@@ -1,0 +1,48 @@
+:root {
+  /* Base tokens */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+
+  /* Colors */
+  --color-bg-post: #f8f8f8;
+  --color-bg-note: #fffbe6;
+  --color-bg-code-post: #e9e9e9;
+  --color-bg-code-note: #f5f1d5;
+  --color-ink: #2d3436;
+  --color-ink-light: #636e72;
+  --color-accent: #0984e3;
+  --color-link: var(--color-accent);
+  --color-border: #b4b4b4;
+  --color-bg: var(--color-bg-note);
+  --color-bg-code: var(--color-bg-code-post);
+
+  /* Typography */
+  --font-post-primary: 'Futura';
+  --font-post-prose: 'Crimson Pro', Georgia, serif;
+  --font-post-ui: system-ui, -apple-system, sans-serif;
+  --font-post-mono: 'JetBrains Mono', monospace;
+
+  --font-note-primary: 'Futura';
+  --font-note-prose: 'Crimson Pro', Georgia, serif;
+  --font-note-ui: system-ui, -apple-system, sans-serif;
+  --font-note-mono: 'JetBrains Mono', monospace;
+
+  --font-primary: var(--font-post-primary);
+  --font-prose: var(--font-post-prose);
+  --font-ui: var(--font-post-ui);
+  --font-mono: var(--font-post-mono);
+
+  /* Font Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+}
+

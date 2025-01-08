@@ -1,0 +1,32 @@
+---
+import Navigation from '../../components/Navigation.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const collection = 'notes';
+const notes = await getCollection(collection);
+const sortedNotes = notes.sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
+---
+
+<Layout theme={collection}>
+  <Navigation selected={collection}/>
+  <main>
+    <h1 class="page-title">{collection.charAt(0).toUpperCase() + collection.slice(1)}</h1>
+    <div class="toc">
+      {sortedNotes.map(note => (
+      <article class="entry">
+        <h2>
+          <a href={`/${collection}/${note.id}`}>
+            {note.data.title}
+          </a>
+        </h2>
+        <div class="line" style="opacity: 0;"></div>
+        <time datetime={note.data.createdAt.toISOString()}>
+          {new Date(note.data.createdAt).toISOString().split('T')[0]}
+        </time>
+        {note.data.description && <p>{note.data.description}</p>}
+      </article>
+      ))}
+    </div>
+  </main>
+</Layout>
