@@ -10,7 +10,8 @@ type Task = {
 
 const styles = {
     container: {
-        maxWidth: '800px',
+        width: '100%',
+        maxWidth: '90ch',
         margin: '0 auto',
         padding: '2rem',
         backgroundColor: 'white',
@@ -25,11 +26,12 @@ const styles = {
     },
     taskInput: {
         display: 'flex',
+        flexDirection: 'column' as const,
         gap: '1rem',
         marginBottom: '2rem'
     },
     input: {
-        flex: 1,
+        width: '100%',
         padding: '0.5rem',
         border: '1px solid #ddd',
         borderRadius: '4px',
@@ -41,7 +43,8 @@ const styles = {
         color: 'white',
         border: 'none',
         borderRadius: '4px',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        width: '100%'
     },
     taskList: {
         display: 'flex',
@@ -158,7 +161,7 @@ export default function Calendar() {
                     type="date"
                     value={selectedDate}
                     onChange={e => setSelectedDate(e.target.value)}
-                    style={{ ...styles.input, flex: '0 0 auto' }}
+                    style={styles.input}
                 />
                 <input
                     type="text"
