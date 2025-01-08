@@ -258,7 +258,6 @@ article p {
   font-size: var(--text-lg);
   line-height: 1.6;
   color: var(--color-ink);
-  text-align: justify;
 }
 
 .content {
@@ -282,7 +281,6 @@ article p {
   margin-bottom: var(--spacing-md);
   font-size: var(--text-xl);
   color: var(--color-ink);
-  text-align: justify;
 }
 
 .content pre {
