@@ -13,22 +13,31 @@ const styles = {
         width: '100%',
         maxWidth: '90ch',
         margin: '0 auto',
-        padding: '2rem',
+        padding: '1rem',
         backgroundColor: 'white',
         borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        '@media (min-width: 640px)': {
+            padding: '2rem'
+        }
     },
     header: {
         marginBottom: '2rem',
         textAlign: 'center' as const,
-        fontSize: '1.5rem',
-        fontWeight: 'bold'
+        fontSize: '1.25rem',
+        fontWeight: 'bold',
+        '@media (min-width: 640px)': {
+            fontSize: '1.5rem'
+        }
     },
     taskInput: {
         display: 'flex',
         flexDirection: 'column' as const,
-        gap: '1rem',
-        marginBottom: '2rem'
+        gap: '0.5rem',
+        marginBottom: '2rem',
+        '@media (min-width: 640px)': {
+            gap: '1rem'
+        }
     },
     input: {
         width: '100%',
@@ -44,7 +53,10 @@ const styles = {
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
-        width: '100%'
+        width: '100%',
+        '@media (min-width: 640px)': {
+            width: 'auto'
+        }
     },
     taskList: {
         display: 'flex',
@@ -58,7 +70,8 @@ const styles = {
         gap: '0.5rem',
         padding: '0.5rem',
         border: '1px solid #eee',
-        borderRadius: '4px'
+        borderRadius: '4px',
+        wordBreak: 'break-word' as const
     },
     statusButton: {
         background: 'none',
@@ -66,30 +79,48 @@ const styles = {
         padding: 0,
         cursor: 'pointer',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexShrink: 0
     },
     calendar: {
         display: 'grid',
         gridTemplateColumns: 'repeat(7, 1fr)',
-        gap: '4px',
-        padding: '1rem'
+        gap: '2px',
+        padding: '0.5rem',
+        '@media (min-width: 640px)': {
+            gap: '4px',
+            padding: '1rem'
+        }
     },
     calendarDay: {
-        padding: '0.5rem',
+        padding: '0.25rem',
         border: '1px solid #eee',
         borderRadius: '4px',
-        minHeight: '80px'
+        minHeight: '60px',
+        cursor: 'pointer',
+        '@media (min-width: 640px)': {
+            padding: '0.5rem',
+            minHeight: '80px'
+        }
     },
     dayHeader: {
-        fontSize: '0.875rem',
-        marginBottom: '0.5rem',
-        color: '#666'
+        fontSize: '0.75rem',
+        marginBottom: '0.25rem',
+        color: '#666',
+        '@media (min-width: 640px)': {
+            fontSize: '0.875rem',
+            marginBottom: '0.5rem'
+        }
     },
     stats: {
-        fontSize: '0.75rem',
+        fontSize: '0.625rem',
         display: 'flex',
         flexDirection: 'column' as const,
-        gap: '2px'
+        gap: '1px',
+        '@media (min-width: 640px)': {
+            fontSize: '0.75rem',
+            gap: '2px'
+        }
     }
 }
 
@@ -120,10 +151,10 @@ export default function Calendar() {
 
     const getStatusIcon = (status: Task['status']) => {
         switch (status) {
-            case 'todo': return <Circle className="w-5 h-5" style={{ color: '#666' }} />
-            case 'done': return <CheckCircle2 className="w-5 h-5" style={{ color: '#22c55e' }} />
-            case 'migrated': return <Square className="w-5 h-5" style={{ color: '#3b82f6' }} />
-            case 'cancelled': return <XCircle className="w-5 h-5" style={{ color: '#ef4444' }} />
+            case 'todo': return <Circle className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#666' }} />
+            case 'done': return <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#22c55e' }} />
+            case 'migrated': return <Square className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#3b82f6' }} />
+            case 'cancelled': return <XCircle className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#ef4444' }} />
         }
     }
 

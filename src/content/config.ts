@@ -33,16 +33,6 @@ const posts = defineCollection({
     }),
 });
 
-const about = defineCollection({
-    loader: glob({ pattern: "index.mdx", base: "./src/content/about" }),
-    schema: z.object({
-        title: z.string(),
-        description: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-    }),
-});
-
 const home = defineCollection({
     loader: glob({ pattern: "index.mdx", base: "./src/content/home" }),
     schema: z.object({
@@ -50,4 +40,4 @@ const home = defineCollection({
     }),
 });
 
-export const collections = { notes, posts, about, home };
+export const collections = { notes, posts, home };

@@ -20,11 +20,21 @@ For the language model, co-locating the component styling with the structural ma
 
 Given the following prompt, here's what `claude-3-5-sonnet-20241022` generates in Cursor (the components below are real, working React code - try them out!).
 
+import Alert from '../../../../components/prose/Alert.astro'
+
+<Alert type="note">
+  I made a few minor adjustments to the generated components to ensure they render nicely on mobile
+</Alert>
+
+
 > use react, tailwind and lucide-react to create an interface for a bullet-journal inspired calendar
 
+import CodeToggle from '../../../../components/prose/CodeToggle.tsx'
 import { default as TailwindCalendarV1 } from './components/TailwindCalendar.v1'
 
-<TailwindCalendarV1 client:load />
+<CodeToggle component={TailwindCalendarV1} >
+  <TailwindCalendarV1 client:load />
+</CodeToggle>
 
 > use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with styles and a corresponding css module
 

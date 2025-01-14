@@ -1,0 +1,22 @@
+---
+import { Icon } from "astro-icon/components";
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer aria-label="Site footer">
+  <div class="content-wrapper">
+    <p>
+      &copy; {currentYear} Dan Corin · Built with <a href="https://astro.build" aria-label="Astro website">Astro <Icon name="simple-icons:astro" class="inline-icon" aria-label="Astro logo"/></a>
+    </p>
+    <p>
+      <a href="https://www.danielcorin.com" target="_blank" rel="noopener noreferrer" aria-label="Personal website"><Icon name="ph:house-line" class="inline-icon" aria-label="Home icon"/></a>
+      <a href="https://github.com/danielcorin" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><Icon name="simple-icons:github" class="inline-icon" aria-label="GitHub icon"/></a>
+      <a href="https://bsky.app/profile/danielcorin.com" target="_blank" rel="noopener noreferrer" aria-label="Bluesky profile"><Icon name="simple-icons:bluesky" class="inline-icon" aria-label="Bluesky icon"/></a>
+      <a href="https://linkedin.com/in/danielcorin" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><Icon name="simple-icons:linkedin" class="inline-icon" aria-label="LinkedIn icon"/></a>
+      <a href="https://twitter.com/danielcorin1" target="_blank" rel="noopener noreferrer" aria-label="Twitter profile"><Icon name="simple-icons:twitter" class="inline-icon" aria-label="Twitter icon"/></a>
+      <a href="mailto:dcorin6@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Email address"><Icon name="simple-icons:gmail" class="inline-icon" aria-label="Gmail icon"/></a>
+      <a href="https://stackoverflow.com/users/2631732/daniel-corin" target="_blank" rel="noopener noreferrer" aria-label="Stack Overflow profile"><Icon name="simple-icons:stackoverflow" class="inline-icon" aria-label="Stack Overflow icon"/></a>
+    </p>
+  </div>
+</footer>

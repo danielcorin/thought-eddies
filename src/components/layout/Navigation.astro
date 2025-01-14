@@ -1,0 +1,21 @@
+---
+import '../../styles/base.css';
+import { Icon } from "astro-icon/components";
+
+interface Props {
+    selected: string;
+}
+
+const { selected } = Astro.props;
+---
+
+<nav>
+    {['', 'notes'].map((item) => (
+        <a href={`/${item === '' ? '' : item}`} class={selected === item || (item === '' && selected === 'home') ? 'nav-link selected' : 'nav-link'}>
+            <span class="nav-item">
+                <Icon name={`ph:${item === '' ? 'house' : item === 'posts' ? 'book-open' : 'note'}`} class="inline-icon"/>
+                <span class="nav-text">{item === '' ? 'Home' : item.charAt(0).toUpperCase() + item.slice(1)}</span>
+            </span>
+        </a>
+    ))}
+</nav>

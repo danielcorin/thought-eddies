@@ -9,8 +9,8 @@
   /* Colors */
   --color-bg-post: #f8f8f8;
   --color-bg-note: #f4f1e4;
-  --color-bg-code-post: #e9e9e9;
-  --color-bg-code-note: #f5f1d5;
+  --color-bg-code-note: color-mix(in srgb, var(--color-bg-post) 90%, #000);
+  --color-bg-code-note: color-mix(in srgb, var(--color-bg-note) 90%, #000);
   --color-ink: #2d3436;
   --color-ink-light: #636e72;
   --color-accent: #0984e3;
@@ -26,7 +26,7 @@
   --font-post-mono: 'JetBrains Mono', monospace;
 
   --font-note-primary: 'Futura';
-  --font-note-prose: 'Crimson Pro', Georgia, serif;
+  --font-note-prose: 'Inter', Georgia, serif;
   --font-note-ui: system-ui, -apple-system, sans-serif;
   --font-note-mono: 'JetBrains Mono', monospace;
 

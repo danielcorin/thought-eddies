@@ -66,10 +66,10 @@ export default function Calendar() {
 
     const getStatusIcon = (status: Task['status']) => {
         switch (status) {
-            case 'todo': return <Circle className="w-5 h-5 text-gray-600" />
-            case 'done': return <CheckCircle2 className="w-5 h-5 text-green-600" />
-            case 'migrated': return <Square className="w-5 h-5 text-blue-600" />
-            case 'cancelled': return <XCircle className="w-5 h-5 text-red-600" />
+            case 'todo': return <Circle className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
+            case 'done': return <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
+            case 'migrated': return <Square className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+            case 'cancelled': return <XCircle className="w-4 h-4 md:w-5 md:h-5 text-red-600" />
         }
     }
 
@@ -114,27 +114,27 @@ export default function Calendar() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md">
-            <div className="flex items-center gap-4 mb-8">
-                <CalendarIcon className="w-6 h-6 text-gray-600" />
-                <h1 className="text-2xl font-semibold">Bullet Journal</h1>
+        <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white rounded-lg shadow-md">
+            <div className="flex items-center gap-2 md:gap-4 mb-6 md:mb-8">
+                <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                <h1 className="text-xl md:text-2xl font-semibold">Bullet Journal</h1>
             </div>
 
-            <div className="grid grid-cols-7 gap-1 mb-8 text-center">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="font-semibold py-2">{day}</div>
+            <div className="grid grid-cols-7 gap-1 mb-6 md:mb-8 text-center text-sm md:text-base">
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                    <div key={day} className="font-semibold py-1 md:py-2">{day}</div>
                 ))}
                 {getDaysInMonth(selectedDate).map((date, i) => (
                     <div
                         key={i}
-                        className={`p-2 min-h-[100px] border ${date?.toDateString() === selectedDate.toDateString() ? 'border-blue-500' : 'border-gray-200'} rounded-md ${date ? 'cursor-pointer hover:bg-gray-50' : ''}`}
+                        className={`p-1 md:p-2 min-h-[60px] md:min-h-[100px] border ${date?.toDateString() === selectedDate.toDateString() ? 'border-blue-500' : 'border-gray-200'} rounded-md ${date ? 'cursor-pointer hover:bg-gray-50' : ''}`}
                         onClick={() => date && setSelectedDate(date)}
                     >
                         {date && (
                             <>
-                                <div className="text-right text-gray-600">{date.getDate()}</div>
+                                <div className="text-right text-gray-600 text-xs md:text-base">{date.getDate()}</div>
                                 {getTaskStats(date) && (
-                                    <div className="mt-1 text-xs space-y-1">
+                                    <div className="mt-1 text-[10px] md:text-xs space-y-0.5 md:space-y-1">
                                         {Object.entries(getTaskStats(date)!).map(([status, count]) => count > 0 && (
                                             <div key={status} className="flex items-center justify-between">
                                                 {getStatusIcon(status as Task['status'])}
@@ -149,18 +149,18 @@ export default function Calendar() {
                 ))}
             </div>
 
-            <div className="flex gap-4 mb-8">
+            <div className="flex flex-col md:flex-row gap-2 md:gap-4 mb-6 md:mb-8">
                 <input
                     type="text"
                     value={newTask}
                     onChange={e => setNewTask(e.target.value)}
                     placeholder="Add new task..."
                     onKeyPress={e => e.key === 'Enter' && addTask()}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                     onClick={addTask}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-4 py-2 bg-blue-600 text-white text-sm md:text-base rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     Add
                 </button>
@@ -168,7 +168,7 @@ export default function Calendar() {
 
             <div className="space-y-2">
                 {currentEntry?.tasks.map(task => (
-                    <div key={task.id} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md">
+                    <div key={task.id} className="flex items-center gap-2 p-2 border border-gray-200 rounded-md text-sm md:text-base">
                         <button
                             onClick={() => {
                                 const nextStatus: Record<Task['status'], Task['status']> = {

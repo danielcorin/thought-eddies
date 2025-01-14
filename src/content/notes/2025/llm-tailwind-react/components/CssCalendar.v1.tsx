@@ -9,38 +9,55 @@ type Task = {
 
 const styles = {
     container: {
-        maxWidth: '600px',
-        margin: '0 auto',
-        padding: '2rem',
+        maxWidth: '800px',
+        margin: '1rem auto',
+        padding: '1rem',
+        width: '95%',
         backgroundColor: 'white',
         borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        '@media (min-width: 640px)': {
+            margin: '2rem auto',
+            padding: '2rem'
+        }
     },
     header: {
         marginBottom: '2rem',
         textAlign: 'center' as const,
-        fontSize: '1.5rem',
-        fontWeight: 'bold'
+        fontSize: '1.25rem',
+        fontWeight: 'bold',
+        '@media (min-width: 640px)': {
+            fontSize: '1.5rem'
+        }
     },
     taskInput: {
         display: 'flex',
-        gap: '1rem',
-        marginBottom: '2rem'
+        flexDirection: 'column' as const,
+        gap: '0.5rem',
+        marginBottom: '2rem',
+        '@media (min-width: 640px)': {
+            flexDirection: 'row' as const,
+            gap: '1rem'
+        }
     },
     input: {
-        flex: 1,
+        width: '100%',
         padding: '0.5rem',
         border: '1px solid #ddd',
         borderRadius: '4px',
         fontSize: '1rem'
     },
     button: {
+        width: '100%',
         padding: '0.5rem 1rem',
         background: '#333',
         color: 'white',
         border: 'none',
         borderRadius: '4px',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        '@media (min-width: 640px)': {
+            width: 'auto'
+        }
     },
     taskList: {
         display: 'flex',
@@ -53,7 +70,8 @@ const styles = {
         gap: '0.5rem',
         padding: '0.5rem',
         border: '1px solid #eee',
-        borderRadius: '4px'
+        borderRadius: '4px',
+        wordBreak: 'break-word' as const
     },
     statusButton: {
         background: 'none',
@@ -61,7 +79,8 @@ const styles = {
         padding: 0,
         cursor: 'pointer',
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexShrink: 0
     }
 }
 
@@ -99,6 +118,7 @@ export default function Calendar() {
 
     return (
         <div style={styles.container}>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <div style={styles.header}>Bullet Journal</div>
 
             <div style={styles.taskInput}>

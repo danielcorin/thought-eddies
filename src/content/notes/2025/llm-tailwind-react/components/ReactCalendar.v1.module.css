@@ -1,51 +1,57 @@
 .container {
     max-width: 800px;
-    margin: 2rem auto;
-    padding: 2rem;
+    margin: 1rem auto;
+    padding: 1rem;
+    width: 95%;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+}
 
-  .header {
+.header {
     display: flex;
     align-items: center;
     gap: 1rem;
     margin-bottom: 2rem;
-  }
+    flex-wrap: wrap;
+}
 
-  .calendarIcon {
+.calendarIcon {
     width: 24px;
     height: 24px;
     color: #666;
-  }
+}
 
-  .dateSelector {
+.dateSelector {
     margin-bottom: 2rem;
-  }
+}
 
-  .dateSelector input {
+.dateSelector input {
     padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
-  }
+    width: 100%;
+}
 
-  .taskInput {
+.taskInput {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
-  }
+    flex-direction: column;
+    gap: 0.5rem;
+}
 
-  .taskInput input {
+.taskInput input {
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
-  }
+    width: 100%;
+}
 
-  .taskInput button {
+.taskInput button {
     padding: 0.5rem 1rem;
     background: #333;
     color: white;
@@ -53,43 +59,59 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.2s;
-  }
+    width: 100%;
+}
 
-  .taskInput button:hover {
+.taskInput button:hover {
     background: #444;
-  }
+}
 
-  .taskList {
+.taskList {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-  }
+}
 
-  .task {
+.task {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem;
     border: 1px solid #eee;
     border-radius: 4px;
-  }
+}
 
-  .statusButton {
+.statusButton {
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
-  }
+}
 
-  .icon {
+.icon {
     width: 20px;
     height: 20px;
     color: #666;
-  }
+}
 
-  .completed {
+.completed {
     text-decoration: line-through;
     color: #999;
-  }
+}
+
+@media (min-width: 640px) {
+    .container {
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .taskInput {
+        flex-direction: row;
+    }
+
+    .taskInput button {
+        width: auto;
+    }
+}
