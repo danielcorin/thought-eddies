@@ -1,0 +1,33 @@
+---
+import { Code as CodeIcon } from 'lucide-react';
+import { Code } from 'astro/components';
+
+interface Props {
+  source: string;
+  lang?: string;
+  children: astroHTML.JSX.Element;
+}
+
+const { source, lang = "tsx" } = Astro.props;
+---
+<div class="relative">
+    <div class="mb-4">
+        <slot />
+    </div>
+
+    <div class="not-prose">
+        <details class="group">
+        <summary class="flex items-center gap-2 font-mono text-xs px-2 py-1 rounded-md
+            bg-[var(--color-bg-code)] text-[var(--color-ink-light)] opacity-80
+            hover:opacity-100 hover:text-[var(--color-ink)]
+            cursor-pointer transition-all duration-200 w-fit">
+            <CodeIcon className="w-3 h-3" />
+            <span class="select-none group-open:hidden">Show Source</span>
+            <span class="select-none hidden group-open:block">Hide Source</span>
+        </summary>
+        <div class="mt-3 rounded-md overflow-hidden bg-[var(--color-bg-code)]">
+            <Code code={source} lang={lang as any} theme="monokai" />
+        </div>
+        </details>
+    </div>
+</div>
