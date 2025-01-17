@@ -3,9 +3,11 @@ import { Icon } from "astro-icon/components";
 
 interface Props {
   type: 'note' | 'tip' | 'important' | 'warning' | 'caution';
+  mobileOnly?: boolean;
+  desktopOnly?: boolean;
 }
 
-const { type } = Astro.props;
+const { type, mobileOnly = false, desktopOnly = false } = Astro.props;
 
 const icons = {
   note: 'material-symbols:info-outline',
@@ -22,9 +24,11 @@ const colors = {
   warning: 'bg-orange-50 border-orange-700 text-orange-700',
   caution: 'bg-red-50 border-red-700 text-red-700'
 };
+
+const visibility = mobileOnly ? 'md:hidden' : desktopOnly ? 'hidden md:block' : '';
 ---
 
-<div class={`alert px-4 py-2 my-4 border-l-4 rounded-r ${colors[type]}`}>
+<div class={`alert px-4 py-2 my-4 border-l-4 rounded-r ${colors[type]} ${visibility}`}>
   <div class="font-bold uppercase mb-2 flex items-center gap-2">
     <Icon name={icons[type]} class="w-5 h-5" /> {type}
   </div>

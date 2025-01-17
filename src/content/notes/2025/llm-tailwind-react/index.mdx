@@ -1,7 +1,7 @@
 ---
 title: "The Unreasonable Effectiveness of Generating UI with React and Tailwind"
 createdAt: 2025-01-05T19:54:48-05:00
-updatedAt: 2025-01-05T19:54:48-05:00
+updatedAt: 2025-01-15T08:59:40-05:00
 description: Writing React/Tailwind with LLMs is effortless
 location: NYC
 draft: false
@@ -23,8 +23,8 @@ For the language model, co-locating the component styling with the structural ma
 
 Given the following prompt, here's what `claude-3-5-sonnet-20241022` generates in Cursor (the components below are real, working React code - try them out!).
 
-<Alert type="note">
-  I made a few minor adjustments post-generation to the components to ensure they render nicely on mobile for you folks on your phones
+<Alert type="note" mobileOnly>
+  I made a few minor adjustments post-generation to the components to ensure they render nicely on small screens
 </Alert>
 
 > use react, tailwind and lucide-react to create an interface for a bullet-journal inspired calendar
