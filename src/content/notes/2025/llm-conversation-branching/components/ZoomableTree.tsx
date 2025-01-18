@@ -69,6 +69,14 @@ export default function ZoomableTree({ messages, summaryZoomLevel = 0.65 }: { me
                 .y(d => d.y)
             )
 
+        const depthColors = [
+            "#f0f9ff", // sky-50
+            "#ffe4e6", // rose-100
+            "#dbeafe", // blue-100
+            "#fef3c7", // amber-100
+            "#dcfce7", // emerald-100
+        ]
+
         const nodes = nodesGroup.selectAll(".node")
             .data(treeData.descendants())
             .join("g")
@@ -81,21 +89,22 @@ export default function ZoomableTree({ messages, summaryZoomLevel = 0.65 }: { me
             .attr("width", 240)
             .attr("height", 100)
             .append("xhtml:div")
-            .attr("class", "flex flex-col p-2 rounded-lg border bg-slate-100 hover:bg-slate-200")
+            .attr("class", "flex flex-col p-2 rounded-lg border hover:bg-slate-200")
+            .style("background-color", d => depthColors[d.depth % depthColors.length])
             .html(d => `
                 <div class="text-sm font-medium text-slate-700 truncate">${d.data.prompt}</div>
                 <div class="h-px bg-slate-300 my-1"></div>
                 <div class="text-xs text-slate-600 line-clamp-3">${d.data.response}</div>
             `)
 
-        nodes.on("mouseover", function () {
+        nodes.on("mouseover", function (event, d) {
             const nodeGroup = d3.select(this)
             nodeGroup.raise()
             nodeGroup.select("foreignObject div")
-                .style("background-color", "#e2e8f0")
-        }).on("mouseout", function () {
+                .style("background-color", d3.color(depthColors[d.depth % depthColors.length])?.darker(0.1))
+        }).on("mouseout", function (event, d) {
             d3.select(this).select("foreignObject div")
-                .style("background-color", "#f1f5f9")
+                .style("background-color", depthColors[d.depth % depthColors.length])
         })
 
         // Calculate bounds
@@ -132,6 +141,7 @@ export default function ZoomableTree({ messages, summaryZoomLevel = 0.65 }: { me
                                 <div class="text-xs text-slate-600 line-clamp-3">${d.data.response}</div>
                             `
                         })
+                        .style("background-color", d => depthColors[d.depth % depthColors.length])
                 })
 
             svg.call(zoom)
