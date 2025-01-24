@@ -13,6 +13,10 @@ const notes = defineCollection({
         tags: z.array(z.string()).optional(),
         image: z.string().optional(),
         draft: z.boolean().optional().default(true),
+        zoomLevels: z.array(z.object({
+            level: z.number().int(),
+            content: z.string(),
+        })).optional().default([]),
         series: z.string().optional(),
     }),
 });

@@ -1,0 +1,200 @@
+---
+title: "Zoomable Document"
+createdAt: 2025-01-22T20:50:48-05:00
+updatedAt: 2025-01-22T20:50:48-05:00
+description: Zooming in and out of a document to view different perspectives
+location: NYC
+draft: false
+zoomLevels:
+  - level: 2
+    content: |
+      ## From Code to Content and Back Again
+
+      I'm experimenting with an unusual approach to this post, inspired by a conversation between Nabeel Hyatt and Dan Shipper about how "code has become content". This resonates deeply with my recent experience - writing and building have become intertwined, with prose becoming prompts for implementation and vice versa.
+
+      Modern LLMs have become incredible idea synthesizers. Their code generation abilities have transformed my creative process - ideas that previously felt too daunting to prototype are now within reach. I'm leveraging this capability to build this interactive post as I write it.
+
+      ## The Technical Foundation
+
+      I'm writing this in an Astro project, specifically in an MDX file that will live in my content directory. The project structure allows me to embed interactive React components directly in my content, creating a seamless blend of prose and functionality.
+
+      ## Content Hierarchy Deep Dive
+
+      Content typically exists in multiple layers:
+      1. Headings and section markers (`#` in markdown)
+      2. Main body content (prose, lists, code, images)
+      3. Supporting elements (asides, footnotes, citations)
+
+      Traditional navigation tools like tables of contents leverage these layers, but they're just scratching the surface. With LLMs, we can generate dynamic summaries that provide flexible levels of detail - similar to how Google Maps lets you zoom between street view and satellite view.
+
+      ## The Map Metaphor
+
+      Just as maps show different details at different zoom levels - from individual buildings to entire states - documents could adapt their content density based on the reader's desired perspective. Current prose navigation is mostly static, but what if we could make it as dynamic as digital cartography?
+
+  - level: 3
+    content: |
+      ## Code and Content Convergence
+
+      This post explores the intersection of writing and building, sparked by the observation that "code has become content". Modern AI tools have made it possible to prototype ideas more freely, leading to this experiment in interactive content.
+
+      ## Technical Implementation
+
+      Built using Astro and MDX, this project demonstrates how interactive components can be seamlessly integrated with written content. The structure allows for dynamic content presentation while maintaining the flexibility of markdown.
+
+      ## Content Structure
+
+      Traditional content hierarchies include headers, main body content, and supplementary materials. While useful, these structures are static. By incorporating LLMs, we can create dynamic navigation experiences similar to digital maps, allowing readers to zoom between different levels of detail.
+
+  - level: 4
+    content: |
+      ## An Interactive Writing Experiment
+
+      This project explores dynamic content presentation, combining traditional writing with modern web technologies. Using AI-assisted development, it demonstrates how documents can provide multiple levels of detail, similar to digital maps.
+
+      The implementation uses Astro and MDX to create an interactive reading experience that challenges conventional document navigation approaches.
+
+  - level: 5
+    content: An experimental approach to document navigation that combines AI, interactive components, and map-like zoom levels to create a more dynamic reading experience.
+---
+
+[original text]
+
+## The Spark
+I'm trying something unusual with this post.
+I think it's going to be a lot of fun.
+I was listening to Nabeel Hyatt and Dan Shipper's [conversation](https://every.to/podcast/the-venture-capitalist-who-only-makes-two-bets-a-year), where they mentioned _code has become content_.
+This resonated with me because I've lately found, specifically with the projects on this site, that writing and building have started to go hand in hand for me.
+The prose I write to describe my ideas often becomes the prompts I use to build them and vice versa.
+
+Powerful models and their code generating abilities are incredible [synthesizers](https://thesephist.com/posts/synth/) for ideas.
+Prior to having a LLM at hand to write most of the code, I wouldn't have the energy to prototype or attempt building many of them.
+Most didn't feel worth the effort or I'd get stuck or frustrated and move on.
+With that context, I'm going to (attempt to) build this interactive post by writing the post.
+
+## Starting from Scratch
+As I write now, I have Cursor open and I am writing in a file at `src/content/notes/2025/document-?/index.mdx` in my Astro project.
+The folder and post are currently called `document-?` because I don't really know what this concept is yet, but I needed to start somewhere.
+Maybe it's called something else when you're reading it.
+My site has interactive Astro and React components at `src/components`.
+I can include these components in my `.mdx` content which has been a really enjoyable way to play around with ideas.
+
+## Understanding Content Structure
+For this post, we are building an experience that allows the reader to interact with the content of a post at multiple levels of detail and specificity.
+Most content has at most just a few levels of content.
+The first are headings.
+These include things like titles and section headers often denoted by `#` tags in markdown.
+These titles and headers can be summarized into a table of contents to give the reader an overview of what's in an article or the ability to jump around or permalink to certain parts.
+A second level of content is the linear prose or the body of the work.
+This is a bit of a kitchen sink category, including prose, lists, code, images and everything that composes most of the written work.
+Finally, a third level of content includes things like asides, footnotes and citations that appear next to or after the main prose.
+Sometimes these are off to the side of content or aggregated all together at the end.
+
+## Enhancing Navigation with LLMs
+With LLMs, we can create summaries that provide at-a-glance skimmability and arbitrary levels of specificity.
+Imagine zooming in and out of a document like you do when using an app like Google Maps.
+If you navigate to New York City and zoom into a particular neighborhood, you can see the roads and the locations of the buildings.
+This zoomed in view is like reading the original prose of a blog post.
+At this level of zoom, you are limited in how much you can see.
+Your browser, phone or field of view is only so large.
+You can't look at every road in the city at the same time.
+Zoom out further and we can see the boroughs or even other states, but then we'd see very few roads.
+There's simply too much detail to show when zoomed out at this level.
+Prose is like this as well but most "maps" of prose are relatively static.
+In practice, we actually spend relatively limited effort making our prose accessible at different levels of zoom.
+What would that even look like?
+
+## Limitations of Traditional Navigation
+Like a map, we may want to zoom out and view an entire piece of written text from a high level, understanding its broad features.
+Today, the closest thing to something like this is a table of contents.
+In the best case, the author has thoughtfully titled their chapters in a way that actually gives us something akin to a high level overview.
+
+Another area that can help is a glossary.
+With the right vocabulary, we can locate references to specific items of interests.
+Unfortunately, most glossaries are limited beyond close to perfect string matches.
+They include things like technical terms, acronyms, and specialized vocabulary.
+But they don't allow us to find where certain concepts are mentioned or where certain motifs occur, at least not flexibly.
+Glossaries rely on the foresight of the author to anticipate how a reader might want to navigate the prose.
+
+Digital documents contain many improvements.
+We can "find" any word or phrase across an arbitrarily large document.
+But it's still fuzzy how you might find all the places in a written work where a character displays "kindness", for example.
+In a literary work, the author doesn't come out and say when a character is kind.
+They show the character's kindness through their actions.
+We can't just run "find" on the word "kind".
+We'll miss a lot.
+
+## Building the Zoomable Document
+Let's return to what a zoomable document looks like.
+We have our street level view.
+That is the unmodified document.
+We see all the words, images, code, asides, footnotes, everything.
+The raw, unedited text as the author created it.
+
+Let's zoom out.
+Now we're seeing neighborhoods.
+Each neighborhood represents a chunk of content that's roughly smaller than a major heading but larger than individual paragraphs.
+
+Markdown supports 6 heading levels.
+Not everyone uses all 6 levels but some people do.
+So when we zoom out, we're zooming out relative to the levels of content the author has provided, but we can't necessarily rely on these "cliff notes".
+In fact, we have to assume the content won't already contain a "roadmap" for the reader.
+That is the utility of what _we_ aim to provide with our "zoomable document".
+
+## Technical Implementation
+How can we construct this zoomable document?
+We'll first need to take a look at the raw content that exists at the street level.
+From here, we will need to compute summaries for each different level of zoom.
+When we zoom out, content at the previous level fades away and content at the next level fades into view.
+As we zoom further and further out, the content is condensed into summaries that capture the essence of the lower levels, giving the reader the ability to quickly scan through these summaries, then zoom into areas of interest, like a dynamic map.
+
+Using the following prompt in Cursor, I was able to generate content summary for levels 2-5 where this "raw" content is level 1.
+The content is generated and stored as markdown strings in the following schema, passed to the React component that renders the `ZoomableDocument`
+
+```tsx
+interface ContentLevel {
+    level: number
+    content: string
+}
+
+interface ZoomableDocumentProps {
+    children: ReactNode
+    levels: ContentLevel[]
+}
+```
+
+> Using markdown (including headers, list and code if useful) given the content at Level 1, write Levels 2-5, maintaining the author's voice and provide increasingly general levels of specificity as the levels increase. Don't just summarize. Provide some of the same details as the original text at the lower levels. Do more summarizing at the higher levels. Use your best judgment to determine which details are relevant at each level. Remember, lower levels are like street and neighborhood views on Google Maps where you can see roads and buildings. Higher levels are like county, state and even country views where we get more of the general geography of a space but see fewer details.
+
+The results have been both interesting and challenging to achieve.
+I created the first version of the `ZoomableDocument` React component by using an early version of this prose as the prompt and giving an LLM instructions to "build that".
+From there, I continued writing more in prompts and here to explain what approaches were working well and refined the prose further.
+The above prompt allows me to easily use an LLM to regenerate the higher level summaries whenever I make edits to this Level 1 version.
+
+There were some technical challenges to overcome.
+Initially, I stored all content (including the raw post) as markdown strings in JSON objects.
+However, this approach wasn't ideal. Through iteration, I developed a better solution: writing the raw content directly in the `.mdx` file, then passing the rendered component from the Astro collection through a layout and into a React component. This preserves all of Astro's markdown features.
+With this foundation in place, I can now generate summaries as a separate field in the post frontmatter using the prompt above.
+
+We now have a foundation for a `ZoomableDocument` component.
+To create another, all we have to do in write our markdown as we'd done normally, then generate arbitrary levels content to zoom to using a language model and the raw post as context.
+Finally, we set the generated zoom levels as a frontmatter field in the `.mdx` post with the following format:
+
+```yaml
+---
+zoomLevels:
+  - level: 2
+    content: Level 2 content...
+
+  - level: 3
+    content: Level 3 content...
+
+  - level: 4
+    content: Level 4 content...
+
+  - level: 5
+    content: Level 5 content...
+---
+```
+
+## Future work
+
+Given the recent release of [Claude Citations](https://docs.anthropic.com/en/docs/build-with-claude/citations), I'll probably revisit this concept introducing explicit linkages between the summarized content and the source text.

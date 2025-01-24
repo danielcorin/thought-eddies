@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { render } from "astro:content";
 import NoteLayout from '@layouts/NoteLayout.astro';
+import ZoomableNoteLayout from '@layouts/ZoomableNoteLayout.astro';
 
 export const prerender = true;
 export async function getStaticPaths() {
@@ -12,11 +13,16 @@ export async function getStaticPaths() {
   }));
 }
 
-
 const { post } = Astro.props as { post: CollectionEntry<'notes'> };
 const { Content } = await render(post);
 ---
 
-<NoteLayout frontmatter={post.data}>
-  <Content />
-</NoteLayout>
+{post.data.zoomLevels.length > 0 ? (
+  <ZoomableNoteLayout frontmatter={post.data} Content={Content}>
+    <Content />
+  </ZoomableNoteLayout>
+) : (
+  <NoteLayout frontmatter={post.data}>
+    <Content />
+  </NoteLayout>
+)}
