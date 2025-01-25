@@ -9,7 +9,7 @@ interface Props {
 const { selected } = Astro.props;
 ---
 
-<nav>
+<nav class="site-nav">
     {['', 'notes'].map((item) => (
         <a href={`/${item === '' ? '' : item}`} class={selected === item || (item === '' && selected === 'home') ? 'nav-link selected' : 'nav-link'}>
             <span class="nav-item">

@@ -30,29 +30,31 @@ body {
   background-color: var(--color-bg);
 }
 
-nav {
+.site-nav {
+  padding: var(--spacing-xs);
+  width: 100%;
   font-family: var(--font-primary);
   font-size: var(--text-lg);
   display: flex;
   gap: var(--spacing-md);
 }
 
-nav a, .nav-link {
+.site-nav a, .nav-link {
   color: var(--color-ink);
   text-decoration: none;
   transition: opacity 0.2s;
 }
 
-nav a {
+.site-nav a {
   font-weight: bold;
 }
 
-nav a:hover {
+.site-nav a:hover {
   opacity: 0.8;
   color: var(--color-accent);
 }
 
-nav a.selected, .nav-link.selected {
+.site-nav a.selected, .nav-link.selected {
   text-decoration: underline;
   text-underline-offset: 2px;
   text-decoration-thickness: 1px;
@@ -161,7 +163,7 @@ a:hover {
 
 /* Layout */
 main {
-  padding: var(--spacing-lg) 0;
+  padding: var(--spacing-xs) 0;
   max-width: 90ch;
   margin: 0 auto var(--spacing-lg);
 }
@@ -302,7 +304,7 @@ footer a {
 
 /* Mobile Styles */
 @media (max-width: 640px) {
-  nav {
+  .site-nav {
     font-size: var(--text-base);
     gap: var(--spacing-sm);
   }

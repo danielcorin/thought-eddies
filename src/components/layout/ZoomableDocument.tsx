@@ -28,13 +28,13 @@ export function ZoomableDocument({ children, levels }: ZoomableDocumentProps) {
             if (typeof children === 'string') {
                 return (
                     <div
-                        className="relative p-4 prose prose-slate dark:prose-invert max-w-3xl mx-auto"
+
                         dangerouslySetInnerHTML={{ __html: children }}
                     />
                 )
             }
             return (
-                <div className="relative p-4 prose prose-slate dark:prose-invert max-w-3xl mx-auto">
+                <div>
                     {children}
                 </div>
             )
@@ -44,7 +44,7 @@ export function ZoomableDocument({ children, levels }: ZoomableDocumentProps) {
         if (!contentLevel) return null
 
         return (
-            <div className="relative p-4 prose prose-slate dark:prose-invert max-w-3xl mx-auto">
+            <div>
                 <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     rehypePlugins={[rehypeSlug, rehypeAutolinkHeadings, rehypePrism]}

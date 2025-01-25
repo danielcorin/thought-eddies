@@ -5,7 +5,9 @@ import { getCollection } from 'astro:content';
 
 const collection = 'notes';
 const notes = await getCollection(collection, ({ data }) => !data.draft);
-const sortedNotes = notes.sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
+const sortedNotes = notes
+  .filter(note => !note.id.includes('level'))
+  .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
 ---
 
 <Layout theme={collection}>

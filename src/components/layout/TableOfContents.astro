@@ -1,0 +1,155 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  title?: string;
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings, title } = Astro.props;
+const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] : headings;
+
+
+---
+<div class="toc-container">
+  <button class="toggle-toc" aria-label="Toggle table of contents" aria-expanded="true">
+    <span class="toggle-text">Table of Contents</span>
+    <Icon name="ph:minus-bold" class="h-3 w-3 toggle-icon minus-icon" />
+    <Icon name="ph:plus-bold" class="h-3 w-3 toggle-icon plus-icon hidden" />
+  </button>
+  <nav class="toc">
+    <div class="toc-content">
+      <ul>
+        {
+          allHeadings.map((heading) => (
+            <li class={`depth-${heading.depth}`}>
+              <a href={`#${heading.slug}`}>
+                {heading.text}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+</div>
+<script>
+  const toc = document.querySelector('.toc');
+  const toggleButton = document.querySelector('.toggle-toc');
+  const minusIcon = toggleButton?.querySelector('.minus-icon');
+  const plusIcon = toggleButton?.querySelector('.plus-icon');
+
+  toggleButton?.addEventListener('click', () => {
+    const isCollapsed = toc?.classList.toggle('collapsed');
+    toggleButton.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+    minusIcon?.classList.toggle('hidden', isCollapsed);
+    plusIcon?.classList.toggle('hidden', !isCollapsed);
+  });
+</script>
+<style>
+.toc-container {
+    display: none;
+}
+
+@media (min-width: 1280px) {
+    .toc-container {
+        display: block;
+        position: fixed;
+        left: var(--spacing-md);
+        top: var(--spacing-md);
+        width: 16rem;
+        box-shadow: 0 0 8px rgb(0 0 0 / 0.2);
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+}
+
+.toggle-toc {
+    position: relative;
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-bg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border: none;
+    font-family: var(--font-primary);
+    font-size: var(--text-base);
+    font-weight: bold;
+}
+
+.toc {
+    background: var(--color-bg);
+    transition: max-height 0.3s ease-out;
+    max-height: calc(75vh - 4rem);
+    overflow: hidden;
+    font-family: var(--font-prose);
+}
+
+.toc-content {
+    max-height: calc(75vh - 4rem);
+    overflow-y: auto;
+    padding: 0 var(--spacing-sm) var(--spacing-sm) var(--spacing-sm);
+    transition: opacity 0.2s ease-in-out;
+    background-size: 20px 20px;
+    background-position: 0 0;
+    scrollbar-color: var(--color-border) var(--color-bg);
+}
+
+.toc.collapsed {
+    max-height: 0;
+}
+
+.toc.collapsed .toc-content {
+    opacity: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (min-width: 1280px) {
+    .toc {
+        display: block;
+    }
+
+    :global(main) {
+        margin-left: 18rem;
+    }
+}
+
+.toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc li {
+    margin: var(--spacing-sm) 0;
+}
+
+.toc a {
+    color: var(--color-ink);
+    opacity: 0.8;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    font-weight: normal;
+    font-size: var(--text-sm);
+    display: block;
+}
+
+.toc a:hover {
+    opacity: 1;
+    border-left: 2px solid var(--color-link);
+    margin-left: calc(-1 * var(--spacing-sm));
+    padding-left: calc(var(--spacing-sm) - 2px);
+}
+
+.depth-2 { padding-left: var(--spacing-md); }
+.depth-3 { padding-left: calc(var(--spacing-md) + var(--spacing-sm)); }
+.depth-4 { padding-left: calc(var(--spacing-md) + var(--spacing-md)); }
+.depth-5 { padding-left: calc(var(--spacing-lg)); }
+.depth-6 { padding-left: calc(var(--spacing-lg) + var(--spacing-sm)); }
+</style>

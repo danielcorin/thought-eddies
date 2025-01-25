@@ -14,12 +14,14 @@ If you've experimented with [Claude Artifacts](https://support.anthropic.com/en/
 Most of my experience building software, especially professionally, comes from working on the "backend".
 Building frontend (read: user interfaces in a browser) is harder for me (or doesn't come as easily), because while I have experience writing software, I don't have as much experience writing _this type_ of software.
 
-# The "magic" stack
+## The "Magic" Stack
 When generating UI, one specific stack has proven to be both popular and effective relative to the technologies I have tried.
 That stack is React and Tailwind.
 
 Both Claude Artifacts and v0 use these technologies by default and there is a reason why.
 For the language model, co-locating the component styling with the structural markup is highly effective and steerable by prompting.
+
+## Comparing Different Approaches
 
 Given the following prompt, here's what `claude-3-5-sonnet-20241022` generates in Cursor (the components below are real, working React code - try them out!).
 
@@ -51,6 +53,8 @@ Pretty straightforward LLM UI output with lots of opportunities for improvement.
 The former component exists entirely within a single `.tsx` file.
 The latter has the markup and style separated into `.tsx` and `.css.module` files.
 
+## Iterating on the Initial Design
+
 Inevitably, we will want to make changes to the first iteration from the model.
 Let's add a calendar component so we can see the number of tasks that have been input on each day.
 
@@ -62,6 +66,8 @@ import TailwindCalendarV2Source from './components/TailwindCalendar.v2?raw';
 <CodeToggle source={TailwindCalendarV2Source}>
     <TailwindCalendarV2 client:load />
 </CodeToggle>
+
+## The Multi-File Challenge
 
 To do the same for our two-file approach, we now need to start thinking about what context we're going to provide to the model.
 Ideally, we would generate diffs to the existing files, as this is one of the faster and more efficient ways we could make changes.
@@ -154,6 +160,8 @@ export default function Calendar() {
     )
 }
 ```
+
+## Comparing diffs
 
 When we prompt to make updates in the UI, we will almost always be making changes in areas 1 and 3 to implement new or modified functionality.
 
@@ -458,6 +466,8 @@ index 16574eb..d4767ff 100644
              <div className="flex gap-4 mb-8">
 ```
 
+## The Efficiency of Tailwind with LLMs
+
 A diff of about half the number of lines is needed to make the prompted changes in the Tailwind component.
 This does not suggest a Tailwind approach is necessarily better than others, but rather that a language model is more effective at following instructions requiring small, more localized modifications.
 Thus, if you use Tailwind/React, you have an easier time iterating and building with a language partner than several other approaches and project structures.
@@ -467,6 +477,8 @@ However, not all models and tools take this approach by default - it's not the o
 For completeness, here are some tools that _don't_ seem to use React and Tailwind by default:
 - Val Town's [Townie](https://www.val.town/)
 - ChatGPT Canvas
+
+## Model Biases and Context Influence
 
 It's also possible that `claude-3-5-sonnet-20241022`, one of the most popular models for coding, has a propensity for writing React/Tailwind code, which could influence the approaches taken by popular tools.
 When prompting Claude with similar prompts as above, I usually get React code, even when I don't ask for it.
