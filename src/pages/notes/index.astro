@@ -10,7 +10,7 @@ const sortedNotes = notes
   .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
 ---
 
-<Layout theme={collection}>
+<Layout theme={collection} title="Notes">
   <Navigation selected={collection}/>
   <main>
     <h1 class="page-title">{collection.charAt(0).toUpperCase() + collection.slice(1)}</h1>
