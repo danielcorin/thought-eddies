@@ -9,7 +9,6 @@ interface Props {
 const { headings, title } = Astro.props;
 const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] : headings;
 
-
 ---
 <div class="toc-container">
   <button class="toggle-toc" aria-label="Toggle table of contents" aria-expanded="true">
@@ -39,11 +38,33 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
   const minusIcon = toggleButton?.querySelector('.minus-icon');
   const plusIcon = toggleButton?.querySelector('.plus-icon');
 
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
+  const toggleToc = (collapse: boolean) => {
+    const isCollapsed = collapse ? toc?.classList.add('collapsed') : toc?.classList.remove('collapsed');
+    toggleButton?.setAttribute('aria-expanded', collapse ? 'false' : 'true');
+    minusIcon?.classList.toggle('hidden', collapse);
+    plusIcon?.classList.toggle('hidden', !collapse);
+  };
+
   toggleButton?.addEventListener('click', () => {
-    const isCollapsed = toc?.classList.toggle('collapsed');
-    toggleButton.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-    minusIcon?.classList.toggle('hidden', isCollapsed);
-    plusIcon?.classList.toggle('hidden', !isCollapsed);
+    const isCurrentlyCollapsed = toc?.classList.contains('collapsed');
+    toggleToc(!isCurrentlyCollapsed);
+  });
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        if (window.scrollY > 200) {
+          toggleToc(true);
+        } else {
+          toggleToc(false);
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
   });
 </script>
 <style>
