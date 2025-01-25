@@ -13,8 +13,8 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
 <div class="toc-container">
   <button class="toggle-toc" aria-label="Toggle table of contents" aria-expanded="true">
     <span class="toggle-text">Table of Contents</span>
-    <Icon name="ph:minus-bold" class="h-3 w-3 toggle-icon minus-icon" />
-    <Icon name="ph:plus-bold" class="h-3 w-3 toggle-icon plus-icon hidden" />
+    <Icon name="ph:caret-up-bold" class="h-5 w-5 toggle-icon minus-icon" />
+    <Icon name="ph:caret-down-bold" class="h-5 w-5 toggle-icon plus-icon hidden" />
   </button>
   <nav class="toc">
     <div class="toc-content">
@@ -40,6 +40,7 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
 
   let lastScrollY = window.scrollY;
   let ticking = false;
+  let manuallyCollapsed = false;
 
   const toggleToc = (collapse: boolean) => {
     const isCollapsed = collapse ? toc?.classList.add('collapsed') : toc?.classList.remove('collapsed');
@@ -50,6 +51,9 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
 
   toggleButton?.addEventListener('click', () => {
     const isCurrentlyCollapsed = toc?.classList.contains('collapsed');
+    if (window.scrollY < 200) {
+      manuallyCollapsed = !isCurrentlyCollapsed;
+    }
     toggleToc(!isCurrentlyCollapsed);
   });
 
@@ -58,7 +62,7 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
       window.requestAnimationFrame(() => {
         if (window.scrollY > 200) {
           toggleToc(true);
-        } else {
+        } else if (!manuallyCollapsed) {
           toggleToc(false);
         }
         ticking = false;
@@ -80,7 +84,6 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
         left: var(--spacing-md);
         top: var(--spacing-md);
         width: 16rem;
-        box-shadow: 0 0 8px rgb(0 0 0 / 0.2);
         border-radius: 0.5rem;
         overflow: hidden;
     }
@@ -89,8 +92,7 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
 .toggle-toc {
     position: relative;
     margin: 0;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--color-bg);
+    padding: 0 var(--spacing-sm);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -102,8 +104,17 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
     font-weight: bold;
 }
 
+.toggle-icon {
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.toggle-toc:hover .toggle-icon {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
 .toc {
-    background: var(--color-bg);
     transition: max-height 0.3s ease-out;
     max-height: calc(75vh - 4rem);
     overflow: hidden;
