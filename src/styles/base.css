@@ -31,7 +31,8 @@ body {
 }
 
 .site-nav {
-  padding: var(--spacing-xs);
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
   width: 100%;
   font-family: var(--font-primary);
   font-size: var(--text-lg);
