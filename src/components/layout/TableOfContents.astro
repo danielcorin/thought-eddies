@@ -38,10 +38,6 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
   const minusIcon = toggleButton?.querySelector('.minus-icon');
   const plusIcon = toggleButton?.querySelector('.plus-icon');
 
-  let lastScrollY = window.scrollY;
-  let ticking = false;
-  let manuallyCollapsed = false;
-
   const toggleToc = (collapse: boolean) => {
     const isCollapsed = collapse ? toc?.classList.add('collapsed') : toc?.classList.remove('collapsed');
     toggleButton?.setAttribute('aria-expanded', collapse ? 'false' : 'true');
@@ -51,24 +47,7 @@ const allHeadings = title ? [{ depth: 1, slug: "", text: title }, ...headings] :
 
   toggleButton?.addEventListener('click', () => {
     const isCurrentlyCollapsed = toc?.classList.contains('collapsed');
-    if (window.scrollY < 200) {
-      manuallyCollapsed = !isCurrentlyCollapsed;
-    }
     toggleToc(!isCurrentlyCollapsed);
-  });
-
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        if (window.scrollY > 200) {
-          toggleToc(true);
-        } else if (!manuallyCollapsed) {
-          toggleToc(false);
-        }
-        ticking = false;
-      });
-      ticking = true;
-    }
   });
 </script>
 <style>
