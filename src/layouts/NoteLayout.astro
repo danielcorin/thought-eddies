@@ -3,10 +3,10 @@ import Navigation from '@components/layout/Navigation.astro';
 import Layout from './Layout.astro';
 
 const { frontmatter } = Astro.props;
+console.log(frontmatter)
 const theme = "notes";
 ---
-
-<Layout theme={theme}>
+<Layout theme={theme} title={frontmatter.title}>
   <Navigation selected={theme} />
   <article>
     <header>

@@ -6,9 +6,10 @@ import Footer from '@components/layout/Footer.astro';
 
 interface Props {
   theme?: 'posts' | 'notes';
+  title: string;
 }
 
-const { theme } = Astro.props;
+const { theme, title } = Astro.props;
 ---
 
 <!doctype html>
@@ -22,7 +23,7 @@ const { theme } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<SEO
-			title="Thought Eddies"
+			title={`Thought Eddies | ${title}`}
 			description="An Experimental Digital Garden"
 			openGraph={{
 				basic: {
