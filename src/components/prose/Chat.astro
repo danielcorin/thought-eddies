@@ -1,0 +1,174 @@
+---
+interface ContentItem {
+  type: "text" | "image_url";
+  text?: string;
+  image_url?: {
+    url: string;
+  };
+}
+
+interface Message {
+  role: "system" | "user" | "assistant" | "function";
+  content: string | ContentItem[];
+  name?: string;
+  function_call?: {
+    name: string;
+    arguments: string;
+  };
+}
+
+interface Props {
+  messages: Message[];
+  model?: string;
+}
+
+const { messages, model } = Astro.props;
+
+function getContent(content: string | ContentItem[]): {
+  text: string;
+  images: string[];
+} {
+  if (typeof content === "string") return { text: content, images: [] };
+
+  const images: string[] = [];
+  const text = content
+    .map((item) => {
+      if (item.type === "image_url" && item.image_url) {
+        images.push(item.image_url.url);
+        return "";
+      }
+      return item.text || "";
+    })
+    .join("");
+
+  return { text, images };
+}
+---
+
+<section class="chat-section">
+  <div class="chat-container">
+    {
+      messages.map((message) => (
+        <div class="message-container">
+          {message.role === "user" && (
+            <div class="message user">
+              <div class="bubble user-bubble">
+                {getContent(message.content).text}
+                {getContent(message.content).images.map((url) => (
+                  <img src={url} alt="" class="message-image" />
+                ))}
+              </div>
+            </div>
+          )}
+          {message.role === "assistant" && (
+            <div class="message assistant">
+              <div class="message-content">
+                {model && <div class="model-label">{model}</div>}
+                <div class="bubble assistant-bubble">
+                  {getContent(message.content).text}
+                  {getContent(message.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          {message.role === "system" && (
+            <div class="message system">
+              <div class="bubble system-bubble">
+                {getContent(message.content).text}
+                {getContent(message.content).images.map((url) => (
+                  <img src={url} alt="" class="message-image" />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .chat-section {
+    --transition-speed: 300ms;
+  }
+
+  .chat-container {
+    --bubble-radius: 1rem;
+    --bubble-padding: 0.75rem 1rem;
+    --bubble-max-width: 80%;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin: 0 auto;
+    font-family: var(--font-prose);
+  }
+
+  .message-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .message {
+    display: flex;
+  }
+
+  .message.user {
+    justify-content: flex-end;
+  }
+  .message.assistant {
+    justify-content: flex-start;
+  }
+  .message.system {
+    justify-content: center;
+  }
+
+  .message-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .bubble {
+    padding: var(--bubble-padding);
+    border-radius: var(--bubble-radius);
+    max-width: var(--bubble-max-width);
+    font-size: var(--text-sm);
+  }
+
+  .user-bubble {
+    background: var(--color-ink-light);
+    color: var(--color-bg);
+    border-bottom-right-radius: 0;
+  }
+
+  .assistant-bubble {
+    background: var(--color-bg-code);
+    color: var(--color-ink);
+    border-bottom-left-radius: 0;
+  }
+
+  .system-bubble {
+    background: var(--color-bg-code);
+    color: var(--color-ink-light);
+    font-style: italic;
+  }
+
+  .model-label {
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    margin-left: 0.5rem;
+  }
+
+  .message-image {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+  }
+</style>
