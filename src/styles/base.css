@@ -216,6 +216,12 @@ code {
   font-size: calc(var(--text-lg) * 0.9);
 }
 
+code.inline-code {
+  background: var(--color-bg-code);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
 /* Links */
 a {
   color: var(--color-ink);

@@ -1,0 +1,169 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Navigation from "@components/layout/Navigation.astro";
+
+// Remove astro-particles import and baseOptions color configurations
+---
+
+<Layout title="404: Not Found">
+    <Navigation />
+    <!-- Replace Particles component with a div -->
+    <div id="tsparticles"></div>
+    <main>
+        <div class="content text-center">
+            <h1 class="page-title">Page Not Found</h1>
+            <p>
+                🤔 <code class="inline-code">{Astro.url.pathname}</code>
+            </p>
+            <p>This page doesn't exist</p>
+            <p>
+                Return to the <a href="/">homepage</a> or <a
+                    href="mailto:dcorin6@gmail.com">reach out</a
+                > if you believe there's a broken link.
+            </p>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import { tsParticles } from "tsparticles-engine";
+    import { loadFull } from "tsparticles";
+
+    const baseOptions = {
+        background: {},
+        fullScreen: {
+            zIndex: -1,
+        },
+        particles: {
+            number: {
+                value: 200,
+            },
+            move: {
+                enable: true,
+                speed: 2,
+                direction: "none",
+                random: false,
+                straight: false,
+                outModes: "out",
+                attract: {
+                    enable: false,
+                },
+            },
+            size: {
+                value: 1,
+                animation: {
+                    enable: true,
+                    speed: 2,
+                    minimumValue: 0.1,
+                    sync: false,
+                },
+            },
+            opacity: {
+                value: 0.5,
+            },
+            links: {
+                enable: true,
+                distance: 75,
+                opacity: 0.4,
+                width: 1,
+            },
+            interactivity: {
+                events: {
+                    onHover: {
+                        enable: true,
+                        mode: "grab",
+                    },
+                    onClick: {
+                        enable: true,
+                        mode: "push",
+                    },
+                },
+                modes: {
+                    grab: {
+                        distance: 200,
+                        links: {
+                            opacity: 1,
+                        },
+                    },
+                    push: {
+                        quantity: 8,
+                    },
+                    repulse: {
+                        distance: 100,
+                        duration: 0.4,
+                    },
+                },
+            },
+        },
+    };
+
+    const rootStyles = getComputedStyle(document.documentElement);
+
+    function getParticlesConfig() {
+        const isLight = document.body.classList.contains("light");
+        const colors = [
+            isLight ? "#34495e" : "#ecf0f1",
+            isLight ? "#3498db" : "#e74c3c",
+            isLight ? "#2980b9" : "#c0392b",
+            isLight ? "#2c3e50" : "#bdc3c7",
+            isLight ? "#95a5a6" : "#7f8c8d",
+            isLight ? "#7f8c8d" : "#95a5a6",
+        ];
+
+        return {
+            ...baseOptions,
+            particles: {
+                ...baseOptions.particles,
+                color: {
+                    value: colors,
+                },
+                links: {
+                    ...baseOptions.particles.links,
+                    color: {
+                        value: colors,
+                        animation: {
+                            enable: true,
+                            speed: 30,
+                            sync: false,
+                        },
+                    },
+                },
+            },
+        };
+    }
+
+    async function initializeParticles() {
+        await loadFull(tsParticles);
+        await tsParticles.load("tsparticles", getParticlesConfig());
+    }
+
+    // Initial load
+    if (document.readyState === "complete") {
+        initializeParticles();
+    } else {
+        window.addEventListener("DOMContentLoaded", initializeParticles);
+    }
+
+    // Theme change handlers
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function updateTheme() {
+        tsParticles.load("tsparticles", getParticlesConfig());
+    }
+
+    mediaQuery.addEventListener("change", updateTheme);
+
+    // Manual theme toggle observer
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === "class") {
+                updateTheme();
+            }
+        });
+    });
+
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["class"],
+    });
+</script>
