@@ -20,12 +20,12 @@ const { Content, headings } = await render(post);
 {
   post.data.zoomLevels.length > 0 ? (
     <ZoomableNoteLayout frontmatter={post.data} Content={Content}>
-      <TableOfContents headings={headings} />
+      <TableOfContents title={post.data.title} headings={headings} />
       <Content />
     </ZoomableNoteLayout>
   ) : (
     <NoteLayout frontmatter={post.data}>
-      <TableOfContents headings={headings} />
+      <TableOfContents title={post.data.title} headings={headings} />
       <Content />
     </NoteLayout>
   )
