@@ -6,13 +6,16 @@ import vercel from "@astrojs/vercel";
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
 
+import sitemap from "@astrojs/sitemap";
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), mdx(), tailwind(), icon()],
-  markdown: {
-    shikiConfig: {
-      theme: "monokai",
+    site: 'https://thoughteddies.com',
+    integrations: [react(), mdx(), tailwind(), icon(), sitemap()],
+    markdown: {
+        shikiConfig: {
+            theme: "monokai",
+        },
     },
-  },
-  adapter: vercel(),
+    adapter: vercel(),
 });
