@@ -3,6 +3,7 @@ import { SEO } from "astro-seo";
 import "@styles/theme.css";
 import "@styles/base.css";
 import Footer from "@components/layout/Footer.astro";
+import ScrollToTop from "@components/layout/ScrollToTop.astro";
 
 interface Props {
 	theme?: "posts" | "notes";
@@ -25,18 +26,8 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 			rel="stylesheet"
 		/>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta name="generator" content={Astro.generator} />
-		<script is:inline>
-			const theme = localStorage.getItem("theme");
-			if (theme) {
-				document.body.classList.add(theme);
-			} else {
-				const prefersDark = window.matchMedia(
-					"(prefers-color-scheme: dark)",
-				).matches;
-				document.body.classList.add(prefersDark ? "dark" : "light");
-			}
-		</script>
 		<SEO
 			title={pageTitle}
 			description="An Experimental Digital Garden"
@@ -57,6 +48,7 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 			</div>
 			<Footer />
 		</main>
+		<ScrollToTop />
 		<script
 			data-goatcounter="https://thought-eddies.goatcounter.com/count"
 			async

@@ -1,0 +1,27 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<button
+    id="scroll-to-top"
+    aria-label="Scroll to top"
+    class="fixed bottom-4 right-4 p-2 rounded-full bg-[var(--color-bg)] border-2 border-[var(--color-border)] text-[var(--color-ink)] opacity-0 transition-opacity duration-200 hover:bg-[var(--color-bg-code)]"
+>
+    <Icon name="ph:caret-up-bold" class="h-5 w-5" />
+</button>
+
+<script>
+    const scrollButton = document.getElementById("scroll-to-top");
+
+    window.addEventListener("scroll", () => {
+        if (scrollButton) {
+            scrollButton.style.opacity = window.scrollY > 300 ? "1" : "0";
+            scrollButton.style.pointerEvents =
+                window.scrollY > 300 ? "auto" : "none";
+        }
+    });
+
+    scrollButton?.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+</script>
