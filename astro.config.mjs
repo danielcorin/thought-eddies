@@ -10,7 +10,7 @@ import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://thoughteddies.com',
+    site: 'https://www.thoughteddies.com',
     integrations: [react(), mdx(), tailwind(), icon(), sitemap()],
     markdown: {
         shikiConfig: {
