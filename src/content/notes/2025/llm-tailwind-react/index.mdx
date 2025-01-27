@@ -78,7 +78,15 @@ The latter has the markup and style separated into `.tsx` and `.css.module` file
 Inevitably, we will want to make changes to the first iteration from the model.
 Let's add a calendar component so we can see the number of tasks that have been input on each day.
 
-> update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day
+<Chat
+  model="claude-3-5-sonnet-20241022"
+  messages={[
+    {
+      role: "user",
+      content: "update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day"
+    }
+  ]}
+/>
 
 import { default as TailwindCalendarV2 } from "./components/TailwindCalendar.v2";
 import TailwindCalendarV2Source from "./components/TailwindCalendar.v2?raw";
