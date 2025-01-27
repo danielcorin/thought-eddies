@@ -9,7 +9,6 @@
   /* Colors */
   --color-bg-post: #f8f8f8;
   --color-bg-note: #f4f1e4;
-  --color-bg-code-note: color-mix(in srgb, var(--color-bg-post) 90%, #000);
   --color-bg-code-note: color-mix(in srgb, var(--color-bg-note) 90%, #000);
   --color-ink: #2d3436;
   --color-ink-light: #636e72;
@@ -18,6 +17,17 @@
   --color-border: #b4b4b4;
   --color-bg: var(--color-bg-note);
   --color-bg-code: var(--color-bg-code-post);
+
+  /* Dark mode colors */
+  --color-bg-note-dark: #1c1b17;
+  --color-bg-code-note-dark: color-mix(in srgb, var(--color-bg-note-dark) 90%, #fff);
+  --color-ink-dark: #cccccc;
+  --color-ink-light-dark: #a8a8a8;
+  --color-accent-dark: #4dabf7;
+  --color-link-dark: var(--color-accent-dark);
+  --color-border-dark: #4a4a4a;
+  --color-bg-dark: var(--color-bg-note-dark);
+  --color-bg-code-dark: var(--color-bg-code-note-dark);
 
   /* Typography */
   --font-post-primary: "Futura";

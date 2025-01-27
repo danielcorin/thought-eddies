@@ -35,16 +35,16 @@ export default function Calendar() {
         return prev.map((entry) =>
           entry.date.toDateString() === selectedDate.toDateString()
             ? {
-                ...entry,
-                tasks: [
-                  ...entry.tasks,
-                  {
-                    id: crypto.randomUUID(),
-                    text: newTask,
-                    status: "todo",
-                  },
-                ],
-              }
+              ...entry,
+              tasks: [
+                ...entry.tasks,
+                {
+                  id: crypto.randomUUID(),
+                  text: newTask,
+                  status: "todo",
+                },
+              ],
+            }
             : entry,
         );
       }
@@ -139,7 +139,7 @@ export default function Calendar() {
     <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white rounded-lg shadow-md">
       <div className="flex items-center gap-2 md:gap-4 mb-6 md:mb-8">
         <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
-        <h1 className="text-xl md:text-2xl font-semibold">Bullet Journal</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-600">Bullet Journal</h1>
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-6 md:mb-8 text-center text-sm md:text-base">

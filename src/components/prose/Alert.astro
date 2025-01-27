@@ -5,9 +5,15 @@ interface Props {
   type: "note" | "tip" | "important" | "warning" | "caution";
   mobileOnly?: boolean;
   desktopOnly?: boolean;
+  darkModeOnly?: boolean;
 }
 
-const { type, mobileOnly = false, desktopOnly = false } = Astro.props;
+const {
+  type,
+  mobileOnly = false,
+  desktopOnly = false,
+  darkModeOnly = false,
+} = Astro.props;
 
 const icons = {
   note: "material-symbols:info-outline",
@@ -18,11 +24,14 @@ const icons = {
 };
 
 const colors = {
-  note: "bg-blue-50 border-blue-700 text-blue-700",
-  tip: "bg-green-50 border-green-700 text-green-700",
-  important: "bg-purple-50 border-purple-700 text-purple-700",
-  warning: "bg-orange-50 border-orange-700 text-orange-700",
-  caution: "bg-red-50 border-red-700 text-red-700",
+  note: "bg-blue-50 dark:bg-blue-950 border-blue-700 dark:border-blue-300 text-blue-700 dark:text-blue-300",
+  tip: "bg-green-50 dark:bg-green-950 border-green-700 dark:border-green-300 text-green-700 dark:text-green-300",
+  important:
+    "bg-purple-50 dark:bg-purple-950 border-purple-700 dark:border-purple-300 text-purple-700 dark:text-purple-300",
+  warning:
+    "bg-orange-50 dark:bg-orange-950 border-orange-700 dark:border-orange-300 text-orange-700 dark:text-orange-300",
+  caution:
+    "bg-red-50 dark:bg-red-950 border-red-700 dark:border-red-300 text-red-700 dark:text-red-300",
 };
 
 const visibility = mobileOnly
@@ -30,10 +39,12 @@ const visibility = mobileOnly
   : desktopOnly
     ? "hidden md:block"
     : "";
+
+const darkMode = darkModeOnly ? "hidden dark:block" : "";
 ---
 
 <div
-  class={`alert px-4 py-2 my-4 border-l-4 rounded-r ${colors[type]} ${visibility}`}
+  class={`alert px-4 py-2 my-4 border-l-4 rounded-r ${colors[type]} ${visibility} ${darkMode}`}
 >
   <div class="font-bold uppercase mb-2 flex items-center gap-2">
     <Icon name={icons[type]} class="w-5 h-5" />

@@ -105,13 +105,16 @@ export default function Tree({
         .attr(
           "class",
           (d) =>
-            `flex flex-col p-2 rounded-lg cursor-pointer border overflow-hidden ${d.id === selectedId ? "bg-slate-200 border-slate-400" : "bg-slate-100 hover:bg-slate-200 border-transparent"}`,
+            `flex flex-col p-2 rounded-lg cursor-pointer border overflow-hidden ${d.id === selectedId
+              ? "bg-[var(--color-bg-code)] border-[var(--color-border)]"
+              : "bg-[var(--color-bg)] hover:bg-[var(--color-bg-code)] border-transparent"
+            }`,
         )
         .html(
           (d) => `
-                <div class="text-sm font-medium text-slate-700 truncate">${d.data.prompt}</div>
-                <div class="h-px bg-slate-300 my-1"></div>
-                <div class="text-xs text-slate-600 line-clamp-3">${d.data.response}</div>
+                <div class="text-sm font-medium text-[var(--color-ink)] truncate">${d.data.prompt}</div>
+                <div class="h-px bg-[var(--color-border)] my-1"></div>
+                <div class="text-xs text-[var(--color-ink-light)] line-clamp-3">${d.data.response}</div>
             `,
         )
         .on("click", (event, d) => {

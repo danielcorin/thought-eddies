@@ -90,16 +90,19 @@ const allHeadings = title
     font-family: var(--font-primary);
     font-size: var(--text-base);
     font-weight: bold;
+    color: var(--color-ink);
+    background: transparent;
   }
 
   .toggle-icon {
     padding: 0.25rem;
     border-radius: 50%;
     transition: background-color 0.2s;
+    color: var(--color-ink);
   }
 
   .toggle-toc:hover .toggle-icon {
-    background-color: rgba(128, 128, 128, 0.2);
+    background-color: color-mix(in srgb, var(--color-border) 20%, transparent);
   }
 
   .toc {

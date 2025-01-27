@@ -35,6 +35,37 @@ body {
   background-color: var(--color-bg);
 }
 
+body.dark {
+  --color-bg: var(--color-bg-dark);
+  --color-bg-code: var(--color-bg-code-dark);
+  --color-ink: var(--color-ink-dark);
+  --color-ink-light: var(--color-ink-light-dark);
+  --color-accent: var(--color-accent-dark);
+  --color-link: var(--color-link-dark);
+  --color-border: var(--color-border-dark);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-border) 60%, transparent) 1px,
+    transparent 1px
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not(.light) {
+    --color-bg: var(--color-bg-dark);
+    --color-bg-code: var(--color-bg-code-dark);
+    --color-ink: var(--color-ink-dark);
+    --color-ink-light: var(--color-ink-light-dark);
+    --color-accent: var(--color-accent-dark);
+    --color-link: var(--color-link-dark);
+    --color-border: var(--color-border-dark);
+    background-image: radial-gradient(
+      color-mix(in srgb, var(--color-border) 60%, transparent) 1px,
+      transparent 1px
+    );
+  }
+}
+
+
 .site-nav {
   padding-top: var(--spacing-md);
   padding-bottom: var(--spacing-md);
@@ -86,6 +117,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
+  color: var(--color-ink-light);
 }
 
 /* Table of Contents */
@@ -131,6 +163,7 @@ h6 {
   line-height: 1.1;
   font-weight: 600;
   margin-bottom: var(--spacing-sm);
+  color: var(--color-ink);
 }
 
 h1 {
@@ -320,6 +353,7 @@ footer p {
   color: var(--text-muted);
   text-align: center;
   font-size: var(--text-sm);
+
 }
 
 footer a {

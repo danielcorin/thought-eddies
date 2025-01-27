@@ -9,6 +9,44 @@ interface Props {
 const { selected } = Astro.props;
 ---
 
+<script>
+    const themeToggle = document.getElementById("theme-toggle");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const sunIcon = themeToggle?.querySelector(".sun-wrapper");
+    const moonIcon = themeToggle?.querySelector(".moon-wrapper");
+
+    // Initial state based on system preference
+    if (prefersDark.matches) {
+        document.body.classList.remove("light");
+        sunIcon?.classList.add("hidden");
+        moonIcon?.classList.remove("hidden");
+    } else {
+        document.body.classList.add("light");
+        sunIcon?.classList.remove("hidden");
+        moonIcon?.classList.add("hidden");
+    }
+
+    // Handle system preference changes
+    prefersDark.addEventListener("change", (e) => {
+        if (e.matches) {
+            document.body.classList.remove("light");
+            sunIcon?.classList.add("hidden");
+            moonIcon?.classList.remove("hidden");
+        } else {
+            document.body.classList.add("light");
+            sunIcon?.classList.remove("hidden");
+            moonIcon?.classList.add("hidden");
+        }
+    });
+
+    // Handle manual toggle
+    themeToggle?.addEventListener("click", () => {
+        const isLight = document.body.classList.toggle("light");
+        sunIcon?.classList.toggle("hidden", !isLight);
+        moonIcon?.classList.toggle("hidden", isLight);
+    });
+</script>
+
 <nav class="site-nav">
     {
         ["", "notes"].map((item) => (
@@ -34,4 +72,14 @@ const { selected } = Astro.props;
             </a>
         ))
     }
+    <button id="theme-toggle" class="nav-link ml-auto">
+        <span class="nav-item">
+            <span class="sun-wrapper">
+                <Icon name="ph:sun" class="inline-icon" />
+            </span>
+            <span class="moon-wrapper hidden">
+                <Icon name="ph:moon" class="inline-icon" />
+            </span>
+        </span>
+    </button>
 </nav>
