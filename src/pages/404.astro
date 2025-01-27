@@ -98,16 +98,13 @@ import Navigation from "@components/layout/Navigation.astro";
     };
 
     const rootStyles = getComputedStyle(document.documentElement);
+    const getColor = (variable: string) =>
+        rootStyles.getPropertyValue(variable).trim();
 
     function getParticlesConfig() {
         const isLight = document.body.classList.contains("light");
         const colors = [
-            isLight ? "#34495e" : "#ecf0f1",
-            isLight ? "#3498db" : "#e74c3c",
-            isLight ? "#2980b9" : "#c0392b",
-            isLight ? "#2c3e50" : "#bdc3c7",
-            isLight ? "#95a5a6" : "#7f8c8d",
-            isLight ? "#7f8c8d" : "#95a5a6",
+            getColor(isLight ? "--color-border-dark" : "--color-border"),
         ];
 
         return {
