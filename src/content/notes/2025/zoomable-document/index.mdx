@@ -60,6 +60,7 @@ zoomLevels:
 [original text]
 
 ## The Spark
+
 I'm trying something unusual with this post.
 I think it's going to be a lot of fun.
 I was listening to Nabeel Hyatt and Dan Shipper's [conversation](https://every.to/podcast/the-venture-capitalist-who-only-makes-two-bets-a-year), where they mentioned _code has become content_.
@@ -72,6 +73,7 @@ Most didn't feel worth the effort or I'd get stuck or frustrated and move on.
 With that context, I'm going to (attempt to) build this interactive post by writing the post.
 
 ## Starting from Scratch
+
 As I write now, I have Cursor open and I am writing in a file at `src/content/notes/2025/document-?/index.mdx` in my Astro project.
 The folder and post are currently called `document-?` because I don't really know what this concept is yet, but I needed to start somewhere.
 Maybe it's called something else when you're reading it.
@@ -79,6 +81,7 @@ My site has interactive Astro and React components at `src/components`.
 I can include these components in my `.mdx` content which has been a really enjoyable way to play around with ideas.
 
 ## Understanding Content Structure
+
 For this post, we are building an experience that allows the reader to interact with the content of a post at multiple levels of detail and specificity.
 Most content has at most just a few levels of content.
 The first are headings.
@@ -90,6 +93,7 @@ Finally, a third level of content includes things like asides, footnotes and cit
 Sometimes these are off to the side of content or aggregated all together at the end.
 
 ## Enhancing Navigation with LLMs
+
 With LLMs, we can create summaries that provide at-a-glance skimmability and arbitrary levels of specificity.
 Imagine zooming in and out of a document like you do when using an app like Google Maps.
 If you navigate to New York City and zoom into a particular neighborhood, you can see the roads and the locations of the buildings.
@@ -104,6 +108,7 @@ In practice, we actually spend relatively limited effort making our prose access
 What would that even look like?
 
 ## Limitations of Traditional Navigation
+
 Like a map, we may want to zoom out and view an entire piece of written text from a high level, understanding its broad features.
 Today, the closest thing to something like this is a table of contents.
 In the best case, the author has thoughtfully titled their chapters in a way that actually gives us something akin to a high level overview.
@@ -124,6 +129,7 @@ We can't just run "find" on the word "kind".
 We'll miss a lot.
 
 ## Building the Zoomable Document
+
 Let's return to what a zoomable document looks like.
 We have our street level view.
 That is the unmodified document.
@@ -141,6 +147,7 @@ In fact, we have to assume the content won't already contain a "roadmap" for the
 That is the utility of what _we_ aim to provide with our "zoomable document".
 
 ## Technical Implementation
+
 How can we construct this zoomable document?
 We'll first need to take a look at the raw content that exists at the street level.
 From here, we will need to compute summaries for each different level of zoom.
@@ -152,13 +159,13 @@ The content is generated and stored as markdown strings in the following schema,
 
 ```tsx
 interface ContentLevel {
-    level: number
-    content: string
+  level: number;
+  content: string;
 }
 
 interface ZoomableDocumentProps {
-    children: ReactNode
-    levels: ContentLevel[]
+  children: ReactNode;
+  levels: ContentLevel[];
 }
 ```
 

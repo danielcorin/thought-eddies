@@ -1,32 +1,36 @@
 ---
-import Navigation from '@components/layout/Navigation.astro';
-import Layout from '@layouts/Layout.astro';
-import { getCollection } from 'astro:content';
+import Navigation from "@components/layout/Navigation.astro";
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
 
-const collection = 'posts';
+const collection = "posts";
 const posts = await getCollection(collection);
-const sortedPosts = posts.sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
+const sortedPosts = posts.sort(
+  (a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf(),
+);
 ---
 
 <Layout theme={collection}>
-  <Navigation selected={collection}/>
+  <Navigation selected={collection} />
   <main>
-    <h1 class="page-title">{collection.charAt(0).toUpperCase() + collection.slice(1)}</h1>
+    <h1 class="page-title">
+      {collection.charAt(0).toUpperCase() + collection.slice(1)}
+    </h1>
     <div class="toc">
-      {sortedPosts.map(post => (
-      <article class="entry">
-          <h2>
-            <a href={`/${collection}/${post.id}`}>
-              {post.data.title}
-            </a>
-          </h2>
-          <div class="line"></div>
-          <time datetime={post.data.createdAt.toISOString()}>
-            {new Date(post.data.createdAt).toISOString().split('T')[0]}
-          </time>
-        {post.data.description && <p>{post.data.description}</p>}
-      </article>
-      ))}
+      {
+        sortedPosts.map((post) => (
+          <article class="entry">
+            <h2>
+              <a href={`/${collection}/${post.id}`}>{post.data.title}</a>
+            </h2>
+            <div class="line" />
+            <time datetime={post.data.createdAt.toISOString()}>
+              {new Date(post.data.createdAt).toISOString().split("T")[0]}
+            </time>
+            {post.data.description && <p>{post.data.description}</p>}
+          </article>
+        ))
+      }
     </div>
   </main>
 </Layout>

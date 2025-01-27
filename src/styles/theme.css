@@ -20,15 +20,15 @@
   --color-bg-code: var(--color-bg-code-post);
 
   /* Typography */
-  --font-post-primary: 'Futura';
-  --font-post-prose: 'Crimson Pro', Georgia, serif;
+  --font-post-primary: "Futura";
+  --font-post-prose: "Crimson Pro", Georgia, serif;
   --font-post-ui: system-ui, -apple-system, sans-serif;
-  --font-post-mono: 'JetBrains Mono', monospace;
+  --font-post-mono: "JetBrains Mono", monospace;
 
-  --font-note-primary: 'Futura';
-  --font-note-prose: 'Inter', Georgia, serif;
+  --font-note-primary: "Futura";
+  --font-note-prose: "Inter", Georgia, serif;
   --font-note-ui: system-ui, -apple-system, sans-serif;
-  --font-note-mono: 'JetBrains Mono', monospace;
+  --font-note-mono: "JetBrains Mono", monospace;
 
   --font-primary: var(--font-post-primary);
   --font-prose: var(--font-post-prose);
@@ -45,4 +45,3 @@
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
 }
-

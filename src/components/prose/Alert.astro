@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 interface Props {
-  type: 'note' | 'tip' | 'important' | 'warning' | 'caution';
+  type: "note" | "tip" | "important" | "warning" | "caution";
   mobileOnly?: boolean;
   desktopOnly?: boolean;
 }
@@ -10,27 +10,34 @@ interface Props {
 const { type, mobileOnly = false, desktopOnly = false } = Astro.props;
 
 const icons = {
-  note: 'material-symbols:info-outline',
-  tip: 'material-symbols:lightbulb-2-outline',
-  important: 'material-symbols:error-outline',
-  warning: 'material-symbols:warning',
-  caution: 'material-symbols:block'
+  note: "material-symbols:info-outline",
+  tip: "material-symbols:lightbulb-2-outline",
+  important: "material-symbols:error-outline",
+  warning: "material-symbols:warning",
+  caution: "material-symbols:block",
 };
 
 const colors = {
-  note: 'bg-blue-50 border-blue-700 text-blue-700',
-  tip: 'bg-green-50 border-green-700 text-green-700',
-  important: 'bg-purple-50 border-purple-700 text-purple-700',
-  warning: 'bg-orange-50 border-orange-700 text-orange-700',
-  caution: 'bg-red-50 border-red-700 text-red-700'
+  note: "bg-blue-50 border-blue-700 text-blue-700",
+  tip: "bg-green-50 border-green-700 text-green-700",
+  important: "bg-purple-50 border-purple-700 text-purple-700",
+  warning: "bg-orange-50 border-orange-700 text-orange-700",
+  caution: "bg-red-50 border-red-700 text-red-700",
 };
 
-const visibility = mobileOnly ? 'md:hidden' : desktopOnly ? 'hidden md:block' : '';
+const visibility = mobileOnly
+  ? "md:hidden"
+  : desktopOnly
+    ? "hidden md:block"
+    : "";
 ---
 
-<div class={`alert px-4 py-2 my-4 border-l-4 rounded-r ${colors[type]} ${visibility}`}>
+<div
+  class={`alert px-4 py-2 my-4 border-l-4 rounded-r ${colors[type]} ${visibility}`}
+>
   <div class="font-bold uppercase mb-2 flex items-center gap-2">
-    <Icon name={icons[type]} class="w-5 h-5" /> {type}
+    <Icon name={icons[type]} class="w-5 h-5" />
+    {type}
   </div>
   <slot />
 </div>

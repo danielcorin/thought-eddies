@@ -1,31 +1,32 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
-import { render } from "astro:content";
-import NoteLayout from '@layouts/NoteLayout.astro';
-import ZoomableNoteLayout from '@layouts/ZoomableNoteLayout.astro';
-import TableOfContents from '@components/layout/TableOfContents.astro';
+import TableOfContents from "@components/layout/TableOfContents.astro";
+import NoteLayout from "@layouts/NoteLayout.astro";
+import ZoomableNoteLayout from "@layouts/ZoomableNoteLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 
 export const prerender = true;
 export async function getStaticPaths() {
-  const notes = await getCollection('notes');
-  return notes.map((post: CollectionEntry<'notes'>) => ({
+  const notes = await getCollection("notes");
+  return notes.map((post: CollectionEntry<"notes">) => ({
     params: { slug: post.id },
     props: { post },
   }));
 }
 
-const { post } = Astro.props as { post: CollectionEntry<'notes'> };
+const { post } = Astro.props as { post: CollectionEntry<"notes"> };
 const { Content, headings } = await render(post);
 ---
 
-{post.data.zoomLevels.length > 0 ? (
-  <ZoomableNoteLayout frontmatter={post.data} Content={Content}>
-    <TableOfContents headings={headings} />
-    <Content />
-  </ZoomableNoteLayout>
-) : (
-  <NoteLayout frontmatter={post.data}>
-    <TableOfContents headings={headings} />
-    <Content />
-  </NoteLayout>
-)}
+{
+  post.data.zoomLevels.length > 0 ? (
+    <ZoomableNoteLayout frontmatter={post.data} Content={Content}>
+      <TableOfContents headings={headings} />
+      <Content />
+    </ZoomableNoteLayout>
+  ) : (
+    <NoteLayout frontmatter={post.data}>
+      <TableOfContents headings={headings} />
+      <Content />
+    </NoteLayout>
+  )
+}

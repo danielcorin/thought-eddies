@@ -6,15 +6,18 @@ description: Writing React/Tailwind with LLMs is effortless
 location: NYC
 draft: false
 ---
-import { Image } from 'astro:assets';
-import Alert from '@components/prose/Alert.astro'
-import CodeToggle from '@components/prose/CodeToggle.astro'
+
+import Alert from "@components/prose/Alert.astro";
+import Chat from "@components/prose/Chat.astro";
+import CodeToggle from "@components/prose/CodeToggle.astro";
+import { Image } from "astro:assets";
 
 If you've experimented with [Claude Artifacts](https://support.anthropic.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them) or [v0.dev](https://v0.dev/), maybe you've been delighted (as I have) that the language model can conjure a UI for an idea you describe.
 Most of my experience building software, especially professionally, comes from working on the "backend".
 Building frontend (read: user interfaces in a browser) is harder for me (or doesn't come as easily), because while I have experience writing software, I don't have as much experience writing _this type_ of software.
 
 ## The "Magic" Stack
+
 When generating UI, one specific stack has proven to be both popular and effective relative to the technologies I have tried.
 That stack is React and Tailwind.
 
@@ -26,22 +29,39 @@ For the language model, co-locating the component styling with the structural ma
 Given the following prompt, here's what `claude-3-5-sonnet-20241022` generates in Cursor (the components below are real, working React code - try them out!).
 
 <Alert type="note" mobileOnly>
-  I made a few minor adjustments post-generation to the components to ensure they render nicely on small screens
+  I made a few minor adjustments post-generation to the components to ensure
+  they render nicely on small screens
 </Alert>
 
-> use react, tailwind and lucide-react to create an interface for a bullet-journal inspired calendar
+<Chat
+  model="claude-3-5-sonnet-20241022"
+  messages={[
+    {
+      role: "user",
+      content: "use react, tailwind and lucide-react to create an interface for a bullet-journal inspired calendar"
+    }
+  ]}
+/>
 
-import { default as TailwindCalendarV1 } from './components/TailwindCalendar.v1'
-import TailwindCalendarV1Source from './components/TailwindCalendar.v1?raw';
+import { default as TailwindCalendarV1 } from "./components/TailwindCalendar.v1";
+import TailwindCalendarV1Source from "./components/TailwindCalendar.v1?raw";
 
 <CodeToggle source={TailwindCalendarV1Source}>
   <TailwindCalendarV1 client:load />
 </CodeToggle>
 
-> use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with styles and a corresponding css module
+<Chat
+  model="claude-3-5-sonnet-20241022"
+  messages={[
+    {
+      role: "user",
+      content: "use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with styles and a corresponding css module"
+    }
+  ]}
+/>
 
-import { default as ReactCalendarV1 } from './components/ReactCalendar.v1'
-import ReactCalendarV1Source from './components/ReactCalendar.v1?raw';
+import { default as ReactCalendarV1 } from "./components/ReactCalendar.v1";
+import ReactCalendarV1Source from "./components/ReactCalendar.v1?raw";
 
 <CodeToggle source={ReactCalendarV1Source}>
   <ReactCalendarV1 client:load />
@@ -60,11 +80,11 @@ Let's add a calendar component so we can see the number of tasks that have been 
 
 > update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day
 
-import { default as TailwindCalendarV2 } from './components/TailwindCalendar.v2'
-import TailwindCalendarV2Source from './components/TailwindCalendar.v2?raw';
+import { default as TailwindCalendarV2 } from "./components/TailwindCalendar.v2";
+import TailwindCalendarV2Source from "./components/TailwindCalendar.v2?raw";
 
 <CodeToggle source={TailwindCalendarV2Source}>
-    <TailwindCalendarV2 client:load />
+  <TailwindCalendarV2 client:load />
 </CodeToggle>
 
 ## The Multi-File Challenge
@@ -92,42 +112,63 @@ and
 /* ... existing styles ... */
 
 .calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 2rem;
 }
 ```
+
 so now I manually need to apply these changes (Cursor Pro has a model that supports one-click application of code changes from chat, but I'm trying to stick to just using the model for now).
 
 Oh, and it looks like the model actually introduced new code using dependencies we don't have installed
 
 ```tsx
-import { eachDayOfInterval, endOfMonth, format, startOfMonth, isSameDay } from 'date-fns'
+import {
+  eachDayOfInterval,
+  endOfMonth,
+  format,
+  isSameDay,
+  startOfMonth,
+} from "date-fns";
 ```
 
 This type of things (arguably a hallucination of sorts) happens a lot less when making changes in a single file.
 I hear you, it's not a fair comparison: Tailwind in-file to CSS with a separate module file.
 Let's put all the CSS styles in the same file then compare what it's like to iterate.
 
-> use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with css styles all in one file
+<Chat
+  messages={[
+    {
+      role: "user",
+      content: "use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with css styles all in one file"
+    }
+  ]}
+/>
 
-import { default as CssCalendarV1 } from './components/CssCalendar.v1'
-import CssCalendarV1Source from './components/CssCalendar.v1?raw';
+import { default as CssCalendarV1 } from "./components/CssCalendar.v1";
+import CssCalendarV1Source from "./components/CssCalendar.v1?raw";
 
 <CodeToggle source={CssCalendarV1Source}>
-    <CssCalendarV1 client:load />
+  <CssCalendarV1 client:load />
 </CodeToggle>
 
 Now, let's transform that single file with the second prompt
 
-> update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day
+<Chat
+  messages={[
+    {
+      role: "user",
+      content: "update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day"
+    }
+  ]}
+/>
 
-import { default as CssCalendarV2 } from './components/CssCalendar.v2'
-import CssCalendarV2Source from './components/CssCalendar.v2?raw';
+import { default as CssCalendarV2 } from "./components/CssCalendar.v2";
+import CssCalendarV2Source from "./components/CssCalendar.v2?raw";
 
 <CodeToggle source={CssCalendarV2Source}>
-    <CssCalendarV2 client:load />
+  <CssCalendarV2 client:load />
 </CodeToggle>
 
 Not bad!
@@ -139,25 +180,25 @@ Why?
 
 The React component with in-file CSS styles has the following structure
 
-
 ```tsx
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from "react";
+
 // other imports
 
 const styles = {
-    // 1. styles
-}
+  // 1. styles
+};
 
 export default function Calendar() {
-    // 2. functions and logic
+  // 2. functions and logic
 
-    return (
-        <div style={styles.container}>
-            {
-                // 3. logic and markup
-            }
-        </div>
-    )
+  return (
+    <div style={styles.container}>
+      {
+        // 3. logic and markup
+      }
+    </div>
+  );
 }
 ```
 
@@ -475,6 +516,7 @@ This understanding is implicitly reflected in the approaches taken by default (p
 However, not all models and tools take this approach by default - it's not the only way to quickly build UIs with language models, but it is a highly effective and fast way.
 
 For completeness, here are some tools that _don't_ seem to use React and Tailwind by default:
+
 - Val Town's [Townie](https://www.val.town/)
 - ChatGPT Canvas
 
