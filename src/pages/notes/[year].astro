@@ -1,0 +1,63 @@
+---
+import Navigation from "@components/layout/Navigation.astro";
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+    const notes = await getCollection("notes", ({ data }) => !data.draft);
+    const years = [
+        ...new Set(
+            notes.map((note) => new Date(note.data.createdAt).getFullYear()),
+        ),
+    ];
+
+    return years.map((year) => ({
+        params: { year: year.toString() },
+        props: { year },
+    }));
+}
+
+const { year } = Astro.params;
+const collection = "notes";
+const notes = await getCollection(collection, ({ data }) => !data.draft);
+
+const yearNotes = notes
+    .filter(
+        (note) =>
+            new Date(note.data.createdAt).getFullYear().toString() === year,
+    )
+    .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
+---
+
+<Layout theme={collection} title={`Notes created in ${year}`}>
+    <Navigation selected={collection} />
+    <main>
+        <h1 class="page-title">
+            Notes created in {year}
+        </h1>
+        <div class="toc">
+            {
+                yearNotes.map((note) => (
+                    <article class="entry">
+                        <h2>
+                            <a href={`/${collection}/${note.id}`}>
+                                {note.data.title}
+                            </a>
+                        </h2>
+                        <div class="line" style="opacity: 0;" />
+                        <time datetime={note.data.createdAt.toISOString()}>
+                            {
+                                new Date(note.data.createdAt)
+                                    .toISOString()
+                                    .split("T")[0]
+                            }
+                        </time>
+                        {note.data.description && (
+                            <p>{note.data.description}</p>
+                        )}
+                    </article>
+                ))
+            }
+        </div>
+    </main>
+</Layout>
