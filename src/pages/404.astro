@@ -1,13 +1,10 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Navigation from "@components/layout/Navigation.astro";
-
-// Remove astro-particles import and baseOptions color configurations
 ---
 
 <Layout title="404: Not Found">
     <Navigation />
-    <!-- Replace Particles component with a div -->
     <div id="tsparticles"></div>
     <main>
         <div class="content text-center">
@@ -36,7 +33,10 @@ import Navigation from "@components/layout/Navigation.astro";
         },
         particles: {
             number: {
-                value: 200,
+                value: Math.round(
+                    ((window.innerWidth * window.innerHeight) / (1512 * 982)) *
+                        200,
+                ),
             },
             move: {
                 enable: true,
@@ -129,9 +129,14 @@ import Navigation from "@components/layout/Navigation.astro";
         };
     }
 
+    let particlesInstance: any = null;
+
     async function initializeParticles() {
         await loadFull(tsParticles);
-        await tsParticles.load("tsparticles", getParticlesConfig());
+        particlesInstance = await tsParticles.load(
+            "tsparticles",
+            getParticlesConfig(),
+        );
     }
 
     // Initial load
@@ -145,7 +150,23 @@ import Navigation from "@components/layout/Navigation.astro";
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     function updateTheme() {
-        tsParticles.load("tsparticles", getParticlesConfig());
+        if (!particlesInstance) return;
+
+        const isLight = document.body.classList.contains("light");
+        const colors = [
+            getColor(isLight ? "--color-border-dark" : "--color-border"),
+        ];
+
+        // Update options for new particles
+        particlesInstance.options.particles.color.value = colors;
+        particlesInstance.options.particles.links.color.value = colors;
+
+        // Update existing particles
+        if (particlesInstance.particles) {
+            particlesInstance.particles.array.forEach((particle) => {
+                particle.color.value = colors[0];
+            });
+        }
     }
 
     mediaQuery.addEventListener("change", updateTheme);
