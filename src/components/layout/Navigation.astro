@@ -1,6 +1,7 @@
 ---
 import "@styles/base.css";
 import { Icon } from "astro-icon/components";
+import ThemeIcon from "./ThemeIcon.astro";
 
 interface Props {
     selected?: string;
@@ -8,43 +9,6 @@ interface Props {
 
 const { selected } = Astro.props;
 ---
-
-<script>
-    const themeToggle = document.getElementById("theme-toggle");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-    const sunIcon = themeToggle?.querySelector(".sun-wrapper");
-    const moonIcon = themeToggle?.querySelector(".moon-wrapper");
-
-    const setTheme = (theme: string) => {
-        document.body.classList.add(theme);
-        document.body.classList.remove(theme === "dark" ? "light" : "dark");
-        if (theme === "dark") {
-            sunIcon?.classList.add("hidden");
-            moonIcon?.classList.remove("hidden");
-        } else {
-            sunIcon?.classList.remove("hidden");
-            moonIcon?.classList.add("hidden");
-        }
-    };
-
-    // Initial state based on system preference
-    if (prefersDark.matches) {
-        setTheme("dark");
-    } else {
-        setTheme("light");
-    }
-
-    // Handle system preference changes
-    prefersDark.addEventListener("change", (e) => {
-        setTheme(e.matches ? "dark" : "light");
-    });
-
-    // Handle manual toggle
-    themeToggle?.addEventListener("click", () => {
-        const isLight = document.body.classList.contains("light");
-        setTheme(isLight ? "dark" : "light");
-    });
-</script>
 
 <nav class="site-nav">
     {
@@ -71,14 +35,5 @@ const { selected } = Astro.props;
             </a>
         ))
     }
-    <button id="theme-toggle" class="nav-link ml-auto">
-        <span class="nav-item">
-            <span class="sun-wrapper">
-                <Icon name="ph:sun" class="inline-icon" />
-            </span>
-            <span class="moon-wrapper hidden">
-                <Icon name="ph:moon" class="inline-icon" />
-            </span>
-        </span>
-    </button>
+    <ThemeIcon />
 </nav>

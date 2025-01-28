@@ -25,6 +25,17 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 			href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono&display=swap"
 			rel="stylesheet"
 		/>
+		<script is:inline>
+			// Immediately check theme preferences
+			(function () {
+				const savedTheme = localStorage.getItem("theme");
+				const systemDark = window.matchMedia(
+					"(prefers-color-scheme: dark)",
+				).matches;
+				const theme = savedTheme || (systemDark ? "dark" : "light");
+				document.documentElement.classList.add(theme);
+			})();
+		</script>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<meta name="generator" content={Astro.generator} />

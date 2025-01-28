@@ -13,6 +13,16 @@ html {
   transition-behavior: allow-discrete;
 }
 
+:root.dark {
+  --color-bg: var(--color-bg-note-dark);
+  --color-bg-code: var(--color-bg-code-note-dark);
+  --color-ink: var(--color-ink-dark);
+  --color-ink-light: var(--color-ink-light-dark);
+  --color-accent: var(--color-accent-dark);
+  --color-link: var(--color-link-dark);
+  --color-border: var(--color-border-dark);
+}
+
 body {
   min-height: 100vh;
   background-image: radial-gradient(
@@ -21,54 +31,22 @@ body {
   );
   background-size: 20px 20px;
   background-position: 0 0;
-  background-color: var(--color-bg-note);
-	transition: color 300ms, background-color 300ms;
-	transition-behavior: allow-discrete;
-}
-
-body {
-  --font-primary: var(--font-post-primary);
-  --font-prose: var(--font-post-prose);
-  --font-ui: var(--font-post-ui);
-  --font-mono: var(--font-post-mono);
-  --color-bg: var(--color-bg-note);
-  --color-bg-code: var(--color-bg-code-note);
-  --font-primary: var(--font-note-primary);
-  --font-prose: var(--font-note-prose);
-  --font-mono: var(--font-note-mono);
   background-color: var(--color-bg);
-}
-
-body.dark {
-  --color-bg: var(--color-bg-dark);
-  --color-bg-code: var(--color-bg-code-dark);
-  --color-ink: var(--color-ink-dark);
-  --color-ink-light: var(--color-ink-light-dark);
-  --color-accent: var(--color-accent-dark);
-  --color-link: var(--color-link-dark);
-  --color-border: var(--color-border-dark);
-  background-image: radial-gradient(
-    color-mix(in srgb, var(--color-border) 60%, transparent) 1px,
-    transparent 1px
-  );
+  transition: color 300ms, background-color 300ms;
+  transition-behavior: allow-discrete;
 }
 
 @media (prefers-color-scheme: dark) {
-  body:not(.light) {
-    --color-bg: var(--color-bg-dark);
-    --color-bg-code: var(--color-bg-code-dark);
+  :root:not(.light) {
+    --color-bg: var(--color-bg-note-dark);
+    --color-bg-code: var(--color-bg-code-note-dark);
     --color-ink: var(--color-ink-dark);
     --color-ink-light: var(--color-ink-light-dark);
     --color-accent: var(--color-accent-dark);
     --color-link: var(--color-link-dark);
     --color-border: var(--color-border-dark);
-    background-image: radial-gradient(
-      color-mix(in srgb, var(--color-border) 60%, transparent) 1px,
-      transparent 1px
-    );
   }
 }
-
 
 .site-nav {
   padding-top: var(--spacing-md);

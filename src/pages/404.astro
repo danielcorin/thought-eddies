@@ -104,7 +104,7 @@ import Navigation from "@components/layout/Navigation.astro";
     function getParticlesConfig() {
         const isLight = document.body.classList.contains("light");
         const colors = [
-            getColor(isLight ? "--color-border-dark" : "--color-border"),
+            getColor(isLight ? "--color-border" : "--color-border-dark"),
         ];
 
         return {

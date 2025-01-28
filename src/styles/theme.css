@@ -16,7 +16,7 @@
   --color-link: var(--color-accent);
   --color-border: #b4b4b4;
   --color-bg: var(--color-bg-note);
-  --color-bg-code: var(--color-bg-code-post);
+  --color-bg-code: var(--color-bg-code-note);
 
   /* Dark mode colors */
   --color-bg-note-dark: #1c1b17;
@@ -40,10 +40,10 @@
   --font-note-ui: system-ui, -apple-system, sans-serif;
   --font-note-mono: "JetBrains Mono", monospace;
 
-  --font-primary: var(--font-post-primary);
-  --font-prose: var(--font-post-prose);
-  --font-ui: var(--font-post-ui);
-  --font-mono: var(--font-post-mono);
+  --font-primary: var(--font-note-primary);
+  --font-prose: var(--font-note-prose);
+  --font-ui: var(--font-note-ui);
+  --font-mono: var(--font-note-mono);
 
   /* Font Sizes */
   --text-xs: 0.75rem;

@@ -105,9 +105,9 @@ export default function Tree({
         .attr(
           "class",
           (d) =>
-            `flex flex-col p-2 rounded-lg cursor-pointer border overflow-hidden ${d.id === selectedId
-              ? "bg-[var(--color-bg-code)] border-[var(--color-border)]"
-              : "bg-[var(--color-bg)] hover:bg-[var(--color-bg-code)] border-transparent"
+            `flex flex-col p-2 rounded-lg cursor-pointer border border-[var(--color-border)] overflow-hidden ${d.id === selectedId
+              ? "bg-[var(--color-bg-code)]"
+              : "bg-[var(--color-bg)] hover:bg-[var(--color-bg-code)]"
             }`,
         )
         .html(
