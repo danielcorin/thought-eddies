@@ -1,0 +1,191 @@
+---
+title: "Document Citations"
+createdAt: 2025-02-01T22:39:49-05:00
+updatedAt: 2025-02-01T22:39:49-05:00
+description: Using Claude Citations to annotate the sources for document Q&A
+location: NYC
+draft: false
+---
+
+The following is an implementation of document Q&A with citations using Anthropic's [press release](https://www.anthropic.com/news/introducing-citations-api) for [Claude Citations](https://docs.anthropic.com/en/docs/build-with-claude/citations), a feature meant to reduce LLM hallucinations and provide clarity for which part of the source text the model is using to produce answers to questions.
+The content below the next page break is from Anthropic (the source document in our example).
+Below are example questions that can be asked about the document.
+When provided with the document as context, an LLM can generate answers to these questions.
+
+## Try it out
+
+Select a question to view the model-generated answer using the source document.
+Doing so will also highlight the areas of the document that Claude returned as citations, justifying the answer.
+If you scroll to the bottom of an answer, you can also find links to the cited passages.
+
+---
+
+export const qaPairs = [
+    {
+        "question": "Does using the Citations feature improve recall accuracy?",
+        "answer": "Yes, according to the documents, the Citations feature does improve recall accuracy. Specifically, Anthropic's internal evaluations show that Claude's built-in citation capabilities outperform most custom implementations, increasing recall accuracy by up to 15%.\n\nThis improvement is further supported by real-world customer experiences. For example, Endex reported that using Anthropic's Citations feature reduced source hallucinations and formatting issues from 10% to 0% and led to a 20% increase in references per response.\n\nThe improvement comes from replacing the previous approach, where developers had to rely on complex prompts to instruct Claude to include source information - a method that resulted in inconsistent performance and required significant time investment in prompt engineering and testing. With Citations, users can simply add source documents to the context window, and Claude automatically cites claims from those sources.",
+        "citations": [
+            {
+                "text": "**Our internal evaluations show that Claude's built-in citation capabilities outperform most custom implementations, increasing recall accuracy by up to 15%.1**\n\n## Use cases\n\nWith Citations, developers can create AI solutions that offer enhanced accountability across use cases like:\n\n*   Document summarization: Generate concise summaries of long documents, like case files, with each key point linked back to its original source.",
+                "start_index": 1041,
+                "end_index": 1474,
+                "document": "Citations on the Anthropic API"
+            },
+            {
+                "text": "\"With Anthropic's Citations, we reduced source hallucinations and formatting issues from 10% to 0% and saw a 20% increase in references per response.",
+                "start_index": 3776,
+                "end_index": 3926,
+                "document": "Citations on the Anthropic API"
+            },
+            {
+                "text": "Previously, developers relied on complex prompts that instruct Claude to include source information, often resulting in inconsistent performance and significant time investment in prompt engineering and testing. With Citations, users can now add source documents to the context window, and when querying the model, Claude automatically cites claims in its output that are inferred from those sources.",
+                "start_index": 639,
+                "end_index": 1041,
+                "document": "Citations on the Anthropic API"
+            }
+        ]
+    },
+    {
+        "question": "How does the Citations feature work technically?",
+        "answer": "Based on the documents, here's how the Citations feature works technically:\n\nThe process begins when the API receives user-provided source documents (which can be PDF documents or plain text files). These documents are first processed by chunking them into sentences.\n\nAfter chunking, these sentences are passed to the model along with:\n- The user's query\n- Any user-provided context\nNote that users have the flexibility to provide their own chunks for the source documents if they prefer.\n\nWhen generating a response, Claude analyzes the query and provides precise citations for any claims that are derived from the source material. The citation system is designed to reference source documents in a way that helps minimize hallucinations.\n\nA key technical advantage of this approach is its flexibility and ease of use - it doesn't require file storage and integrates seamlessly with the Messages API.\n\nRegarding performance and pricing:\n\nInternal evaluations have shown that Claude's built-in citation capabilities perform better than most custom implementations, with up to 15% higher recall accuracy.\n\nThe feature uses Anthropic's standard token-based pricing model. While processing documents may require additional input tokens, users are not charged for output tokens that return the quoted text itself.",
+        "citations": [
+            {
+                "text": "## How it works\n\nWhen Citations is enabled, the API processes user-provided source documents (PDF documents and plain text files) by chunking them into sentences.",
+                "start_index": 1867,
+                "end_index": 2030,
+                "document": "Citations on the Anthropic API"
+            },
+            {
+                "text": "These chunked sentences, along with user-provided context, are then passed to the model with the user's query. Alternatively, users can provide their own chunks for the source documents.",
+                "start_index": 2030,
+                "end_index": 2218,
+                "document": "Citations on the Anthropic API"
+            },
+            {
+                "text": "Claude analyzes the query and generates a response that includes precise citations based on the provided chunks and context for any claims derived from the source material. Cited text will reference source documents to minimize hallucinations.",
+                "start_index": 2218,
+                "end_index": 2463,
+                "document": "Citations on the Anthropic API"
+            },
+            {
+                "text": "This approach offers superior flexibility and ease of use, as it doesn't require file storage and seamlessly integrates with the Messages API.",
+                "start_index": 2463,
+                "end_index": 2607,
+                "document": "Citations on the Anthropic API"
+            },
+            {
+                "text": "**Our internal evaluations show that Claude's built-in citation capabilities outperform most custom implementations, increasing recall accuracy by up to 15%.1**\n\n## Use cases\n\nWith Citations, developers can create AI solutions that offer enhanced accountability across use cases like:\n\n*   Document summarization: Generate concise summaries of long documents, like case files, with each key point linked back to its original source.",
+                "start_index": 1041,
+                "end_index": 1474,
+                "document": "Citations on the Anthropic API"
+            },
+            {
+                "text": "## Pricing\n\nCitations uses our standard token-based pricing model. While it may use additional input tokens to process documents, users will not pay for output tokens that return the quoted text itself.",
+                "start_index": 2607,
+                "end_index": 2811,
+                "document": "Citations on the Anthropic API"
+            }
+        ]
+    },
+    {
+        "question": "How is Citations priced?",
+        "answer": "According to the document, here are the key points about Citations pricing:\n\nCitations follows Anthropic's standard token-based pricing model. While using Citations may require additional input tokens for processing documents, users will not be charged for output tokens that return the quoted text itself.",
+        "citations": [
+            {
+                "text": "## Pricing\n\nCitations uses our standard token-based pricing model. While it may use additional input tokens to process documents, users will not pay for output tokens that return the quoted text itself.",
+                "start_index": 2607,
+                "end_index": 2811,
+                "document": "Citations on the Anthropic API"
+            }
+        ]
+    },
+    {
+        "question": "Which Claude models support Citations?",
+        "answer": "According to the documents, Citations is available for Claude 3.5 Sonnet and Claude 3.5 Haiku. The feature is generally available on both the Anthropic API and Google Cloud's Vertex AI.",
+        "citations": [
+            {
+                "text": "## Get started\n\nCitations is now available for the new Claude 3.5 Sonnet and Claude 3.5 Haiku.",
+                "start_index": 4114,
+                "end_index": 4209,
+                "document": "Citations on the Anthropic API"
+            },
+            {
+                "text": "Citations is generally available on the Anthropic API and Google Cloud\u2019s Vertex AI.",
+                "start_index": 315,
+                "end_index": 400,
+                "document": "Citations on the Anthropic API"
+            }
+        ]
+    }
+]
+
+import DocumentCitations from '@components/prose/DocumentCitations.astro'
+
+<DocumentCitations
+  qaPairs={qaPairs}
+  sourcePath="2025/document-citations/source.md"
+/>
+
+---
+Claude Citations outputs the exact passage from the cited document as well as start and end indices referencing the slices of the original document (as a string) that contain the citations.
+
+We unpack the inference response from Claude into a data structure for this post like this:
+
+```json
+{
+    "question": "Which Claude models support Citations?",
+    "answer": "According to the documents, Citations is available for Claude 3.5 Sonnet and Claude 3.5 Haiku. The feature is generally available on both the Anthropic API and Google Cloud's Vertex AI.",
+    "citations": [
+        {
+            "text": "## Get started\n\nCitations is now available for the new Claude 3.5 Sonnet and Claude 3.5 Haiku.",
+            "start_index": 4114,
+            "end_index": 4209,
+            "document": "Citations on the Anthropic API"
+        },
+        {
+            "text": "Citations is generally available on the Anthropic API and Google Cloud\u2019s Vertex AI.",
+            "start_index": 315,
+            "end_index": 400,
+            "document": "Citations on the Anthropic API"
+        }
+    ]
+}
+```
+
+To make the above UX work as rendered HTML, we need to first add HTML markup to the raw markdown string before rendering, since the cited passages and document indices would no longer match the content after rendering the markdown as HTML.
+To add the highlighting, we iterate through the citations from end to beginning to avoid interfering with the citation start and end indices.
+Within each citation, we break the content up by line and wrap each line with `<mark>` tags, with special case handling for markdown elements like headings and lists.
+Finally, we render that HTML/markdown mix as HTML, resulting in the highlighted document upon selecting a question.
+
+## Challenges
+
+Finding a way to add the highlights to the document was the biggest challenge because we must do so before the markdown is rendered as HTML (the citations are in markdown) but we also needed to avoid interfering with the markdown to HTML renderer so that the HTML markup would be added correctly. For example, a common problem I ran into was correct highlighting but content that was sent to the DOM as
+
+```html
+## Get started
+```
+
+rather than
+
+```html
+<h2>Get started</h2>
+```
+
+This issue was due to a difference of the preprocessor outputting
+
+```md
+<mark class="citation-highlight"> ## Get started </mark>
+```
+
+instead of
+
+```md
+## <mark class="citation-highlight"> Get started </mark>
+```
+
+## Future work
+
+With a similar approach, we could add a chat to a document and call the Citations API in real-time with whatever question a user inputs, displaying both the response and the highlighted citations from the source document.
+This pattern is an inversion of approaches like RAG, which put the Q&A front and center rather than the source document.
+In cases of knowledge aggregation this may be preferred, but when focusing on a single text, it's easy to become disconnected from the source material.
+Keeping the source content front and center helps maintain better grounding in the original text while still getting the benefits from the power of LLM summarization.

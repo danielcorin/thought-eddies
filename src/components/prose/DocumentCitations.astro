@@ -1,0 +1,431 @@
+---
+import { markdown } from "@astropub/md";
+import { Icon } from "astro-icon/components";
+
+interface QAPair {
+    question: string;
+    answer: string;
+    citations: {
+        text: string;
+        start_index: number;
+        end_index: number;
+        document: string;
+    }[];
+}
+
+const { qaPairs, sourcePath } = Astro.props;
+const { rawContent } = await import(
+    /* @vite-ignore */ `../../content/notes/${sourcePath}`
+);
+const rawMarkdown = rawContent();
+
+function highlightCitations(citations: QAPair["citations"], content: string) {
+    let highlightedContent = content;
+    const sortedCitations = [...citations].sort(
+        (a, b) => b.start_index - a.start_index,
+    );
+
+    sortedCitations.forEach((citation, index) => {
+        const before = highlightedContent.slice(0, citation.start_index);
+        const cited = highlightedContent.slice(
+            citation.start_index,
+            citation.end_index,
+        );
+        const after = highlightedContent.slice(citation.end_index);
+
+        const citedLines = cited.split("\n");
+        const highlightedCited = citedLines
+            .map((line) => {
+                // Headers
+                if (line.trim().startsWith("#")) {
+                    const [hashes, ...rest] = line.split(" ");
+                    return `${hashes} <mark class="citation-highlight" id="citation-${index}"> ${rest.join(" ")} </mark>`;
+                }
+                // Lists (unordered and ordered)
+                if (
+                    line.trim().match(/^[*+-]\s/) ||
+                    line.trim().match(/^\d+\.\s/)
+                ) {
+                    const [bullet, ...rest] = line.split(/\s(.+)/);
+                    return `${bullet} <mark class="citation-highlight" id="citation-${index}">${rest.join("")}</mark>`;
+                }
+                // Blockquotes
+                if (line.trim().startsWith(">")) {
+                    const [quote, ...rest] = line.split(/\s(.+)/);
+                    return `${quote} <mark class="citation-highlight" id="citation-${index}">${rest.join("")}</mark>`;
+                }
+                // Code blocks
+                if (
+                    line.trim().startsWith("```") ||
+                    line.trim().startsWith("`")
+                ) {
+                    return line; // Don't highlight code blocks
+                }
+                // Tables
+                if (line.trim().startsWith("|")) {
+                    const cells = line.split("|");
+                    return cells
+                        .map((cell) =>
+                            cell.trim()
+                                ? `| <mark class="citation-highlight" id="citation-${index}">${cell.trim()}</mark> `
+                                : "|",
+                        )
+                        .join("");
+                }
+                return line
+                    ? `<mark class="citation-highlight" id="citation-${index}"> ${line} </mark>`
+                    : "";
+            })
+            .join("\n");
+
+        highlightedContent = before + highlightedCited + after;
+    });
+    return highlightedContent;
+}
+
+const renderedVersions = await Promise.all(
+    qaPairs.map(async (qa) => {
+        const highlightedMarkdown = highlightCitations(
+            qa.citations,
+            rawMarkdown,
+        );
+        return await markdown(highlightedMarkdown);
+    }),
+);
+
+const initialContent = await markdown(rawMarkdown);
+---
+
+<div class="document-citations">
+    <div class="sidebar">
+        <div class="questions">
+            <div class="questions-header">
+                <h3>Questions</h3>
+                <button id="close-answer" class="close-btn hidden"
+                    >Clear Selection</button
+                >
+            </div>
+            {
+                qaPairs.map((qa: QAPair, index: number) => (
+                    <div class="question-container">
+                        <button class="question-btn" data-index={index}>
+                            {qa.question}
+                        </button>
+                        <div class="answer-container">
+                            <div
+                                class="answer-box hidden"
+                                data-answer-index={index}
+                            />
+                            <button class="expand-btn hidden">
+                                <Icon name="ph:caret-down" />
+                            </button>
+                        </div>
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+
+    <div class="content">
+        <div id="source-content" set:html={initialContent} />
+    </div>
+</div>
+<script define:vars={{ qaPairs, renderedVersions, initialContent }}>
+    const sourceContent = document.getElementById("source-content");
+    const questions = document.querySelectorAll(".question-btn");
+    const answerBoxes = document.querySelectorAll(".answer-box");
+    const expandBtns = document.querySelectorAll(".expand-btn");
+    const closeBtn = document.getElementById("close-answer");
+
+    questions.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const index = parseInt(btn.getAttribute("data-index") || "0");
+            const qa = qaPairs[index];
+            const answerBox = document.querySelector(
+                `[data-answer-index="${index}"]`,
+            );
+            const expandBtn = answerBox.nextElementSibling;
+
+            const citationLinks = qa.citations
+                .map(
+                    (_, i, arr) =>
+                        `<a href="#citation-${arr.length - 1 - i}" class="citation-link" style="font-family: var(--font-mono); text-decoration: none;"">[${i + 1}]</a>`,
+                )
+                .join("");
+
+            answerBox.innerHTML = `
+                <h4>Answer</h4>
+                <p>${qa.answer} <sup>${citationLinks}</sup></p>
+            `;
+
+            // Use setTimeout to ensure the scroll happens after content update
+            setTimeout(() => {
+                answerBox.scrollTop = 0;
+                if (answerBox.scrollHeight > answerBox.clientHeight) {
+                    expandBtn.classList.remove("hidden");
+                }
+            }, 0);
+
+            sourceContent.innerHTML = renderedVersions[index];
+
+            // Add click handlers for citation links
+            document.querySelectorAll(".citation-link").forEach((link) => {
+                link.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute("href");
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        target.scrollIntoView({ behavior: "smooth" });
+                    }
+                });
+            });
+
+            questions.forEach((q) => {
+                if (q !== btn) {
+                    q.classList.add("hidden");
+                }
+                q.classList.remove("active");
+            });
+
+            answerBox.classList.remove("hidden");
+            btn.classList.add("active");
+            closeBtn.classList.remove("hidden");
+        });
+    });
+
+    expandBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const answerBox = btn.previousElementSibling;
+            answerBox.classList.toggle("expanded");
+            btn.querySelector("svg").classList.toggle("rotate");
+        });
+    });
+
+    closeBtn.addEventListener("click", () => {
+        answerBoxes.forEach((box) => {
+            box.classList.add("hidden");
+            box.classList.remove("expanded");
+            box.nextElementSibling.classList.add("hidden");
+            box.nextElementSibling
+                .querySelector("svg")
+                ?.classList.remove("rotate");
+        });
+
+        questions.forEach((q) => {
+            q.classList.remove("hidden");
+            q.classList.remove("active");
+        });
+
+        closeBtn.classList.add("hidden");
+        sourceContent.innerHTML = initialContent;
+    });
+</script>
+<style>
+    .document-citations {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        position: relative;
+    }
+
+    @media (min-width: 768px) {
+        .document-citations {
+            grid-template-columns: 1fr 300px;
+        }
+        .document-citations .sidebar {
+            order: 2;
+        }
+        .document-citations .content {
+            order: 1;
+        }
+    }
+
+    .sidebar {
+        position: relative;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2rem;
+    }
+
+    @media (min-width: 768px) {
+        .sidebar {
+            position: sticky;
+            top: 2rem;
+            height: calc(100vh - 4rem);
+            margin-bottom: 0;
+        }
+    }
+
+    .questions {
+        margin-bottom: 1rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .questions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        color: var(--color-ink);
+        padding: 0.25rem 0.75rem;
+    }
+
+    .close-btn:hover {
+        background: var(--color-bg-code);
+        color: var(--color-accent);
+    }
+
+    .question-container {
+        width: 100%;
+    }
+
+    .question-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        background: none;
+        cursor: pointer;
+        color: var(--color-ink);
+        font-size: 0.9rem;
+        background: var(--color-bg);
+    }
+
+    @media (min-width: 768px) {
+        .question-btn {
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    .question-btn:hover,
+    .question-btn.active {
+        background: var(--color-bg-code);
+    }
+
+    .answer-container {
+        position: relative;
+    }
+
+    .answer-box {
+        min-height: fit-content;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 1rem;
+        margin: 0.5rem 0 1rem 0;
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        background: var(--color-bg-code);
+        transition: max-height 0.3s ease-in-out;
+        font-size: 0.9rem;
+    }
+
+    @media (min-width: 768px) {
+        .answer-box {
+            max-height: 300px;
+            font-size: 1rem;
+        }
+    }
+
+    .answer-box::-webkit-scrollbar {
+        width: 8px;
+        border-radius: 4px;
+    }
+
+    .answer-box::-webkit-scrollbar-track {
+        background: var(--color-bg);
+        border-radius: 4px;
+    }
+
+    .answer-box::-webkit-scrollbar-thumb {
+        background: var(--color-border);
+        border-radius: 4px;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+    }
+
+    .answer-box.expanded {
+        max-height: calc(100vh - 12rem);
+    }
+
+    .answer-box h4 {
+        margin-bottom: 0.5rem;
+    }
+
+    .expand-btn {
+        position: absolute;
+        right: 0.5rem;
+        bottom: 1.5rem;
+        background: var(--color-bg-code);
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        padding: 0.25rem;
+        cursor: pointer;
+        color: var(--color-ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+            background-color 0.2s ease,
+            color 0.2s ease;
+    }
+
+    .expand-btn:hover {
+        background: var(--color-bg);
+        color: var(--color-accent);
+    }
+
+    .expand-btn svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        transition: transform 0.3s ease;
+    }
+
+    .expand-btn svg.rotate {
+        transform: rotate(180deg);
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .close-btn {
+        background: var(--color-bg);
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        color: var(--color-ink);
+        padding: 0.25rem 0.75rem;
+    }
+
+    .close-btn:hover {
+        background: var(--color-bg-code);
+        color: var(--color-accent);
+    }
+
+    .citation-link {
+        color: var(--color-accent);
+        text-decoration: none;
+        cursor: pointer;
+        font-family: var(--font-mono);
+    }
+
+    .citation-link:hover {
+        text-decoration: underline;
+    }
+</style>

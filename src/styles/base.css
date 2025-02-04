@@ -21,6 +21,7 @@ html {
   --color-accent: var(--color-accent-dark);
   --color-link: var(--color-link-dark);
   --color-border: var(--color-border-dark);
+  --color-highlight: var(--color-highlight-dark);
 }
 
 body {
@@ -35,6 +36,19 @@ body {
   transition: color 300ms, background-color 300ms;
   transition-behavior: allow-discrete;
 }
+
+mark {
+  background: var(--color-highlight);
+  background-color: var(--color-highlight);
+  color: var(--color-ink);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--spacing-lg) 0;
+}
+
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {

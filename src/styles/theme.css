@@ -17,6 +17,8 @@
   --color-border: #b4b4b4;
   --color-bg: var(--color-bg-note);
   --color-bg-code: var(--color-bg-code-note);
+  --color-highlight: color-mix(in srgb, var(--color-accent) 50%, transparent);
+  --color-highlight-dark: color-mix(in srgb, var(--color-accent-dark) 50%, transparent);
 
   /* Dark mode colors */
   --color-bg-note-dark: #1c1b17;
