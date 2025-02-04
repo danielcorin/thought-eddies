@@ -11,12 +11,17 @@ import sitemap from "@astrojs/sitemap";
 // https://astro.build/config
 export default defineConfig({
     site: 'https://www.thoughteddies.com',
-    integrations: [react(), mdx(), tailwind(), icon(), sitemap()],
+    integrations: [react(), mdx({
+        syntaxHighlight: 'shiki',
+        shikiConfig: {
+            theme: 'monokai',
+            wrap: true
+        }
+    }), tailwind(), icon(), sitemap()],
     markdown: {
         shikiConfig: {
             theme: "monokai",
             wrap: true,
-            transformers: []
         },
     },
     adapter: vercel(),

@@ -1,6 +1,7 @@
 ---
-import { Code } from "astro/components";
 import { Code as CodeIcon } from "lucide-react";
+import { createHighlighter } from "shiki";
+import type { BundledLanguage } from "shiki";
 
 interface Props {
   source: string;
@@ -9,6 +10,16 @@ interface Props {
 }
 
 const { source, lang = "tsx" } = Astro.props;
+
+const highlighter = await createHighlighter({
+  themes: ["monokai"],
+  langs: [lang],
+});
+
+const html = highlighter.codeToHtml(source, {
+  lang: lang as BundledLanguage,
+  theme: "monokai",
+});
 ---
 
 <div class="relative">
@@ -28,9 +39,7 @@ const { source, lang = "tsx" } = Astro.props;
         <span class="select-none group-open:hidden">Show Source</span>
         <span class="select-none hidden group-open:block">Hide Source</span>
       </summary>
-      <div class="mt-3 rounded-md overflow-hidden">
-        <Code code={source} lang={lang as any} theme="monokai" />
-      </div>
+      <div class="mt-3 rounded-md overflow-hidden" set:html={html} />
     </details>
   </div>
 </div>
