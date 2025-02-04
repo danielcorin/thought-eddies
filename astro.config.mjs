@@ -15,6 +15,8 @@ export default defineConfig({
     markdown: {
         shikiConfig: {
             theme: "monokai",
+            wrap: true,
+            transformers: []
         },
     },
     adapter: vercel(),
