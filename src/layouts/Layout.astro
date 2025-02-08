@@ -3,6 +3,7 @@ import { SEO } from "astro-seo";
 import "@styles/theme.css";
 import "@styles/base.css";
 import Footer from "@components/layout/Footer.astro";
+import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
 
 interface Props {
@@ -53,6 +54,7 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 		<title>{pageTitle}</title>
 	</head>
 	<body class={theme}>
+		<ReadingProgress />
 		<main>
 			<div class="content-wrapper">
 				<slot />
