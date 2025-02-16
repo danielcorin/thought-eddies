@@ -39,6 +39,12 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 		</script>
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title="RSS Feed"
+			href="/rss.xml"
+		/>
 		<meta name="generator" content={Astro.generator} />
 		<SEO
 			title={pageTitle}
