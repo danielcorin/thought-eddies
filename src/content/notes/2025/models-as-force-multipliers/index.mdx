@@ -1,0 +1,125 @@
+---
+title: "Models as Force Multipliers and their Limits in Software Development"
+createdAt: 2025-04-08T12:29:01-04:00
+updatedAt: 2025-04-08T12:29:01-04:00
+description: You need to use models to build software to really understand their limits
+location: SF
+draft: false
+---
+
+import Chat from "@components/prose/Chat.astro";
+
+I'm on a flight and wanted to write code to work on an idea.
+After a few moments of shifting mental gears, I popped open [Zed](https://zed.dev/), which allows me to code with a local LLM using [ollama](https://ollama.com/).
+My default impulse when writing code is to prompt a model.
+At first, I felt somewhat negative about this but with [`llama3.2:3b`](https://ollama.com/library/llama3.2:3b) at my side, eventually I got into the rhythm of working through the idea and mostly writing the code by hand which I don't do as often these days.
+
+This experience of not having a good model available made me reflect for the first time in a while -- how am I even thinking about when I use a LLM today to write some bit of code or functionality in a project I am working on?
+How do I reason about whether the LLM is up to the task and how much am I filling in the model's gaps without realizing it?
+
+## llama3.2 feels like going back in time
+
+One of the first things I was confronted with was how mediocre `llama3.2` was as a code assistant compared to Claude Sonnet, my current daily driver.
+It's not that `llama3.2` can't write code that fulfills my prompts -- it mostly can -- it's that it can't fluidly edit code inline while following prompt instructions and regenerating the specific parts of the file that need changes to comply with the instructions.
+
+Here is an example
+
+<Chat
+  model="llama3.2"
+  messages={[
+    {
+      role: "user",
+      content: "write python code to create a markdown file with created_at as frontmatter. use the stdlib only. no comments."
+    },
+    {
+        role: "assistant",
+        content: `
+\`\`\`python
+import json
+from datetime import datetime
+
+def create_markdown_file(file_name, created_at):
+    data = {
+        "created_at": created_at.strftime('%Y-%m-%d %H:%M:%S')
+    }
+    with open(f'{file_name}.md', 'w') as f:
+        json.dump(data, f)
+        f.write('\\n---\\n')
+
+# create a markdown file
+create_markdown_file('example', datetime.now())
+\`\`\`
+`
+    }
+  ]}
+/>
+
+This code creates an `example.md` containing
+
+```md
+{"created_at": "2025-04-08 12:45:00"}
+---
+```
+Maybe not exactly what I had in mind but gets enough of the way there that the output with minor modifications will do what I want.
+This reminds me of the days I used to use ChatGPT to help write code.
+I would toss in a prompt like the one above and get code that was a helpful starting point for the direction I was headed in.
+
+These small models don't work very well as editors of source code or agents because they are not consistent enough at following instructions.
+They are best used for chat.
+Using inline editor prompting (<kbd>cmd</kbd>+<kbd>I</kbd> by default in Zed) often results in strange artifacts getting added to the file and that model often does not follow instructions well.
+Nevertheless, chat can still go a long way.
+
+## Building software feels different now
+
+If you've been following state of the art models and agents, you're aware that these days you can push both the model alone, as well as a tool-calling agents, to build and iterate on what used to be nontrivial sized software projects (x,000 lines of code).
+The state of the art has pushed us so far that people can now build proof-of-concept quality, functioning software without ever directly touching code themselves.
+There are still plenty of [challenges](https://www.danielcorin.com/posts/2025/vibe-coding/) but this was not possible a year ago.
+
+These capabilities are pretty incredible.
+I use them.
+They have a ceiling, but it's one that is hard to articulate.
+For someone hoping to build a simple UI and deploy to Vercel, maybe this ceiling is irrelevant.
+Especially if they're not familiar with code, they may not have a concept of the ceiling of the model/agent's capabilities.
+They just know the agent did what they asked it to do.
+
+## Different types of software have different burdens of maintenance
+
+Software systems don't need to be incredibly large or complex to be useful.
+Plenty of software becomes less useful as it grows, bloated with features meant to extract value rather than create it.
+At the same time, as a codebase grows, issues of maintainability and reliability become more relevant.
+
+If I create a registration system for a summer camp that all of a sudden breaks when I need it to be working most, that is a problem I need to solve myself if I wrote the software.
+If you don't know how to write code by hand, maybe you could use a model to build this registration system today, but could you use a model to fix the system when it breaks?
+Most of the "life" of software is spent being maintained, not written.
+Most engineering jobs prioritize keeping the existing system available above any new changes or improvements.
+
+These maintenance needs are invisible to the first-time software author (read vibe coder) until they're obvious.
+
+The system breaks.
+
+Someone compromised your system's data.
+
+The system is overwhelmed by traffic.
+
+These are realities of software in the world.
+Models are even useful for solving these problems.
+No perfect system exists -- it's all about making tradeoffs within the constraints.
+
+## Models are force multipliers
+
+Right now we're in a period of adjustment.
+It's still surprising how much code we can write with simple instructions and how much progress we can make on a project in fixed time relative to what has previous been possible.
+But many of the realities of building software that needs to run reliably and be secure have not changed.
+If the engineer is still the responsible party for handling and being accountable for these challenges, then models are simply tools.
+
+It would be ill advised to generate and merge code for a system you are oncall for without carefully reading and testing that code yourself.
+It's much easier to deal with any problems with that code before it makes it to production.
+Knowing whether things work requires verification, by a human, tests, or trusted system.
+
+Models are currently a force multiplier.
+With a powerful model, I can build a ChatGPT clone in Swift in days or weeks instead of weeks or months.
+I can get code in any language to solve a simple problem like formatting a date as `yyyy-mm-dd` in a few seconds instead of minutes a very high percentage of the time.
+
+Such a force multiplier empowers a larger number of people to realize a vision they have in less time and with fewer resources.
+It empowers people to use their existing skills in different ways.
+It makes the computer a more powerful tool for more people.
