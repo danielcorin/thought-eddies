@@ -26,22 +26,6 @@ const notes = defineCollection({
   }),
 });
 
-const posts = defineCollection({
-  loader: glob({ pattern: "**/*.mdx", base: "./src/content/posts" }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    location: z.string().optional(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-    publishedAt: z.date().optional(),
-    tags: z.array(z.string()).optional(),
-    image: z.string().optional(),
-    draft: z.boolean().optional().default(true),
-    series: z.string().optional(),
-  }),
-});
-
 const home = defineCollection({
   loader: glob({ pattern: "index.mdx", base: "./src/content/home" }),
   schema: z.object({
@@ -49,4 +33,4 @@ const home = defineCollection({
   }),
 });
 
-export const collections = { notes, posts, home };
+export const collections = { notes, home };
