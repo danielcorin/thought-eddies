@@ -5,6 +5,7 @@ import tailwind from "@astrojs/tailwind";
 import vercel from "@astrojs/vercel";
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
+import markdownIntegration from '@astropub/md'
 
 import sitemap from "@astrojs/sitemap";
 
@@ -16,8 +17,8 @@ export default defineConfig({
         shikiConfig: {
             theme: 'monokai',
             wrap: true
-        }
-    }), tailwind(), icon(), sitemap()],
+        },
+    }), tailwind(), icon(), sitemap(), markdownIntegration()],
     markdown: {
         shikiConfig: {
             theme: "monokai",

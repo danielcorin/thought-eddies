@@ -1,4 +1,6 @@
 ---
+import { Markdown } from "@astropub/md";
+
 interface ContentItem {
   type: "text" | "image_url";
   text?: string;
@@ -53,7 +55,7 @@ function getContent(content: string | ContentItem[]): {
           {message.role === "user" && (
             <div class="message user">
               <div class="bubble user-bubble">
-                {getContent(message.content).text}
+                <Markdown of={getContent(message.content).text} />
                 {getContent(message.content).images.map((url) => (
                   <img src={url} alt="" class="message-image" />
                 ))}
@@ -65,7 +67,7 @@ function getContent(content: string | ContentItem[]): {
               <div class="message-content">
                 {model && <div class="model-label">{model}</div>}
                 <div class="bubble assistant-bubble">
-                  {getContent(message.content).text}
+                  <Markdown of={getContent(message.content).text} />
                   {getContent(message.content).images.map((url) => (
                     <img src={url} alt="" class="message-image" />
                   ))}
@@ -76,7 +78,7 @@ function getContent(content: string | ContentItem[]): {
           {message.role === "system" && (
             <div class="message system">
               <div class="bubble system-bubble">
-                {getContent(message.content).text}
+                <Markdown of={getContent(message.content).text} />
                 {getContent(message.content).images.map((url) => (
                   <img src={url} alt="" class="message-image" />
                 ))}
@@ -170,5 +172,55 @@ function getContent(content: string | ContentItem[]): {
     max-width: 100%;
     max-height: 250px;
     object-fit: contain;
+  }
+
+  /* Ensure text colors respect dark mode */
+  .user-bubble :global(p),
+  .user-bubble :global(li),
+  .user-bubble :global(h1),
+  .user-bubble :global(h2),
+  .user-bubble :global(h3),
+  .user-bubble :global(h4),
+  .user-bubble :global(h5),
+  .user-bubble :global(h6) {
+    color: var(--color-bg);
+  }
+
+  .assistant-bubble :global(p),
+  .assistant-bubble :global(li),
+  .assistant-bubble :global(h1),
+  .assistant-bubble :global(h2),
+  .assistant-bubble :global(h3),
+  .assistant-bubble :global(h4),
+  .assistant-bubble :global(h5),
+  .assistant-bubble :global(h6) {
+    color: var(--color-ink);
+  }
+
+  .system-bubble :global(p),
+  .system-bubble :global(li),
+  .system-bubble :global(h1),
+  .system-bubble :global(h2),
+  .system-bubble :global(h3),
+  .system-bubble :global(h4),
+  .system-bubble :global(h5),
+  .system-bubble :global(h6) {
+    color: var(--color-ink-light);
+  }
+
+  /* Ensure links in bubbles have appropriate colors */
+  .user-bubble :global(a) {
+    color: var(--color-bg);
+    text-decoration: underline;
+  }
+
+  .assistant-bubble :global(a) {
+    color: var(--color-link);
+    text-decoration: underline;
+  }
+
+  .system-bubble :global(a) {
+    color: var(--color-ink-light);
+    text-decoration: underline;
   }
 </style>
