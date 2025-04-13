@@ -158,13 +158,17 @@ const allHeadings = title
     font-weight: normal;
     font-size: var(--text-sm);
     display: block;
+    border-left: 2px solid transparent;
+    margin-left: calc(-1 * var(--spacing-sm));
+    padding-left: calc(var(--spacing-sm) - 2px);
+    transition:
+      opacity 0.2s,
+      border-left-color 0.2s;
   }
 
   .toc a:hover {
     opacity: 1;
-    border-left: 2px solid var(--color-link);
-    margin-left: calc(-1 * var(--spacing-sm));
-    padding-left: calc(var(--spacing-sm) - 2px);
+    border-left-color: var(--color-link);
   }
 
   .depth-2 {
