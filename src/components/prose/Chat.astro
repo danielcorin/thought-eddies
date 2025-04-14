@@ -223,4 +223,31 @@ function getContent(content: string | ContentItem[]): {
     color: var(--color-ink-light);
     text-decoration: underline;
   }
+
+  /* Mobile styles */
+  @media (max-width: 640px) {
+    .chat-container {
+      --bubble-max-width: 100%;
+    }
+
+    .message.user,
+    .message.assistant,
+    .message.system {
+      justify-content: stretch;
+    }
+
+    .bubble {
+      width: 100%;
+    }
+
+    .user-bubble {
+      border-radius: var(--bubble-radius);
+      border-bottom-right-radius: 0;
+    }
+
+    .assistant-bubble {
+      border-radius: var(--bubble-radius);
+      border-bottom-left-radius: 0;
+    }
+  }
 </style>
