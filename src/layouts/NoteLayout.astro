@@ -1,5 +1,6 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
+import { Icon } from "astro-icon/components";
 import Layout from "./Layout.astro";
 
 const { frontmatter } = Astro.props;
@@ -12,8 +13,27 @@ const theme = "notes";
     <header>
       <h1>{frontmatter.title}</h1>
       <time datetime={frontmatter.createdAt}>
-        {new Date(frontmatter.createdAt).toISOString().split("T")[0]}{
-          frontmatter.location ? ` · ${frontmatter.location}` : ""
+        <span class="icon-text-wrapper">
+          <Icon name="ph:pencil-simple-line" class="inline-icon meta-icon" />
+          {new Date(frontmatter.createdAt).toISOString().split("T")[0]}
+        </span>
+        {
+          frontmatter.updatedAt &&
+            new Date(frontmatter.updatedAt).toISOString() !==
+              new Date(frontmatter.createdAt).toISOString() && (
+              <span class="icon-text-wrapper">
+                <Icon name="ph:clock-clockwise" class="inline-icon meta-icon" />
+                {new Date(frontmatter.updatedAt).toISOString().split("T")[0]}
+              </span>
+            )
+        }
+        {
+          frontmatter.location && (
+            <span class="icon-text-wrapper">
+              <Icon name="ph:map-pin" class="inline-icon meta-icon" />
+              {frontmatter.location}
+            </span>
+          )
         }
       </time>
     </header>
@@ -22,3 +42,21 @@ const theme = "notes";
     </div>
   </article>
 </Layout>
+<style>
+  .icon-text-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-right: 1rem;
+  }
+
+  .meta-icon {
+    opacity: 0.7;
+  }
+
+  @media (max-width: 640px) {
+    .icon-text-wrapper {
+      margin-right: 0.25rem;
+    }
+  }
+</style>
