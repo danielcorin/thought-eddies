@@ -1,0 +1,372 @@
+---
+import { Markdown } from "@astropub/md";
+
+interface ContentItem {
+    type: "text" | "image_url";
+    text?: string;
+    image_url?: {
+        url: string;
+    };
+}
+
+interface Message {
+    role: "system" | "user" | "assistant" | "function";
+    content: string | ContentItem[];
+    name?: string;
+    function_call?: {
+        name: string;
+        arguments: string;
+    };
+}
+
+interface Props {
+    messages: Message[];
+    model?: string;
+}
+
+const { messages, model } = Astro.props;
+
+function getContent(content: string | ContentItem[]): {
+    text: string;
+    images: string[];
+} {
+    if (typeof content === "string") return { text: content, images: [] };
+
+    const images: string[] = [];
+    const text = content
+        .map((item) => {
+            if (item.type === "image_url" && item.image_url) {
+                images.push(item.image_url.url);
+                return "";
+            }
+            return item.text || "";
+        })
+        .join("");
+
+    return { text, images };
+}
+---
+
+<section class="chat-section">
+    <div class="code-editor">
+        <div class="editor-header">
+            <div class="editor-tabs">
+                <div class="editor-tab active">conversation.chat</div>
+            </div>
+            <div class="editor-controls">
+                <span class="editor-control">⚙️</span>
+            </div>
+        </div>
+        <div class="editor-body">
+            <div class="line-numbers">
+                {
+                    Array.from({ length: messages.length * 5 + 5 }, (_, i) => (
+                        <div class="line-number">{i + 1}</div>
+                    ))
+                }
+            </div>
+            <div class="editor-content">
+                <div class="code-comment">
+                    // Conversation between User and {model || "Assistant"}
+                </div>
+                <div class="code-comment">
+                    // Started: {new Date().toISOString()}
+                </div>
+                <div class="code-line"></div>
+                {
+                    messages.map((message, index) => (
+                        <>
+                            <div class={`code-block ${message.role}-block`}>
+                                <div class="block-header">
+                                    <span class="block-icon">
+                                        {message.role === "user" ? "👤" : "🤖"}
+                                    </span>
+                                    <span class="block-label">
+                                        {message.role === "assistant"
+                                            ? model || "Assistant"
+                                            : message.role
+                                                  .charAt(0)
+                                                  .toUpperCase() +
+                                              message.role.slice(1)}
+                                    </span>
+                                    <div class="block-controls">
+                                        <span class="block-fold">[-]</span>
+                                    </div>
+                                </div>
+                                <div class="block-content">
+                                    <div class={`${message.role}-content`}>
+                                        <Markdown
+                                            of={
+                                                getContent(message.content).text
+                                            }
+                                        />
+                                        {getContent(message.content).images.map(
+                                            (url) => (
+                                                <img
+                                                    src={url}
+                                                    alt=""
+                                                    class="message-image"
+                                                />
+                                            ),
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="code-line" />
+                        </>
+                    ))
+                }
+                <div class="cursor-line">
+                    <span class="cursor-blink">|</span>
+                </div>
+            </div>
+        </div>
+        <div class="editor-footer">
+            <div class="editor-status">Ready</div>
+            <div class="editor-info">
+                <span>UTF-8</span>
+                <span>Ln {messages.length * 5}, Col 1</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .chat-section {
+        --editor-bg: #1e1e1e;
+        --editor-text: #d4d4d4;
+        --editor-line-numbers: #858585;
+        --editor-cursor: #a6a6a6;
+        --editor-selection: #264f78;
+        --editor-gutter: #111111;
+        --editor-user-comment: #6a9955;
+        --editor-assistant-text: #9cdcfe;
+        --editor-variable: #4fc1ff;
+        --editor-code-bg: #0d0d0d;
+        --editor-border: #454545;
+        --editor-active-tab: #1e1e1e;
+        --editor-tab-bg: #2d2d2d;
+
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+    }
+
+    .code-editor {
+        display: flex;
+        flex-direction: column;
+        border-radius: 0.5rem;
+        border: 1px solid var(--editor-border);
+        overflow: hidden;
+        background-color: var(--editor-bg);
+        color: var(--editor-text);
+        height: auto;
+        min-height: 400px;
+    }
+
+    .editor-header {
+        display: flex;
+        justify-content: space-between;
+        background-color: var(--editor-tab-bg);
+        border-bottom: 1px solid var(--editor-border);
+        padding: 0.5rem;
+    }
+
+    .editor-tabs {
+        display: flex;
+    }
+
+    .editor-tab {
+        padding: 0.25rem 1rem;
+        background-color: var(--editor-tab-bg);
+        border-radius: 0.25rem 0.25rem 0 0;
+        font-size: var(--text-xs);
+        margin-right: 0.25rem;
+    }
+
+    .editor-tab.active {
+        background-color: var(--editor-active-tab);
+        border: 1px solid var(--editor-border);
+        border-bottom: none;
+    }
+
+    .editor-controls {
+        font-size: var(--text-xs);
+    }
+
+    .editor-body {
+        display: flex;
+        flex-grow: 1;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+    .line-numbers {
+        padding: 0.5rem 0;
+        text-align: right;
+        background-color: var(--editor-gutter);
+        border-right: 1px solid var(--editor-border);
+        user-select: none;
+        min-width: 3rem;
+    }
+
+    .line-number {
+        color: var(--editor-line-numbers);
+        padding: 0 0.5rem;
+        font-size: var(--text-xs);
+        line-height: 1.5;
+    }
+
+    .editor-content {
+        flex-grow: 1;
+        padding: 0.5rem;
+    }
+
+    .code-comment {
+        color: var(--editor-user-comment);
+        line-height: 1.5;
+    }
+
+    .code-line {
+        height: 1.5rem;
+    }
+
+    .code-block {
+        margin: 0.5rem 0;
+        border-radius: 0.25rem;
+        overflow: hidden;
+    }
+
+    .block-header {
+        display: flex;
+        align-items: center;
+        padding: 0.25rem 0.5rem;
+        background-color: var(--editor-selection);
+        font-size: var(--text-xs);
+    }
+
+    .block-icon {
+        margin-right: 0.5rem;
+    }
+
+    .block-label {
+        flex-grow: 1;
+    }
+
+    .block-controls {
+        font-size: var(--text-xs);
+        cursor: pointer;
+    }
+
+    .block-content {
+        padding: 0.5rem;
+        background-color: var(--editor-code-bg);
+        border: 1px solid var(--editor-border);
+        border-top: none;
+    }
+
+    .user-block .block-header {
+        background-color: #2e4f2e;
+    }
+
+    .assistant-block .block-header {
+        background-color: #2d4562;
+    }
+
+    .system-block .block-header {
+        background-color: #553333;
+    }
+
+    .user-content {
+        color: #9acb9a;
+    }
+
+    .assistant-content {
+        color: var(--editor-assistant-text);
+    }
+
+    .system-content {
+        color: #e69595;
+        font-style: italic;
+    }
+
+    .cursor-line {
+        display: flex;
+        align-items: center;
+        line-height: 1.5;
+    }
+
+    .cursor-blink {
+        color: var(--editor-cursor);
+        font-weight: bold;
+        animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+        from,
+        to {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+    }
+
+    .editor-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.25rem 0.5rem;
+        background-color: var(--editor-tab-bg);
+        border-top: 1px solid var(--editor-border);
+        font-size: var(--text-xs);
+    }
+
+    .editor-info {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .message-image {
+        margin-top: 0.5rem;
+        max-width: 100%;
+        max-height: 250px;
+        object-fit: contain;
+    }
+
+    /* Ensure code blocks in markdown are styled nicely */
+    .assistant-content :global(pre),
+    .user-content :global(pre) {
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        overflow-x: auto;
+        margin: 0.5rem 0;
+    }
+
+    .assistant-content :global(code),
+    .user-content :global(code) {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+    }
+
+    /* Ensure links are properly styled */
+    .assistant-content :global(a) {
+        color: #4dacfd;
+        text-decoration: underline;
+    }
+
+    .user-content :global(a) {
+        color: #7fca7f;
+        text-decoration: underline;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 640px) {
+        .line-numbers {
+            display: none;
+        }
+
+        .editor-info {
+            display: none;
+        }
+    }
+</style>

@@ -1,0 +1,377 @@
+---
+import { Markdown } from "@astropub/md";
+
+interface ContentItem {
+    type: "text" | "image_url";
+    text?: string;
+    image_url?: {
+        url: string;
+    };
+}
+
+interface Message {
+    role: "system" | "user" | "assistant" | "function";
+    content: string | ContentItem[];
+    name?: string;
+    function_call?: {
+        name: string;
+        arguments: string;
+    };
+}
+
+interface Props {
+    messages: Message[];
+    model?: string;
+}
+
+const { messages, model } = Astro.props;
+
+function getContent(content: string | ContentItem[]): {
+    text: string;
+    images: string[];
+} {
+    if (typeof content === "string") return { text: content, images: [] };
+
+    const images: string[] = [];
+    const text = content
+        .map((item) => {
+            if (item.type === "image_url" && item.image_url) {
+                images.push(item.image_url.url);
+                return "";
+            }
+            return item.text || "";
+        })
+        .join("");
+
+    return { text, images };
+}
+
+// Calculate message length to determine bubble size
+function getBubbleSize(text: string): string {
+    const length = text.length;
+    if (length < 100) return "small";
+    if (length < 300) return "medium";
+    return "large";
+}
+---
+
+<section class="chat-stream">
+    <div class="stream-container">
+        {
+            messages.map((message, index) => {
+                const content = getContent(message.content);
+                const bubbleSize = getBubbleSize(content.text);
+
+                return (
+                    <div class={`message-wrapper ${message.role}-wrapper`}>
+                        <div class="role-indicator">
+                            <span class={`indicator ${message.role}-indicator`}>
+                                {message.role === "assistant"
+                                    ? model?.charAt(0) || "A"
+                                    : message.role.charAt(0).toUpperCase()}
+                            </span>
+                        </div>
+                        <div
+                            class={`bubble ${message.role}-bubble ${bubbleSize}`}
+                            tabindex="0"
+                        >
+                            <div class="bubble-content">
+                                <Markdown of={content.text} />
+                                {content.images.map((url) => (
+                                    <img
+                                        src={url}
+                                        alt=""
+                                        class="message-image"
+                                    />
+                                ))}
+                            </div>
+                            <div class="bubble-tail" />
+                        </div>
+                    </div>
+                );
+            })
+        }
+    </div>
+</section>
+
+<style>
+    .chat-stream {
+        --user-color: var(--color-ink-light);
+        --assistant-color: var(--color-bg-code);
+        --system-color: #8a8a9c;
+        --function-color: #7b61ff;
+        --transition-speed: 300ms;
+        --border-radius: 1.5rem;
+
+        padding: 1rem;
+        max-width: 100%;
+        overflow-x: hidden;
+        font-family: var(--font-prose);
+    }
+
+    .stream-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .message-wrapper {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        max-width: 100%;
+        transition: transform var(--transition-speed);
+    }
+
+    .message-wrapper:hover {
+        transform: translateX(0.25rem);
+    }
+
+    .user-wrapper {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+    }
+
+    .user-wrapper:hover {
+        transform: translateX(-0.25rem);
+    }
+
+    .role-indicator {
+        flex-shrink: 0;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+
+    .indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 50%;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: -0.02em;
+    }
+
+    .user-indicator {
+        background-color: var(--user-color);
+        color: var(--color-bg);
+    }
+
+    .assistant-indicator {
+        background-color: var(--assistant-color);
+        color: var(--color-ink);
+        border: 1px solid var(--color-border);
+    }
+
+    .system-indicator {
+        background-color: var(--system-color);
+        color: var(--color-bg);
+    }
+
+    .function-indicator {
+        background-color: var(--function-color);
+        color: var(--color-bg);
+    }
+
+    .bubble {
+        position: relative;
+        padding: 1rem 1.25rem;
+        border-radius: var(--border-radius);
+        max-width: calc(100% - 3rem);
+        transition: all var(--transition-speed);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .bubble:focus {
+        outline: none;
+        transform: scale(1.01);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .bubble-content {
+        font-size: var(--text-sm);
+        overflow-wrap: break-word;
+    }
+
+    .bubble-tail {
+        position: absolute;
+        width: 0.75rem;
+        height: 0.75rem;
+        transform: rotate(45deg);
+        top: 1rem;
+    }
+
+    /* Size variations */
+    .bubble.small {
+        width: 60%;
+    }
+
+    .bubble.medium {
+        width: 75%;
+    }
+
+    .bubble.large {
+        width: 90%;
+    }
+
+    /* User bubble */
+    .user-bubble {
+        background-color: var(--user-color);
+        color: var(--color-bg);
+        border-bottom-right-radius: 0.25rem;
+    }
+
+    .user-bubble .bubble-tail {
+        background-color: var(--user-color);
+        right: -0.25rem;
+    }
+
+    /* Assistant bubble */
+    .assistant-bubble {
+        background-color: var(--assistant-color);
+        color: var(--color-ink);
+        border: 1px solid var(--color-border);
+        border-bottom-left-radius: 0.25rem;
+    }
+
+    .assistant-bubble .bubble-tail {
+        background-color: var(--assistant-color);
+        border-bottom: 1px solid var(--color-border);
+        border-left: 1px solid var(--color-border);
+        left: -0.25rem;
+    }
+
+    /* System bubble */
+    .system-bubble {
+        background-color: var(--system-color);
+        color: var(--color-bg);
+        border-bottom-left-radius: 0.25rem;
+        font-style: italic;
+    }
+
+    .system-bubble .bubble-tail {
+        background-color: var(--system-color);
+        left: -0.25rem;
+    }
+
+    /* Function bubble */
+    .function-bubble {
+        background-color: var(--function-color);
+        color: var(--color-bg);
+        border-bottom-left-radius: 0.25rem;
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+    }
+
+    .function-bubble .bubble-tail {
+        background-color: var(--function-color);
+        left: -0.25rem;
+    }
+
+    .message-image {
+        margin-top: 0.5rem;
+        max-width: 100%;
+        border-radius: 0.5rem;
+        max-height: 250px;
+        object-fit: contain;
+    }
+
+    /* Ensure text colors respect dark mode */
+    .user-bubble :global(p),
+    .user-bubble :global(li),
+    .user-bubble :global(h1),
+    .user-bubble :global(h2),
+    .user-bubble :global(h3),
+    .user-bubble :global(h4),
+    .user-bubble :global(h5),
+    .user-bubble :global(h6) {
+        color: var(--color-bg);
+    }
+
+    .assistant-bubble :global(p),
+    .assistant-bubble :global(li),
+    .assistant-bubble :global(h1),
+    .assistant-bubble :global(h2),
+    .assistant-bubble :global(h3),
+    .assistant-bubble :global(h4),
+    .assistant-bubble :global(h5),
+    .assistant-bubble :global(h6) {
+        color: var(--color-ink);
+    }
+
+    .system-bubble :global(p),
+    .system-bubble :global(li),
+    .system-bubble :global(h1),
+    .system-bubble :global(h2),
+    .system-bubble :global(h3),
+    .system-bubble :global(h4),
+    .system-bubble :global(h5),
+    .system-bubble :global(h6) {
+        color: var(--color-bg);
+    }
+
+    .function-bubble :global(p),
+    .function-bubble :global(li),
+    .function-bubble :global(h1),
+    .function-bubble :global(h2),
+    .function-bubble :global(h3),
+    .function-bubble :global(h4),
+    .function-bubble :global(h5),
+    .function-bubble :global(h6) {
+        color: var(--color-bg);
+    }
+
+    /* Ensure links in bubbles have appropriate colors */
+    .user-bubble :global(a) {
+        color: var(--color-bg);
+        text-decoration: underline;
+    }
+
+    .assistant-bubble :global(a) {
+        color: var(--color-link);
+        text-decoration: underline;
+    }
+
+    .system-bubble :global(a),
+    .function-bubble :global(a) {
+        color: var(--color-bg);
+        text-decoration: underline;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+        .bubble.small {
+            width: 80%;
+        }
+
+        .bubble.medium,
+        .bubble.large {
+            width: 95%;
+        }
+
+        .chat-stream {
+            --border-radius: 1.25rem;
+        }
+    }
+</style>
+
+<script>
+    // Add accessibility improvements
+    document.addEventListener("DOMContentLoaded", () => {
+        const bubbles = document.querySelectorAll(".bubble");
+
+        bubbles.forEach((bubble) => {
+            bubble.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    this.classList.toggle("active");
+                }
+            });
+        });
+    });
+</script>

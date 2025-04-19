@@ -1,0 +1,482 @@
+---
+import { Markdown } from "@astropub/md";
+
+interface ContentItem {
+    type: "text" | "image_url";
+    text?: string;
+    image_url?: {
+        url: string;
+    };
+}
+
+interface Message {
+    role: "system" | "user" | "assistant" | "function";
+    content: string | ContentItem[];
+    name?: string;
+    function_call?: {
+        name: string;
+        arguments: string;
+    };
+}
+
+interface Props {
+    messages: Message[];
+    model?: string;
+}
+
+const { messages, model } = Astro.props;
+
+function getContent(content: string | ContentItem[]): {
+    text: string;
+    images: string[];
+} {
+    if (typeof content === "string") return { text: content, images: [] };
+
+    const images: string[] = [];
+    const text = content
+        .map((item) => {
+            if (item.type === "image_url" && item.image_url) {
+                images.push(item.image_url.url);
+                return "";
+            }
+            return item.text || "";
+        })
+        .join("");
+
+    return { text, images };
+}
+
+// Generate timestamps for demonstration
+function generateTimestamp(index: number) {
+    const now = new Date();
+    const minutesAgo = (messages.length - index) * 3;
+    now.setMinutes(now.getMinutes() - minutesAgo);
+    return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+// Calculate message length category for visual indicators
+function getMessageLengthCategory(text: string): string {
+    const length = text.length;
+    if (length < 100) return "short";
+    if (length < 300) return "medium";
+    return "long";
+}
+---
+
+<section class="timeline-section">
+    <div class="timeline-container">
+        {
+            messages.map((message, index) => {
+                const content = getContent(message.content);
+                const timestamp = generateTimestamp(index);
+                const lengthCategory = getMessageLengthCategory(content.text);
+                const isFirst = index === 0;
+                const isLast = index === messages.length - 1;
+
+                return (
+                    <div
+                        class={`timeline-item ${message.role}-item ${isFirst ? "first-item" : ""} ${isLast ? "last-item" : ""}`}
+                    >
+                        <div class="timeline-node-container">
+                            {!isFirst && (
+                                <div class="timeline-line timeline-line-above" />
+                            )}
+                            <div
+                                class={`timeline-node ${message.role}-node ${lengthCategory}-node`}
+                            >
+                                <span class="node-indicator">{index + 1}</span>
+                            </div>
+                            {!isLast && (
+                                <div class="timeline-line timeline-line-below" />
+                            )}
+                            <div class="timeline-timestamp">{timestamp}</div>
+                        </div>
+
+                        <div
+                            class={`message-container ${message.role === "user" ? "left-message" : "right-message"}`}
+                        >
+                            <div
+                                class={`message-header ${message.role}-header`}
+                            >
+                                <span class="message-role">
+                                    {message.role === "assistant"
+                                        ? model || "Assistant"
+                                        : message.role.charAt(0).toUpperCase() +
+                                          message.role.slice(1)}
+                                </span>
+                                <button
+                                    class="collapse-button"
+                                    title="Collapse message"
+                                >
+                                    −
+                                </button>
+                            </div>
+                            <div class={`message-body ${message.role}-body`}>
+                                <Markdown of={content.text} />
+                                {content.images.map((url) => (
+                                    <img
+                                        src={url}
+                                        alt=""
+                                        class="message-image"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            })
+        }
+    </div>
+</section>
+
+<style>
+    .timeline-section {
+        --timeline-width: 2px;
+        --node-size: 24px;
+        --message-max-width: 80%;
+        --timeline-color: var(--color-border);
+        --transition-speed: 300ms;
+
+        padding: 2rem 0;
+        font-family: var(--font-prose);
+    }
+
+    .timeline-container {
+        position: relative;
+        margin: 0 auto;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .timeline-item {
+        display: flex;
+        margin-bottom: 1.5rem;
+        min-height: 4rem;
+        position: relative;
+        padding-bottom: 0;
+    }
+
+    .timeline-node-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: var(--node-size);
+        flex-shrink: 0;
+        z-index: 2;
+        margin-top: -0.5px;
+        margin-bottom: -0.5px;
+    }
+
+    .timeline-line {
+        position: absolute;
+        left: 50%;
+        width: var(--timeline-width);
+        background-color: var(--timeline-color);
+        transform: translateX(-50%);
+        z-index: 1;
+    }
+
+    .timeline-line-above {
+        top: -1.5rem; /* Connect to the previous node */
+        height: 1.5rem; /* Match the margin-bottom of timeline-item */
+    }
+
+    .timeline-line-below {
+        top: var(--node-size);
+        height: 2rem; /* Sufficient height to reach the next node */
+    }
+
+    .timeline-node {
+        width: var(--node-size);
+        height: var(--node-size);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0.5rem 0;
+        z-index: 2;
+        transition: transform var(--transition-speed);
+    }
+
+    .timeline-node:hover {
+        transform: scale(1.1);
+    }
+
+    .user-node {
+        background: var(--color-ink-light);
+        color: var(--color-bg);
+    }
+
+    .assistant-node {
+        background: var(--color-bg-code);
+        border: 1px solid var(--color-border);
+        color: var(--color-ink);
+    }
+
+    .system-node {
+        background: var(--color-bg-code);
+        border: 1px dashed var(--color-border);
+        color: var(--color-ink-light);
+    }
+
+    /* Node size variations based on message length */
+    .short-node {
+        transform: scale(0.8);
+    }
+
+    .medium-node {
+        transform: scale(1);
+    }
+
+    .long-node {
+        transform: scale(1.2);
+    }
+
+    .node-indicator {
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .timeline-timestamp {
+        font-size: 0.7rem;
+        color: var(--color-ink-light);
+        margin-top: 0.25rem;
+    }
+
+    /* Message containers */
+    .message-container {
+        max-width: var(--message-max-width);
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition:
+            transform var(--transition-speed),
+            opacity var(--transition-speed);
+    }
+
+    .message-container:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .left-message {
+        margin-right: auto;
+        margin-left: 1rem;
+    }
+
+    .right-message {
+        margin-left: auto;
+        margin-right: 1rem;
+    }
+
+    .message-header {
+        padding: 0.5rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: var(--text-xs);
+        font-weight: 500;
+    }
+
+    .user-header {
+        background: var(--color-ink-light);
+        color: var(--color-bg);
+    }
+
+    .assistant-header {
+        background: var(--color-bg-code);
+        color: var(--color-ink);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .system-header {
+        background: var(--color-bg-code);
+        color: var(--color-ink-light);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .collapse-button {
+        background: transparent;
+        border: none;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 0;
+        border-radius: 50%;
+        transition: background var(--transition-speed);
+    }
+
+    .user-header .collapse-button {
+        color: var(--color-bg);
+    }
+
+    .user-header .collapse-button:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .assistant-header .collapse-button,
+    .system-header .collapse-button {
+        color: var(--color-ink);
+    }
+
+    .assistant-header .collapse-button:hover,
+    .system-header .collapse-button:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .message-body {
+        padding: 0.75rem 1rem;
+        font-size: var(--text-sm);
+    }
+
+    .user-body {
+        background: color-mix(
+            in srgb,
+            var(--color-ink-light) 90%,
+            var(--color-bg) 10%
+        );
+        color: var(--color-bg);
+    }
+
+    .assistant-body {
+        background: color-mix(
+            in srgb,
+            var(--color-bg-code) 90%,
+            var(--color-bg) 10%
+        );
+        color: var(--color-ink);
+    }
+
+    .system-body {
+        background: color-mix(
+            in srgb,
+            var(--color-bg-code) 90%,
+            var(--color-bg) 10%
+        );
+        color: var(--color-ink-light);
+        font-style: italic;
+    }
+
+    .message-image {
+        margin-top: 0.5rem;
+        max-width: 100%;
+        border-radius: 0.25rem;
+        max-height: 250px;
+        object-fit: contain;
+    }
+
+    /* Ensure text colors respect dark mode */
+    .user-body :global(p),
+    .user-body :global(li),
+    .user-body :global(h1),
+    .user-body :global(h2),
+    .user-body :global(h3),
+    .user-body :global(h4),
+    .user-body :global(h5),
+    .user-body :global(h6) {
+        color: var(--color-bg);
+    }
+
+    .assistant-body :global(p),
+    .assistant-body :global(li),
+    .assistant-body :global(h1),
+    .assistant-body :global(h2),
+    .assistant-body :global(h3),
+    .assistant-body :global(h4),
+    .assistant-body :global(h5),
+    .assistant-body :global(h6) {
+        color: var(--color-ink);
+    }
+
+    .system-body :global(p),
+    .system-body :global(li),
+    .system-body :global(h1),
+    .system-body :global(h2),
+    .system-body :global(h3),
+    .system-body :global(h4),
+    .system-body :global(h5),
+    .system-body :global(h6) {
+        color: var(--color-ink-light);
+    }
+
+    /* Ensure links in bubbles have appropriate colors */
+    .user-body :global(a) {
+        color: var(--color-bg);
+        text-decoration: underline;
+    }
+
+    .assistant-body :global(a) {
+        color: var(--color-link);
+        text-decoration: underline;
+    }
+
+    .system-body :global(a) {
+        color: var(--color-ink-light);
+        text-decoration: underline;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 640px) {
+        .timeline-section {
+            --message-max-width: 75%;
+        }
+
+        .timeline-item {
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+
+    /* Ensure first and last items have appropriate styling */
+    .first-item .timeline-node-container {
+        padding-top: 0.75rem; /* Add some space at the top of the first node */
+    }
+
+    .last-item .timeline-node-container {
+        padding-bottom: 0.75rem; /* Add some space at the bottom of the last node */
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Toggle message collapse functionality
+        const collapseButtons = document.querySelectorAll(".collapse-button");
+
+        collapseButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const messageContainer = button.closest(".message-container");
+                if (!messageContainer) return;
+
+                const messageBody =
+                    messageContainer.querySelector(".message-body");
+                if (!messageBody) return;
+
+                if (messageBody.classList.contains("collapsed")) {
+                    // Expand
+                    messageBody.classList.remove("collapsed");
+                    button.textContent = "−";
+                    button.setAttribute("title", "Collapse message");
+                } else {
+                    // Collapse
+                    messageBody.classList.add("collapsed");
+                    button.textContent = "+";
+                    button.setAttribute("title", "Expand message");
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Add this to handle collapsed state with CSS instead of JS style properties */
+    .message-body.collapsed {
+        display: none;
+    }
+</style>

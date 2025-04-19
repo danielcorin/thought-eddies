@@ -1,0 +1,265 @@
+---
+import { Markdown } from "@astropub/md";
+
+interface ContentItem {
+  type: "text" | "image_url";
+  text?: string;
+  image_url?: {
+    url: string;
+  };
+}
+
+interface Message {
+  role: "system" | "user" | "assistant" | "function";
+  content: string | ContentItem[];
+  name?: string;
+  function_call?: {
+    name: string;
+    arguments: string;
+  };
+}
+
+interface Props {
+  messages: Message[];
+  model?: string;
+}
+
+const { messages, model } = Astro.props;
+
+function getContent(content: string | ContentItem[]): {
+  text: string;
+  images: string[];
+} {
+  if (typeof content === "string") return { text: content, images: [] };
+
+  const images: string[] = [];
+  const text = content
+    .map((item) => {
+      if (item.type === "image_url" && item.image_url) {
+        images.push(item.image_url.url);
+        return "";
+      }
+      return item.text || "";
+    })
+    .join("");
+
+  return { text, images };
+}
+---
+
+<section class="chat-section">
+  <div class="chat-container">
+    {
+      messages.map((message) => (
+        <div class="message-container">
+          {message.role === "user" && (
+            <div class="message">
+              <div class="message-bubble">
+                <div class="message-header user-header">
+                  <span>User</span>
+                </div>
+                <div class="message-body user-body">
+                  <Markdown of={getContent(message.content).text} />
+                  {getContent(message.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          {message.role === "assistant" && (
+            <div class="message">
+              <div class="message-bubble">
+                <div class="message-header assistant-header">
+                  <span>{model || "Assistant"}</span>
+                </div>
+                <div class="message-body assistant-body">
+                  <Markdown of={getContent(message.content).text} />
+                  {getContent(message.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          {message.role === "system" && (
+            <div class="message">
+              <div class="message-bubble system-bubble">
+                <div class="message-header system-header">
+                  <span>System</span>
+                </div>
+                <div class="message-body system-body">
+                  <Markdown of={getContent(message.content).text} />
+                  {getContent(message.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .chat-section {
+    --transition-speed: 300ms;
+  }
+
+  .chat-container {
+    --bubble-radius: 0.75rem;
+    --bubble-max-width: 90%;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin: 0 auto;
+    font-family: var(--font-prose);
+  }
+
+  .message-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .message {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .message-bubble {
+    border-radius: var(--bubble-radius);
+    overflow: hidden;
+    width: var(--bubble-max-width);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .message-header {
+    padding: 0.5rem 1rem;
+    font-size: var(--text-xs);
+    font-weight: 500;
+  }
+
+  .message-body {
+    padding: 0.75rem 1rem;
+    font-size: var(--text-sm);
+  }
+
+  .user-header {
+    background: var(--color-ink-light);
+    color: var(--color-bg);
+  }
+
+  .user-body {
+    background: color-mix(
+      in srgb,
+      var(--color-ink-light) 90%,
+      var(--color-bg) 10%
+    );
+    color: var(--color-bg);
+  }
+
+  .assistant-header {
+    background: var(--color-bg-code);
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .assistant-body {
+    background: color-mix(
+      in srgb,
+      var(--color-bg-code) 90%,
+      var(--color-bg) 10%
+    );
+    color: var(--color-ink);
+  }
+
+  .system-header {
+    background: var(--color-bg-code);
+    color: var(--color-ink-light);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .system-body {
+    background: color-mix(
+      in srgb,
+      var(--color-bg-code) 90%,
+      var(--color-bg) 10%
+    );
+    color: var(--color-ink-light);
+    font-style: italic;
+  }
+
+  .message-image {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+  }
+
+  /* Ensure text colors respect dark mode */
+  .user-body :global(p),
+  .user-body :global(li),
+  .user-body :global(h1),
+  .user-body :global(h2),
+  .user-body :global(h3),
+  .user-body :global(h4),
+  .user-body :global(h5),
+  .user-body :global(h6) {
+    color: var(--color-bg);
+  }
+
+  .assistant-body :global(p),
+  .assistant-body :global(li),
+  .assistant-body :global(h1),
+  .assistant-body :global(h2),
+  .assistant-body :global(h3),
+  .assistant-body :global(h4),
+  .assistant-body :global(h5),
+  .assistant-body :global(h6) {
+    color: var(--color-ink);
+  }
+
+  .system-body :global(p),
+  .system-body :global(li),
+  .system-body :global(h1),
+  .system-body :global(h2),
+  .system-body :global(h3),
+  .system-body :global(h4),
+  .system-body :global(h5),
+  .system-body :global(h6) {
+    color: var(--color-ink-light);
+  }
+
+  /* Ensure links in bubbles have appropriate colors */
+  .user-body :global(a) {
+    color: var(--color-bg);
+    text-decoration: underline;
+  }
+
+  .assistant-body :global(a) {
+    color: var(--color-link);
+    text-decoration: underline;
+  }
+
+  .system-body :global(a) {
+    color: var(--color-ink-light);
+    text-decoration: underline;
+  }
+
+  /* Mobile styles */
+  @media (max-width: 640px) {
+    .chat-container {
+      --bubble-max-width: 100%;
+    }
+
+    .message-bubble {
+      width: 100%;
+    }
+  }
+</style>

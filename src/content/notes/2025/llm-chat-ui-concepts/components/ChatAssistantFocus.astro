@@ -1,0 +1,431 @@
+---
+import { Markdown } from "@astropub/md";
+
+interface ContentItem {
+  type: "text" | "image_url";
+  text?: string;
+  image_url?: {
+    url: string;
+  };
+}
+
+interface Message {
+  role: "system" | "user" | "assistant" | "function";
+  content: string | ContentItem[];
+  name?: string;
+  function_call?: {
+    name: string;
+    arguments: string;
+  };
+}
+
+interface Props {
+  messages: Message[];
+  model?: string;
+}
+
+// Define possible message pair types
+type MessagePair =
+  | { user: Message; assistant: Message }
+  | { system: Message }
+  | { user: Message }
+  | { assistant: Message }
+  | { function: Message };
+
+const { messages, model } = Astro.props;
+
+function getContent(content: string | ContentItem[]): {
+  text: string;
+  images: string[];
+} {
+  if (typeof content === "string") return { text: content, images: [] };
+
+  const images: string[] = [];
+  const text = content
+    .map((item) => {
+      if (item.type === "image_url" && item.image_url) {
+        images.push(item.image_url.url);
+        return "";
+      }
+      return item.text || "";
+    })
+    .join("");
+
+  return { text, images };
+}
+
+// Group messages into pairs of user and assistant messages
+const messagePairs: MessagePair[] = [];
+for (let i = 0; i < messages.length; i++) {
+  if (
+    messages[i].role === "user" &&
+    i + 1 < messages.length &&
+    messages[i + 1].role === "assistant"
+  ) {
+    messagePairs.push({
+      user: messages[i],
+      assistant: messages[i + 1],
+    });
+    i++; // Skip the next message as we've already paired it
+  } else if (
+    messages[i].role === "assistant" &&
+    i - 1 >= 0 &&
+    messages[i - 1].role === "user"
+  ) {
+    // Skip as this should have been handled in the previous iteration
+  } else {
+    // Handle unpaired messages (system messages or unpaired user/assistant)
+    messagePairs.push({
+      [messages[i].role]: messages[i],
+    } as MessagePair);
+  }
+}
+---
+
+<section class="chat-section">
+  <div class="chat-container">
+    {
+      messagePairs.map((pair, index) => (
+        <div
+          class={`message-pair ${index === 0 ? "first-pair" : ""} ${index === messagePairs.length - 1 ? "last-pair" : ""}`}
+        >
+          {"system" in pair && (
+            <div class="message system-message">
+              <div class="message-bubble system-bubble">
+                <div class="message-header system-header">
+                  <span>System</span>
+                </div>
+                <div class="message-body system-body">
+                  <Markdown of={getContent(pair.system.content).text} />
+                  {getContent(pair.system.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {"user" in pair && "assistant" in pair && (
+            <div class="conversation-pair">
+              <div class="message assistant-message">
+                <div class="message-bubble assistant-bubble">
+                  <div class="message-header assistant-header">
+                    <span>{model || "Assistant"}</span>
+                  </div>
+                  <div class="message-body assistant-body">
+                    <Markdown of={getContent(pair.assistant.content).text} />
+                    {getContent(pair.assistant.content).images.map((url) => (
+                      <img src={url} alt="" class="message-image" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div class="message user-message">
+                <div class="message-bubble user-bubble">
+                  <div class="message-header user-header">
+                    <span>User</span>
+                  </div>
+                  <div class="message-body user-body">
+                    <Markdown of={getContent(pair.user.content).text} />
+                    {getContent(pair.user.content).images.map((url) => (
+                      <img src={url} alt="" class="message-image" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {"user" in pair && !("assistant" in pair) && (
+            <div class="message user-message">
+              <div class="message-bubble user-bubble">
+                <div class="message-header user-header">
+                  <span>User</span>
+                </div>
+                <div class="message-body user-body">
+                  <Markdown of={getContent(pair.user.content).text} />
+                  {getContent(pair.user.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {"assistant" in pair && !("user" in pair) && (
+            <div class="message assistant-message">
+              <div class="message-bubble assistant-bubble">
+                <div class="message-header assistant-header">
+                  <span>{model || "Assistant"}</span>
+                </div>
+                <div class="message-body assistant-body">
+                  <Markdown of={getContent(pair.assistant.content).text} />
+                  {getContent(pair.assistant.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {"function" in pair && (
+            <div class="message function-message">
+              <div class="message-bubble function-bubble">
+                <div class="message-header function-header">
+                  <span>
+                    Function
+                    {pair.function.name ? `: ${pair.function.name}` : ""}
+                  </span>
+                </div>
+                <div class="message-body function-body">
+                  <Markdown of={getContent(pair.function.content).text} />
+                  {getContent(pair.function.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .chat-section {
+    --transition-speed: 300ms;
+  }
+
+  .chat-container {
+    --bubble-radius: 0.5rem;
+    --bubble-max-width: 90%;
+
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    font-family: var(--font-prose);
+    gap: 1.5rem;
+  }
+
+  .message-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .conversation-pair {
+    position: relative;
+  }
+
+  .message {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .message-bubble {
+    width: var(--bubble-max-width);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .message-header {
+    padding: 0.5rem 1rem;
+    font-size: var(--text-xs);
+    font-weight: 500;
+  }
+
+  .message-body {
+    padding: 0.75rem 1rem;
+    font-size: var(--text-sm);
+  }
+
+  /* User message styling */
+  .user-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition:
+      opacity var(--transition-speed),
+      transform var(--transition-speed);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .conversation-pair:hover .user-message {
+    opacity: 1;
+    transform: translateY(-100%);
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .user-header {
+    background: var(--color-ink-light);
+    color: var(--color-bg);
+    border-top-left-radius: var(--bubble-radius);
+    border-top-right-radius: var(--bubble-radius);
+  }
+
+  .user-body {
+    background: color-mix(
+      in srgb,
+      var(--color-ink-light) 90%,
+      var(--color-bg) 10%
+    );
+    color: var(--color-bg);
+    border-bottom-left-radius: var(--bubble-radius);
+    border-bottom-right-radius: var(--bubble-radius);
+  }
+
+  /* Assistant message styling */
+  .assistant-header {
+    background: var(--color-bg-code);
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border);
+    border-top-left-radius: var(--bubble-radius);
+    border-top-right-radius: var(--bubble-radius);
+  }
+
+  .assistant-body {
+    background: color-mix(
+      in srgb,
+      var(--color-bg-code) 90%,
+      var(--color-bg) 10%
+    );
+    color: var(--color-ink);
+    border-bottom-left-radius: var(--bubble-radius);
+    border-bottom-right-radius: var(--bubble-radius);
+  }
+
+  /* System message styling */
+  .system-header {
+    background: var(--color-bg-code);
+    color: var(--color-ink-light);
+    border-bottom: 1px solid var(--color-border);
+    border-top-left-radius: var(--bubble-radius);
+    border-top-right-radius: var(--bubble-radius);
+  }
+
+  .system-body {
+    background: color-mix(
+      in srgb,
+      var(--color-bg-code) 90%,
+      var(--color-bg) 10%
+    );
+    color: var(--color-ink-light);
+    font-style: italic;
+    border-bottom-left-radius: var(--bubble-radius);
+    border-bottom-right-radius: var(--bubble-radius);
+  }
+
+  /* Function message styling */
+  .function-header {
+    background: var(--color-bg-code);
+    color: var(--color-link);
+    border-bottom: 1px solid var(--color-border);
+    border-top-left-radius: var(--bubble-radius);
+    border-top-right-radius: var(--bubble-radius);
+  }
+
+  .function-body {
+    background: color-mix(
+      in srgb,
+      var(--color-bg-code) 90%,
+      var(--color-bg) 10%
+    );
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    border-bottom-left-radius: var(--bubble-radius);
+    border-bottom-right-radius: var(--bubble-radius);
+  }
+
+  .message-image {
+    margin-top: 0.5rem;
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+  }
+
+  /* Ensure text colors respect dark mode */
+  .user-body :global(p),
+  .user-body :global(li),
+  .user-body :global(h1),
+  .user-body :global(h2),
+  .user-body :global(h3),
+  .user-body :global(h4),
+  .user-body :global(h5),
+  .user-body :global(h6) {
+    color: var(--color-bg);
+  }
+
+  .assistant-body :global(p),
+  .assistant-body :global(li),
+  .assistant-body :global(h1),
+  .assistant-body :global(h2),
+  .assistant-body :global(h3),
+  .assistant-body :global(h4),
+  .assistant-body :global(h5),
+  .assistant-body :global(h6) {
+    color: var(--color-ink);
+  }
+
+  .system-body :global(p),
+  .system-body :global(li),
+  .system-body :global(h1),
+  .system-body :global(h2),
+  .system-body :global(h3),
+  .system-body :global(h4),
+  .system-body :global(h5),
+  .system-body :global(h6) {
+    color: var(--color-ink-light);
+  }
+
+  .function-body :global(p),
+  .function-body :global(li),
+  .function-body :global(h1),
+  .function-body :global(h2),
+  .function-body :global(h3),
+  .function-body :global(h4),
+  .function-body :global(h5),
+  .function-body :global(h6),
+  .function-body :global(pre),
+  .function-body :global(code) {
+    color: var(--color-ink);
+  }
+
+  /* Ensure links in bubbles have appropriate colors */
+  .user-body :global(a) {
+    color: var(--color-bg);
+    text-decoration: underline;
+  }
+
+  .assistant-body :global(a) {
+    color: var(--color-link);
+    text-decoration: underline;
+  }
+
+  .system-body :global(a) {
+    color: var(--color-ink-light);
+    text-decoration: underline;
+  }
+
+  .function-body :global(a) {
+    color: var(--color-link);
+    text-decoration: underline;
+  }
+
+  /* Mobile styles */
+  @media (max-width: 640px) {
+    .chat-container {
+      --bubble-max-width: 100%;
+    }
+
+    .message-bubble {
+      width: 100%;
+    }
+  }
+</style>

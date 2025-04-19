@@ -1,0 +1,176 @@
+---
+title: "LLM Chat UI Concepts"
+createdAt: 2025-04-13T20:22:24-04:00
+updatedAt: 2025-04-19T12:10:14-04:00
+description: A few concepts for LLM chat UIs
+location: NYC
+draft: false
+---
+
+import Chat from "@components/prose/Chat.astro";
+
+To write this post, I was going to take myself through some of the history of different chat interfaces.
+This is not that post.
+I was too impatient and decided to go in without any appreciation for prior art (beyond what I'm already aware of), because it seemed more fun at the time.
+
+## This site's current implementation
+
+My current UI for displaying an LLM conversation on this site looks like this.
+I'm going to assign identifiers to each of these UI concepts to make them easier to reference between descriptions.
+
+export const messages = [
+  {
+    role: "user",
+    content: "What's the best way to learn programming?"
+  },
+  {
+    role: "assistant",
+    content: "The best way to learn programming is by building projects that interest you. Start small, be consistent, and don't be afraid to make mistakes. Reading documentation and tutorials is helpful, but nothing beats hands-on experience."
+  },
+  {
+    role: "user",
+    content: "How much time should I spend coding each day?"
+  },
+  {
+    role: "assistant",
+    content: "Even 30 minutes of focused coding daily is better than occasional marathon sessions. Consistency is key. As you build the habit, you can gradually increase your time. Remember that regular practice, problem-solving, and reflection on what you've learned will help you progress steadily."
+  }
+];
+
+<Chat
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+## Top Bars
+
+Here is a version with the "user" or the assistant names in top bars.
+
+import ChatTopBar from "./components/ChatTopBar.astro";
+
+<ChatTopBar
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+## Continuous
+
+Here's another with the vertical gaps from [Top Bars](#top-bars) removed and the UI visually continuous with each message in a different color.
+
+import ChatContinuous from "./components/ChatContinuous.astro";
+
+<ChatContinuous
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+## Columns
+
+Let's sort of rotate [Continuous](#continuous) 90 degrees to the left then add the vertical labels turned 90 degrees left as well.
+The chat messages should each exist in a column to the left of their label.
+They are placed in order, next to each other from left to right.
+The message texts run top to bottom in each column.
+
+import ChatColumns from "./components/ChatColumns.astro";
+
+<ChatColumns
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+Not sure I really like it but it's _different_ from most things I've seen.
+
+## Assistant Focus
+
+Here's a version where the assistant's messages are shown prominently and the user's message only appears on mouse over of a particular assistant message.
+On mouse over, the element animates to reveal the user message for a given assistant message.
+This reads more like a write up you'd create as or after you've done a deep dive into a topic.
+The user questions elicit a sort of winding narrative response from the model.
+
+import ChatAssistantFocus from "./components/ChatAssistantFocus.astro";
+
+<ChatAssistantFocus
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+## LLM-designed
+
+Most of the above concepts are from my head, implemented by prompting an LLM.
+I was curious what would happen if I gave over some of the style decision making to Claude and Cursor.
+Here are a few of the results.
+
+
+## Code Editor
+import ChatCodeEditor from "./components/ChatCodeEditor.astro";
+
+<ChatCodeEditor
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+
+Claude made that one, when shown all my examples and prompted to create its own with no specific instructions as to how.
+It wanted the development to be in a comfortable and familiar environment.
+
+## Notebook
+
+import ChatNotebook from "./components/ChatNotebook.astro";
+
+<ChatNotebook
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+Claude made this when prompted to create its own novel approach that should add value for the reader.
+
+## Timeline
+
+import ChatTimeline from "./components/ChatTimeline.astro";
+
+<ChatTimeline
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+Claude made this when prompted to create its own novel approach that should add value for the reader and still be minimal and clear.
+
+Of all the concepts Claude implemented, I liked the [Timeline](#timeline) the best.
+Most of the time, the model seemed to focus more on the styling of the UI than the specific presentation of the data.
+I wanted to push the agent to focus on clear and simple data presentation.
+
+export const design_message = [
+  {
+    role: "user",
+    content: "Take a look at @ChatAssistantFocus.astro @ChatColumns.astro @ChatTimeline.astro @ChatColumnsTopBar.astro @ChatContinuous.astro . These are all different React components for a chat. Carefully consider your strategy and come up with a simple, creative way to present chat data to a user in a surprising, but straightforward and effective way. Less is more. Write your results to @components then add the component to @index.mdx"
+  },
+  {
+    role: "assistant",
+    content: "The bubble stream presents messages in a familiar chat interface, but with a few key improvements: bubbles size themselves based on content length, have a subtle hover effect, and work with keyboard navigation for accessibility."
+  }
+]
+
+<Chat
+  model="claude-3-7-sonnet"
+  messages={design_message}
+/>
+
+## Bubble Stream
+
+import ChatBubbleStream from "./components/ChatBubbleStream.astro";
+
+<ChatBubbleStream
+  model="claude-3-7-sonnet"
+  messages={messages}
+/>
+
+## Takeaways
+
+This experiment reinforced my sense that if I outsource parts of design or implementation that I care about to a model, I often don't really like the results.
+An LLM can't quite understand what I personally mean by "clean", "minimal", and "novel".
+In practice these are directional concepts that mean something different to everyone.
+To get a model to output a design that I like, I need to provide more specifics for the model to follow.
+
+In the case of the first few designs that I described and the model implemented, the results are quite representative of my vision.
+The model is good at following instructions.
+Its taste is not always aligned with mine.
