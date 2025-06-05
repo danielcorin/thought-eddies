@@ -1,6 +1,6 @@
 ---
-import Layout from "@layouts/Layout.astro";
 import Navigation from "@components/layout/Navigation.astro";
+import Layout from "@layouts/Layout.astro";
 ---
 
 <Layout title="404: Not Found">
@@ -23,8 +23,8 @@ import Navigation from "@components/layout/Navigation.astro";
 </Layout>
 
 <script>
-    import { tsParticles } from "tsparticles-engine";
     import { loadFull } from "tsparticles";
+    import { tsParticles } from "tsparticles-engine";
 
     const baseOptions = {
         background: {},
@@ -135,7 +135,7 @@ import Navigation from "@components/layout/Navigation.astro";
         await loadFull(tsParticles);
         particlesInstance = await tsParticles.load(
             "tsparticles",
-            getParticlesConfig(),
+            getParticlesConfig() as any,
         );
     }
 
@@ -163,9 +163,11 @@ import Navigation from "@components/layout/Navigation.astro";
 
         // Update existing particles
         if (particlesInstance.particles) {
-            particlesInstance.particles.array.forEach((particle) => {
-                particle.color.value = colors[0];
-            });
+            particlesInstance.particles.array.forEach(
+                (particle: { color: { value: string } }) => {
+                    particle.color.value = colors[0];
+                },
+            );
         }
     }
 

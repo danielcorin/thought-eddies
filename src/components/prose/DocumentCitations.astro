@@ -88,13 +88,22 @@ function highlightCitations(citations: QAPair["citations"], content: string) {
 }
 
 const renderedVersions = await Promise.all(
-    qaPairs.map(async (qa) => {
-        const highlightedMarkdown = highlightCitations(
-            qa.citations,
-            rawMarkdown,
-        );
-        return await markdown(highlightedMarkdown);
-    }),
+    qaPairs.map(
+        async (qa: {
+            citations: {
+                text: string;
+                start_index: number;
+                end_index: number;
+                document: string;
+            }[];
+        }) => {
+            const highlightedMarkdown = highlightCitations(
+                qa.citations,
+                rawMarkdown,
+            );
+            return await markdown(highlightedMarkdown);
+        },
+    ),
 );
 
 const initialContent = await markdown(rawMarkdown);
