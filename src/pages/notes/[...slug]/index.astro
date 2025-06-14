@@ -15,16 +15,21 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props as { post: CollectionEntry<"notes"> };
 const { Content, headings } = await render(post);
+const ogImage = `${Astro.site}notes/${post.id}/og.png`;
 ---
 
 {
   post.data.zoomLevels.length > 0 ? (
-    <ZoomableNoteLayout frontmatter={post.data} Content={Content}>
+    <ZoomableNoteLayout
+      frontmatter={post.data}
+      Content={Content}
+      ogImage={ogImage}
+    >
       <TableOfContents title={post.data.title} headings={headings} />
       <Content />
     </ZoomableNoteLayout>
   ) : (
-    <NoteLayout frontmatter={post.data}>
+    <NoteLayout frontmatter={post.data} ogImage={ogImage}>
       <TableOfContents title={post.data.title} headings={headings} />
       <Content />
     </NoteLayout>

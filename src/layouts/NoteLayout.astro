@@ -3,11 +3,11 @@ import Navigation from "@components/layout/Navigation.astro";
 import { Icon } from "astro-icon/components";
 import Layout from "./Layout.astro";
 
-const { frontmatter } = Astro.props;
+const { frontmatter, ogImage } = Astro.props;
 const theme = "notes";
 ---
 
-<Layout theme={theme} title={frontmatter.title}>
+<Layout theme={theme} title={frontmatter.title} ogImage={ogImage}>
   <Navigation selected={theme} />
   <article>
     <header>

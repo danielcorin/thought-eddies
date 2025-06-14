@@ -27,9 +27,10 @@ const yearNotes = notes
             new Date(note.data.createdAt).getFullYear().toString() === year,
     )
     .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
+const ogImage = `${Astro.site}notes/${year}/og.png`;
 ---
 
-<Layout theme={collection} title={`Notes created in ${year}`}>
+<Layout theme={collection} title={`Notes created in ${year}`} ogImage={ogImage}>
     <Navigation selected={collection} />
     <main>
         <h1 class="page-title">

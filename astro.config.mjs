@@ -12,6 +12,10 @@ import sitemap from "@astrojs/sitemap";
 // https://astro.build/config
 export default defineConfig({
     site: 'https://www.thoughteddies.com',
+    server: {
+        host: true,
+        allowedHosts: ['local.danielcorin.com']
+    },
     integrations: [react(), mdx({
         syntaxHighlight: 'shiki',
         shikiConfig: {

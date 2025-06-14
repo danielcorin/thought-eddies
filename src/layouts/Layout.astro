@@ -9,9 +9,10 @@ import ScrollToTop from "@components/layout/ScrollToTop.astro";
 interface Props {
 	theme?: "posts" | "notes";
 	title?: string;
+	ogImage?: string;
 }
 
-const { theme, title = "" } = Astro.props;
+const { theme, title = "", ogImage } = Astro.props;
 const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 ---
 
@@ -53,7 +54,7 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 				basic: {
 					title: "Thought Eddies",
 					type: "website",
-					image: "/og-image.png",
+					image: ogImage || "/og-image.png",
 				},
 			}}
 		/>
