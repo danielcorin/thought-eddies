@@ -128,10 +128,11 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                                                 "linear-gradient(135deg, #cccccc 0%, #ffffff 30%, #e8e8e8 70%, #cccccc 100%)",
                                             backgroundClip: "text",
                                             color: "transparent",
-                                            lineHeight: 1.1,
+                                            lineHeight: 1.25,
                                             letterSpacing: "-0.02em",
                                             textShadow:
                                                 "0 0 40px rgba(204,204,204,0.2)",
+                                            paddingBottom: "12px",
                                         },
                                         children: content.title,
                                     },
