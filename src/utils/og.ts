@@ -47,8 +47,10 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                     height: "100%",
                     alignItems: "center",
                     justifyContent: "center",
-                    background:
-                        "linear-gradient(135deg, #1e293b 0%, #475569 100%)",
+                    background: "#1c1b17",
+                    backgroundImage:
+                        "radial-gradient(circle at 1px 1px, rgba(74,74,74,0.6) 1px, transparent 0)",
+                    backgroundSize: "20px 20px",
                     color: "white",
                     fontFamily: "Inter",
                     padding: "48px",
@@ -96,7 +98,7 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                                 fontSize: content.title === "Thought Eddies"
                                     ? "24px"
                                     : "20px",
-                                opacity: 0.75,
+                                color: "#cccccc",
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "16px",
