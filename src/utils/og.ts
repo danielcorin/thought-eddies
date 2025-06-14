@@ -19,6 +19,16 @@ async function loadFonts() {
         },
         {
             name: "Inter",
+            data: await fs.readFile(path.join(fontPath, "Inter-Medium.ttf")),
+            weight: 500,
+        },
+        {
+            name: "Inter",
+            data: await fs.readFile(path.join(fontPath, "Inter-SemiBold.ttf")),
+            weight: 600,
+        },
+        {
+            name: "Inter",
             data: await fs.readFile(path.join(fontPath, "Inter-Bold.ttf")),
             weight: 700,
         },
@@ -36,6 +46,7 @@ export interface OGContent {
 export async function generateOGImage(content: OGContent): Promise<Response> {
     try {
         const fonts = await loadFonts();
+        const isMainPage = content.title === "Thought Eddies";
 
         const element = {
             type: "div",
@@ -47,88 +58,215 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                     height: "100%",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: "#1c1b17",
-                    backgroundImage:
-                        "radial-gradient(circle at 1px 1px, rgba(74,74,74,0.6) 1px, transparent 0)",
-                    backgroundSize: "20px 20px",
-                    color: "white",
+                    background:
+                        "linear-gradient(135deg, #1c1b17 0%, #2a2620 50%, #1a1814 100%)",
+                    position: "relative",
                     fontFamily: "Inter",
-                    padding: "48px",
                 },
                 children: [
-                    {
-                        type: "h1",
-                        props: {
-                            style: {
-                                fontSize: content.title === "Thought Eddies"
-                                    ? "72px"
-                                    : "64px",
-                                fontWeight: 700,
-                                margin: content.title === "Thought Eddies"
-                                    ? "0 0 32px 0"
-                                    : "0 0 24px 0",
-                                textAlign: "center",
-                                lineHeight: 1.1,
-                            },
-                            children: content.title,
-                        },
-                    },
-                    content.description
-                        ? {
-                            type: "p",
-                            props: {
-                                style: {
-                                    fontSize: content.title === "Thought Eddies"
-                                        ? "36px"
-                                        : "32px",
-                                    margin: content.title === "Thought Eddies"
-                                        ? "0 0 32px 0"
-                                        : "0 0 24px 0",
-                                    opacity: 0.9,
-                                    textAlign: "center",
-                                },
-                                children: content.description,
-                            },
-                        }
-                        : null,
+                    // Background overlay pattern
                     {
                         type: "div",
                         props: {
                             style: {
-                                fontSize: content.title === "Thought Eddies"
-                                    ? "24px"
-                                    : "20px",
-                                color: "#cccccc",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "16px",
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                background:
+                                    "radial-gradient(circle at 20% 80%, rgba(77, 171, 247, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(204, 204, 204, 0.08) 0%, transparent 50%)",
+                                opacity: 0.6,
                             },
-                            children: content.subtitle
-                                ? content.subtitle.split(" • ").map((
-                                    part,
-                                    index,
-                                    array,
-                                ) => [
-                                    {
-                                        type: "span",
-                                        props: { children: part },
-                                    },
-                                    index < array.length - 1
-                                        ? {
-                                            type: "span",
-                                            props: { children: "•" },
-                                        }
-                                        : null,
-                                ]).flat().filter(Boolean)
-                                : [
-                                    {
-                                        type: "span",
-                                        props: { children: "Thought Eddies" },
-                                    },
-                                ],
                         },
                     },
-                ].filter(Boolean),
+                    // Subtle grid pattern
+                    {
+                        type: "div",
+                        props: {
+                            style: {
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                backgroundImage:
+                                    "linear-gradient(rgba(74,74,74,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(74,74,74,0.2) 1px, transparent 1px)",
+                                backgroundSize: "32px 32px",
+                            },
+                        },
+                    },
+                    // Main content container
+                    {
+                        type: "div",
+                        props: {
+                            style: {
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: isMainPage ? "80px 60px" : "60px 60px",
+                                maxWidth: "1000px",
+                                textAlign: "center",
+                                position: "relative",
+                                zIndex: 1,
+                            },
+                            children: [
+                                // Main title
+                                {
+                                    type: "h1",
+                                    props: {
+                                        style: {
+                                            fontSize: isMainPage
+                                                ? "84px"
+                                                : "68px",
+                                            fontWeight: 700,
+                                            margin: "0 0 " +
+                                                (isMainPage ? "32px" : "24px") +
+                                                " 0",
+                                            background:
+                                                "linear-gradient(135deg, #cccccc 0%, #ffffff 30%, #e8e8e8 70%, #cccccc 100%)",
+                                            backgroundClip: "text",
+                                            color: "transparent",
+                                            lineHeight: 1.1,
+                                            letterSpacing: "-0.02em",
+                                            textShadow:
+                                                "0 0 40px rgba(204,204,204,0.2)",
+                                        },
+                                        children: content.title,
+                                    },
+                                },
+                                // Description
+                                content.description
+                                    ? {
+                                        type: "p",
+                                        props: {
+                                            style: {
+                                                fontSize: isMainPage
+                                                    ? "32px"
+                                                    : "28px",
+                                                fontWeight: 400,
+                                                margin: "0 0 " + (isMainPage
+                                                    ? "40px"
+                                                    : "32px") +
+                                                    " 0",
+                                                color: "#a8a8a8",
+                                                lineHeight: 1.4,
+                                                letterSpacing: "-0.01em",
+                                                maxWidth: "800px",
+                                            },
+                                            children: content.description,
+                                        },
+                                    }
+                                    : null,
+                                // Subtitle/metadata bar
+                                {
+                                    type: "div",
+                                    props: {
+                                        style: {
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            gap: "24px",
+                                            padding: "16px 32px",
+                                            background:
+                                                "rgba(204, 204, 204, 0.08)",
+                                            backdropFilter: "blur(12px)",
+                                            borderRadius: "16px",
+                                            border:
+                                                "1px solid rgba(74, 74, 74, 0.4)",
+                                            boxShadow:
+                                                "0 8px 32px rgba(0, 0, 0, 0.4)",
+                                        },
+                                        children: content.subtitle
+                                            ? content.subtitle.split(" • ").map(
+                                                (part, index, array) => [
+                                                    {
+                                                        type: "span",
+                                                        props: {
+                                                            style: {
+                                                                fontSize:
+                                                                    isMainPage
+                                                                        ? "20px"
+                                                                        : "18px",
+                                                                fontWeight: 500,
+                                                                color:
+                                                                    "#cccccc",
+                                                            },
+                                                            children: part,
+                                                        },
+                                                    },
+                                                    index < array.length - 1
+                                                        ? {
+                                                            type: "span",
+                                                            props: {
+                                                                style: {
+                                                                    color:
+                                                                        "#4a4a4a",
+                                                                    fontSize:
+                                                                        "16px",
+                                                                },
+                                                                children: "•",
+                                                            },
+                                                        }
+                                                        : null,
+                                                ],
+                                            ).flat().filter(Boolean)
+                                            : [
+                                                {
+                                                    type: "span",
+                                                    props: {
+                                                        style: {
+                                                            fontSize: isMainPage
+                                                                ? "20px"
+                                                                : "18px",
+                                                            fontWeight: 600,
+                                                            color: "#cccccc",
+                                                        },
+                                                        children:
+                                                            "Thought Eddies",
+                                                    },
+                                                },
+                                            ],
+                                    },
+                                },
+                            ].filter(Boolean),
+                        },
+                    },
+                    // Decorative elements
+                    {
+                        type: "div",
+                        props: {
+                            style: {
+                                position: "absolute",
+                                top: "40px",
+                                right: "40px",
+                                width: "120px",
+                                height: "120px",
+                                background:
+                                    "linear-gradient(135deg, rgba(77, 171, 247, 0.15) 0%, rgba(77, 171, 247, 0.08) 100%)",
+                                borderRadius: "50%",
+                                filter: "blur(40px)",
+                            },
+                        },
+                    },
+                    {
+                        type: "div",
+                        props: {
+                            style: {
+                                position: "absolute",
+                                bottom: "40px",
+                                left: "40px",
+                                width: "80px",
+                                height: "80px",
+                                background:
+                                    "linear-gradient(135deg, rgba(204, 204, 204, 0.12) 0%, rgba(168, 168, 168, 0.08) 100%)",
+                                borderRadius: "50%",
+                                filter: "blur(30px)",
+                            },
+                        },
+                    },
+                ],
             },
         };
 
@@ -139,7 +277,7 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
         });
 
         const png = await sharp(Buffer.from(svg))
-            .png({ quality: 80, compressionLevel: 6 })
+            .png({ quality: 90, compressionLevel: 6 })
             .toBuffer();
 
         return new Response(png, {
