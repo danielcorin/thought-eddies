@@ -80,7 +80,7 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                             },
                         },
                     },
-                    // Subtle grid pattern
+                    // Subtle dot pattern (matching site CSS)
                     {
                         type: "div",
                         props: {
@@ -91,8 +91,8 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                                 right: 0,
                                 bottom: 0,
                                 backgroundImage:
-                                    "linear-gradient(rgba(74,74,74,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(74,74,74,0.2) 1px, transparent 1px)",
-                                backgroundSize: "32px 32px",
+                                    "radial-gradient(rgba(74,74,74,0.8) 2px, transparent 2px)",
+                                backgroundSize: "24px 24px",
                             },
                         },
                     },
