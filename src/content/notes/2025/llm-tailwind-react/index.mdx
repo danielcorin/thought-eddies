@@ -112,7 +112,7 @@ For simplicity, let's send both files to the LLM and make the same ask (I'll @-r
 
 Cursor outputs code like
 
-```tsx
+```tsx showLineNumbers=false
 // ... existing imports ...
 import { eachDayOfInterval, endOfMonth, format, startOfMonth, isSameDay } from 'date-fns'
 
@@ -122,7 +122,7 @@ export default function Calendar() {
 
 and
 
-```css
+```css showLineNumbers=false
 /* ... existing styles ... */
 
 .calendar {
@@ -137,7 +137,7 @@ so now I manually need to apply these changes (Cursor Pro has a model that suppo
 
 Oh, and it looks like the model actually introduced new code using dependencies we don't have installed
 
-```tsx
+```tsx showLineNumbers=false
 import {
   eachDayOfInterval,
   endOfMonth,
@@ -194,7 +194,7 @@ Why?
 
 The React component with in-file CSS styles has the following structure
 
-```tsx
+```tsx showLineNumbers=false
 import { useMemo, useState } from "react";
 
 // other imports
@@ -228,7 +228,7 @@ In my experience using models to generate code, the less thinking you do or the 
 
 Here is the diff between the two versions of the component with CSS styles in-file:
 
-```diff
+```diff showLineNumbers=false
 diff --git a/src/content/notes/2025/llm-tailwind-react/components/CssCalendar.v1.tsx b/src/content/notes/2025/llm-tailwind-react/components/CssCalendar.v2.tsx
 index 2b34248..e177c5a 100644
 --- a/src/content/notes/2025/llm-tailwind-react/components/CssCalendar.v1.tsx
@@ -429,7 +429,7 @@ index 2b34248..e177c5a 100644
 
 Compare these two distinct areas of change to the changes in the versions using Tailwind:
 
-```diff
+```diff showLineNumbers=false
 diff --git a/src/content/notes/2025/llm-tailwind-react/components/TailwindCalendar.v1.tsx b/src/content/notes/2025/llm-tailwind-react/components/TailwindCalendar.v2.tsx
 index 16574eb..d4767ff 100644
 --- a/src/content/notes/2025/llm-tailwind-react/components/TailwindCalendar.v1.tsx
