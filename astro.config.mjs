@@ -9,6 +9,8 @@ import markdownIntegration from '@astropub/md'
 
 import sitemap from "@astrojs/sitemap";
 
+import expressiveCode from "astro-expressive-code";
+
 // https://astro.build/config
 export default defineConfig({
     site: 'https://www.thoughteddies.com',
@@ -16,13 +18,10 @@ export default defineConfig({
         host: true,
         allowedHosts: ['local.danielcorin.com']
     },
-    integrations: [react(), mdx({
-        syntaxHighlight: 'shiki',
-        shikiConfig: {
-            theme: 'monokai',
-            wrap: true
-        },
-    }), tailwind(), icon(), sitemap(), markdownIntegration()],
+    integrations: [
+        react(), expressiveCode(), mdx(), tailwind(), icon(), sitemap(),
+        markdownIntegration()
+    ],
     markdown: {
         shikiConfig: {
             theme: "monokai",
