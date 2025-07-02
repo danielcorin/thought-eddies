@@ -97,27 +97,26 @@ import Layout from "@layouts/Layout.astro";
         },
     };
 
-    const rootStyles = getComputedStyle(document.documentElement);
-    const getColor = (variable: string) =>
-        rootStyles.getPropertyValue(variable).trim();
-
     function getParticlesConfig() {
-        const isLight = document.body.classList.contains("light");
-        const colors = [
-            getColor(isLight ? "--color-border" : "--color-border-dark"),
-        ];
-
+        const isDark = document.documentElement.classList.contains("dark");
+        const rootStyles = getComputedStyle(document.documentElement);
+        const inkColor = rootStyles.getPropertyValue("--color-ink").trim();
+        
         return {
             ...baseOptions,
             particles: {
                 ...baseOptions.particles,
                 color: {
-                    value: colors,
+                    value: inkColor,
+                },
+                opacity: {
+                    value: isDark ? 0.5 : 0.8,
                 },
                 links: {
                     ...baseOptions.particles.links,
+                    opacity: isDark ? 0.4 : 0.6,
                     color: {
-                        value: colors,
+                        value: inkColor,
                         animation: {
                             enable: true,
                             speed: 30,
@@ -147,43 +146,25 @@ import Layout from "@layouts/Layout.astro";
     }
 
     // Theme change handlers
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    function updateTheme() {
-        if (!particlesInstance) return;
-
-        const isLight = document.body.classList.contains("light");
-        const colors = [
-            getColor(isLight ? "--color-border-dark" : "--color-border"),
-        ];
-
-        // Update options for new particles
-        particlesInstance.options.particles.color.value = colors;
-        particlesInstance.options.particles.links.color.value = colors;
-
-        // Update existing particles
-        if (particlesInstance.particles) {
-            particlesInstance.particles.array.forEach(
-                (particle: { color: { value: string } }) => {
-                    particle.color.value = colors[0];
-                },
-            );
+    async function recreateParticles() {
+        if (particlesInstance) {
+            // Completely destroy current instance
+            await particlesInstance.destroy();
+            particlesInstance = null;
         }
+        
+        // Recreate with new theme
+        await loadFull(tsParticles);
+        particlesInstance = await tsParticles.load(
+            "tsparticles",
+            getParticlesConfig() as any,
+        );
     }
 
-    mediaQuery.addEventListener("change", updateTheme);
+    // Listen for custom theme change event
+    window.addEventListener("themeChanged", recreateParticles);
 
-    // Manual theme toggle observer
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.attributeName === "class") {
-                updateTheme();
-            }
-        });
-    });
-
-    observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ["class"],
-    });
+    // Also listen to system preference changes
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.addEventListener("change", recreateParticles);
 </script>

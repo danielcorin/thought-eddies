@@ -13,6 +13,11 @@ import { Icon } from "astro-icon/components";
         localStorage.setItem("theme", isDark ? "dark" : "light");
         sunWrapper?.classList.toggle("hidden", isDark);
         moonWrapper?.classList.toggle("hidden", !isDark);
+        
+        // Dispatch custom event for other components to listen to
+        window.dispatchEvent(new CustomEvent("themeChanged", { 
+            detail: { isDark } 
+        }));
     };
 
     themeToggle?.addEventListener("click", () => {
