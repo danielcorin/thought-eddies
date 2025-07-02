@@ -1,0 +1,40 @@
+---
+import { Code } from "astro-expressive-code/components";
+
+interface Props {
+    code: string;
+    lang?: string;
+    title?: string;
+    collapsed?: boolean;
+    mobileLineNumbers?: boolean;
+}
+
+const {
+    code,
+    lang = "tsx",
+    title,
+    collapsed = true,
+    mobileLineNumbers = false,
+} = Astro.props;
+
+const baseMetaParts = [];
+if (collapsed) baseMetaParts.push("collapse={1-999}");
+
+const desktopMeta = baseMetaParts.join(" ") || undefined;
+const mobileMeta = mobileLineNumbers
+    ? desktopMeta
+    : [...baseMetaParts, "showLineNumbers=false"].join(" ") ||
+      "showLineNumbers=false";
+---
+
+<div class="mt-4">
+    <!-- Desktop version with line numbers -->
+    <div class="hidden md:block">
+        <Code code={code} lang={lang} meta={desktopMeta} title={title} />
+    </div>
+
+    <!-- Mobile version without line numbers (unless mobileLineNumbers=true) -->
+    <div class="block md:hidden">
+        <Code code={code} lang={lang} meta={mobileMeta} title={title} />
+    </div>
+</div>

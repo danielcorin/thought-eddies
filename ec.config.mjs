@@ -5,4 +5,14 @@ import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-s
 export default defineEcConfig({
     plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
     themes: ['monokai'],
+    defaultProps: {
+        showLineNumbers: false,
+    },
+    styleOverrides: {
+        collapsibleSections: {
+            closedBackgroundColor: 'var(--color-bg-code)',
+            closedBorderColor: 'var(--color-border)',
+            closedTextColor: 'var(--color-ink-light)',
+        },
+    },
 })

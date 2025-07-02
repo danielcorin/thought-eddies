@@ -9,7 +9,7 @@ draft: false
 
 import Alert from "@components/prose/Alert.astro";
 import Chat from "@components/prose/Chat.astro";
-import CodeToggle from "@components/prose/CodeToggle.astro";
+import CodeBlock from "@components/prose/CodeBlock.astro";
 import { Image } from "astro:assets";
 
 If you've experimented with [Claude Artifacts](https://support.anthropic.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them) or [v0.dev](https://v0.dev/), maybe you've been delighted (as I have) that the language model can conjure a UI for an idea you describe.
@@ -52,9 +52,13 @@ Given the following prompt, here's what `claude-3-5-sonnet-20241022` generates i
 import { default as TailwindCalendarV1 } from "./components/TailwindCalendar.v1";
 import TailwindCalendarV1Source from "./components/TailwindCalendar.v1?raw";
 
-<CodeToggle source={TailwindCalendarV1Source}>
-  <TailwindCalendarV1 client:load />
-</CodeToggle>
+<TailwindCalendarV1 client:load />
+
+<CodeBlock
+  code={TailwindCalendarV1Source}
+  lang="tsx"
+  title="TailwindCalendar.v1.tsx"
+/>
 
 <Chat
   model="claude-3-5-sonnet-20241022"
@@ -69,9 +73,13 @@ import TailwindCalendarV1Source from "./components/TailwindCalendar.v1?raw";
 import { default as ReactCalendarV1 } from "./components/ReactCalendar.v1";
 import ReactCalendarV1Source from "./components/ReactCalendar.v1?raw";
 
-<CodeToggle source={ReactCalendarV1Source}>
-  <ReactCalendarV1 client:load />
-</CodeToggle>
+<ReactCalendarV1 client:load />
+
+<CodeBlock
+  code={ReactCalendarV1Source}
+  lang="tsx"
+  title="ReactCalendar.v1.tsx"
+/>
 
 Not much difference between these two from the user's perspective.
 Pretty straightforward LLM UI output with lots of opportunities for improvement.
@@ -97,9 +105,13 @@ Let's add a calendar component so we can see the number of tasks that have been 
 import { default as TailwindCalendarV2 } from "./components/TailwindCalendar.v2";
 import TailwindCalendarV2Source from "./components/TailwindCalendar.v2?raw";
 
-<CodeToggle source={TailwindCalendarV2Source}>
-  <TailwindCalendarV2 client:load />
-</CodeToggle>
+<TailwindCalendarV2 client:load />
+
+<CodeBlock
+  code={TailwindCalendarV2Source}
+  lang="tsx"
+  title="TailwindCalendar.v2.tsx"
+/>
 
 ## The Multi-File Challenge
 
@@ -163,9 +175,13 @@ Let's put all the CSS styles in the same file then compare what it's like to ite
 import { default as CssCalendarV1 } from "./components/CssCalendar.v1";
 import CssCalendarV1Source from "./components/CssCalendar.v1?raw";
 
-<CodeToggle source={CssCalendarV1Source}>
-  <CssCalendarV1 client:load />
-</CodeToggle>
+<CssCalendarV1 client:load />
+
+<CodeBlock
+  code={CssCalendarV1Source}
+  lang="tsx"
+  title="CssCalendar.v1.tsx"
+/>
 
 Now, let's transform that single file with the second prompt
 
@@ -181,9 +197,13 @@ Now, let's transform that single file with the second prompt
 import { default as CssCalendarV2 } from "./components/CssCalendar.v2";
 import CssCalendarV2Source from "./components/CssCalendar.v2?raw";
 
-<CodeToggle source={CssCalendarV2Source}>
-  <CssCalendarV2 client:load />
-</CodeToggle>
+<CssCalendarV2 client:load />
+
+<CodeBlock
+  code={CssCalendarV2Source}
+  lang="tsx"
+  title="CssCalendar.v2.tsx"
+/>
 
 Not bad!
 So what am I complaining about?
