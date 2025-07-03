@@ -3,6 +3,7 @@ import { SEO } from "astro-seo";
 import "@styles/theme.css";
 import "@styles/base.css";
 import Footer from "@components/layout/Footer.astro";
+import NavigationShortcuts from "@components/layout/NavigationShortcuts.astro";
 import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
 
@@ -69,6 +70,7 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 			<Footer />
 		</main>
 		<ScrollToTop />
+		<NavigationShortcuts />
 		<script
 			data-goatcounter="https://thought-eddies.goatcounter.com/count"
 			async
