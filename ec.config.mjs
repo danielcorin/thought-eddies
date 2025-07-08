@@ -9,10 +9,15 @@ export default defineEcConfig({
         showLineNumbers: false,
     },
     styleOverrides: {
+        frames: {
+            tooltipSuccessForeground: 'var(--color-ink-light)',
+            tooltipSuccessBackground: 'var(--color-bg)',
+        },
         collapsibleSections: {
             closedBackgroundColor: 'var(--color-bg-code)',
             closedBorderColor: 'var(--color-border)',
             closedTextColor: 'var(--color-ink-light)',
         },
+        codeBackground: 'var(--color-bg-code)',
     },
 })

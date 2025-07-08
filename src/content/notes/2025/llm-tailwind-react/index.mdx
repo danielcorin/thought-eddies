@@ -248,27 +248,27 @@ In my experience using models to generate code, the less thinking you do or the 
 
 Here is the diff between the two versions of the component with CSS styles in-file:
 
-```diff showLineNumbers=false
+```tsx ins={8} ins={20} ins={29-30} ins={38-60} ins={67} ins={76-77} ins={85-109} ins={115-120} ins={139-172} ins={175} ins={184-193} del={7} del={19} del={28} del={75} del={128-138} del={174} del={177-183}
 diff --git a/src/content/notes/2025/llm-tailwind-react/components/CssCalendar.v1.tsx b/src/content/notes/2025/llm-tailwind-react/components/CssCalendar.v2.tsx
 index 2b34248..e177c5a 100644
 --- a/src/content/notes/2025/llm-tailwind-react/components/CssCalendar.v1.tsx
 +++ b/src/content/notes/2025/llm-tailwind-react/components/CssCalendar.v2.tsx
 @@ -1,15 +1,16 @@
  import { Circle, CheckCircle2, Square, XCircle } from 'lucide-react'
--import { useState } from 'react'
-+import { useState, useMemo } from 'react'
+ import { useState } from 'react'
+ import { useState, useMemo } from 'react'
 
  type Task = {
      id: string
      text: string
      status: 'todo' | 'done' | 'migrated' | 'cancelled'
-+    date: string
+     date: string
  }
 
  const styles = {
      container: {
--        maxWidth: '600px',
-+        maxWidth: '800px',
+         maxWidth: '600px',
+         maxWidth: '800px',
          margin: '0 auto',
          padding: '2rem',
          backgroundColor: 'white',
@@ -276,9 +276,9 @@ index 2b34248..e177c5a 100644
      taskList: {
          display: 'flex',
          flexDirection: 'column' as const,
--        gap: '0.5rem'
-+        gap: '0.5rem',
-+        marginBottom: '2rem'
+         gap: '0.5rem'
+         gap: '0.5rem',
+         marginBottom: '2rem'
      },
      task: {
          display: 'flex',
@@ -286,36 +286,36 @@ index 2b34248..e177c5a 100644
          cursor: 'pointer',
          display: 'flex',
          alignItems: 'center'
-+    },
-+    calendar: {
-+        display: 'grid',
-+        gridTemplateColumns: 'repeat(7, 1fr)',
-+        gap: '4px',
-+        padding: '1rem'
-+    },
-+    calendarDay: {
-+        padding: '0.5rem',
-+        border: '1px solid #eee',
-+        borderRadius: '4px',
-+        minHeight: '80px'
-+    },
-+    dayHeader: {
-+        fontSize: '0.875rem',
-+        marginBottom: '0.5rem',
-+        color: '#666'
-+    },
-+    stats: {
-+        fontSize: '0.75rem',
-+        display: 'flex',
-+        flexDirection: 'column' as const,
-+        gap: '2px'
+     },
+     calendar: {
+         display: 'grid',
+         gridTemplateColumns: 'repeat(7, 1fr)',
+         gap: '4px',
+         padding: '1rem'
+     },
+     calendarDay: {
+         padding: '0.5rem',
+         border: '1px solid #eee',
+         borderRadius: '4px',
+         minHeight: '80px'
+     },
+     dayHeader: {
+         fontSize: '0.875rem',
+         marginBottom: '0.5rem',
+         color: '#666'
+     },
+     stats: {
+         fontSize: '0.75rem',
+         display: 'flex',
+         flexDirection: 'column' as const,
+         gap: '2px'
      }
  }
 
  export default function Calendar() {
      const [tasks, setTasks] = useState<Task[]>([])
      const [newTask, setNewTask] = useState('')
-+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
 
      const addTask = () => {
          if (!newTask.trim()) return
@@ -323,9 +323,9 @@ index 2b34248..e177c5a 100644
          setTasks(prev => [...prev, {
              id: crypto.randomUUID(),
              text: newTask,
--            status: 'todo'
-+            status: 'todo',
-+            date: selectedDate
+             status: 'todo'
+             status: 'todo',
+             date: selectedDate
          }])
          setNewTask('')
      }
@@ -333,42 +333,42 @@ index 2b34248..e177c5a 100644
          }
      }
 
-+    const calendarDays = useMemo(() => {
-+        const today = new Date()
-+        const start = new Date(today.getFullYear(), today.getMonth(), 1)
-+        const end = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-+        const days = []
-+
-+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-+            days.push(new Date(d))
-+        }
-+
-+        return days
-+    }, [])
-+
-+    const getTaskStats = (date: Date) => {
-+        const dateStr = date.toISOString().split('T')[0]
-+        const dayTasks = tasks.filter(t => t.date === dateStr)
-+
-+        return {
-+            todo: dayTasks.filter(t => t.status === 'todo').length,
-+            done: dayTasks.filter(t => t.status === 'done').length,
-+            migrated: dayTasks.filter(t => t.status === 'migrated').length,
-+            cancelled: dayTasks.filter(t => t.status === 'cancelled').length
-+        }
-+    }
-+
+     const calendarDays = useMemo(() => {
+         const today = new Date()
+         const start = new Date(today.getFullYear(), today.getMonth(), 1)
+         const end = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+         const days = []
+
+         for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+             days.push(new Date(d))
+         }
+
+         return days
+     }, [])
+
+     const getTaskStats = (date: Date) => {
+         const dateStr = date.toISOString().split('T')[0]
+         const dayTasks = tasks.filter(t => t.date === dateStr)
+
+         return {
+             todo: dayTasks.filter(t => t.status === 'todo').length,
+             done: dayTasks.filter(t => t.status === 'done').length,
+             migrated: dayTasks.filter(t => t.status === 'migrated').length,
+             cancelled: dayTasks.filter(t => t.status === 'cancelled').length
+         }
+     }
+
      return (
          <div style={styles.container}>
              <div style={styles.header}>Bullet Journal</div>
 
              <div style={styles.taskInput}>
-+                <input
-+                    type="date"
-+                    value={selectedDate}
-+                    onChange={e => setSelectedDate(e.target.value)}
-+                    style={{ ...styles.input, flex: '0 0 auto' }}
-+                />
+                 <input
+                     type="date"
+                     value={selectedDate}
+                     onChange={e => setSelectedDate(e.target.value)}
+                     style={{ ...styles.input, flex: '0 0 auto' }}
+                 />
                  <input
                      type="text"
                      value={newTask}
@@ -376,72 +376,72 @@ index 2b34248..e177c5a 100644
              </div>
 
              <div style={styles.taskList}>
--                {tasks.map(task => (
--                    <div key={task.id} style={styles.task}>
--                        <button
--                            onClick={() => {
--                                const nextStatus: Record<Task['status'], Task['status']> = {
--                                    todo: 'done',
--                                    done: 'migrated',
--                                    migrated: 'cancelled',
--                                    cancelled: 'todo'
--                                }
--                                updateTaskStatus(task.id, nextStatus[task.status])
-+                {tasks
-+                    .filter(task => task.date === selectedDate)
-+                    .map(task => (
-+                        <div key={task.id} style={styles.task}>
-+                            <button
-+                                onClick={() => {
-+                                    const nextStatus: Record<Task['status'], Task['status']> = {
-+                                        todo: 'done',
-+                                        done: 'migrated',
-+                                        migrated: 'cancelled',
-+                                        cancelled: 'todo'
-+                                    }
-+                                    updateTaskStatus(task.id, nextStatus[task.status])
-+                                }}
-+                                style={styles.statusButton}
-+                            >
-+                                {getStatusIcon(task.status)}
-+                            </button>
-+                            <span style={task.status === 'done' ? { textDecoration: 'line-through', color: '#999' } : {}}>
-+                                {task.text}
-+                            </span>
-+                        </div>
-+                    ))}
-+            </div>
-+
-+            <div style={styles.calendar}>
-+                {calendarDays.map(day => {
-+                    const stats = getTaskStats(day)
-+                    return (
-+                        <div
-+                            key={day.toISOString()}
-+                            style={{
-+                                ...styles.calendarDay,
-+                                backgroundColor: day.toISOString().split('T')[0] === selectedDate ? '#f0f0f0' : 'white'
+                 {tasks.map(task => (
+                     <div key={task.id} style={styles.task}>
+                         <button
+                             onClick={() => {
+                                 const nextStatus: Record<Task['status'], Task['status']> = {
+                                     todo: 'done',
+                                     done: 'migrated',
+                                     migrated: 'cancelled',
+                                     cancelled: 'todo'
+                                 }
+                                 updateTaskStatus(task.id, nextStatus[task.status])
+                 {tasks
+                     .filter(task => task.date === selectedDate)
+                     .map(task => (
+                         <div key={task.id} style={styles.task}>
+                             <button
+                                 onClick={() => {
+                                     const nextStatus: Record<Task['status'], Task['status']> = {
+                                         todo: 'done',
+                                         done: 'migrated',
+                                         migrated: 'cancelled',
+                                         cancelled: 'todo'
+                                     }
+                                     updateTaskStatus(task.id, nextStatus[task.status])
+                                 }}
+                                 style={styles.statusButton}
+                             >
+                                 {getStatusIcon(task.status)}
+                             </button>
+                             <span style={task.status === 'done' ? { textDecoration: 'line-through', color: '#999' } : {}}>
+                                 {task.text}
+                             </span>
+                         </div>
+                     ))}
+             </div>
+
+             <div style={styles.calendar}>
+                 {calendarDays.map(day => {
+                     const stats = getTaskStats(day)
+                     return (
+                         <div
+                             key={day.toISOString()}
+                             style={{
+                                 ...styles.calendarDay,
+                                 backgroundColor: day.toISOString().split('T')[0] === selectedDate ? '#f0f0f0' : 'white'
                              }}
--                            style={styles.statusButton}
-+                            onClick={() => setSelectedDate(day.toISOString().split('T')[0])}
+                             style={styles.statusButton}
+                             onClick={() => setSelectedDate(day.toISOString().split('T')[0])}
                          >
--                            {getStatusIcon(task.status)}
--                        </button>
--                        <span style={task.status === 'done' ? { textDecoration: 'line-through', color: '#999' } : {}}>
--                            {task.text}
--                        </span>
--                    </div>
--                ))}
-+                            <div style={styles.dayHeader}>{day.getDate()}</div>
-+                            <div style={styles.stats}>
-+                                {stats.todo > 0 && <div style={{ color: '#666' }}>○ {stats.todo}</div>}
-+                                {stats.done > 0 && <div style={{ color: '#22c55e' }}>✓ {stats.done}</div>}
-+                                {stats.migrated > 0 && <div style={{ color: '#3b82f6' }}>□ {stats.migrated}</div>}
-+                                {stats.cancelled > 0 && <div style={{ color: '#ef4444' }}>× {stats.cancelled}</div>}
-+                            </div>
-+                        </div>
-+                    )
-+                })}
+                             {getStatusIcon(task.status)}
+                         </button>
+                         <span style={task.status === 'done' ? { textDecoration: 'line-through', color: '#999' } : {}}>
+                             {task.text}
+                         </span>
+                     </div>
+                 ))}
+                             <div style={styles.dayHeader}>{day.getDate()}</div>
+                             <div style={styles.stats}>
+                                 {stats.todo > 0 && <div style={{ color: '#666' }}>○ {stats.todo}</div>}
+                                 {stats.done > 0 && <div style={{ color: '#22c55e' }}>✓ {stats.done}</div>}
+                                 {stats.migrated > 0 && <div style={{ color: '#3b82f6' }}>□ {stats.migrated}</div>}
+                                 {stats.cancelled > 0 && <div style={{ color: '#ef4444' }}>× {stats.cancelled}</div>}
+                             </div>
+                         </div>
+                     )
+                 })}
              </div>
          </div>
      )
@@ -449,7 +449,7 @@ index 2b34248..e177c5a 100644
 
 Compare these two distinct areas of change to the changes in the versions using Tailwind:
 
-```diff showLineNumbers=false
+```tsx ins={9-44} ins={47} ins={60-86} del={46} del={53-59}
 diff --git a/src/content/notes/2025/llm-tailwind-react/components/TailwindCalendar.v1.tsx b/src/content/notes/2025/llm-tailwind-react/components/TailwindCalendar.v2.tsx
 index 16574eb..d4767ff 100644
 --- a/src/content/notes/2025/llm-tailwind-react/components/TailwindCalendar.v1.tsx
@@ -458,84 +458,84 @@ index 16574eb..d4767ff 100644
          entry.date.toDateString() === selectedDate.toDateString()
      )
 
-+    const getDaysInMonth = (date: Date) => {
-+        const year = date.getFullYear()
-+        const month = date.getMonth()
-+        const firstDay = new Date(year, month, 1)
-+        const lastDay = new Date(year, month + 1, 0)
-+        const days = []
-+
-+        for (let i = 0; i < firstDay.getDay(); i++) {
-+            days.push(null)
-+        }
-+
-+        for (let i = 1; i <= lastDay.getDate(); i++) {
-+            days.push(new Date(year, month, i))
-+        }
-+
-+        return days
-+    }
-+
-+    const getTaskStats = (date: Date) => {
-+        const entry = entries.find(e => e.date.toDateString() === date.toDateString())
-+        if (!entry) return null
-+
-+        const stats = {
-+            todo: 0,
-+            done: 0,
-+            migrated: 0,
-+            cancelled: 0
-+        }
-+
-+        entry.tasks.forEach(task => {
-+            stats[task.status]++
-+        })
-+
-+        return stats
-+    }
-+
+     const getDaysInMonth = (date: Date) => {
+         const year = date.getFullYear()
+         const month = date.getMonth()
+         const firstDay = new Date(year, month, 1)
+         const lastDay = new Date(year, month + 1, 0)
+         const days = []
+
+         for (let i = 0; i < firstDay.getDay(); i++) {
+             days.push(null)
+         }
+
+         for (let i = 1; i <= lastDay.getDate(); i++) {
+             days.push(new Date(year, month, i))
+          }
+
+         return days
+     }
+
+     const getTaskStats = (date: Date) => {
+         const entry = entries.find(e => e.date.toDateString() === date.toDateString())
+         if (!entry) return null
+
+         const stats = {
+             todo: 0,
+             done: 0,
+             migrated: 0,
+             cancelled: 0
+         }
+
+         entry.tasks.forEach(task => {
+             stats[task.status]++
+         })
+
+         return stats
+     }
+
      return (
--        <div className="max-w-2xl mx-auto p-8 bg-white rounded-lg shadow-md">
-+        <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md">
+         <div className="max-w-2xl mx-auto p-8 bg-white rounded-lg shadow-md">
+         <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md">
              <div className="flex items-center gap-4 mb-8">
                  <CalendarIcon className="w-6 h-6 text-gray-600" />
                  <h1 className="text-2xl font-semibold">Bullet Journal</h1>
              </div>
 
--            <div className="mb-8">
--                <input
--                    type="date"
--                    value={selectedDate.toISOString().split('T')[0]}
--                    onChange={e => setSelectedDate(new Date(e.target.value))}
--                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
--                />
-+            <div className="grid grid-cols-7 gap-1 mb-8 text-center">
-+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-+                    <div key={day} className="font-semibold py-2">{day}</div>
-+                ))}
-+                {getDaysInMonth(selectedDate).map((date, i) => (
-+                    <div
-+                        key={i}
-+                        className={`p-2 min-h-[100px] border ${date?.toDateString() === selectedDate.toDateString() ? 'border-blue-500' : 'border-gray-200'} rounded-md ${date ? 'cursor-pointer hover:bg-gray-50' : ''}`}
-+                        onClick={() => date && setSelectedDate(date)}
-+                    >
-+                        {date && (
-+                            <>
-+                                <div className="text-right text-gray-600">{date.getDate()}</div>
-+                                {getTaskStats(date) && (
-+                                    <div className="mt-1 text-xs space-y-1">
-+                                        {Object.entries(getTaskStats(date)!).map(([status, count]) => count > 0 && (
-+                                            <div key={status} className="flex items-center justify-between">
-+                                                {getStatusIcon(status as Task['status'])}
-+                                                <span>{count}</span>
-+                                            </div>
-+                                        ))}
-+                                    </div>
-+                                )}
-+                            </>
-+                        )}
-+                    </div>
-+                ))}
+             <div className="mb-8">
+                 <input
+                     type="date"
+                     value={selectedDate.toISOString().split('T')[0]}
+                     onChange={e => setSelectedDate(new Date(e.target.value))}
+                     className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                 />
+             <div className="grid grid-cols-7 gap-1 mb-8 text-center">
+                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                     <div key={day} className="font-semibold py-2">{day}</div>
+                 ))}
+                 {getDaysInMonth(selectedDate).map((date, i) => (
+                     <div
+                         key={i}
+                         className={`p-2 min-h-[100px] border ${date?.toDateString() === selectedDate.toDateString() ? 'border-blue-500' : 'border-gray-200'} rounded-md ${date ? 'cursor-pointer hover:bg-gray-50' : ''}`}
+                         onClick={() => date && setSelectedDate(date)}
+                     >
+                         {date && (
+                             <>
+                                 <div className="text-right text-gray-600">{date.getDate()}</div>
+                                 {getTaskStats(date) && (
+                                     <div className="mt-1 text-xs space-y-1">
+                                         {Object.entries(getTaskStats(date)!).map(([status, count]) => count > 0 && (
+                                             <div key={status} className="flex items-center justify-between">
+                                                 {getStatusIcon(status as Task['status'])}
+                                                 <span>{count}</span>
+                                             </div>
+                                         ))}
+                                     </div>
+                                 )}
+                             </>
+                         )}
+                     </div>
+                 ))}
              </div>
 
              <div className="flex gap-4 mb-8">
