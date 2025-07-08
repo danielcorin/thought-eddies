@@ -403,8 +403,6 @@ footer a:last-child {
 .inline-icon {
   display: inline-block;
   vertical-align: text-bottom;
-  width: 1em;
-  height: 1em;
   margin-bottom: 0;
 }
 
@@ -426,6 +424,10 @@ kbd {
   overflow: visible;
 }
 
+.expressive-code {
+  margin-block: 1rem;
+}
+
 /* Mobile Styles */
 @media (max-width: 640px) {
   .site-nav {
@@ -443,6 +445,15 @@ kbd {
     font-size: var(--text-base);
   }
 
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 1.3;
+  }
+
   .content h2 {
     font-size: var(--text-xl);
   }
@@ -457,6 +468,20 @@ kbd {
 
   .content code {
     font-size: calc(var(--text-base) * 0.8);
+  }
+
+  /* Table responsiveness */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th,
+  td {
+    padding: var(--spacing-xs) var(--spacing-xs);
+    font-size: calc(var(--text-base) * 0.9);
   }
 
   .toc article {
