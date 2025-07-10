@@ -49,19 +49,6 @@ hr {
   margin: var(--spacing-lg) 0;
 }
 
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --color-bg: var(--color-bg-note-dark);
-    --color-bg-code: var(--color-bg-code-note-dark);
-    --color-ink: var(--color-ink-dark);
-    --color-ink-light: var(--color-ink-light-dark);
-    --color-accent: var(--color-accent-dark);
-    --color-link: var(--color-link-dark);
-    --color-border: var(--color-border-dark);
-  }
-}
-
 .site-nav {
   padding-top: var(--spacing-md);
   padding-bottom: var(--spacing-md);

@@ -14,10 +14,6 @@ export default defineEcConfig({
             tooltipSuccessBackground: 'var(--color-bg)',
         },
         collapsibleSections: {
-            closedBackgroundColor: 'var(--color-bg-code)',
-            closedBorderColor: 'var(--color-border)',
-            closedTextColor: 'var(--color-ink-light)',
         },
-        codeBackground: 'var(--color-bg-code)',
     },
 })

@@ -6,18 +6,29 @@
   --spacing-lg: 2rem;
   --spacing-xl: 3rem;
 
-  /* Colors */
-  --color-bg-post: #f8f8f8;
-  --color-bg-note: #f4f1e4;
-  --color-bg-code-note: color-mix(in srgb, var(--color-bg-note) 90%, #000);
-  --color-ink: #2d3436;
-  --color-ink-light: #636e72;
-  --color-accent: #0984e3;
-  --color-link: var(--color-accent);
-  --color-border: #b4b4b4;
+  /* Light theme colors */
+  --color-bg-post-light: #f8f8f8;
+  --color-bg-note-light: #f4f1e4;
+  --color-bg-code-note-light: color-mix(in srgb, var(--color-bg-note-light) 90%, #000);
+  --color-ink-light-theme: #2d3436;
+  --color-ink-light-light: #636e72;
+  --color-accent-light: #0984e3;
+  --color-link-light: var(--color-accent-light);
+  --color-border-light: #b4b4b4;
+  --color-highlight-light: color-mix(in srgb, var(--color-accent-light) 50%, transparent);
+
+  /* Colors - default to light theme */
+  --color-bg-post: var(--color-bg-post-light);
+  --color-bg-note: var(--color-bg-note-light);
+  --color-bg-code-note: var(--color-bg-code-note-light);
+  --color-ink: var(--color-ink-light-theme);
+  --color-ink-light: var(--color-ink-light-light);
+  --color-accent: var(--color-accent-light);
+  --color-link: var(--color-link-light);
+  --color-border: var(--color-border-light);
   --color-bg: var(--color-bg-note);
   --color-bg-code: var(--color-bg-code-note);
-  --color-highlight: color-mix(in srgb, var(--color-accent) 50%, transparent);
+  --color-highlight: var(--color-highlight-light);
   --color-highlight-dark: color-mix(in srgb, var(--color-accent-dark) 50%, transparent);
 
   /* Dark mode colors */
@@ -55,5 +66,31 @@
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
+    --text-4xl: 2.25rem;
+}
+
+/* Default to dark theme when user has dark mode preference and no explicit theme is set */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --color-bg: var(--color-bg-note-dark);
+    --color-bg-code: var(--color-bg-code-note-dark);
+    --color-ink: var(--color-ink-dark);
+    --color-ink-light: var(--color-ink-light-dark);
+    --color-accent: var(--color-accent-dark);
+    --color-link: var(--color-link-dark);
+    --color-border: var(--color-border-dark);
+    --color-highlight: var(--color-highlight-dark);
+  }
+}
+
+/* Light theme class override */
+:root.light {
+  --color-bg: var(--color-bg-note-light);
+  --color-bg-code: var(--color-bg-code-note-light);
+  --color-ink: var(--color-ink-light-theme);
+  --color-ink-light: var(--color-ink-light-light);
+  --color-accent: var(--color-accent-light);
+  --color-link: var(--color-link-light);
+  --color-border: var(--color-border-light);
+  --color-highlight: var(--color-highlight-light);
 }
