@@ -22,14 +22,8 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono&display=swap"
-			rel="stylesheet"
-		/>
 		<script is:inline>
-			// Immediately check theme preferences
+			// Immediately check theme preferences - must run before CSS loads
 			(function () {
 				const savedTheme = localStorage.getItem("theme");
 				const systemDark = window.matchMedia(
@@ -39,6 +33,12 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 				document.documentElement.classList.add(theme);
 			})();
 		</script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono&display=swap"
+			rel="stylesheet"
+		/>
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<link
