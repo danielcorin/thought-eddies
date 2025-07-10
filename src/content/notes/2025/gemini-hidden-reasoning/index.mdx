@@ -487,6 +487,7 @@ response = client.chat.completions.create(
 )
 ```
 
+The chart below contains the aggregated stats for five runs of `claude-sonnet-4-20250514` with different thinking modes.
 The suffixes denote the thinking token budget given to Claude for the runs that were aggregated in the plot.
 No suffixes indicate the default reasoning behavior of the model.
 
@@ -496,7 +497,7 @@ With a thinking token budget, the time to first token is higher.
 Inspecting the response chunks, we don't see any of the thinking.
 It turns out, using the OpenAI Python client, we can't see the thinking:
 
-> The OpenAI SDK won’t return Claude’s detailed thought process
+> The OpenAI SDK won't return Claude's detailed thought process
 > https://docs.anthropic.com/en/api/openai-sdk#extended-thinking-support
 
 So, the time to first token is higher when thinking, and that seems to be relatively constant across the specified thinking token budgets.
@@ -539,6 +540,7 @@ So when we `include_thoughts`, this is what they look like.
 Also, when we include thoughts, the time to the first token goes down, which makes sense because otherwise, we're waiting for the model to think but not "seeing" it think.
 We can further validate this by setting `thinking_budget` to 0 and `reasoning_effort` to "none".
 
+The chart below contains the aggregated stats for five runs of the `gemini-2.5-flash` model with different thinking modes.
 The numeric suffixes denote the thinking token budget, while the others indicate the reasoning effort given to Gemini for the runs aggregated in the plot.
 No suffixes indicate the default reasoning behavior of the model.
 
