@@ -22,15 +22,27 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<style is:inline>
+			html.no-transitions,
+			body.no-transitions {
+				transition: none !important;
+			}
+		</style>
 		<script is:inline>
-			// Immediately check theme preferences - must run before CSS loads
+			// Prevent flash of wrong theme: disable transitions, then set theme and re-enable.
 			(function () {
+				const root = document.documentElement;
+				root.classList.add("no-transitions");
 				const savedTheme = localStorage.getItem("theme");
 				const systemDark = window.matchMedia(
 					"(prefers-color-scheme: dark)",
 				).matches;
 				const theme = savedTheme || (systemDark ? "dark" : "light");
-				document.documentElement.classList.add(theme);
+				root.classList.add(theme);
+				// Allow the browser to paint once, then re-enable transitions
+				setTimeout(() => {
+					root.classList.remove("no-transitions");
+				}, 0);
 			})();
 		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
