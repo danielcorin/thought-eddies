@@ -23,26 +23,23 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<style is:inline>
-			html.no-transitions,
-			body.no-transitions {
-				transition: none !important;
+			html {
+				visibility: hidden;
+				opacity: 0;
 			}
 		</style>
 		<script is:inline>
-			// Prevent flash of wrong theme: disable transitions, then set theme and re-enable.
+			// This script runs before anything else to prevent flash of wrong theme
 			(function () {
-				const root = document.documentElement;
-				root.classList.add("no-transitions");
 				const savedTheme = localStorage.getItem("theme");
 				const systemDark = window.matchMedia(
 					"(prefers-color-scheme: dark)",
 				).matches;
 				const theme = savedTheme || (systemDark ? "dark" : "light");
-				root.classList.add(theme);
-				// Allow the browser to paint once, then re-enable transitions
-				setTimeout(() => {
-					root.classList.remove("no-transitions");
-				}, 0);
+				document.documentElement.classList.add(theme);
+				// Make the page visible after theme is set
+				document.documentElement.style.visibility = "visible";
+				document.documentElement.style.opacity = "1";
 			})();
 		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
