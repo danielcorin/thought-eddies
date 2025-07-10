@@ -29,18 +29,7 @@
   --color-bg-code-dark: var(--color-bg-code-note-dark);
   --color-highlight-dark: color-mix(in srgb, var(--color-accent-dark) 50%, transparent);
 
-  /* Colors - default to light theme */
-  --color-bg-post: var(--color-bg-post-light);
-  --color-bg-note: var(--color-bg-note-light);
-  --color-bg-code-note: var(--color-bg-code-note-light);
-  --color-ink: var(--color-ink-light-theme);
-  --color-ink-light: var(--color-ink-light-light);
-  --color-accent: var(--color-accent-light);
-  --color-link: var(--color-link-light);
-  --color-border: var(--color-border-light);
-  --color-bg: var(--color-bg-note);
-  --color-bg-code: var(--color-bg-code-note);
-  --color-highlight: var(--color-highlight-light);
+  /* Colors - no default theme to prevent flash */
 
   /* Typography */
   --font-post-primary: "Futura";
