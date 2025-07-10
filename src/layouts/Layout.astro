@@ -22,12 +22,6 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<style is:inline>
-			html {
-				visibility: hidden;
-				opacity: 0;
-			}
-		</style>
 		<script is:inline>
 			// This script runs before anything else to prevent flash of wrong theme
 			(function () {
@@ -37,9 +31,6 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 				).matches;
 				const theme = savedTheme || (systemDark ? "dark" : "light");
 				document.documentElement.classList.add(theme);
-				// Make the page visible after theme is set
-				document.documentElement.style.visibility = "visible";
-				document.documentElement.style.opacity = "1";
 			})();
 		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
