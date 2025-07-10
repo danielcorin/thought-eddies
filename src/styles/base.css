@@ -13,17 +13,6 @@ html {
   transition-behavior: allow-discrete;
 }
 
-:root.dark {
-  --color-bg: var(--color-bg-note-dark);
-  --color-bg-code: var(--color-bg-code-note-dark);
-  --color-ink: var(--color-ink-dark);
-  --color-ink-light: var(--color-ink-light-dark);
-  --color-accent: var(--color-accent-dark);
-  --color-link: var(--color-link-dark);
-  --color-border: var(--color-border-dark);
-  --color-highlight: var(--color-highlight-dark);
-}
-
 body {
   min-height: 100vh;
   background-image: radial-gradient(

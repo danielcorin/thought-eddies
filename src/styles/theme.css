@@ -17,6 +17,18 @@
   --color-border-light: #b4b4b4;
   --color-highlight-light: color-mix(in srgb, var(--color-accent-light) 50%, transparent);
 
+  /* Dark mode colors */
+  --color-bg-note-dark: #1c1b17;
+  --color-bg-code-note-dark: color-mix(in srgb, var(--color-bg-note-dark) 90%, #fff);
+  --color-ink-dark: #cccccc;
+  --color-ink-light-dark: #a8a8a8;
+  --color-accent-dark: #4dabf7;
+  --color-link-dark: var(--color-accent-dark);
+  --color-border-dark: #4a4a4a;
+  --color-bg-dark: var(--color-bg-note-dark);
+  --color-bg-code-dark: var(--color-bg-code-note-dark);
+  --color-highlight-dark: color-mix(in srgb, var(--color-accent-dark) 50%, transparent);
+
   /* Colors - default to light theme */
   --color-bg-post: var(--color-bg-post-light);
   --color-bg-note: var(--color-bg-note-light);
@@ -29,18 +41,6 @@
   --color-bg: var(--color-bg-note);
   --color-bg-code: var(--color-bg-code-note);
   --color-highlight: var(--color-highlight-light);
-  --color-highlight-dark: color-mix(in srgb, var(--color-accent-dark) 50%, transparent);
-
-  /* Dark mode colors */
-  --color-bg-note-dark: #1c1b17;
-  --color-bg-code-note-dark: color-mix(in srgb, var(--color-bg-note-dark) 90%, #fff);
-  --color-ink-dark: #cccccc;
-  --color-ink-light-dark: #a8a8a8;
-  --color-accent-dark: #4dabf7;
-  --color-link-dark: var(--color-accent-dark);
-  --color-border-dark: #4a4a4a;
-  --color-bg-dark: var(--color-bg-note-dark);
-  --color-bg-code-dark: var(--color-bg-code-note-dark);
 
   /* Typography */
   --font-post-primary: "Futura";
@@ -71,7 +71,7 @@
 
 /* Default to dark theme when user has dark mode preference and no explicit theme is set */
 @media (prefers-color-scheme: dark) {
-  :root:not(.light) {
+  :root {
     --color-bg: var(--color-bg-note-dark);
     --color-bg-code: var(--color-bg-code-note-dark);
     --color-ink: var(--color-ink-dark);
@@ -93,4 +93,16 @@
   --color-link: var(--color-link-light);
   --color-border: var(--color-border-light);
   --color-highlight: var(--color-highlight-light);
+}
+
+/* Dark theme class override */
+:root.dark {
+  --color-bg: var(--color-bg-note-dark);
+  --color-bg-code: var(--color-bg-code-note-dark);
+  --color-ink: var(--color-ink-dark);
+  --color-ink-light: var(--color-ink-light-dark);
+  --color-accent: var(--color-accent-dark);
+  --color-link: var(--color-link-dark);
+  --color-border: var(--color-border-dark);
+  --color-highlight: var(--color-highlight-dark);
 }
