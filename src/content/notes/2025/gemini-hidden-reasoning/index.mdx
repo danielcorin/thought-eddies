@@ -535,7 +535,6 @@ I'm starting ...
 
 </thought>Unit 734 woke, as it did every cycle...
 ```
-
 So when we `include_thoughts`, this is what they look like.
 Also, when we include thoughts, the time to the first token goes down, which makes sense because otherwise, we're waiting for the model to think but not "seeing" it think.
 We can further validate this by setting `thinking_budget` to 0 and `reasoning_effort` to "none".
@@ -563,5 +562,5 @@ I am heartened to see OpenRouter serving as the layer of consistency across mode
 I hope they're able to continue to make this work and would love to see more of a push for an independent API standard.
 [LiteLLM](https://github.com/BerriAI/litellm) is also a great project that is continuing to make this work where they can.
 
-Many LLMs APIs now also contain nontrivial product features.
+Many LLM APIs now also contain nontrivial product features.
 What could have been some sort of protocol has morphed into competing products with competing visions.
