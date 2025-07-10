@@ -1,6 +1,12 @@
 default:
     @just --list
 
+install:
+    npm install
+
+run:
+    npm run dev
+
 dev:
     npm run dev
 
