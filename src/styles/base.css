@@ -46,6 +46,7 @@ hr {
   font-size: var(--text-lg);
   display: flex;
   gap: var(--spacing-md);
+  align-items: center;
 }
 
 .site-nav a,
@@ -53,6 +54,20 @@ hr {
   color: var(--color-ink);
   text-decoration: none;
   transition: opacity 0.2s;
+}
+
+#theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--color-ink);
+  transition: opacity 0.2s;
+}
+
+#theme-toggle:hover {
+  opacity: 0.8;
+  color: var(--color-accent);
 }
 
 .site-nav a {
@@ -82,6 +97,10 @@ hr {
 
 .nav-text {
   margin-left: 0.25rem;
+}
+
+.hidden {
+  display: none;
 }
 
 .content-wrapper {

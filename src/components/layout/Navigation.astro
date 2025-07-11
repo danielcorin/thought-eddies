@@ -34,4 +34,55 @@ const { selected } = Astro.props;
             </a>
         ))
     }
+    <button id="theme-toggle" class="nav-link" style="margin-left: auto;">
+        <span class="nav-item">
+            <span id="sun-wrapper" class="sun-wrapper">
+                <Icon name="ph:sun" class="inline-icon" />
+            </span>
+            <span id="moon-wrapper" class="moon-wrapper hidden">
+                <Icon name="ph:moon" class="inline-icon" />
+            </span>
+        </span>
+    </button>
 </nav>
+
+<script is:inline>
+    // Theme button functionality using global utilities
+    (function () {
+        const themeToggle = document.getElementById("theme-toggle");
+        const sunWrapper = document.getElementById("sun-wrapper");
+        const moonWrapper = document.getElementById("moon-wrapper");
+
+        function updateIconsForTheme() {
+            if (!sunWrapper || !moonWrapper) return;
+
+            const currentTheme = window.themeUtils
+                ? window.themeUtils.getCurrentTheme()
+                : document.documentElement.className;
+            const isDark = currentTheme === "dark";
+
+            sunWrapper.classList.toggle("hidden", isDark);
+            moonWrapper.classList.toggle("hidden", !isDark);
+        }
+
+        // Initialize icons when DOM is ready
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", updateIconsForTheme);
+        } else {
+            updateIconsForTheme();
+        }
+
+        // Listen for theme changes from other sources
+        window.addEventListener("themeChanged", updateIconsForTheme);
+
+        // Handle click events
+        if (themeToggle) {
+            themeToggle.addEventListener("click", () => {
+                if (window.themeUtils) {
+                    window.themeUtils.toggleTheme();
+                }
+                updateIconsForTheme();
+            });
+        }
+    })();
+</script>
