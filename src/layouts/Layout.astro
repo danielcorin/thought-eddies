@@ -1,9 +1,9 @@
 ---
+import { Icon } from "astro-icon/components";
 import { SEO } from "astro-seo";
 import "@styles/theme.css";
 import "@styles/base.css";
 import Footer from "@components/layout/Footer.astro";
-import NavigationShortcuts from "@components/layout/NavigationShortcuts.astro";
 import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
 
@@ -18,19 +18,21 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<script is:inline>
-			// This script runs before anything else to prevent flash of wrong theme
+			// Theme flicker prevention - runs immediately before page renders
 			(function () {
 				const savedTheme = localStorage.getItem("theme");
 				const systemDark = window.matchMedia(
 					"(prefers-color-scheme: dark)",
 				).matches;
 				const theme = savedTheme || (systemDark ? "dark" : "light");
-				document.documentElement.classList.add(theme);
+
+				// Remove any existing theme classes and set the correct one
+				document.documentElement.className = theme;
 			})();
 		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -63,6 +65,88 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 	</head>
 	<body class={theme}>
 		<ReadingProgress />
+
+		<!-- Theme Toggle Button - now in base layout -->
+		<button id="theme-toggle" class="nav-link ml-auto">
+			<span class="nav-item">
+				<span id="sun-wrapper" class="sun-wrapper">
+					<Icon name="ph:sun" class="inline-icon" />
+				</span>
+				<span id="moon-wrapper" class="moon-wrapper hidden">
+					<Icon name="ph:moon" class="inline-icon" />
+				</span>
+			</span>
+		</button>
+
+		<script is:inline>
+			// Theme toggle functionality - placed after the elements it references
+			(function () {
+				const themeToggle = document.getElementById("theme-toggle");
+				const sunWrapper = document.getElementById("sun-wrapper");
+				const moonWrapper = document.getElementById("moon-wrapper");
+
+				function enableLightTheme() {
+					document.documentElement.className = "light";
+					localStorage.setItem("theme", "light");
+					if (sunWrapper && moonWrapper) {
+						sunWrapper.classList.remove("hidden");
+						moonWrapper.classList.add("hidden");
+					}
+				}
+
+				function enableDarkTheme() {
+					document.documentElement.className = "dark";
+					localStorage.setItem("theme", "dark");
+					if (sunWrapper && moonWrapper) {
+						sunWrapper.classList.add("hidden");
+						moonWrapper.classList.remove("hidden");
+					}
+				}
+
+				function toggleTheme() {
+					const currentTheme = document.documentElement.className;
+					if (currentTheme === "dark") {
+						enableLightTheme();
+					} else {
+						enableDarkTheme();
+					}
+
+					// Dispatch custom event for other components to listen to
+					window.dispatchEvent(
+						new CustomEvent("themeChanged", {
+							detail: {
+								isDark:
+									document.documentElement.className ===
+									"dark",
+							},
+						}),
+					);
+				}
+
+				// Initialize the toggle button state based on current theme
+				function initializeTheme() {
+					const currentTheme = document.documentElement.className;
+					if (sunWrapper && moonWrapper) {
+						if (currentTheme === "dark") {
+							sunWrapper.classList.add("hidden");
+							moonWrapper.classList.remove("hidden");
+						} else {
+							sunWrapper.classList.remove("hidden");
+							moonWrapper.classList.add("hidden");
+						}
+					}
+				}
+
+				// Initialize immediately
+				initializeTheme();
+
+				// Add click event listener
+				if (themeToggle) {
+					themeToggle.addEventListener("click", toggleTheme);
+				}
+			})();
+		</script>
+
 		<main>
 			<div class="content-wrapper">
 				<slot />
@@ -70,7 +154,6 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 			<Footer />
 		</main>
 		<ScrollToTop />
-		<NavigationShortcuts />
 		<script
 			data-goatcounter="https://thought-eddies.goatcounter.com/count"
 			async
