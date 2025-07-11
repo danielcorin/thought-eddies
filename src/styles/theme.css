@@ -29,7 +29,15 @@
   --color-bg-code-dark: var(--color-bg-code-note-dark);
   --color-highlight-dark: color-mix(in srgb, var(--color-accent-dark) 50%, transparent);
 
-  /* Colors - no default theme to prevent flash */
+  /* Colors - set light theme as default to prevent flash */
+  --color-bg: var(--color-bg-note-light);
+  --color-bg-code: var(--color-bg-code-note-light);
+  --color-ink: var(--color-ink-light-theme);
+  --color-ink-light: var(--color-ink-light-light);
+  --color-accent: var(--color-accent-light);
+  --color-link: var(--color-link-light);
+  --color-border: var(--color-border-light);
+  --color-highlight: var(--color-highlight-light);
 
   /* Typography */
   --font-post-primary: "Futura";
@@ -58,19 +66,7 @@
     --text-4xl: 2.25rem;
 }
 
-/* Default to dark theme when user has dark mode preference and no explicit theme is set */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: var(--color-bg-note-dark);
-    --color-bg-code: var(--color-bg-code-note-dark);
-    --color-ink: var(--color-ink-dark);
-    --color-ink-light: var(--color-ink-light-dark);
-    --color-accent: var(--color-accent-dark);
-    --color-link: var(--color-link-dark);
-    --color-border: var(--color-border-dark);
-    --color-highlight: var(--color-highlight-dark);
-  }
-}
+
 
 /* Light theme class override */
 :root.light {
