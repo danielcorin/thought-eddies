@@ -45,7 +45,7 @@ hr {
   font-family: var(--font-primary);
   font-size: var(--text-lg);
   display: flex;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   align-items: center;
 }
 
@@ -427,7 +427,16 @@ kbd {
 @media (max-width: 640px) {
   .site-nav {
     font-size: var(--text-base);
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .nav-text {
+    display: none;
+  }
+
+  .nav-link.selected .nav-text {
+    display: block;
   }
 
   .content-wrapper {
