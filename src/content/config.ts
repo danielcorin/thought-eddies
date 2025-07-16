@@ -33,4 +33,14 @@ const home = defineCollection({
   }),
 });
 
-export const collections = { notes, home };
+const logs = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/logs" }),
+  schema: z.object({
+    date: z.string().or(z.date()).transform((val) => new Date(val)),
+    title: z.string(),
+    tags: z.array(z.string()).optional(),
+    draft: z.boolean().optional().default(true),
+  }),
+});
+
+export const collections = { notes, home, logs };

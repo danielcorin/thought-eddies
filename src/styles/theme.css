@@ -49,6 +49,8 @@
   --font-note-prose: "Inter", Georgia, serif;
   --font-note-ui: system-ui, -apple-system, sans-serif;
   --font-note-mono: "JetBrains Mono", monospace;
+  
+  --font-handwriting: "Inter", Georgia, serif;
 
   --font-primary: var(--font-note-primary);
   --font-prose: var(--font-note-prose);
