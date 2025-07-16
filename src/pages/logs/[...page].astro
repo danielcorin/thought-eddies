@@ -1,0 +1,285 @@
+---
+import Navigation from "@components/layout/Navigation.astro";
+import Pagination from "@components/Pagination.astro";
+import Layout from "@layouts/Layout.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+
+export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
+  const logs = await getCollection("logs");
+  const sortedLogs = logs
+    .filter((log) => !log.data.draft)
+    .sort((a, b) => {
+      return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+    });
+
+  // Use Astro's paginate function
+  return paginate(sortedLogs, { pageSize: 10 });
+};
+
+const { page } = Astro.props as { page: any };
+
+// Helper function to extract preview from content
+function getPreview(content: string, maxLength: number = 200): string {
+  // Remove frontmatter if present
+  const contentWithoutFrontmatter = content.replace(/^---[\s\S]*?---\n/, "");
+
+  // Remove markdown formatting for cleaner preview
+  const cleanContent = contentWithoutFrontmatter
+    .replace(/#{1,6}\s/g, "") // Remove headers
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Convert links to text
+    .replace(/`{3}[\s\S]*?`{3}/g, "[code block]") // Replace code blocks
+    .replace(/`([^`]+)`/g, "$1") // Remove inline code formatting
+    .replace(/[*_]{1,2}([^*_]+)[*_]{1,2}/g, "$1") // Remove bold/italic
+    .replace(/^\s*[-*+]\s/gm, "") // Remove list markers
+    .replace(/\n{2,}/g, " ") // Replace multiple newlines with space
+    .trim();
+
+  if (cleanContent.length <= maxLength) {
+    return cleanContent;
+  }
+
+  // Cut at word boundary
+  const truncated = cleanContent.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return truncated.substring(0, lastSpace) + "...";
+}
+
+// Get all years with logs for navigation
+const allLogs = await getCollection("logs");
+const publishedLogs = allLogs.filter((log) => !log.data.draft);
+const yearsWithLogs = [
+  ...new Set(publishedLogs.map((log) => new Date(log.data.date).getFullYear())),
+].sort((a, b) => b - a);
+---
+
+<Layout title="Logs">
+  <Navigation selected="logs" />
+  <main>
+    <h1 class="page-title">Logs</h1>
+
+    {
+      page.lastPage > 1 && (
+        <Pagination
+          currentPage={page.currentPage}
+          lastPage={page.lastPage}
+          prevUrl={page.url.prev}
+          nextUrl={page.url.next}
+          baseUrl="/logs"
+        />
+      )
+    }
+
+    <div class="toc">
+      {
+        page.data.map(async (log: any) => {
+          const date = new Date(log.data.date);
+          const rawContent = log.body || "";
+          const preview = getPreview(rawContent);
+
+          return (
+            <article class="entry">
+              <time class="entry-date">
+                <a href={`/logs/${log.id}`} class="date-day">
+                  {date.getDate()}
+                </a>
+                <a
+                  href={`/logs/${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}`}
+                  class="date-month"
+                >
+                  {date.toLocaleDateString("en-US", { month: "short" })}
+                </a>
+                <a href={`/logs/${date.getFullYear()}`} class="date-year">
+                  {date.getFullYear()}
+                </a>
+              </time>
+              <div class="entry-content">
+                <p>{preview}</p>
+                <div class="entry-footer">
+                  {log.data.tags && log.data.tags.length > 0 && (
+                    <div class="tags">
+                      {log.data.tags.map((tag: string) => (
+                        <span class="tag">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                  <a href={`/logs/${log.id}`} class="read-more">
+                    Read more →
+                  </a>
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    {
+      page.lastPage > 1 && (
+        <div class="pagination-bottom">
+          <Pagination
+            currentPage={page.currentPage}
+            lastPage={page.lastPage}
+            prevUrl={page.url.prev}
+            nextUrl={page.url.next}
+            baseUrl="/logs"
+          />
+        </div>
+      )
+    }
+
+    <nav class="year-navigation">
+      <h2>Browse by year</h2>
+      <div class="year-links">
+        {
+          yearsWithLogs.map((year) => (
+            <a href={`/logs/${year}`} class="year-link">
+              {year}
+            </a>
+          ))
+        }
+      </div>
+    </nav>
+  </main>
+</Layout>
+
+<style>
+  /* Reuse base.css styles as much as possible */
+
+  .subtitle {
+    text-align: center;
+    color: var(--color-ink-light);
+    font-style: italic;
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Override toc article grid to be simpler for logs */
+  .toc article {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .entry-content {
+    flex: 1;
+  }
+
+  .toc time {
+    font-family: var(--font-prose);
+  }
+
+  .entry-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .entry-date a {
+    color: var(--color-ink-light);
+    text-decoration: none;
+    display: block;
+  }
+
+  .entry-date a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .date-day {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-ink) !important;
+  }
+
+  .date-month {
+    font-size: var(--text-sm);
+  }
+
+  .date-year {
+    font-size: var(--text-xs);
+  }
+
+  .toc p {
+    margin: 0 0 var(--spacing-sm);
+    font-size: var(--text-base);
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+
+  .entry-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .read-more {
+    font-size: var(--text-sm);
+    color: var(--color-accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .read-more:hover {
+    text-decoration: underline;
+  }
+
+  .tags {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+  }
+
+  .pagination-bottom {
+    margin-top: var(--spacing-xl);
+  }
+
+  .year-navigation {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .year-navigation h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .year-links {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .year-link {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-bg-code);
+    border-radius: 0.25rem;
+  }
+
+  @media (max-width: 640px) {
+    .toc article {
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+
+    .entry-footer {
+      flex-wrap: wrap;
+    }
+  }
+</style>

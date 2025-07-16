@@ -1,0 +1,220 @@
+---
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  currentPage: number;
+  lastPage: number;
+  prevUrl?: string | null;
+  nextUrl?: string | null;
+  baseUrl: string;
+}
+
+const { currentPage, lastPage, prevUrl, nextUrl, baseUrl } = Astro.props;
+
+// Calculate page numbers to show
+const maxPagesToShow = 5;
+let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+let endPage = Math.min(lastPage, startPage + maxPagesToShow - 1);
+if (endPage - startPage < maxPagesToShow - 1) {
+  startPage = Math.max(1, endPage - maxPagesToShow + 1);
+}
+const pageNumbers = Array.from(
+  { length: endPage - startPage + 1 },
+  (_, i) => startPage + i,
+);
+
+// Helper to generate page URL
+function getPageUrl(pageNum: number): string {
+  return pageNum === 1 ? baseUrl : `${baseUrl}/${pageNum}`;
+}
+---
+
+<nav class="pagination">
+  <div class="nav-item nav-prev-wrapper">
+    {prevUrl && (
+      <a href={prevUrl} class="nav-prev">
+        <Icon name="ph:arrow-left" />
+        <span>Previous</span>
+      </a>
+    )}
+  </div>
+
+  <div class="page-numbers">
+    {startPage > 1 && (
+      <>
+        <a href={baseUrl} class="page-number">
+          1
+        </a>
+        {startPage > 2 && <span class="ellipsis">...</span>}
+      </>
+    )}
+
+    {pageNumbers.map((pageNum) => (
+      <a
+        href={getPageUrl(pageNum)}
+        class={`page-number ${pageNum === currentPage ? "active" : ""}`}
+        aria-current={pageNum === currentPage ? "page" : undefined}
+      >
+        {pageNum}
+      </a>
+    ))}
+
+    {endPage < lastPage && (
+      <>
+        {endPage < lastPage - 1 && (
+          <span class="ellipsis">...</span>
+        )}
+        <a href={getPageUrl(lastPage)} class="page-number">
+          {lastPage}
+        </a>
+      </>
+    )}
+  </div>
+
+  <div class="nav-item nav-next-wrapper">
+    {nextUrl && (
+      <a href={nextUrl} class="nav-next">
+        <span>Next</span>
+        <Icon name="ph:arrow-right" />
+      </a>
+    )}
+  </div>
+</nav>
+
+<style>
+  .pagination {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    min-height: 3rem;
+  }
+
+  .nav-item {
+    display: flex;
+  }
+
+  .nav-prev-wrapper {
+    justify-content: flex-start;
+  }
+
+  .nav-next-wrapper {
+    justify-content: flex-end;
+  }
+
+  .nav-prev,
+  .nav-next {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+  }
+
+  .nav-prev svg,
+  .nav-next svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .page-numbers {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  .page-number {
+    font-size: var(--text-sm);
+    border-radius: 0.25rem;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .page-number:hover {
+    background: var(--color-bg);
+  }
+
+  .page-number.active {
+    background: var(--color-ink-light);
+    color: var(--color-bg);
+    font-weight: 500;
+  }
+
+  .page-number.active:hover {
+    opacity: 0.9;
+  }
+
+  .ellipsis {
+    color: var(--color-ink-light);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 640px) {
+    .pagination {
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm);
+      grid-template-columns: minmax(auto, max-content) 1fr minmax(auto, max-content);
+    }
+
+    .page-numbers {
+      justify-content: center;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .page-numbers::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-prev,
+    .nav-next {
+      font-size: var(--text-xs);
+    }
+    
+    .nav-prev span,
+    .nav-next span {
+      display: none;
+    }
+    
+    .nav-prev svg,
+    .nav-next svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .page-number {
+      font-size: var(--text-xs);
+      min-width: 1.5rem;
+      height: 1.5rem;
+      padding: 0 0.25rem;
+      flex-shrink: 0;
+    }
+  }
+</style>
+
+<script>
+  // Add keyboard navigation support
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      const prevLink = document.querySelector('.nav-prev') as HTMLAnchorElement;
+      if (prevLink) {
+        prevLink.click();
+      }
+    } else if (e.key === 'ArrowRight') {
+      const nextLink = document.querySelector('.nav-next') as HTMLAnchorElement;
+      if (nextLink) {
+        nextLink.click();
+      }
+    }
+  });
+</script>

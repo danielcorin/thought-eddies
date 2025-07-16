@@ -10,7 +10,7 @@ const { Content } = await render(home);
 const ogImage = `${Astro.site}og.png`;
 ---
 
-<Layout theme="posts" ogImage={ogImage}>
+<Layout ogImage={ogImage}>
   <Navigation selected={collection} />
   <main>
     <h1 class="page-title">{home.data.title}</h1>

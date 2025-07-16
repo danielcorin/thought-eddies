@@ -30,7 +30,7 @@ const yearNotes = notes
 const ogImage = `${Astro.site}notes/${year}/og.png`;
 ---
 
-<Layout theme={collection} title={`Notes created in ${year}`} ogImage={ogImage}>
+<Layout title={`Notes created in ${year}`} ogImage={ogImage}>
     <Navigation selected={collection} />
     <main>
         <h1 class="page-title">

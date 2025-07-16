@@ -7,12 +7,11 @@ import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
 
 interface Props {
-	theme?: "posts" | "notes";
 	title?: string;
 	ogImage?: string;
 }
 
-const { theme, title = "", ogImage } = Astro.props;
+const { title = "", ogImage } = Astro.props;
 const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 ---
 
@@ -62,7 +61,7 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 		/>
 		<title>{pageTitle}</title>
 	</head>
-	<body class={theme}>
+	<body class="notes">
 		<ReadingProgress />
 
 		<script is:inline>

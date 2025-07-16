@@ -1,0 +1,230 @@
+---
+import Navigation from "@components/layout/Navigation.astro";
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import Layout from "./Layout.astro";
+
+const { frontmatter, ogImage } = Astro.props;
+
+// Get all logs to find prev/next
+const allLogs = await getCollection("logs");
+const sortedLogs = allLogs
+  .filter((log) => !log.data.draft)
+  .sort(
+    (a, b) => new Date(a.data.date).getTime() - new Date(b.data.date).getTime(),
+  );
+
+// Find current log index
+const currentLogDate = new Date(frontmatter.date).toISOString().split("T")[0];
+const currentIndex = sortedLogs.findIndex(
+  (log) =>
+    new Date(log.data.date).toISOString().split("T")[0] === currentLogDate,
+);
+
+const prevLog = currentIndex > 0 ? sortedLogs[currentIndex - 1] : null;
+const nextLog =
+  currentIndex < sortedLogs.length - 1 ? sortedLogs[currentIndex + 1] : null;
+---
+
+<Layout title={frontmatter.title} ogImage={ogImage}>
+  <Navigation selected="logs" />
+  <main>
+    <article>
+      <nav class="breadcrumb">
+        <a href="/logs">Logs</a>
+        <span class="separator">/</span>
+        <a href={`/logs/${new Date(frontmatter.date).getFullYear()}`}>
+          {new Date(frontmatter.date).getFullYear()}
+        </a>
+        <span class="separator">/</span>
+        <a
+          href={`/logs/${new Date(frontmatter.date).getFullYear()}/${String(new Date(frontmatter.date).getMonth() + 1).padStart(2, "0")}`}
+        >
+          {
+            new Date(frontmatter.date).toLocaleDateString("en-US", {
+              month: "long",
+            })
+          }
+        </a>
+        <span class="separator">/</span>
+        <span class="current">{new Date(frontmatter.date).getDate()}</span>
+      </nav>
+
+      <nav class="day-navigation">
+        <div class="nav-item nav-prev-wrapper">
+          {
+            prevLog && (
+              <a href={`/logs/${prevLog.id}`} class="nav-prev">
+                <Icon name="ph:arrow-left" />
+                <span>
+                  {new Date(prevLog.data.date).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </span>
+              </a>
+            )
+          }
+        </div>
+        <time class="current-day">
+          {
+            new Date(frontmatter.date).toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })
+          }
+        </time>
+        <div class="nav-item nav-next-wrapper">
+          {
+            nextLog && (
+              <a href={`/logs/${nextLog.id}`} class="nav-next">
+                <span>
+                  {new Date(nextLog.data.date).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </span>
+                <Icon name="ph:arrow-right" />
+              </a>
+            )
+          }
+        </div>
+      </nav>
+
+      {
+        frontmatter.tags && frontmatter.tags.length > 0 && (
+          <div class="tags">
+            {frontmatter.tags.map((tag: string) => (
+              <span class="tag">#{tag}</span>
+            ))}
+          </div>
+        )
+      }
+
+      <div class="content">
+        <slot />
+      </div>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  /* Use base.css main and article styles, only add log-specific styles */
+  
+  .breadcrumb {
+    font-size: var(--text-sm);
+    margin-bottom: var(--spacing-md);
+    color: var(--color-ink-light);
+  }
+
+  .breadcrumb a {
+    color: var(--color-ink-light);
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+
+  .breadcrumb .separator {
+    margin: 0 0.5rem;
+    color: var(--color-border);
+  }
+
+  .breadcrumb .current {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .tag {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+  }
+
+  .day-navigation {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md);
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+  }
+
+  .nav-item {
+    display: flex;
+  }
+
+  .nav-prev-wrapper {
+    justify-content: flex-start;
+  }
+
+  .nav-next-wrapper {
+    justify-content: flex-end;
+  }
+
+  .nav-prev,
+  .nav-next {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+  }
+
+  .nav-prev svg,
+  .nav-next svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .current-day {
+    text-align: center;
+    font-family: var(--font-prose);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 768px) {
+    .day-navigation {
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm);
+    }
+
+    .current-day {
+      font-size: var(--text-xs);
+    }
+
+    .nav-prev,
+    .nav-next {
+      font-size: var(--text-xs);
+    }
+  }
+</style>
+
+<script>
+  // Add keyboard navigation support
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      const prevLink = document.querySelector('.nav-prev') as HTMLAnchorElement;
+      if (prevLink) {
+        prevLink.click();
+      }
+    } else if (e.key === 'ArrowRight') {
+      const nextLink = document.querySelector('.nav-next') as HTMLAnchorElement;
+      if (nextLink) {
+        nextLink.click();
+      }
+    }
+  });
+</script>

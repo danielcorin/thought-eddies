@@ -1,0 +1,402 @@
+---
+import Navigation from "@components/layout/Navigation.astro";
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+
+export async function getStaticPaths() {
+  const logs = await getCollection("logs");
+  
+  // Get all unique year-month combinations
+  const yearMonths = new Set<string>();
+  logs.forEach((log) => {
+    const date = new Date(log.data.date);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    yearMonths.add(`${year}-${month}`);
+  });
+
+  return Array.from(yearMonths).map((yearMonth) => {
+    const [year, month] = yearMonth.split('-');
+    return {
+      params: { year, month },
+      props: { year: parseInt(year), month: parseInt(month) },
+    };
+  });
+}
+
+const { year, month } = Astro.props;
+const logs = await getCollection("logs");
+
+const monthLogs = logs
+  .filter((log) => {
+    const date = new Date(log.data.date);
+    return date.getFullYear() === year && date.getMonth() + 1 === month;
+  })
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+const monthName = monthNames[month - 1];
+
+// Create a map of days with logs
+const daysWithLogs = new Map<number, typeof logs[0]>();
+monthLogs.forEach(log => {
+  const day = new Date(log.data.date).getDate();
+  daysWithLogs.set(day, log);
+});
+
+// Get first day of the month and number of days
+const firstDay = new Date(year, month - 1, 1).getDay();
+const daysInMonth = new Date(year, month, 0).getDate();
+
+// Create calendar grid
+const calendarWeeks = [];
+let currentWeek = [];
+
+// Add empty cells for days before month starts
+for (let i = 0; i < firstDay; i++) {
+  currentWeek.push(null);
+}
+
+// Add days of the month
+for (let day = 1; day <= daysInMonth; day++) {
+  currentWeek.push(day);
+  
+  if (currentWeek.length === 7) {
+    calendarWeeks.push(currentWeek);
+    currentWeek = [];
+  }
+}
+
+// Fill last week with empty cells if needed
+if (currentWeek.length > 0) {
+  while (currentWeek.length < 7) {
+    currentWeek.push(null);
+  }
+  calendarWeeks.push(currentWeek);
+}
+
+// Get all months with logs for navigation
+const monthsWithLogs = new Set<string>();
+logs.forEach((log) => {
+  const date = new Date(log.data.date);
+  const logYear = date.getFullYear();
+  const logMonth = date.getMonth() + 1;
+  monthsWithLogs.add(`${logYear}-${String(logMonth).padStart(2, '0')}`);
+});
+
+const sortedMonths = Array.from(monthsWithLogs).sort().reverse();
+const currentMonthKey = `${year}-${String(month).padStart(2, '0')}`;
+const currentIndex = sortedMonths.indexOf(currentMonthKey);
+
+const prevMonth = currentIndex < sortedMonths.length - 1 ? sortedMonths[currentIndex + 1] : null;
+const nextMonth = currentIndex > 0 ? sortedMonths[currentIndex - 1] : null;
+
+// Get all tags used this month
+const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
+---
+
+<Layout title={`${monthName} ${year} Logs`}>
+  <Navigation selected="logs" />
+  <main>
+    <nav class="breadcrumb">
+      <a href="/logs">Logs</a>
+      <span class="separator">/</span>
+      <a href={`/logs/${year}`}>{year}</a>
+      <span class="separator">/</span>
+      <span class="current">{monthName}</span>
+    </nav>
+    
+    <header class="page-header">
+      <h1 class="page-title">{monthName} {year}</h1>
+      <p class="entry-count">{monthLogs.length} {monthLogs.length === 1 ? 'entry' : 'entries'}</p>
+    </header>
+    
+    <nav class="month-navigation">
+      <div class="nav-item nav-prev-wrapper">
+        {prevMonth && (
+          <a href={`/logs/${prevMonth.split('-')[0]}/${prevMonth.split('-')[1]}`} class="nav-prev">
+            <Icon name="ph:arrow-left" />
+            <span class="full-month">{monthNames[parseInt(prevMonth.split('-')[1]) - 1]} {prevMonth.split('-')[0]}</span>
+            <span class="abbrev-month">{monthNames[parseInt(prevMonth.split('-')[1]) - 1].slice(0, 3)} {prevMonth.split('-')[0]}</span>
+          </a>
+        )}
+      </div>
+      <time class="current-month">
+        <span class="full-month">{monthName} {year}</span>
+        <span class="abbrev-month">{monthName.slice(0, 3)} {year}</span>
+      </time>
+      <div class="nav-item nav-next-wrapper">
+        {nextMonth && (
+          <a href={`/logs/${nextMonth.split('-')[0]}/${nextMonth.split('-')[1]}`} class="nav-next">
+            <span class="full-month">{monthNames[parseInt(nextMonth.split('-')[1]) - 1]} {nextMonth.split('-')[0]}</span>
+            <span class="abbrev-month">{monthNames[parseInt(nextMonth.split('-')[1]) - 1].slice(0, 3)} {nextMonth.split('-')[0]}</span>
+            <Icon name="ph:arrow-right" />
+          </a>
+        )}
+      </div>
+    </nav>
+
+    <div class="calendar">
+      <div class="weekdays">
+        <div>Sun</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+      </div>
+      {calendarWeeks.map((week) => (
+        <div class="week">
+          {week.map((day) => {
+            if (day === null) {
+              return <div class="day empty"></div>;
+            }
+            const hasLog = daysWithLogs.has(day);
+            const log = daysWithLogs.get(day);
+            
+            return (
+              <div class={`day ${hasLog ? 'has-log' : ''}`}>
+                {hasLog && log ? (
+                  <a href={`/logs/${log.id}`}>
+                    {day}
+                  </a>
+                ) : (
+                  <span>{day}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+
+    {monthTags.length > 0 && (
+      <section class="month-tags">
+        <h2>Tags used this month</h2>
+        <div class="tags">
+          {monthTags.map(tag => (
+            <span class="tag">#{tag}</span>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+</Layout>
+
+<style>
+  .breadcrumb {
+    font-size: var(--text-sm);
+    margin-bottom: var(--spacing-md);
+    color: var(--color-ink-light);
+  }
+
+  .breadcrumb a {
+    color: var(--color-ink-light);
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+
+  .breadcrumb .separator {
+    margin: 0 0.5rem;
+    color: var(--color-border);
+  }
+
+  .breadcrumb .current {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .page-header h1 {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .entry-count {
+    color: var(--color-ink-light);
+    font-size: var(--text-sm);
+    margin: 0;
+  }
+
+  .month-navigation {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+  }
+
+  .nav-item {
+    display: flex;
+  }
+
+  .nav-prev-wrapper {
+    justify-content: flex-start;
+  }
+
+  .nav-next-wrapper {
+    justify-content: flex-end;
+  }
+
+  .nav-prev,
+  .nav-next {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+  }
+
+  .nav-prev svg,
+  .nav-next svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .current-month {
+    text-align: center;
+    font-size: var(--text-sm);
+  }
+
+  .abbrev-month {
+    display: none;
+  }
+
+  .calendar {
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-align: center;
+    color: var(--color-ink-light);
+  }
+
+  .week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .week:last-child {
+    margin-bottom: 0;
+  }
+
+  .day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-sm);
+  }
+
+  .day.empty {
+    visibility: hidden;
+  }
+
+  .day.has-log a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-border);
+    color: var(--color-ink);
+    border-radius: 0.25rem;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .day.has-log a:hover {
+    background: var(--color-ink-light);
+    color: var(--color-bg);
+  }
+
+  .day span {
+    color: var(--color-ink-light);
+  }
+
+  .month-tags {
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .month-tags h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .tags {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+  }
+
+  @media (max-width: 768px) {
+    .month-navigation {
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm);
+    }
+
+    .full-month {
+      display: none;
+    }
+
+    .abbrev-month {
+      display: inline;
+    }
+
+    .current-month {
+      font-size: var(--text-xs);
+    }
+  }
+</style>
+
+<script>
+  // Add keyboard navigation support
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      const prevLink = document.querySelector('.nav-prev') as HTMLAnchorElement;
+      if (prevLink) {
+        prevLink.click();
+      }
+    } else if (e.key === 'ArrowRight') {
+      const nextLink = document.querySelector('.nav-next') as HTMLAnchorElement;
+      if (nextLink) {
+        nextLink.click();
+      }
+    }
+  });
+</script>
