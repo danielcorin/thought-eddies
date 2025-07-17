@@ -5,8 +5,10 @@ draft: false
 tags:
 ---
 
+import Sidenote from "@components/prose/Sidenote.astro";
+
 I spent some more time experimenting with thought partnership with language models.
-I've previously experimented with this idea when building [write-partner]({{< ref "projects/write-partner.md">}}).
+I've previously experimented with this idea when building [write-partner](/projects/write-partner).
 Referring back to this work, the prompts still seemed pretty effective for the goal at hand.
 My original idea was to incrementally construct and iterate on a document by having a conversation with a language model.
 A separate model would analyze that conversation and update the working draft of the document to include new information, thoughts or insights from the conversation.
@@ -18,7 +20,7 @@ For this, I used a smaller model.
 Initially, I tried `mistral` but ended up settling on `llama3` as it was a bit better at following my instructions.
 Instead of writing to the working file after each conversation turn, I decided to add a `done` command that allowed me to do that on-demand.
 
-The results were pretty reasonable for such a {{< sidenote "small model" >}}Small models love to ignore directions about output formatting and will frequently add content like "Here's the updated document:" even when you explicitly prompt them not to.{{< /sidenote >}}.
+The results were pretty reasonable for such a <Sidenote anchor="small model" content="Small models love to ignore directions about output formatting and will frequently add content like 'Here's the updated document:' even when you explicitly prompt them not to." />.
 Something I think that I've been under-appreciating is that the raw conversations are the most important artifact produced from this tool and exercise.
 It's possible the model won't propose useful edits or take the conversation in a productive direction, but the value that comes from the model interactions is how the user responds to the model.
 This is the signal or raw material that can be refined into a more focused structure.

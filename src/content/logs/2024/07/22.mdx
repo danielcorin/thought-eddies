@@ -7,13 +7,14 @@ tags:
 - language_models
 ---
 
+import Chat from "@components/prose/Chat.astro";
+
 I've been wanting to create a chat component for this site for a while, because I really don't like quoting conversations and manually formatting them each time.
 When using a model playground, usually there is a code snippet option that generates Python code you can copy out intro a script.
 Using that feature, I can now copy the message list and paste it as JSON into a Hugo shortcode and get results like this:
 
 
-{{< chat model="gpt-4o-mini" >}}
-[
+<Chat model="gpt-4o-mini" messages={[
   {
     "role": "system",
     "content": [
@@ -41,7 +42,6 @@ Using that feature, I can now copy the message list and paste it as JSON into a 
       }
     ]
   }
-]
-{{< /chat >}}
+]} />
 
 I'd also like to add a copy button like this site has for code snippets to to copy the raw JSON conversation to the clipboard but this is a nice starting point.

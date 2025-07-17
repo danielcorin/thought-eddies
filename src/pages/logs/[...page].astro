@@ -96,13 +96,13 @@ const yearsWithLogs = [
               <div class="entry-content">
                 <p>{preview}</p>
                 <div class="entry-footer">
-                  {log.data.tags && log.data.tags.length > 0 && (
-                    <div class="tags">
-                      {log.data.tags.map((tag: string) => (
+                  <div class="tags">
+                    {log.data.tags && log.data.tags.length > 0 && 
+                      log.data.tags.map((tag: string) => (
                         <span class="tag">#{tag}</span>
-                      ))}
-                    </div>
-                  )}
+                      ))
+                    }
+                  </div>
                   <a href={`/logs/${log.id}`} class="read-more">
                     Read more →
                   </a>

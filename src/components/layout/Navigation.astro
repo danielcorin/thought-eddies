@@ -11,7 +11,7 @@ const { selected } = Astro.props;
 
 <nav class="site-nav">
     {
-        ["", "notes", "logs"].map((item) => (
+        ["", "notes"].map((item) => (
             <a
                 href={`/${item === "" ? "" : item}`}
                 class={

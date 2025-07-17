@@ -38,7 +38,7 @@ const logs = defineCollection({
   schema: z.object({
     date: z.string().or(z.date()).transform((val) => new Date(val)),
     title: z.string(),
-    tags: z.array(z.string()).optional(),
+    tags: z.array(z.string()).nullable().optional(),
     draft: z.boolean().optional().default(true),
   }),
 });

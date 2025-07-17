@@ -5,10 +5,12 @@ draft: false
 tags:
 ---
 
+import Chat from "@components/prose/Chat.astro";
+
 Ran several experiments using local LLMs (~7b parameter models) like `llama3.2` and `phi3` to generate a random number between 1 and 100.
 The exact prompt was
 
-{{< chat model="llama3.2" >}}
+<Chat model="llama3.2" messages={
 [
     {
         "role": "system",
@@ -19,7 +21,7 @@ The exact prompt was
         "content": "Generate a random number between 1 and 100. Provide the output in the following format: 'Random number: X', where X is the generated number. Ensure the number is an integer and do not include any additional text or explanations."
     }
 ]
-{{< /chat >}}
+} />
 
 I didn't expect this approach to work as a uniform number generator, but it was interesting to see _how_ it doesn't work.
 At lower temperatures, most models only output a few different values in the range of 40-60.
