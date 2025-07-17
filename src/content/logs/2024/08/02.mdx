@@ -5,9 +5,11 @@ draft: false
 tags:
 ---
 
+import Chat from "@components/prose/Chat.astro";
+
 I added image support for the [`chat` shortcode](https://github.com/danielcorin/blog/blob/main/layouts/shortcodes/chat.html) of this site.
 
-{{< chat model="gpt-4o" >}}
+<Chat model="gpt-4o" messages={
 [
   {
     "role": "user",
@@ -34,4 +36,4 @@ I added image support for the [`chat` shortcode](https://github.com/danielcorin/
     ]
   }
 ]
-{{< /chat >}}
+} />

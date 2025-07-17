@@ -54,11 +54,14 @@ function getContent(content: string | ContentItem[]): {
         <div class="message-container">
           {message.role === "user" && (
             <div class="message user">
-              <div class="bubble user-bubble">
-                <Markdown of={getContent(message.content).text} />
-                {getContent(message.content).images.map((url) => (
-                  <img src={url} alt="" class="message-image" />
-                ))}
+              <div class="message-content">
+                <div class="user-label">User</div>
+                <div class="bubble user-bubble">
+                  <Markdown of={getContent(message.content).text} />
+                  {getContent(message.content).images.map((url) => (
+                    <img src={url} alt="" class="message-image" />
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -135,6 +138,10 @@ function getContent(content: string | ContentItem[]): {
     gap: 0.25rem;
   }
 
+  .message.user .message-content {
+    align-items: flex-end;
+  }
+
   .bubble {
     padding: var(--bubble-padding);
     border-radius: var(--bubble-radius);
@@ -160,10 +167,16 @@ function getContent(content: string | ContentItem[]): {
     font-style: italic;
   }
 
-  .model-label {
+  .model-label,
+  .user-label {
     font-size: var(--text-xs);
     color: var(--color-ink-light);
     margin-left: 0.5rem;
+  }
+
+  .user-label {
+    text-align: right;
+    margin-bottom: 0.25rem;
   }
 
   .message-image {

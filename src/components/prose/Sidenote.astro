@@ -1,0 +1,147 @@
+---
+interface Props {
+  anchor: string;
+  content: string;
+}
+
+const { anchor, content } = Astro.props;
+const id = Math.random().toString(36).substring(7);
+---
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Handle clicking outside to close sidenotes
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const isToggle = target.classList.contains('sidenote-toggle');
+      const isContent = target.closest('.sidenote-content');
+      
+      if (!isToggle && !isContent) {
+        // Close all sidenotes
+        document.querySelectorAll('.sidenote-checkbox:checked').forEach((checkbox) => {
+          (checkbox as HTMLInputElement).checked = false;
+        });
+      }
+    });
+    
+    // Handle escape key to close sidenotes
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.sidenote-checkbox:checked').forEach((checkbox) => {
+          (checkbox as HTMLInputElement).checked = false;
+        });
+      }
+    });
+  });
+</script>
+
+<span class="sidenote-wrapper">
+  <label 
+    for={`sidenote-toggle-${id}`} 
+    class="sidenote-toggle"
+    tabindex="0"
+    role="button"
+    aria-label={`Toggle sidenote: ${content.substring(0, 50)}...`}
+  >
+    {anchor}
+  </label>
+  <input 
+    type="checkbox" 
+    id={`sidenote-toggle-${id}`} 
+    class="sidenote-checkbox"
+    aria-hidden="true"
+  />
+  <span class="sidenote-content" role="note">
+    {content}
+  </span>
+</span>
+
+<style>
+  .sidenote-wrapper {
+    position: relative;
+  }
+
+  .sidenote-toggle {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    transition: color var(--transition-speed) ease;
+  }
+
+  .sidenote-toggle:hover {
+    color: var(--color-ink);
+    text-decoration-style: solid;
+  }
+
+  .sidenote-toggle:focus {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .sidenote-checkbox {
+    display: none;
+  }
+
+  .sidenote-content {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 250px;
+    margin-top: 0.5rem;
+    padding: var(--spacing-sm);
+    background: var(--color-bg);
+    border: 1px solid var(--color-bg-code);
+    border-radius: 8px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(10px);
+    transition: 
+      opacity var(--transition-speed) ease,
+      visibility var(--transition-speed) ease,
+      transform var(--transition-speed) ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+  }
+
+  .sidenote-checkbox:checked ~ .sidenote-content,
+  .sidenote-toggle:focus ~ .sidenote-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+
+  /* Mobile styles - show below content */
+  @media (max-width: 768px) {
+    .sidenote-content {
+      position: fixed;
+      left: var(--spacing-md);
+      right: var(--spacing-md);
+      bottom: var(--spacing-md);
+      top: auto;
+      width: auto;
+      transform: translateY(100%);
+      border-radius: 8px;
+      padding: var(--spacing-md);
+      font-size: var(--text-sm);
+    }
+
+    .sidenote-checkbox:checked ~ .sidenote-content,
+    .sidenote-toggle:focus ~ .sidenote-content {
+      transform: translateY(0);
+    }
+  }
+
+  /* Dark mode adjustments */
+  @media (prefers-color-scheme: dark) {
+    .sidenote-content {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+</style>
