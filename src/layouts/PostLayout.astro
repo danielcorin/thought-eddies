@@ -1,24 +1,29 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
-import { ZoomableDocument } from "@components/layout/ZoomableDocument";
+import Tag from "@components/Tag.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
 
-const { frontmatter, Content, ogImage } = Astro.props;
+const { frontmatter, ogImage } = Astro.props;
 
 // Get all posts to find prev/next
 const allPosts = await getCollection("posts");
 const sortedPosts = allPosts
   .filter((post) => !post.data.draft)
-  .sort((a, b) => new Date(b.data.createdAt).getTime() - new Date(a.data.createdAt).getTime());
+  .sort(
+    (a, b) =>
+      new Date(b.data.createdAt).getTime() -
+      new Date(a.data.createdAt).getTime(),
+  );
 
 // Find current post index
 const currentIndex = sortedPosts.findIndex(
-  (post) => post.data.title === frontmatter.title
+  (post) => post.data.title === frontmatter.title,
 );
 
-const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+const prevPost =
+  currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 ---
 
@@ -33,6 +38,19 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
             <Icon name="ph:pencil-simple-line" class="inline-icon meta-icon" />
             {new Date(frontmatter.createdAt).toISOString().split("T")[0]}
           </span>
+          {
+            frontmatter.updatedAt &&
+              new Date(frontmatter.updatedAt).toISOString() !==
+                new Date(frontmatter.createdAt).toISOString() && (
+                <span class="icon-text-wrapper">
+                  <Icon
+                    name="ph:clock-clockwise"
+                    class="inline-icon meta-icon"
+                  />
+                  {new Date(frontmatter.updatedAt).toISOString().split("T")[0]}
+                </span>
+              )
+          }
         </time>
         {
           frontmatter.location && (
@@ -45,7 +63,11 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
         {
           frontmatter.githubUrl && (
             <span class="icon-text-wrapper github-link">
-              <a href={frontmatter.githubUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                href={frontmatter.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Icon name="ph:github-logo" class="inline-icon meta-icon" />
                 <span class="github-text">On GitHub</span>
               </a>
@@ -53,13 +75,20 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
           )
         }
       </div>
+      {
+        frontmatter.tags && frontmatter.tags.length > 0 && (
+          <div class="tags">
+            {frontmatter.tags.map((tag: string) => (
+              <Tag tag={tag} />
+            ))}
+          </div>
+        )
+      }
     </header>
     <div class="content">
-      <ZoomableDocument client:load levels={frontmatter.zoomLevels}>
-        <Content />
-      </ZoomableDocument>
+      <slot />
     </div>
-    
+
     <nav class="post-navigation">
       <div class="nav-item nav-prev-wrapper">
         {
@@ -136,6 +165,12 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
     color: var(--color-accent);
   }
 
+  @media (max-width: 640px) {
+    .icon-text-wrapper {
+      margin-right: 0.25rem;
+    }
+  }
+
   .post-navigation {
     display: flex;
     justify-content: space-between;
@@ -190,11 +225,11 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
     top: 50%;
     transform: translateY(-50%);
   }
-  
+
   .nav-prev svg {
     left: var(--spacing-md);
   }
-  
+
   .nav-next svg {
     right: var(--spacing-md);
   }
@@ -235,18 +270,25 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
       max-width: 100%;
     }
   }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
 </style>
 
 <script>
   // Add keyboard navigation support
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') {
-      const prevLink = document.querySelector('.nav-prev') as HTMLAnchorElement;
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") {
+      const prevLink = document.querySelector(".nav-prev") as HTMLAnchorElement;
       if (prevLink) {
         prevLink.click();
       }
-    } else if (e.key === 'ArrowRight') {
-      const nextLink = document.querySelector('.nav-next') as HTMLAnchorElement;
+    } else if (e.key === "ArrowRight") {
+      const nextLink = document.querySelector(".nav-next") as HTMLAnchorElement;
       if (nextLink) {
         nextLink.click();
       }

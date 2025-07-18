@@ -1,5 +1,6 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
+import Tag from "@components/Tag.astro";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
@@ -81,9 +82,11 @@ const monthsData = monthNames.map((monthName, index) => {
     hasLogs: monthLogs.length > 0
   };
 });
+
+const ogImage = `/logs/${year}/og.png`;
 ---
 
-<Layout title={`Logs from ${year}`}>
+<Layout title={`Logs from ${year}`} ogImage={ogImage}>
   <Navigation selected="logs" />
   <main>
     <nav class="breadcrumb">
@@ -127,7 +130,7 @@ const monthsData = monthNames.map((monthName, index) => {
               {month.tags.length > 0 && (
                 <div class="tags">
                   {month.tags.map(tag => (
-                    <span class="tag">#{tag}</span>
+                    <Tag tag={tag} onClick="event.stopPropagation()" />
                   ))}
                 </div>
               )}
@@ -149,6 +152,7 @@ const monthsData = monthNames.map((monthName, index) => {
     font-size: var(--text-sm);
     margin-bottom: var(--spacing-md);
     color: var(--color-ink-light);
+    font-family: var(--font-mono);
   }
 
   .breadcrumb a {
@@ -213,6 +217,7 @@ const monthsData = monthNames.map((monthName, index) => {
     align-items: center;
     gap: 0.5rem;
     font-size: var(--text-sm);
+    font-family: var(--font-mono);
   }
 
   .nav-prev svg,
@@ -224,6 +229,7 @@ const monthsData = monthNames.map((monthName, index) => {
   .current-year {
     text-align: center;
     font-size: var(--text-sm);
+    font-family: var(--font-mono);
   }
 
   .months-grid {
@@ -271,14 +277,6 @@ const monthsData = monthNames.map((monthName, index) => {
     gap: var(--spacing-sm);
     flex-wrap: wrap;
     margin-top: var(--spacing-sm);
-  }
-
-  .tag {
-    font-size: var(--text-sm);
-    color: var(--color-ink-light);
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 2px;
   }
 
   @media (max-width: 768px) {

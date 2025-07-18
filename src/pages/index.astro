@@ -7,7 +7,7 @@ const collection = "home";
 const homeEntries = await getCollection(collection);
 const home = homeEntries[0] as CollectionEntry<"home">;
 const { Content } = await render(home);
-const ogImage = `${Astro.site}og.png`;
+const ogImage = `/og.png`;
 ---
 
 <Layout ogImage={ogImage}>

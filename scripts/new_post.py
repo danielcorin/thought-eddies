@@ -15,16 +15,16 @@ def slugify(text):
     return text
 
 
-def create_note(name):
-    """Create a new note with the given name"""
+def create_post(name):
+    """Create a new post with the given name"""
     slug = slugify(name)
     title = name.replace("-", " ").title()
     year = datetime.now().year
     now = datetime.now().isoformat()
 
     # Create directory path
-    note_dir = Path(f"src/content/notes/{year}/{slug}")
-    note_dir.mkdir(parents=True, exist_ok=True)
+    post_dir = Path(f"src/content/posts/{year}/{slug}")
+    post_dir.mkdir(parents=True, exist_ok=True)
 
     # Create index.mdx content
     frontmatter = f"""---
@@ -39,7 +39,7 @@ draft: true
 """
 
     # Write the file
-    index_file = note_dir / "index.mdx"
+    index_file = post_dir / "index.mdx"
     index_file.write_text(frontmatter)
 
     print(f"Created note: {index_file}")
@@ -47,11 +47,11 @@ draft: true
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Create a new note")
-    parser.add_argument("name", help="Name of the note")
+    parser = argparse.ArgumentParser(description="Create a new post")
+    parser.add_argument("name", help="Name of the post")
 
     args = parser.parse_args()
-    create_note(args.name)
+    create_post(args.name)
 
 
 if __name__ == "__main__":

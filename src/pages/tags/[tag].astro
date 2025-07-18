@@ -1,0 +1,298 @@
+---
+import Navigation from "@components/layout/Navigation.astro";
+import Tag from "@components/Tag.astro";
+import Layout from "@layouts/Layout.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  // Get all posts and logs
+  const posts = await getCollection("posts");
+  const logs = await getCollection("logs");
+  
+  // Extract all unique tags
+  const allTags = new Set<string>();
+  
+  [...posts, ...logs].forEach(item => {
+    if (item.data.tags && Array.isArray(item.data.tags)) {
+      item.data.tags.forEach(tag => allTags.add(tag));
+    }
+  });
+  
+  // Generate paths for each tag
+  return Array.from(allTags).map(tag => ({
+    params: { tag },
+    props: { tag }
+  }));
+};
+
+const { tag } = Astro.props;
+
+// Helper function to extract clean preview text from MDX/Markdown content
+function getContentPreview(body: string, maxLength: number = 200): string {
+  if (!body) return "";
+
+  // Remove all import statements (including multiline)
+  let content = body.replace(
+    /^import\s+[\s\S]*?from\s+['"][^'"]+['"];?\s*$/gm,
+    "",
+  );
+
+  // Remove export statements
+  content = content.replace(/^export\s+[\s\S]*?;\s*$/gm, "");
+
+  // Remove JSX/MDX components (both self-closing and with children)
+  content = content.replace(/<[A-Z][^>]*\/>/g, ""); // Self-closing
+  content = content.replace(/<[A-Z][^>]*>[\s\S]*?<\/[A-Z][^>]*>/g, ""); // With children
+
+  // Remove HTML comments
+  content = content.replace(/<!--[\s\S]*?-->/g, "");
+
+  // Remove code blocks
+  content = content.replace(/```[\s\S]*?```/g, "");
+  content = content.replace(/~~~[\s\S]*?~~~/g, "");
+
+  // Remove inline code
+  content = content.replace(/`[^`\n]+`/g, "");
+
+  // Remove images
+  content = content.replace(/!\[[^\]]*\]\([^)]+\)/g, "");
+
+  // Convert links to just their text
+  content = content.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+
+  // Remove headings but keep their text
+  content = content.replace(/^#{1,6}\s+(.+)$/gm, "$1");
+
+  // Remove horizontal rules
+  content = content.replace(/^[-*_]{3,}$/gm, "");
+
+  // Remove blockquotes markers
+  content = content.replace(/^>\s+/gm, "");
+
+  // Remove list markers
+  content = content.replace(/^\s*[-*+]\s+/gm, "");
+  content = content.replace(/^\s*\d+\.\s+/gm, "");
+
+  // Remove bold/italic markers
+  content = content.replace(/\*{1,3}([^*]+)\*{1,3}/g, "$1");
+  content = content.replace(/_{1,3}([^_]+)_{1,3}/g, "$1");
+
+  // Clean up extra whitespace
+  content = content.replace(/\n{3,}/g, "\n\n");
+  content = content.replace(/^\s*\n/gm, "");
+
+  // Get paragraphs and filter out short fragments
+  const paragraphs = content
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 20 && !p.match(/^\s*$/))
+    .slice(0, 2); // Take first 2 paragraphs
+
+  let preview = paragraphs.join(" ");
+
+  // Final cleanup
+  preview = preview.replace(/\s+/g, " ").trim();
+
+  if (preview.length <= maxLength) {
+    return preview;
+  }
+
+  // Truncate at word boundary
+  const truncated = preview.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return truncated.substring(0, lastSpace) + "...";
+}
+
+// Get all content with this tag
+const posts = await getCollection("posts");
+const logs = await getCollection("logs");
+
+// Filter and combine content
+const taggedPosts = posts
+  .filter(post => !post.data.draft && post.data.tags?.includes(tag))
+  .map(post => ({
+    ...post,
+    type: 'post' as const,
+    date: post.data.createdAt
+  }));
+
+const taggedLogs = logs
+  .filter(log => !log.data.draft && log.data.tags?.includes(tag))
+  .map(log => ({
+    ...log,
+    type: 'log' as const,
+    date: log.data.date
+  }));
+
+// Combine and sort by date
+const allTaggedContent = [...taggedPosts, ...taggedLogs]
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+const ogImage = `/tags/${encodeURIComponent(tag)}/og.png`;
+---
+
+<Layout title={`Tag: ${tag}`} ogImage={ogImage}>
+  <Navigation />
+  <main>
+    <h1 class="page-title">
+      Tag: <span class="tag-highlight">{tag}</span>
+      <span class="count">({allTaggedContent.length} {allTaggedContent.length === 1 ? 'item' : 'items'})</span>
+    </h1>
+    
+    <div class="content-list">
+      {allTaggedContent.map(item => {
+        const date = new Date(item.date);
+        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        const url = item.type === 'post' ? `/posts/${item.id}` : `/logs/${item.id}`;
+        
+        return (
+          <article class="entry">
+            <div class="entry-header">
+              <time class="entry-date">
+                <a href={url}>{formattedDate}</a>
+              </time>
+              <a href={item.type === 'post' ? '/posts' : '/logs'} class="entry-section">
+                {item.type === 'post' ? 'Posts' : 'Logs'}
+              </a>
+            </div>
+            <div class="entry-content">
+              <h2>
+                <a href={url}>{item.data.title}</a>
+              </h2>
+              {item.data.description ? (
+                <p class="entry-description">{item.data.description}</p>
+              ) : (
+                <p class="entry-preview">{getContentPreview(item.body || "")}</p>
+              )}
+              <div class="entry-tags">
+                {item.data.tags?.map((t: string) => (
+                  <Tag tag={t} current={t === tag} />
+                ))}
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+    
+    <div class="back-link">
+      <a href="/tags">← All tags</a>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .page-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .tag-highlight {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+  
+  .count {
+    font-size: var(--text-xl);
+    color: var(--color-ink-light);
+    font-weight: normal;
+    margin-left: var(--spacing-sm);
+  }
+  
+  .content-list {
+    margin-top: var(--spacing-xl);
+  }
+  
+  .entry {
+    padding: var(--spacing-lg);
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .entry-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .entry-date {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+  
+  .entry-date a {
+    color: var(--color-ink-light);
+    text-decoration: none;
+  }
+  
+  .entry-date a:hover {
+    color: var(--color-accent);
+  }
+  
+  .entry-section {
+    display: inline-block;
+    padding: 0.125rem 0.75rem;
+    background: var(--color-bg-code);
+    color: var(--color-ink-light);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border);
+    transition: all 0.2s ease;
+  }
+  
+  .entry-section:hover {
+    background: var(--color-ink-light);
+    color: var(--color-bg);
+    border-color: var(--color-ink-light);
+  }
+  
+  .entry-content h2 {
+    margin: 0 0 var(--spacing-sm);
+    font-size: var(--text-xl);
+  }
+  
+  .entry-content h2 a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+  
+  .entry-content h2 a:hover {
+    color: var(--color-accent);
+  }
+  
+  .entry-description {
+    margin: 0 0 var(--spacing-md);
+    color: var(--color-ink-light);
+    line-height: 1.6;
+  }
+  
+  .entry-preview {
+    margin: 0 0 var(--spacing-md);
+    color: var(--color-ink-light);
+    line-height: 1.6;
+  }
+  
+  .entry-tags {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+  
+  .back-link {
+    margin-top: var(--spacing-xl);
+    text-align: center;
+  }
+  
+  .back-link a {
+    color: var(--color-ink-light);
+    text-decoration: none;
+  }
+  
+  .back-link a:hover {
+    color: var(--color-accent);
+  }
+</style>

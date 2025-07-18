@@ -12,8 +12,10 @@ export async function getStaticPaths() {
 
 const { log } = Astro.props as { log: CollectionEntry<"logs"> };
 const { Content } = await render(log);
+
+const ogImage = `/logs/${log.id}/og.png`;
 ---
 
-<LogLayout frontmatter={log.data}>
+<LogLayout frontmatter={log.data} ogImage={ogImage}>
     <Content />
 </LogLayout>

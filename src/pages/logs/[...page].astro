@@ -1,6 +1,7 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
 import Pagination from "@components/Pagination.astro";
+import Tag from "@components/Tag.astro";
 import Layout from "@layouts/Layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
@@ -51,9 +52,11 @@ const publishedLogs = allLogs.filter((log) => !log.data.draft);
 const yearsWithLogs = [
   ...new Set(publishedLogs.map((log) => new Date(log.data.date).getFullYear())),
 ].sort((a, b) => b - a);
+
+const ogImage = `/logs/og.png`;
 ---
 
-<Layout title="Logs">
+<Layout title="Logs" ogImage={ogImage}>
   <Navigation selected="logs" />
   <main>
     <h1 class="page-title">Logs</h1>
@@ -99,7 +102,7 @@ const yearsWithLogs = [
                   <div class="tags">
                     {log.data.tags && log.data.tags.length > 0 && 
                       log.data.tags.map((tag: string) => (
-                        <span class="tag">#{tag}</span>
+                        <Tag tag={tag} />
                       ))
                     }
                   </div>
@@ -170,7 +173,7 @@ const yearsWithLogs = [
   }
 
   .toc time {
-    font-family: var(--font-prose);
+    font-family: var(--font-mono);
   }
 
   .entry-date {
@@ -237,14 +240,6 @@ const yearsWithLogs = [
     flex-wrap: wrap;
   }
 
-  .tag {
-    font-size: var(--text-sm);
-    color: var(--color-ink-light);
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 2px;
-  }
-
   .pagination-bottom {
     margin-top: var(--spacing-xl);
   }
@@ -270,6 +265,7 @@ const yearsWithLogs = [
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--color-bg-code);
     border-radius: 0.25rem;
+    font-family: var(--font-mono);
   }
 
   @media (max-width: 640px) {

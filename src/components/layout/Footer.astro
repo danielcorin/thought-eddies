@@ -5,28 +5,43 @@ const currentYear = new Date().getFullYear();
 ---
 
 <footer aria-label="Site footer">
-  <div class="content-wrapper">
-    <p>
-      &copy; {currentYear} Dan Corin · Built with <a
-        href="https://astro.build"
-        aria-label="Astro website"
-        >Astro <Icon
-          name="simple-icons:astro"
-          class="inline-icon"
-          aria-label="Astro logo"
-        /></a
-      >
-    </p>
-    <p>
+  <div class="footer-content">
+    <div class="footer-info">
+      <p class="copyright">
+        &copy; {currentYear} Dan Corin · Built with <a
+          href="https://astro.build"
+          aria-label="Astro website"
+          >Astro <Icon
+            name="simple-icons:astro"
+            class="inline-icon"
+            aria-label="Astro logo"
+          /></a
+        >
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Social links">
       <a
         href="https://www.danielcorin.com"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Personal website"
+        class="link-home"
         ><Icon
           name="ph:house-line"
-          class="inline-icon"
+          class="social-icon"
           aria-label="Home icon"
+        /></a
+      >
+      <a
+        href="https://www.wvlen.llc/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Business website"
+        class="link-business"
+        ><Icon
+          name="ph:building-office"
+          class="social-icon"
+          aria-label="Building icon"
         /></a
       >
       <a
@@ -34,21 +49,19 @@ const currentYear = new Date().getFullYear();
         target="_blank"
         rel="noopener noreferrer"
         aria-label="RSS feed"
+        class="link-rss"
       >
-        <Icon
-          name="simple-icons:rss"
-          class="inline-icon"
-          aria-label="RSS icon"
-        /></a
+        <Icon name="ph:rss" class="social-icon" aria-label="RSS icon" /></a
       >
       <a
         href="https://github.com/danielcorin"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="GitHub profile"
+        class="link-github"
         ><Icon
-          name="simple-icons:github"
-          class="inline-icon"
+          name="ph:github-logo"
+          class="social-icon"
           aria-label="GitHub icon"
         /></a
       >
@@ -57,9 +70,10 @@ const currentYear = new Date().getFullYear();
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Bluesky profile"
+        class="link-bluesky"
         ><Icon
-          name="simple-icons:bluesky"
-          class="inline-icon"
+          name="ph:butterfly"
+          class="social-icon"
           aria-label="Bluesky icon"
         /></a
       >
@@ -68,9 +82,10 @@ const currentYear = new Date().getFullYear();
         target="_blank"
         rel="noopener noreferrer"
         aria-label="LinkedIn profile"
+        class="link-linkedin"
         ><Icon
-          name="simple-icons:linkedin"
-          class="inline-icon"
+          name="ph:linkedin-logo"
+          class="social-icon"
           aria-label="LinkedIn icon"
         /></a
       >
@@ -79,34 +94,138 @@ const currentYear = new Date().getFullYear();
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Twitter profile"
+        class="link-twitter"
         ><Icon
-          name="simple-icons:twitter"
-          class="inline-icon"
+          name="ph:twitter-logo"
+          class="social-icon"
           aria-label="Twitter icon"
         /></a
       >
       <a
-        href="mailto:dcorin6@gmail.com"
+        href="mailto:dan@wvlen.llc"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Email address"
+        class="link-email"
         ><Icon
-          name="simple-icons:gmail"
-          class="inline-icon"
+          name="ph:envelope"
+          class="social-icon"
           aria-label="Gmail icon"
         /></a
       >
-      <a
-        href="https://stackoverflow.com/users/2631732/daniel-corin"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Stack Overflow profile"
-        ><Icon
-          name="simple-icons:stackoverflow"
-          class="inline-icon"
-          aria-label="Stack Overflow icon"
-        /></a
-      >
-    </p>
+    </nav>
   </div>
 </footer>
+
+<style>
+  footer {
+    margin-top: 4rem;
+  }
+
+  .footer-content {
+    padding: 3rem var(--spacing-lg);
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .footer-info {
+    text-align: center;
+  }
+
+  .copyright {
+    margin: 0;
+    color: var(--color-ink-light);
+    opacity: 0.8;
+    font-size: var(--text-sm);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-links a {
+    color: var(--color-ink-light);
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    margin: 0;
+  }
+
+  .footer-links a:hover {
+    opacity: 1;
+  }
+
+  /* Platform-specific hover colors */
+  .link-home:hover {
+    color: #ff6b6b !important;
+    opacity: 1 !important;
+  }
+
+  .link-business:hover {
+    color: #4ecdc4 !important;
+    opacity: 1 !important;
+  }
+
+  .link-rss:hover {
+    color: #ff6600 !important;
+    opacity: 1 !important;
+  }
+
+  .link-github:hover {
+    color: #2ea043 !important;
+    opacity: 1 !important;
+  }
+
+  .link-bluesky:hover {
+    color: #00a8e8 !important;
+    opacity: 1 !important;
+  }
+
+  .link-linkedin:hover {
+    color: #0a66c2 !important;
+    opacity: 1 !important;
+  }
+
+  .link-twitter:hover {
+    color: #1da1f2 !important;
+    opacity: 1 !important;
+  }
+
+  .link-email:hover {
+    color: #ea4335 !important;
+    opacity: 1 !important;
+  }
+
+  .inline-icon {
+    font-size: 1.2em;
+    vertical-align: text-bottom;
+  }
+
+  .social-icon {
+    font-size: 1.5rem;
+    display: block;
+  }
+
+  @media (min-width: 640px) {
+    .footer-content {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .footer-info {
+      text-align: left;
+    }
+
+    .footer-links {
+      justify-content: flex-end;
+    }
+  }
+</style>
