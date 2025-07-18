@@ -1,0 +1,37 @@
+---
+export interface Props {
+  tag: string;
+  onClick?: string;
+  current?: boolean;
+}
+
+const { tag, onClick, current = false } = Astro.props;
+---
+
+<a 
+  href={`/tags/${encodeURIComponent(tag)}`} 
+  class={`tag ${current ? 'current' : ''}`}
+  onclick={onClick}
+>
+  #{tag}
+</a>
+
+<style>
+  .tag {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .tag:hover {
+    color: var(--color-accent);
+  }
+
+  .tag.current {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+</style>

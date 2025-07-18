@@ -1,0 +1,35 @@
+---
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  const paths: {
+    params: { alias: string };
+    props: { redirectTo: string; postTitle: string };
+  }[] = [];
+
+  // Create redirect paths for each alias
+  posts.forEach((post) => {
+    if (post.data.aliases && Array.isArray(post.data.aliases)) {
+      post.data.aliases.forEach((alias) => {
+        // Remove leading slash if present
+        const cleanAlias = alias.startsWith("/") ? alias.slice(1) : alias;
+        paths.push({
+          params: { alias: cleanAlias },
+          props: {
+            redirectTo: `/posts/${post.id}`,
+            postTitle: post.data.title,
+          },
+        });
+      });
+    }
+  });
+
+  return paths;
+}
+
+const { redirectTo, postTitle } = Astro.props;
+
+// Perform redirect
+return Astro.redirect(redirectTo, 301);
+---

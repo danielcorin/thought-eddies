@@ -16,5 +16,5 @@ build:
 preview:
     npm run preview
 
-note name:
-    python3 scripts/new_note.py "{{name}}"
+post name:
+    python3 scripts/new_post.py "{{name}}"

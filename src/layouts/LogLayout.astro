@@ -1,5 +1,6 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
+import Tag from "@components/Tag.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
@@ -97,7 +98,7 @@ const nextLog =
         frontmatter.tags && frontmatter.tags.length > 0 && (
           <div class="tags">
             {frontmatter.tags.map((tag: string) => (
-              <span class="tag">#{tag}</span>
+              <Tag tag={tag} />
             ))}
           </div>
         )
@@ -117,6 +118,7 @@ const nextLog =
     font-size: var(--text-sm);
     margin-bottom: var(--spacing-md);
     color: var(--color-ink-light);
+    font-family: var(--font-mono);
   }
 
   .breadcrumb a {
@@ -181,6 +183,7 @@ const nextLog =
     align-items: center;
     gap: 0.5rem;
     font-size: var(--text-sm);
+    font-family: var(--font-mono);
   }
 
   .nav-prev svg,
@@ -191,7 +194,7 @@ const nextLog =
 
   .current-day {
     text-align: center;
-    font-family: var(--font-prose);
+    font-family: var(--font-mono);
     font-size: var(--text-sm);
   }
 
@@ -209,6 +212,14 @@ const nextLog =
     .nav-next {
       font-size: var(--text-xs);
     }
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 </style>
 

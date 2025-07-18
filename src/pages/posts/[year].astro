@@ -4,10 +4,10 @@ import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
-    const notes = await getCollection("notes", ({ data }) => !data.draft);
+    const posts = await getCollection("posts", ({ data }) => !data.draft);
     const years = [
         ...new Set(
-            notes.map((note) => new Date(note.data.createdAt).getFullYear()),
+            posts.map((post) => new Date(post.data.createdAt).getFullYear()),
         ),
     ];
 
@@ -18,43 +18,43 @@ export async function getStaticPaths() {
 }
 
 const { year } = Astro.params;
-const collection = "notes";
-const notes = await getCollection(collection, ({ data }) => !data.draft);
+const collection = "posts";
+const posts = await getCollection(collection, ({ data }) => !data.draft);
 
-const yearNotes = notes
+const yearPosts = posts
     .filter(
-        (note) =>
-            new Date(note.data.createdAt).getFullYear().toString() === year,
+        (post) =>
+            new Date(post.data.createdAt).getFullYear().toString() === year,
     )
     .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
-const ogImage = `${Astro.site}notes/${year}/og.png`;
+const ogImage = `/posts/${year}/og.png`;
 ---
 
-<Layout title={`Notes created in ${year}`} ogImage={ogImage}>
+<Layout title={`Posts created in ${year}`} ogImage={ogImage}>
     <Navigation selected={collection} />
     <main>
         <h1 class="page-title">
-            Notes created in {year}
+            Posts created in {year}
         </h1>
         <div class="toc">
             {
-                yearNotes.map((note) => (
+                yearPosts.map((post) => (
                     <article class="entry">
                         <h2>
-                            <a href={`/${collection}/${note.id}`}>
-                                {note.data.title}
+                            <a href={`/${collection}/${post.id}`}>
+                                {post.data.title}
                             </a>
                         </h2>
                         <div class="line" style="opacity: 0;" />
-                        <time datetime={note.data.createdAt.toISOString()}>
+                        <time datetime={post.data.createdAt.toISOString()}>
                             {
-                                new Date(note.data.createdAt)
+                                new Date(post.data.createdAt)
                                     .toISOString()
                                     .split("T")[0]
                             }
                         </time>
-                        {note.data.description && (
-                            <p>{note.data.description}</p>
+                        {post.data.description && (
+                            <p>{post.data.description}</p>
                         )}
                     </article>
                 ))

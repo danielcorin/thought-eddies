@@ -1,5 +1,6 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
+import Tag from "@components/Tag.astro";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
@@ -98,9 +99,11 @@ const nextMonth = currentIndex > 0 ? sortedMonths[currentIndex - 1] : null;
 
 // Get all tags used this month
 const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
+
+const ogImage = `/logs/${year}/${String(month).padStart(2, '0')}/og.png`;
 ---
 
-<Layout title={`${monthName} ${year} Logs`}>
+<Layout title={`${monthName} ${year} Logs`} ogImage={ogImage}>
   <Navigation selected="logs" />
   <main>
     <nav class="breadcrumb">
@@ -181,7 +184,7 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
         <h2>Tags used this month</h2>
         <div class="tags">
           {monthTags.map(tag => (
-            <span class="tag">#{tag}</span>
+            <Tag tag={tag} />
           ))}
         </div>
       </section>
@@ -194,6 +197,7 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
     font-size: var(--text-sm);
     margin-bottom: var(--spacing-md);
     color: var(--color-ink-light);
+    font-family: var(--font-mono);
   }
 
   .breadcrumb a {
@@ -258,6 +262,7 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
     align-items: center;
     gap: 0.5rem;
     font-size: var(--text-sm);
+    font-family: var(--font-mono);
   }
 
   .nav-prev svg,
@@ -269,6 +274,7 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
   .current-month {
     text-align: center;
     font-size: var(--text-sm);
+    font-family: var(--font-mono);
   }
 
   .abbrev-month {
@@ -306,6 +312,10 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
     margin-bottom: 0;
   }
 
+  .weekdays {
+    font-family: var(--font-mono);
+  }
+
   .day {
     aspect-ratio: 1;
     display: flex;
@@ -328,6 +338,7 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
     color: var(--color-ink);
     border-radius: 0.25rem;
     font-weight: 500;
+    font-family: var(--font-mono);
     transition: background 0.2s ease, color 0.2s ease;
   }
 
@@ -338,6 +349,7 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
 
   .day span {
     color: var(--color-ink-light);
+    font-family: var(--font-mono);
   }
 
   .month-tags {
@@ -354,14 +366,6 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
     display: flex;
     gap: var(--spacing-sm);
     flex-wrap: wrap;
-  }
-
-  .tag {
-    font-size: var(--text-sm);
-    color: var(--color-ink-light);
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 2px;
   }
 
   @media (max-width: 768px) {

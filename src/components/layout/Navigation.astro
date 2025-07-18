@@ -11,7 +11,7 @@ const { selected } = Astro.props;
 
 <nav class="site-nav">
     {
-        ["", "notes"].map((item) => (
+        ["", "posts"].map((item) => (
             <a
                 href={`/${item === "" ? "" : item}`}
                 class={
@@ -34,16 +34,23 @@ const { selected } = Astro.props;
             </a>
         ))
     }
-    <button id="theme-toggle" class="nav-link" style="margin-left: auto;">
-        <span class="nav-item">
-            <span id="sun-wrapper" class="sun-wrapper">
-                <Icon name="ph:sun" class="inline-icon" />
+    <div class="nav-icons-group" style="margin-left: auto;">
+        <a href="/rss.xml" class="nav-link nav-icon-link" title="RSS Feed">
+            <span class="nav-item">
+                <Icon name="ph:rss" class="inline-icon nav-icon" />
             </span>
-            <span id="moon-wrapper" class="moon-wrapper hidden">
-                <Icon name="ph:moon" class="inline-icon" />
+        </a>
+        <button id="theme-toggle" class="nav-link nav-icon-link">
+            <span class="nav-item">
+                <span id="sun-wrapper" class="sun-wrapper">
+                    <Icon name="ph:sun" class="inline-icon nav-icon" />
+                </span>
+                <span id="moon-wrapper" class="moon-wrapper hidden">
+                    <Icon name="ph:moon" class="inline-icon nav-icon" />
+                </span>
             </span>
-        </span>
-    </button>
+        </button>
+    </div>
 </nav>
 
 <script is:inline>
@@ -86,3 +93,37 @@ const { selected } = Astro.props;
         }
     })();
 </script>
+
+<style>
+    .nav-icon-link {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle;
+    }
+    
+    .nav-icon-link .nav-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 24px;
+    }
+    
+    .nav-icon {
+        vertical-align: middle !important;
+        margin: 0;
+        display: block;
+    }
+    
+    /* Ensure both icons have the same size */
+    .nav-icon-link svg {
+        width: 1em;
+        height: 1em;
+    }
+    
+    /* Group icons together with controlled spacing */
+    .nav-icons-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+</style>

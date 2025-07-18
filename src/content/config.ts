@@ -1,8 +1,11 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
-const notes = defineCollection({
-  loader: glob({ pattern: "**/*.mdx", base: "./src/content/notes" }),
+const posts = defineCollection({
+  loader: glob({ 
+    pattern: ["**/*.{md,mdx}", "!**/source.md"], 
+    base: "./src/content/posts"
+  }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
@@ -10,9 +13,11 @@ const notes = defineCollection({
     createdAt: z.date(),
     updatedAt: z.date(),
     publishedAt: z.date().optional(),
-    tags: z.array(z.string()).optional(),
+    tags: z.array(z.string()).nullable().optional(),
     image: z.string().optional(),
     draft: z.boolean().optional().default(true),
+    aliases: z.array(z.string()).optional(),
+    githubUrl: z.string().url().optional(),
     zoomLevels: z
       .array(
         z.object({
@@ -43,4 +48,4 @@ const logs = defineCollection({
   }),
 });
 
-export const collections = { notes, home, logs };
+export const collections = { posts, home, logs };

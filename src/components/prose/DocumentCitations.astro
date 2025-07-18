@@ -17,7 +17,7 @@ const { qaPairs, sourcePath } = Astro.props;
 const rawContent = await import.meta.glob<{
     file: string;
     rawContent: () => string;
-}>("../../content/notes/**/*.md", { eager: true });
+}>("../../content/posts/**/*.md", { eager: true });
 const sourceFile = Object.values(rawContent).find((file) =>
     file.file.includes(sourcePath),
 );

@@ -1,21 +1,21 @@
 ---
 import TableOfContents from "@components/layout/TableOfContents.astro";
-import NoteLayout from "@layouts/NoteLayout.astro";
+import PostLayout from "@layouts/PostLayout.astro";
 import ZoomableNoteLayout from "@layouts/ZoomableNoteLayout.astro";
 import { getCollection, render, type CollectionEntry } from "astro:content";
 
 export const prerender = true;
 export async function getStaticPaths() {
-  const notes = await getCollection("notes");
-  return notes.map((post: CollectionEntry<"notes">) => ({
+  const posts = await getCollection("posts");
+  return posts.map((post: CollectionEntry<"posts">) => ({
     params: { slug: post.id },
     props: { post },
   }));
 }
 
-const { post } = Astro.props as { post: CollectionEntry<"notes"> };
+const { post } = Astro.props as { post: CollectionEntry<"posts"> };
 const { Content, headings } = await render(post);
-const ogImage = `${Astro.site}notes/${post.id}/og.png`;
+const ogImage = `/posts/${post.id}/og.png`;
 ---
 
 {
@@ -29,9 +29,9 @@ const ogImage = `${Astro.site}notes/${post.id}/og.png`;
       <Content />
     </ZoomableNoteLayout>
   ) : (
-    <NoteLayout frontmatter={post.data} ogImage={ogImage}>
+    <PostLayout frontmatter={post.data} ogImage={ogImage}>
       <TableOfContents title={post.data.title} headings={headings} />
       <Content />
-    </NoteLayout>
+    </PostLayout>
   )
 }
