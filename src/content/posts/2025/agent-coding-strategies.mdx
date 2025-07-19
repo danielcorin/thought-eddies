@@ -1,0 +1,137 @@
+---
+title: "Agent Coding Strategies"
+createdAt: 2025-06-19T11:18:05-04:00
+updatedAt: 2025-07-18T11:18:05-04:00
+draft: false
+toc: true
+tags:
+- language_models
+- agents
+---
+
+import Sidenote from "@components/prose/Sidenote.astro";
+import Alert from "@components/prose/Alert.astro";
+
+<Alert type="note">
+Feel free to skip directly to the [strategies](/posts/2025/agent-coding-strategies#write-a-spec-first) if you don't need to be convinced using agents to write code is worth your time.
+</Alert>
+
+If you've read any of my writing in the past year, you're probably aware I've heavily adopted agents to build much of the software I write now.
+What I've done less of is write about the strategies I've used to do this.
+
+After shadowing some colleagues, both classically technical and classically non-technical, I've seen good ideas come from everywhere on how to make agents build what you want them to build.
+
+The markers of success with these approaches, above all else, seem to be persistence, a willingness to try many different things, and to learn and adapt to what _does_ works, especially as the tools continue to change.
+This pivot in approach can be especially hard for people who already know how to code and have strong opinions about how to do things.
+
+If this is you, try and suspend your disbelief.
+See what the tools can do for you.
+Your knowledge of code will be valuable, but first you need to develop this new skill of prompting a language model.
+
+Here are some of the strategies that work for me in June 2025.
+I've tried to keep these tool agnostic as the landscape of tools is changing rapidly and I use these approaches across all agent tools I work with.
+
+## Write a spec first
+
+For projects that I hope to keep around for a while and iterate on, I write a spec for each feature first.
+Sometimes, I put these in a `specs` folder, named `yyyy-mm-dd-feature-name.md`.
+These serve as the beginning of my conversation with the agent, which often looks like:
+
+> Implement @specs/2025-05-16-test-api-button.md
+
+Here is an example from one of my projects:
+
+```md {title="specs/2025-05-16-test-api-button.md"}
+# Test API Button
+
+In @ApiSettingsView.swift add minimal button below the configuration value input fields to make a test api request with the configured provider, model and API key in the @ApiSettingsView.swift
+Make the test request by use @OpenAIService.swift to send a "hi" message to the model API.
+
+If the call is successful, show a green UI element.
+Otherwise show a red UI element and the full error from the call.
+Always allow the user to click the button to retry the connection and update the UI to show the new result.
+```
+I took this idea from [Geoffrey Huntley](https://ghuntley.com/specs).
+
+The approach helps ensure that I know what I expect the agent to build.
+If I am fuzzy on these details, the agent will often attempt to fill them in, but if they are details I care about, I will likely need to start over adding the details to the spec because the agent can't read my mind (even though sometimes it feels like it can).
+
+## Ensure the model has proper context
+
+You might have noticed I used `@` to reference specific files in my spec.
+Agents are often good enough to find the context they need by searching your codebase, but referencing specific files ensures the agent will use what you know to be the correct context where it starts to work.
+Most agents are pretty good at searching your codebase, but in larger codebases or in the face of ambiguity, being clear helps with quality.
+
+For me, there is a specific exception to this rule.
+Sometimes I go out of my way to _not_ be specific, particularly with languages and frameworks I am less familiar with.
+In these cases, I'm often not writing production-grade code and am leaning on the model to steer me in a reasonable direction.
+This doesn't always work, but it seems to be better than [being wrong](#consider-if-you-are-wrong).
+
+## Start fresh to avoid context rot
+
+Context rot was a [recently coined term](https://news.ycombinator.com/item?id=44308711#44310054) to describe the process by which the past messages in an LLM conversation undermine its ability to accomplish a task going forward.
+Sometimes this rot comes from the agent, other times the user's prompt, often a combination of both.
+It happens as the context grows towards the size limit of the context window, where most models begin to have [issues with recall](https://fiction.live/stories/Fiction-liveBench-Feb-21-2025/oQdzQvKHw8JyXbN87).
+
+I mention this because context rot is the reason I write specs.
+
+Fixing problematic context or instructions is fundamental to getting the agent on the right track to solving your problem.
+
+Starting with a fresh chat or fixing a misunderstanding, typo, or mistake by deleting/editing a previous message is <Sidenote anchor="always better" content="After noticing this phenomenon, I built a project called [Delta](https://github.com/danielcorin/delta) (like a river delta) to enable first-class conversation branching, where I can branch off any message in the conversation to continue in a new direction but also preserve the history of other branches if useful." /> than trying to clarify the mistake with a follow-up message.
+
+If the agent is going in the wrong direction from the first prompt, I edit the spec and start over.
+
+I've also described this as "conversational inertia." When the agent is going in the wrong direction, it tends to keep going in the wrong direction.
+Conversely, when the agent is going in the right direction, follow-ups can be useful, effective, and powerful while not too much of the context window is being utilized.
+
+When I add follow-up messages, I haven't kept a consistent habit of adding the follow-ups to the spec, but this feels important, especially if I decide to keep the specs under source control or add them to the PR description.
+
+## Use examples
+
+This recommendation is a bit like "a picture is worth a thousand words." If you have a working example of code that uses a pattern or library -- in your codebase, from documentation, or elsewhere -- this can serve as valuable context to add to your prompt.
+
+It is more difficult and time-consuming to explain with words to the agent how you want an SDK to be used than it is to just show the agent the SDK and how it works.
+
+I've successfully one-shotted RPC calls using an undocumented internal framework by showing a totally different working RPC and the protobuf definition for the RPC I wanted to call.
+The agent wrote a working call on the first try.
+
+## Consider if you are wrong
+
+I was building a recipe web app for myself with a 50-50 split of two panes to list the ingredients and instructions for a recipe.
+I wanted the agent to edit the styling of the numbered badges in the instructions pane, but I accidentally told it to edit the badges in the ingredients pane.
+As a result, the agent kept trying to update the style of the tag badges above the ingredients list.
+
+Since I wasn't as mentally checked in as I would have been for a serious project, I wasn't recognizing how the agent was attempting to make changes and thus missed my mistake for several attempts.
+
+## Be an active collaborator
+
+The quality of the results I get using agents to write code seems directly correlated to how focused I am in participating in the work with the agent.
+I _can_ submit a prompt then walk away, but what seems to matter consistently is that I generally consider how I would do the task and that I review the results of the agent's work.
+
+What does this mean for vibe coding?
+
+It probably means the quality of the codebases written by folks familiar with code will be better than non-technical folks for a little while longer.
+
+When I care about the endurance of the project I am working on, I've found I need to be an active collaborator with the agent; otherwise, it will eventually make a mistake I miss, find out about later, and can't prompt it to dig itself out of.
+I ran into this exact problem when I "fully vibe coded" [Pad Lander](projects/pad-lander).
+
+I'm not exactly sure if this problem will ever go away as agents improve because you can always increase the complexity by another order of magnitude.
+
+Can the agent refactor a problematic codebase? What about a codebase 5x as large? What about 5 interdependent codebases deployed separately? What about those same 5 codebases deployed in multiple regions with eventually consistent data?
+
+I'm not saying agents won't eventually get there, just that they still have room to improve.
+Right now, the best results for me still come from actively participating.
+This has allowed me to keep primarily-agent-written codebases in good enough shape that I've been able to continue adding features to them for many months - a year or so (the capability is about a year old).
+
+## Bonus: use guardrails
+
+Guardrails don't strictly make the agent _better_ at producing good results, but they often allow the agent to use feedback to run for longer and fix problems you might have to resolve yourself (or just paste back into the agent and prompt it to do it).
+
+Guardrails come in many forms, but ones that have been most helpful for me are integration tests.
+For example, I start my app locally, then write code to make a request to an an API, check the response, and finally request another API to validate the system is in the expected state.
+
+I don't have strong opinions on the type of guardrails you add.
+I recommend adding guardrails that give you confidence the change you made it safe, works, and didn't break anything else.
+
+Different types of agent guardrails could be a post in and of itself.
+Maybe another time and after I try more things.

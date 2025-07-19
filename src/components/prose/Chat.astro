@@ -102,7 +102,7 @@ function getContent(content: string | ContentItem[]): {
   .chat-container {
     --bubble-radius: 1rem;
     --bubble-padding: 0.75rem 1rem;
-    --bubble-max-width: 80%;
+    --bubble-max-width: 90%;
 
     display: flex;
     flex-direction: column;
@@ -136,6 +136,8 @@ function getContent(content: string | ContentItem[]): {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    max-width: var(--bubble-max-width);
+    min-width: 0;
   }
 
   .message.user .message-content {
@@ -147,6 +149,10 @@ function getContent(content: string | ContentItem[]): {
     border-radius: var(--bubble-radius);
     max-width: var(--bubble-max-width);
     font-size: var(--text-sm);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
+    display: inline-block;
   }
 
   .user-bubble {
@@ -237,6 +243,44 @@ function getContent(content: string | ContentItem[]): {
     text-decoration: underline;
   }
 
+  /* Inline code styling within bubbles */
+  .user-bubble :global(code:not(pre code)) {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-bg);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+
+  .assistant-bubble :global(code:not(pre code)) {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: var(--color-ink);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+
+  /* Dark mode adjustments for inline code */
+  :global(.dark) .assistant-bubble :global(code:not(pre code)) {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Code block styling within bubbles */
+  .bubble :global(pre) {
+    margin: 0.5rem 0;
+    overflow-x: auto;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .bubble :global(pre code) {
+    display: block;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+    min-width: 0;
+  }
+
   /* Mobile styles */
   @media (max-width: 640px) {
     .chat-container {
@@ -251,6 +295,15 @@ function getContent(content: string | ContentItem[]): {
 
     .bubble {
       width: 100%;
+      display: block;
+    }
+
+    .message-content {
+      max-width: 100%;
+    }
+
+    .message.user .message-content {
+      align-items: stretch;
     }
 
     .user-bubble {

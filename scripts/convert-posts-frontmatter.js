@@ -58,6 +58,14 @@ async function convertPost(filePath) {
 function parseDate(dateStr) {
   if (!dateStr) return new Date();
   
+  // If it's already a Date object, return it
+  if (dateStr instanceof Date) {
+    return dateStr;
+  }
+  
+  // Convert to string if it's not already
+  dateStr = String(dateStr);
+  
   // Remove quotes if present
   dateStr = dateStr.replace(/['"]/g, '');
   

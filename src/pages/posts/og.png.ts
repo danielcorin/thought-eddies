@@ -1,5 +1,5 @@
 import { getCollection } from "astro:content";
-import { generateOGImage } from "../../utils/og";
+import { generateOGImage } from "@utils/og";
 
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 

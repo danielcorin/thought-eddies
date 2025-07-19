@@ -1,3 +1,10 @@
+---
+title: Untitled
+createdAt: 2025-07-19T00:19:26.545Z
+updatedAt: 2025-07-19T00:19:26.545Z
+tags: null
+draft: true
+---
 # Introducing Citations on the Anthropic API
 
 Today, we're launching Citations, a new API feature that lets Claude ground its answers in source documents. Claude can now provide detailed references to the exact sentences and passages it uses to generate responses, leading to more verifiable, trustworthy outputs.

@@ -2,6 +2,7 @@
 import Navigation from "@components/layout/Navigation.astro";
 import Tag from "@components/Tag.astro";
 import Layout from "@layouts/Layout.astro";
+import { getContentPreview } from "@utils/text";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 
@@ -28,81 +29,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 const { tag } = Astro.props;
 
-// Helper function to extract clean preview text from MDX/Markdown content
-function getContentPreview(body: string, maxLength: number = 200): string {
-  if (!body) return "";
-
-  // Remove all import statements (including multiline)
-  let content = body.replace(
-    /^import\s+[\s\S]*?from\s+['"][^'"]+['"];?\s*$/gm,
-    "",
-  );
-
-  // Remove export statements
-  content = content.replace(/^export\s+[\s\S]*?;\s*$/gm, "");
-
-  // Remove JSX/MDX components (both self-closing and with children)
-  content = content.replace(/<[A-Z][^>]*\/>/g, ""); // Self-closing
-  content = content.replace(/<[A-Z][^>]*>[\s\S]*?<\/[A-Z][^>]*>/g, ""); // With children
-
-  // Remove HTML comments
-  content = content.replace(/<!--[\s\S]*?-->/g, "");
-
-  // Remove code blocks
-  content = content.replace(/```[\s\S]*?```/g, "");
-  content = content.replace(/~~~[\s\S]*?~~~/g, "");
-
-  // Remove inline code
-  content = content.replace(/`[^`\n]+`/g, "");
-
-  // Remove images
-  content = content.replace(/!\[[^\]]*\]\([^)]+\)/g, "");
-
-  // Convert links to just their text
-  content = content.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
-
-  // Remove headings but keep their text
-  content = content.replace(/^#{1,6}\s+(.+)$/gm, "$1");
-
-  // Remove horizontal rules
-  content = content.replace(/^[-*_]{3,}$/gm, "");
-
-  // Remove blockquotes markers
-  content = content.replace(/^>\s+/gm, "");
-
-  // Remove list markers
-  content = content.replace(/^\s*[-*+]\s+/gm, "");
-  content = content.replace(/^\s*\d+\.\s+/gm, "");
-
-  // Remove bold/italic markers
-  content = content.replace(/\*{1,3}([^*]+)\*{1,3}/g, "$1");
-  content = content.replace(/_{1,3}([^_]+)_{1,3}/g, "$1");
-
-  // Clean up extra whitespace
-  content = content.replace(/\n{3,}/g, "\n\n");
-  content = content.replace(/^\s*\n/gm, "");
-
-  // Get paragraphs and filter out short fragments
-  const paragraphs = content
-    .split(/\n\n+/)
-    .map((p) => p.trim())
-    .filter((p) => p.length > 20 && !p.match(/^\s*$/))
-    .slice(0, 2); // Take first 2 paragraphs
-
-  let preview = paragraphs.join(" ");
-
-  // Final cleanup
-  preview = preview.replace(/\s+/g, " ").trim();
-
-  if (preview.length <= maxLength) {
-    return preview;
-  }
-
-  // Truncate at word boundary
-  const truncated = preview.substring(0, maxLength);
-  const lastSpace = truncated.lastIndexOf(" ");
-  return truncated.substring(0, lastSpace) + "...";
-}
 
 // Get all content with this tag
 const posts = await getCollection("posts");
