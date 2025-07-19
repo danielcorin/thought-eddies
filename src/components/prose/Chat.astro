@@ -58,8 +58,8 @@ function getContent(content: string | ContentItem[]): {
                 <div class="user-label">User</div>
                 <div class="bubble user-bubble">
                   <Markdown of={getContent(message.content).text} />
-                  {getContent(message.content).images.map((url) => (
-                    <img src={url} alt="" class="message-image" />
+                  {getContent(message.content).images.map((url, index) => (
+                    <img src={url} alt={`Image ${index + 1} from user message`} class="message-image" />
                   ))}
                 </div>
               </div>
@@ -71,8 +71,8 @@ function getContent(content: string | ContentItem[]): {
                 {model && <div class="model-label">{model}</div>}
                 <div class="bubble assistant-bubble">
                   <Markdown of={getContent(message.content).text} />
-                  {getContent(message.content).images.map((url) => (
-                    <img src={url} alt="" class="message-image" />
+                  {getContent(message.content).images.map((url, index) => (
+                    <img src={url} alt={`Image ${index + 1} from ${model || 'assistant'} response`} class="message-image" />
                   ))}
                 </div>
               </div>
@@ -82,8 +82,8 @@ function getContent(content: string | ContentItem[]): {
             <div class="message system">
               <div class="bubble system-bubble">
                 <Markdown of={getContent(message.content).text} />
-                {getContent(message.content).images.map((url) => (
-                  <img src={url} alt="" class="message-image" />
+                {getContent(message.content).images.map((url, index) => (
+                  <img src={url} alt={`Image ${index + 1} from system message`} class="message-image" />
                 ))}
               </div>
             </div>

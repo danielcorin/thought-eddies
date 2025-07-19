@@ -78,6 +78,7 @@ const sortedLogs = logs.sort((a, b) => {
 		<title>{pageTitle}</title>
 	</head>
 	<body class="posts">
+		<a href="#main-content" class="skip-link">Skip to main content</a>
 		<ReadingProgress />
 
 		<script is:inline>
@@ -118,7 +119,7 @@ const sortedLogs = logs.sort((a, b) => {
 			};
 		</script>
 
-		<main>
+		<main id="main-content">
 			<div class="content-wrapper">
 				<slot />
 			</div>
