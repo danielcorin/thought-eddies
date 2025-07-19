@@ -42,9 +42,7 @@ const id = Math.random().toString(36).substring(7);
     tabindex="0"
     role="button"
     aria-label={`Toggle sidenote: ${content.substring(0, 50)}...`}
-  >
-    {anchor}
-  </label>
+  ><span class="sidenote-anchor">{anchor.trim()}</span></label>
   <input 
     type="checkbox" 
     id={`sidenote-toggle-${id}`} 
@@ -62,15 +60,18 @@ const id = Math.random().toString(36).substring(7);
   }
 
   .sidenote-toggle {
+    cursor: pointer;
+  }
+
+  .sidenote-anchor {
     color: var(--color-link);
     text-decoration: underline;
     text-decoration-style: dotted;
     text-underline-offset: 2px;
-    cursor: pointer;
     transition: color var(--transition-speed) ease;
   }
 
-  .sidenote-toggle:hover {
+  .sidenote-toggle:hover .sidenote-anchor {
     color: var(--color-ink);
     text-decoration-style: solid;
   }

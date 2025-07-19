@@ -136,6 +136,12 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
     color: var(--color-accent);
   }
 
+  @media (max-width: 640px) {
+    .icon-text-wrapper {
+      margin-right: 0.75rem;
+    }
+  }
+
   .post-navigation {
     display: flex;
     justify-content: space-between;

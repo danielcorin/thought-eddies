@@ -1,4 +1,4 @@
-import { generateOGImage } from "../utils/og";
+import { generateOGImage } from "@utils/og";
 
 export async function GET() {
     return generateOGImage({

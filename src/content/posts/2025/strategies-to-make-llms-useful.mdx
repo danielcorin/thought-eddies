@@ -1,0 +1,170 @@
+---
+title: "A few strategies to make LLMs useful for you"
+createdAt: 2025-06-24T19:39:33-04:00
+updatedAt: 2025-07-18T19:39:33-04:00
+draft: false
+---
+
+import Chat from "@components/prose/Chat.astro";
+
+> I was reading your [blog](/posts/2025/who-finds-llms-useful-and-why) and had a question about this:
+>
+> "I noticed that my coworker was prompting for specific technical implementations, and Claude was struggling, pulling in too much context and taking an unfocused approach, whereas I would have been much more vague and general to start and refined as I saw whether Claude was on the right track."
+>
+> Would you be able to elaborate more on your thought process on how to prompt an LLM to code a task for you based on its complexity? [I ...] would appreciate any examples you have from experience.
+
+I think part of why I get good results from prompting LLMs is because I'm both willing to engage in and enjoy the process of thinking and writing with clarity.
+I'm the software engineer who likes to write air tight documentation, with working copy-pasteable example code in different languages.
+I like to be thorough, mentioning issues I ran into in the process, but I also try and value the reader's time and attention, giving them the thing they are looking for if they aren't interested in reading about the details.
+
+I've found this process is highly effective for getting good results from LLMs as well.
+
+But it's not always so easy to just start writing.
+
+Let's say your university CS class project is to build a snake game.
+If you prompt an LLM to build you a [snake game](https://en.wikipedia.org/wiki/Snake_(video_game_genre)), it can probably do it with no further prompts.
+There are tons of open source implementations of snake games and even if there weren't, the model already knows how the game works, the rules, the mechanics, and the win conditions.
+
+However if you just prompt
+
+<Chat messages={
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "write me a snake game"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "I'll create a Snake game using Python and Pygame. Here's a complete implementation:\n\n```python\nimport pygame\nimport random\nimport sys\n\n# Initialize Pygame\npygame.init()\n\n# Constants\nWINDOW_WIDTH = 800\nWINDOW_HEIGHT = 600\nGRID_SIZE = 20\nGRID_WIDTH = WINDOW_WIDTH // GRID_SIZE\nGRID_HEIGHT = WINDOW_HEIGHT // GRID_SIZE\n\n# Colors\nBLACK = (0, 0, 0)\nGREEN = (0, 255, 0)\nRED = (255, 0, 0)\nWHITE = (255, 255, 255)\nDARK_GREEN = (0, 150, 0)\n\n# Directions\nUP = (0, -1)\nDOWN = (0, 1)\nLEFT = (-1, 0)\nRIGHT = (1, 0)\n\nclass Snake:\n    def __init__(self):\n        ...\n```"
+      }
+    ]
+  }
+]
+} />
+
+the model will have to fill in a vast number of details to build the game to completion.
+
+This includes things like
+
+- the size of the grid
+- the colors of the snake, food, and background
+- the speed of the game
+- whether the game should speed up over time
+- whether the game should have multiple levels
+
+The list goes on.
+
+If you prompt the model in a vague manner, it can often deliver something in the direction of what you are looking for, but it will fill in a lot of details in ways you might not want.
+This seems to be the default behavior of most models these days, especially coding agents.
+You prompt them and they get to work.
+They assume you've given them all the information they need to do the task.
+
+However, if you're working on something particularly complex and you know you may have some gaps in your question, you can prompt the model to prompt _you_ for more details.
+
+OpenAI does this with deep research agents.
+After you send your first prompt, the model prompts you for more details.
+
+You can add a system prompt to any language model you are working with to get it to do this for you whenever you want.
+
+<Chat messages={
+[
+  {
+    "role": "system",
+    "content": [
+      {
+        "type": "text",
+        "text": "You are an assistant to a user in a coding task. When they ask you to help them do something, prompt them for more information if anything about the task is unclear or requires more details."
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "write me a snake game"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "I'd be happy to help you create a Snake game! To make sure I build exactly what you're looking for, could you provide some more details?\n\n1. **Platform/Technology**: What would you like me to use?\n   - Python with Pygame\n   - JavaScript (HTML5 Canvas)\n   - Python with Tkinter\n   - Another language/framework?\n\n2. **Features**: What functionality do you want?\n   - Basic snake movement and food collection\n   - Score tracking\n   - Game over screen\n   - Different difficulty levels\n   - Sound effects\n   - High score saving\n\n3. **Visual style**: Any preferences for:\n   - Window size\n   - Colors\n   - Grid-based or smooth movement\n\n4. **Controls**: \n   - Arrow keys\n   - WASD keys\n   - Both options\n\nLet me know your preferences and I'll create a Snake game tailored to your needs!"
+      }
+    ]
+  }
+]
+} />
+
+
+This difference in behavior is already a substantially different approach to working with a language model.
+In the first case, you are largely delegating work to the model.
+You have some task you need to get done, you ask the model to do it, maybe it comes up with something close to what you wanted.
+
+For most tasks, there are a lot of details.
+
+You _can_ offload decisions about the details to the model, but then you're not really intellectually participating in the process of creating the thing.
+
+Maybe you don't care about _most_ of the details but now you have the opportunity to specify the ones you _do_ care about.
+
+A follow up prompt as simple as
+
+<Chat messages={
+[
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "use python. let's get to work"
+      }
+    ]
+  },
+  {
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Perfect! I'll create a Snake game in Python using Pygame. Let me build a complete, playable version for you: ..."
+      }
+    ]
+  }
+]
+} />
+
+is enough to send the agent to work, but a lot of good things happen in the interim.
+
+Getting the model to prompt you for more details is an easy and effective way to make sure it is on the right track and make sure it understands what you are asking it to do.
+You then also have the opportunity to fill in the details you care about, steering the model to giving you a much better result.
+If it clearly doesn't understand what you are asking for, you can start over with different instructions until you are convinced it does (I recommend starting over rather than trying to fix it with a follow up prompt).
+
+This is one of several ways I experiment with models to build things.
+
+They're also excellent brainstorming partners, to challenge you to think through details and assumptions you've made about your plans.
+I frequently use a model with a version of the following system prompt to help me think through some new idea I have to see where it leads.
+
+> You are a thought partner to the user.
+> You will have a conversation with the user, asking thoughtful follow up questions about what they say.
+> You will allow the user to steer the conversation in whatever direction they choose.
+> Only provide feedback when asked.
+> Focus on following up to help the user deepen and clarify the ideas they are exploring.
+
+The model's prompt makes my thought process more of a conversation designed to elicit further thought than an independent exercise in putting words on a page -- something which can oftentimes be a lot more effortful than doing what feels more or less like texting your friend about an idea you just thought of and them enthusiastically saying "tell me more" in lots of different ways.
+
+If you feel this approach results in too much sycophancy, modify the prompt to instruct the model to challenge you more.
+
+Find what works well for you!
+
+That is one of the best parts about working with these incredibly flexible models.
+
+Even just a few lines of a system prompt can change the model from something that feels difficult to use to a highly effective collaborative partner you work with daily.

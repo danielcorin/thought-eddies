@@ -1,7 +1,10 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
+import PostCard from "@components/PostCard.astro";
+import YearPill from "@components/YearPill.astro";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
@@ -27,38 +30,151 @@ const yearPosts = posts
             new Date(post.data.createdAt).getFullYear().toString() === year,
     )
     .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
+
+// Get all years with posts for navigation
+const yearsWithPosts = [...new Set(posts.map((post) => new Date(post.data.createdAt).getFullYear()))].sort((a, b) => b - a);
+const currentYearIndex = yearsWithPosts.indexOf(parseInt(year));
+const prevYear = currentYearIndex < yearsWithPosts.length - 1 ? yearsWithPosts[currentYearIndex + 1] : null;
+const nextYear = currentYearIndex > 0 ? yearsWithPosts[currentYearIndex - 1] : null;
+
 const ogImage = `/posts/${year}/og.png`;
 ---
 
-<Layout title={`Posts created in ${year}`} ogImage={ogImage}>
+<Layout title={`Posts from ${year}`} ogImage={ogImage}>
     <Navigation selected={collection} />
     <main>
-        <h1 class="page-title">
-            Posts created in {year}
-        </h1>
-        <div class="toc">
+        <header class="page-header">
+            <h1 class="page-title">{year}</h1>
+            <p class="entry-count">{yearPosts.length} {yearPosts.length === 1 ? 'post' : 'posts'}</p>
+        </header>
+
+        <nav class="year-navigation">
+            <div class="nav-item nav-prev-wrapper">
+                {prevYear && (
+                    <a href={`/posts/${prevYear}`} class="nav-prev">
+                        <Icon name="ph:arrow-left" />
+                        <YearPill year={prevYear} href={`/posts/${prevYear}`} />
+                    </a>
+                )}
+            </div>
+            <div class="current-year">
+                <YearPill year={year} href={`/posts/${year}`} />
+            </div>
+            <div class="nav-item nav-next-wrapper">
+                {nextYear && (
+                    <a href={`/posts/${nextYear}`} class="nav-next">
+                        <YearPill year={nextYear} href={`/posts/${nextYear}`} />
+                        <Icon name="ph:arrow-right" />
+                    </a>
+                )}
+            </div>
+        </nav>
+
+        <div class="posts-grid">
             {
                 yearPosts.map((post) => (
-                    <article class="entry">
-                        <h2>
-                            <a href={`/${collection}/${post.id}`}>
-                                {post.data.title}
-                            </a>
-                        </h2>
-                        <div class="line" style="opacity: 0;" />
-                        <time datetime={post.data.createdAt.toISOString()}>
-                            {
-                                new Date(post.data.createdAt)
-                                    .toISOString()
-                                    .split("T")[0]
-                            }
-                        </time>
-                        {post.data.description && (
-                            <p>{post.data.description}</p>
-                        )}
-                    </article>
+                    <PostCard post={post} variant="grid" />
                 ))
             }
         </div>
     </main>
 </Layout>
+
+<style>
+    .page-header {
+        text-align: center;
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .page-header h1 {
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .entry-count {
+        color: var(--color-ink-light);
+        font-size: var(--text-sm);
+        margin: 0;
+    }
+
+    .year-navigation {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        margin-bottom: var(--spacing-xl);
+        padding: var(--spacing-md);
+        background: var(--color-bg-code);
+        border-radius: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+    }
+
+    .nav-prev-wrapper {
+        justify-content: flex-start;
+    }
+
+    .nav-next-wrapper {
+        justify-content: flex-end;
+    }
+
+    .nav-prev,
+    .nav-next {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .nav-prev svg,
+    .nav-next svg {
+        width: 1rem;
+        height: 1rem;
+        color: var(--color-ink-light);
+    }
+
+    .nav-prev:hover svg,
+    .nav-next:hover svg {
+        color: var(--color-accent);
+    }
+    
+    .nav-prev:hover .year-pill,
+    .nav-next:hover .year-pill {
+        background: var(--color-bg-hover);
+        color: var(--color-accent);
+    }
+
+    .current-year {
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .current-year .year-pill {
+        background: var(--color-accent);
+        color: var(--color-bg);
+        cursor: default;
+    }
+
+    .posts-grid {
+        display: grid;
+        gap: var(--spacing-lg);
+    }
+</style>
+
+<script>
+    // Add keyboard navigation support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            const prevLink = document.querySelector('.nav-prev') as HTMLAnchorElement;
+            if (prevLink) {
+                prevLink.click();
+            }
+        } else if (e.key === 'ArrowRight') {
+            const nextLink = document.querySelector('.nav-next') as HTMLAnchorElement;
+            if (nextLink) {
+                nextLink.click();
+            }
+        }
+    });
+</script>

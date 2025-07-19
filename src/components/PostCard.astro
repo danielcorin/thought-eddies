@@ -1,0 +1,275 @@
+---
+import Tag from "@components/Tag.astro";
+import { getContentPreview } from "@utils/text";
+
+export interface Props {
+    post: {
+        id: string;
+        data: {
+            title: string;
+            description?: string;
+            createdAt: Date;
+            tags?: string[];
+        };
+        body?: string;
+    };
+    variant?: "list" | "grid";
+}
+
+const { post, variant = "list" } = Astro.props;
+const date = new Date(post.data.createdAt);
+const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const contentPreview = getContentPreview(post.body || "");
+---
+
+<article class={variant === "list" ? "entry" : "post-card"}>
+    {variant === "list" ? (
+        <>
+            <div class="entry-header">
+                <time class="entry-date-mono">
+                    <a href={`/posts/${post.id}`}>{formattedDate}</a>
+                </time>
+            </div>
+            <div class="entry-content">
+                <h2>
+                    <a href={`/posts/${post.id}`}>{post.data.title}</a>
+                </h2>
+                {post.data.description && (
+                    <p class="entry-description">{post.data.description}</p>
+                )}
+                <p class="entry-preview">{contentPreview}</p>
+                <div class="entry-footer">
+                    <div class="tags">
+                        {post.data.tags && post.data.tags.length > 0 && (
+                            post.data.tags.map((tag: string) => (
+                                <Tag tag={tag} />
+                            ))
+                        )}
+                    </div>
+                    <a href={`/posts/${post.id}`} class="read-more">
+                        Read more →
+                    </a>
+                </div>
+            </div>
+        </>
+    ) : (
+        <>
+            <div class="post-header">
+                <time class="post-date">
+                    <a href={`/posts/${post.id}`}>{formattedDate}</a>
+                </time>
+            </div>
+            <h2 class="post-title">
+                <a href={`/posts/${post.id}`}>{post.data.title}</a>
+            </h2>
+            {post.data.description && (
+                <p class="post-description">{post.data.description}</p>
+            )}
+            <p class="post-preview">{contentPreview}</p>
+            <div class="post-footer">
+                <div class="tags">
+                    {post.data.tags && post.data.tags.length > 0 && (
+                        post.data.tags.map((tag: string) => (
+                            <Tag tag={tag} />
+                        ))
+                    )}
+                </div>
+                <a href={`/posts/${post.id}`} class="read-more">
+                    Read more →
+                </a>
+            </div>
+        </>
+    )}
+</article>
+
+<style>
+    /* List variant styles */
+    .entry {
+        display: block;
+        padding: var(--spacing-lg) var(--spacing-xl);
+        background: var(--color-bg-code);
+        border-radius: 0.5rem;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .entry-header {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .entry-date-mono {
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+    }
+
+    .entry-date-mono a {
+        color: var(--color-ink-light);
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .entry-date-mono a:hover {
+        opacity: 0.8;
+        color: var(--color-accent);
+    }
+
+    .entry-content {
+        margin-left: 0;
+    }
+
+    .entry-content h2 {
+        margin: 0 0 var(--spacing-md);
+        font-size: var(--text-2xl);
+        line-height: 1.3;
+    }
+
+    .entry-content h2 a {
+        color: var(--color-ink);
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .entry-content h2 a:hover {
+        opacity: 0.8;
+        color: var(--color-accent);
+    }
+
+    .entry-description {
+        margin: 0 0 var(--spacing-md);
+        font-size: var(--text-lg);
+        line-height: 1.6;
+        color: var(--color-ink);
+        font-weight: 500;
+    }
+
+    .entry-preview {
+        margin: 0 0 var(--spacing-md);
+        font-size: var(--text-base);
+        line-height: 1.7;
+        color: var(--color-ink-light);
+    }
+
+    .entry-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-md);
+    }
+
+    .read-more {
+        font-size: var(--text-sm);
+        color: var(--color-accent);
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .read-more:hover {
+        text-decoration: underline;
+    }
+
+    /* Grid variant styles */
+    .post-card {
+        background: var(--color-bg-code);
+        border-radius: 0.5rem;
+        overflow: hidden;
+        padding: var(--spacing-lg);
+    }
+
+    .post-card .post-header {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .post-card .post-date {
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+    }
+
+    .post-card .post-date a {
+        color: var(--color-ink-light);
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .post-card .post-date a:hover {
+        opacity: 0.8;
+        color: var(--color-accent);
+    }
+
+    .post-card .post-title {
+        font-size: var(--text-2xl);
+        margin: 0 0 var(--spacing-md);
+        line-height: 1.3;
+    }
+
+    .post-card .post-title a {
+        color: var(--color-ink);
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .post-card .post-title a:hover {
+        opacity: 0.8;
+        color: var(--color-accent);
+    }
+
+    .post-card .post-description {
+        font-size: var(--text-lg);
+        line-height: 1.6;
+        color: var(--color-ink);
+        font-weight: 500;
+        margin: 0 0 var(--spacing-md);
+    }
+
+    .post-card .post-preview {
+        font-size: var(--text-base);
+        line-height: 1.7;
+        color: var(--color-ink-light);
+        margin: 0 0 var(--spacing-md);
+    }
+
+    .post-card .post-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-md);
+    }
+
+    .tags {
+        display: flex;
+        gap: var(--spacing-sm);
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 640px) {
+        .entry {
+            padding: var(--spacing-md);
+        }
+
+        .entry-content h2 {
+            font-size: var(--text-xl);
+        }
+
+        .entry-description {
+            font-size: var(--text-base);
+        }
+
+        .entry-footer {
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .post-card {
+            padding: var(--spacing-md);
+        }
+
+        .post-title {
+            font-size: var(--text-xl);
+        }
+
+        .post-description {
+            font-size: var(--text-base);
+        }
+    }
+</style>

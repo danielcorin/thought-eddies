@@ -1,0 +1,31 @@
+---
+interface Props {
+  year: number | string;
+  href: string;
+}
+
+const { year, href } = Astro.props;
+---
+
+<a href={href} class="year-pill">
+  {year}
+</a>
+
+<style>
+  .year-pill {
+    padding: 0.25rem 0.75rem;
+    background: var(--color-bg-code);
+    border-radius: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    display: inline-block;
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+
+  .year-pill:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+</style>

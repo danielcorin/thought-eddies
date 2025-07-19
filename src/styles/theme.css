@@ -9,7 +9,7 @@
   /* Light theme colors */
   --color-bg-post-light: #f8f8f8;
   --color-bg-note-light: #f4f1e4;
-  --color-bg-code-note-light: color-mix(in srgb, var(--color-bg-note-light) 90%, #000);
+  --color-bg-code-note-light: #e8e5d8;
   --color-ink-light-theme: #2d3436;
   --color-ink-light-light: #636e72;
   --color-accent-light: #0984e3;
@@ -19,7 +19,7 @@
 
   /* Dark mode colors */
   --color-bg-note-dark: #1c1b17;
-  --color-bg-code-note-dark: color-mix(in srgb, var(--color-bg-note-dark) 90%, #fff);
+  --color-bg-code-note-dark: #2a2925;
   --color-ink-dark: #cccccc;
   --color-ink-light-dark: #a8a8a8;
   --color-accent-dark: #4dabf7;
@@ -32,6 +32,7 @@
   /* Colors - set light theme as default to prevent flash */
   --color-bg: var(--color-bg-note-light);
   --color-bg-code: var(--color-bg-code-note-light);
+  --color-bg-hover: color-mix(in srgb, var(--color-bg-code-note-light) 70%, var(--color-accent-light) 30%);
   --color-ink: var(--color-ink-light-theme);
   --color-ink-light: var(--color-ink-light-light);
   --color-accent: var(--color-accent-light);
@@ -86,6 +87,7 @@
 :root.dark {
   --color-bg: var(--color-bg-note-dark);
   --color-bg-code: var(--color-bg-code-note-dark);
+  --color-bg-hover: color-mix(in srgb, var(--color-bg-code-note-dark) 70%, var(--color-accent-dark) 30%);
   --color-ink: var(--color-ink-dark);
   --color-ink-light: var(--color-ink-light-dark);
   --color-accent: var(--color-accent-dark);

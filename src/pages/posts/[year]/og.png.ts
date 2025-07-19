@@ -1,6 +1,6 @@
 import { getCollection } from "astro:content";
 import type { InferGetStaticParamsType } from "astro";
-import { generateOGImage } from "../../../utils/og";
+import { generateOGImage } from "@utils/og";
 
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;
