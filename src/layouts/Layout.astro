@@ -5,6 +5,8 @@ import "@styles/base.css";
 import Footer from "@components/layout/Footer.astro";
 import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
+import SearchOverlay from "@components/SearchOverlay";
+import { getCollection } from 'astro:content';
 
 interface Props {
 	title?: string;
@@ -13,6 +15,20 @@ interface Props {
 
 const { title = "", ogImage } = Astro.props;
 const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
+
+// Get all posts and logs for search
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+const logs = await getCollection('logs', ({ data }) => !data.draft);
+
+const sortedPosts = posts.sort((a, b) => {
+  const dateA = a.data.publishedAt || a.data.createdAt;
+  const dateB = b.data.publishedAt || b.data.createdAt;
+  return dateB.getTime() - dateA.getTime();
+});
+
+const sortedLogs = logs.sort((a, b) => {
+  return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+});
 ---
 
 <!doctype html>
@@ -109,6 +125,7 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 			<Footer />
 		</main>
 		<ScrollToTop />
+		<SearchOverlay posts={sortedPosts} logs={sortedLogs} client:load />
 		<script
 			data-goatcounter="https://thought-eddies.goatcounter.com/count"
 			async

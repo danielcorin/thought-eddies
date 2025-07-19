@@ -22,7 +22,7 @@ const { selected } = Astro.props;
             >
                 <span class="nav-item">
                     <Icon
-                        name={`ph:${item === "" ? "house" : item === "logs" ? "scroll" : "note"}`}
+                        name={`ph:${item === "" ? "house" : "note"}`}
                         class="inline-icon"
                     />
                     <span class="nav-text">
@@ -35,6 +35,11 @@ const { selected } = Astro.props;
         ))
     }
     <div class="nav-icons-group" style="margin-left: auto;">
+        <button id="search-toggle" class="nav-link nav-icon-link" title="Search (⌘K)">
+            <span class="nav-item">
+                <Icon name="ph:magnifying-glass" class="inline-icon nav-icon" />
+            </span>
+        </button>
         <a href="/rss.xml" class="nav-link nav-icon-link" title="RSS Feed">
             <span class="nav-item">
                 <Icon name="ph:rss" class="inline-icon nav-icon" />
@@ -54,6 +59,17 @@ const { selected } = Astro.props;
 </nav>
 
 <script is:inline>
+    // Search button functionality
+    (function () {
+        const searchToggle = document.getElementById("search-toggle");
+        if (searchToggle) {
+            searchToggle.addEventListener("click", () => {
+                // Dispatch a custom event to trigger the search overlay
+                window.dispatchEvent(new CustomEvent("openSearch"));
+            });
+        }
+    })();
+
     // Theme button functionality using global utilities
     (function () {
         const themeToggle = document.getElementById("theme-toggle");
@@ -125,5 +141,20 @@ const { selected } = Astro.props;
         display: flex;
         align-items: center;
         gap: 1rem;
+    }
+    
+    /* Button styles to match links */
+    #search-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        color: var(--color-ink);
+        transition: opacity 0.2s;
+    }
+    
+    #search-toggle:hover {
+        opacity: 0.8;
+        color: var(--color-accent);
     }
 </style>

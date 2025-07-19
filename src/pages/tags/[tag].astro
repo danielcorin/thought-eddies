@@ -1,8 +1,7 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
-import Tag from "@components/Tag.astro";
+import PostCard from "@components/PostCard.astro";
 import Layout from "@layouts/Layout.astro";
-import { getContentPreview } from "@utils/text";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 
@@ -67,39 +66,9 @@ const ogImage = `/tags/${encodeURIComponent(tag)}/og.png`;
     </h1>
     
     <div class="content-list">
-      {allTaggedContent.map(item => {
-        const date = new Date(item.date);
-        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-        const url = item.type === 'post' ? `/posts/${item.id}` : `/logs/${item.id}`;
-        
-        return (
-          <article class="entry">
-            <div class="entry-header">
-              <time class="entry-date">
-                <a href={url}>{formattedDate}</a>
-              </time>
-              <a href={item.type === 'post' ? '/posts' : '/logs'} class="entry-section">
-                {item.type === 'post' ? 'Posts' : 'Logs'}
-              </a>
-            </div>
-            <div class="entry-content">
-              <h2>
-                <a href={url}>{item.data.title}</a>
-              </h2>
-              {item.data.description ? (
-                <p class="entry-description">{item.data.description}</p>
-              ) : (
-                <p class="entry-preview">{getContentPreview(item.body || "")}</p>
-              )}
-              <div class="entry-tags">
-                {item.data.tags?.map((t: string) => (
-                  <Tag tag={t} current={t === tag} />
-                ))}
-              </div>
-            </div>
-          </article>
-        );
-      })}
+      {allTaggedContent.map(item => (
+        <PostCard post={item} type={item.type} showTypeLabel={true} />
+      ))}
     </div>
     
     <div class="back-link">
@@ -130,83 +99,6 @@ const ogImage = `/tags/${encodeURIComponent(tag)}/og.png`;
     margin-top: var(--spacing-xl);
   }
   
-  .entry {
-    padding: var(--spacing-lg);
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-    margin-bottom: var(--spacing-lg);
-  }
-  
-  .entry-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-  }
-  
-  .entry-date {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-  }
-  
-  .entry-date a {
-    color: var(--color-ink-light);
-    text-decoration: none;
-  }
-  
-  .entry-date a:hover {
-    color: var(--color-accent);
-  }
-  
-  .entry-section {
-    display: inline-block;
-    padding: 0.125rem 0.75rem;
-    background: var(--color-bg-code);
-    color: var(--color-ink-light);
-    font-size: var(--text-sm);
-    text-decoration: none;
-    border-radius: 9999px;
-    border: 1px solid var(--color-border);
-    transition: all 0.2s ease;
-  }
-  
-  .entry-section:hover {
-    background: var(--color-ink-light);
-    color: var(--color-bg);
-    border-color: var(--color-ink-light);
-  }
-  
-  .entry-content h2 {
-    margin: 0 0 var(--spacing-sm);
-    font-size: var(--text-xl);
-  }
-  
-  .entry-content h2 a {
-    color: var(--color-ink);
-    text-decoration: none;
-  }
-  
-  .entry-content h2 a:hover {
-    color: var(--color-accent);
-  }
-  
-  .entry-description {
-    margin: 0 0 var(--spacing-md);
-    color: var(--color-ink-light);
-    line-height: 1.6;
-  }
-  
-  .entry-preview {
-    margin: 0 0 var(--spacing-md);
-    color: var(--color-ink-light);
-    line-height: 1.6;
-  }
-  
-  .entry-tags {
-    display: flex;
-    gap: var(--spacing-sm);
-    flex-wrap: wrap;
-  }
   
   .back-link {
     margin-top: var(--spacing-xl);
