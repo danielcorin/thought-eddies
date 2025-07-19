@@ -1,0 +1,45 @@
+---
+export interface Props {
+  type: 'post' | 'log';
+  href?: string;
+}
+
+const { type, href } = Astro.props;
+const label = type === 'post' ? 'Posts' : 'Logs';
+const url = href || (type === 'post' ? '/posts' : '/logs');
+---
+
+<a href={url} class="type-label">
+  {label}
+</a>
+
+<style>
+  .type-label {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgb(239, 246, 255);
+    color: rgb(30, 64, 175);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 9999px;
+    border: 1px solid rgb(191, 219, 254);
+    transition: all 0.2s ease;
+  }
+  
+  :global(.dark) .type-label {
+    background: rgb(30, 58, 138);
+    color: rgb(191, 219, 254);
+    border-color: rgb(30, 58, 138);
+  }
+  
+  .type-label:hover {
+    background: rgb(219, 234, 254);
+    border-color: rgb(147, 197, 253);
+  }
+  
+  :global(.dark) .type-label:hover {
+    background: rgb(37, 99, 235);
+    border-color: rgb(37, 99, 235);
+  }
+</style>

@@ -13,25 +13,41 @@ const { tag, onClick, current = false } = Astro.props;
   class={`tag ${current ? 'current' : ''}`}
   onclick={onClick}
 >
-  #{tag}
+  {tag}
 </a>
 
 <style>
   .tag {
-    font-size: var(--text-sm);
-    color: var(--color-ink-light);
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 2px;
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    font-size: var(--text-xs);
+    color: rgb(71, 85, 105);
+    text-decoration: none;
+    border-radius: 0.375rem;
+    background: rgb(241, 245, 249);
+    border: none;
     transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  :global(.dark) .tag {
+    background: rgb(51, 65, 85);
+    color: rgb(203, 213, 225);
   }
 
   .tag:hover {
-    color: var(--color-accent);
+    background: rgb(226, 232, 240);
+    color: rgb(30, 41, 59);
+  }
+
+  :global(.dark) .tag:hover {
+    background: rgb(71, 85, 105);
+    color: rgb(241, 245, 249);
   }
 
   .tag.current {
-    color: var(--color-accent);
+    background: var(--color-accent);
+    color: white;
     font-weight: 600;
   }
 </style>

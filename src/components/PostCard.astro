@@ -1,85 +1,63 @@
 ---
 import Tag from "@components/Tag.astro";
+import TypeLabel from "@components/TypeLabel.astro";
 import { getContentPreview } from "@utils/text";
+import type { CollectionEntry } from "astro:content";
 
 export interface Props {
-    post: {
-        id: string;
-        data: {
-            title: string;
-            description?: string;
-            createdAt: Date;
-            tags?: string[];
-        };
-        body?: string;
-    };
+    post: CollectionEntry<'posts'> | CollectionEntry<'logs'>;
+    type?: 'post' | 'log';
     variant?: "list" | "grid";
+    showTypeLabel?: boolean;
 }
 
-const { post, variant = "list" } = Astro.props;
-const date = new Date(post.data.createdAt);
-const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const { post, type = 'post', variant = "list", showTypeLabel = false } = Astro.props;
+
+// Get date based on type
+const date = new Date(type === 'log' ? (post.data as any).date : ((post.data as any).publishedAt || (post.data as any).createdAt));
+
+// Format date components
+const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, '0');
+const day = String(date.getDate()).padStart(2, '0');
+
+// Build URL and formatted date
+const url = type === 'log' ? `/logs/${year}/${month}/${day}` : `/posts/${post.id}`;
+const formattedDate = `${year}-${month}-${day}`;
 const contentPreview = getContentPreview(post.body || "");
+const tags = post.data.tags || [];
 ---
 
 <article class={variant === "list" ? "entry" : "post-card"}>
-    {variant === "list" ? (
-        <>
-            <div class="entry-header">
-                <time class="entry-date-mono">
-                    <a href={`/posts/${post.id}`}>{formattedDate}</a>
-                </time>
+    <div class={variant === "list" ? "entry-header" : "post-header"}>
+        <time class={variant === "list" ? "entry-date-mono" : "post-date"}>
+            <a href={url}>{formattedDate}</a>
+        </time>
+        {showTypeLabel && <TypeLabel type={type} />}
+    </div>
+    
+    <div class={variant === "list" ? "entry-content" : ""}>
+        <h2 class={variant === "grid" ? "post-title" : ""}>
+            <a href={url}>{post.data.title}</a>
+        </h2>
+        
+        {post.data.description && (
+            <p class={variant === "list" ? "entry-description" : "post-description"}>
+                {post.data.description}
+            </p>
+        )}
+        
+        <p class={variant === "list" ? "entry-preview" : "post-preview"}>
+            {contentPreview}
+        </p>
+        
+        <div class={variant === "list" ? "entry-footer" : "post-footer"}>
+            <div class="tags">
+                {tags.map((tag: string) => <Tag tag={tag} />)}
             </div>
-            <div class="entry-content">
-                <h2>
-                    <a href={`/posts/${post.id}`}>{post.data.title}</a>
-                </h2>
-                {post.data.description && (
-                    <p class="entry-description">{post.data.description}</p>
-                )}
-                <p class="entry-preview">{contentPreview}</p>
-                <div class="entry-footer">
-                    <div class="tags">
-                        {post.data.tags && post.data.tags.length > 0 && (
-                            post.data.tags.map((tag: string) => (
-                                <Tag tag={tag} />
-                            ))
-                        )}
-                    </div>
-                    <a href={`/posts/${post.id}`} class="read-more">
-                        Read more →
-                    </a>
-                </div>
-            </div>
-        </>
-    ) : (
-        <>
-            <div class="post-header">
-                <time class="post-date">
-                    <a href={`/posts/${post.id}`}>{formattedDate}</a>
-                </time>
-            </div>
-            <h2 class="post-title">
-                <a href={`/posts/${post.id}`}>{post.data.title}</a>
-            </h2>
-            {post.data.description && (
-                <p class="post-description">{post.data.description}</p>
-            )}
-            <p class="post-preview">{contentPreview}</p>
-            <div class="post-footer">
-                <div class="tags">
-                    {post.data.tags && post.data.tags.length > 0 && (
-                        post.data.tags.map((tag: string) => (
-                            <Tag tag={tag} />
-                        ))
-                    )}
-                </div>
-                <a href={`/posts/${post.id}`} class="read-more">
-                    Read more →
-                </a>
-            </div>
-        </>
-    )}
+            <a href={url} class="read-more">Read more →</a>
+        </div>
+    </div>
 </article>
 
 <style>
@@ -94,20 +72,26 @@ const contentPreview = getContentPreview(post.body || "");
 
     .entry-header {
         margin-bottom: var(--spacing-md);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
     }
 
-    .entry-date-mono {
+    .entry-date-mono,
+    .post-date {
         font-family: var(--font-mono);
         font-size: var(--text-sm);
     }
 
-    .entry-date-mono a {
+    .entry-date-mono a,
+    .post-date a {
         color: var(--color-ink-light);
         text-decoration: none;
         transition: opacity 0.2s;
     }
 
-    .entry-date-mono a:hover {
+    .entry-date-mono a:hover,
+    .post-date a:hover {
         opacity: 0.8;
         color: var(--color-accent);
     }
@@ -116,24 +100,28 @@ const contentPreview = getContentPreview(post.body || "");
         margin-left: 0;
     }
 
-    .entry-content h2 {
+    .entry-content h2,
+    .post-title {
         margin: 0 0 var(--spacing-md);
         font-size: var(--text-2xl);
         line-height: 1.3;
     }
 
-    .entry-content h2 a {
+    .entry-content h2 a,
+    .post-title a {
         color: var(--color-ink);
         text-decoration: none;
         transition: opacity 0.2s;
     }
 
-    .entry-content h2 a:hover {
+    .entry-content h2 a:hover,
+    .post-title a:hover {
         opacity: 0.8;
         color: var(--color-accent);
     }
 
-    .entry-description {
+    .entry-description,
+    .post-description {
         margin: 0 0 var(--spacing-md);
         font-size: var(--text-lg);
         line-height: 1.6;
@@ -141,14 +129,16 @@ const contentPreview = getContentPreview(post.body || "");
         font-weight: 500;
     }
 
-    .entry-preview {
+    .entry-preview,
+    .post-preview {
         margin: 0 0 var(--spacing-md);
         font-size: var(--text-base);
         line-height: 1.7;
         color: var(--color-ink-light);
     }
 
-    .entry-footer {
+    .entry-footer,
+    .post-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -175,64 +165,11 @@ const contentPreview = getContentPreview(post.body || "");
         padding: var(--spacing-lg);
     }
 
-    .post-card .post-header {
+    .post-header {
         margin-bottom: var(--spacing-md);
-    }
-
-    .post-card .post-date {
-        font-family: var(--font-mono);
-        font-size: var(--text-sm);
-    }
-
-    .post-card .post-date a {
-        color: var(--color-ink-light);
-        text-decoration: none;
-        transition: opacity 0.2s;
-    }
-
-    .post-card .post-date a:hover {
-        opacity: 0.8;
-        color: var(--color-accent);
-    }
-
-    .post-card .post-title {
-        font-size: var(--text-2xl);
-        margin: 0 0 var(--spacing-md);
-        line-height: 1.3;
-    }
-
-    .post-card .post-title a {
-        color: var(--color-ink);
-        text-decoration: none;
-        transition: opacity 0.2s;
-    }
-
-    .post-card .post-title a:hover {
-        opacity: 0.8;
-        color: var(--color-accent);
-    }
-
-    .post-card .post-description {
-        font-size: var(--text-lg);
-        line-height: 1.6;
-        color: var(--color-ink);
-        font-weight: 500;
-        margin: 0 0 var(--spacing-md);
-    }
-
-    .post-card .post-preview {
-        font-size: var(--text-base);
-        line-height: 1.7;
-        color: var(--color-ink-light);
-        margin: 0 0 var(--spacing-md);
-    }
-
-    .post-card .post-footer {
         display: flex;
-        justify-content: space-between;
         align-items: center;
         gap: var(--spacing-md);
-        margin-top: var(--spacing-md);
     }
 
     .tags {
