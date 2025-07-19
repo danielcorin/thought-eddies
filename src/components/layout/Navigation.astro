@@ -19,6 +19,7 @@ const { selected } = Astro.props;
                         ? "nav-link selected"
                         : "nav-link"
                 }
+                aria-current={selected === item || (item === "" && selected === "home") ? "page" : undefined}
             >
                 <span class="nav-item">
                     <Icon
@@ -35,17 +36,17 @@ const { selected } = Astro.props;
         ))
     }
     <div class="nav-icons-group" style="margin-left: auto;">
-        <button id="search-toggle" class="nav-link nav-icon-link" title="Search (⌘K)">
+        <button id="search-toggle" class="nav-link nav-icon-link" aria-label="Search (⌘K)" aria-keyshortcuts="Cmd+K">
             <span class="nav-item">
                 <Icon name="ph:magnifying-glass" class="inline-icon nav-icon" />
             </span>
         </button>
-        <a href="/rss.xml" class="nav-link nav-icon-link" title="RSS Feed">
+        <a href="/rss.xml" class="nav-link nav-icon-link" aria-label="RSS Feed">
             <span class="nav-item">
                 <Icon name="ph:rss" class="inline-icon nav-icon" />
             </span>
         </a>
-        <button id="theme-toggle" class="nav-link nav-icon-link">
+        <button id="theme-toggle" class="nav-link nav-icon-link" aria-label="Toggle theme" aria-pressed="false">
             <span class="nav-item">
                 <span id="sun-wrapper" class="sun-wrapper">
                     <Icon name="ph:sun" class="inline-icon nav-icon" />
@@ -86,6 +87,11 @@ const { selected } = Astro.props;
 
             sunWrapper.classList.toggle("hidden", isDark);
             moonWrapper.classList.toggle("hidden", !isDark);
+            
+            // Update aria-pressed attribute
+            if (themeToggle) {
+                themeToggle.setAttribute("aria-pressed", isDark ? "true" : "false");
+            }
         }
 
         // Initialize icons when DOM is ready

@@ -30,7 +30,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
         e.preventDefault();
         setIsOpen(true);
       }
-      
+
       // Escape to close
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
@@ -63,7 +63,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
 
     document.addEventListener('keydown', handleKeyDown);
     window.addEventListener('openSearch', handleOpenSearch);
-    
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('openSearch', handleOpenSearch);
@@ -202,7 +202,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-start justify-center px-4 pt-20">
         <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
-        
+
         <div
           ref={overlayRef}
           className="relative w-full max-w-2xl transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-2xl transition-all"
@@ -227,7 +227,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search posts and logs..."
+                placeholder="Search site..."
                 className="flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none"
               />
               <kbd className="ml-3 hidden sm:inline-block rounded border border-gray-300 dark:border-gray-600 px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
@@ -249,11 +249,10 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
                     key={index}
                     ref={(el) => (itemRefs.current[index] = el)}
                     href={url}
-                    className={`block px-4 py-3 transition-colors ${
-                      isSelected
-                        ? 'bg-gray-100 dark:bg-gray-700'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                    }`}
+                    className={`block px-4 py-3 transition-colors ${isSelected
+                      ? 'bg-gray-100 dark:bg-gray-700'
+                      : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      }`}
                     onMouseEnter={() => setSelectedIndex(index)}
                   >
                     <div className="flex items-start justify-between">
@@ -287,7 +286,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
                         )}
                       </div>
                       <div className="ml-4 flex-shrink-0 text-right">
-                        <a 
+                        <a
                           href={result.type === 'post' ? '/posts' : '/logs'}
                           className="inline-block px-3 py-1 text-xs rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900 text-blue-800 dark:text-blue-200 transition-all hover:bg-blue-100 hover:border-blue-300 dark:hover:bg-blue-800 no-underline font-medium"
                           onClick={(e) => e.stopPropagation()}
@@ -312,7 +311,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
           ) : (
             <div className="p-8 text-center">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Type to search through posts and logs
+                Type to search the site
               </p>
             </div>
           )}

@@ -62,8 +62,8 @@ function getContent(content: string | ContentItem[]): {
                 </div>
                 <div class="message-body user-body">
                   <Markdown of={getContent(message.content).text} />
-                  {getContent(message.content).images.map((url) => (
-                    <img src={url} alt="" class="message-image" />
+                  {getContent(message.content).images.map((url, index) => (
+                    <img src={url} alt={`Image ${index + 1} from user message`} class="message-image" />
                   ))}
                 </div>
               </div>
@@ -77,8 +77,8 @@ function getContent(content: string | ContentItem[]): {
                 </div>
                 <div class="message-body assistant-body">
                   <Markdown of={getContent(message.content).text} />
-                  {getContent(message.content).images.map((url) => (
-                    <img src={url} alt="" class="message-image" />
+                  {getContent(message.content).images.map((url, index) => (
+                    <img src={url} alt={`Image ${index + 1} from ${model || 'assistant'} response`} class="message-image" />
                   ))}
                 </div>
               </div>
@@ -92,8 +92,8 @@ function getContent(content: string | ContentItem[]): {
                 </div>
                 <div class="message-body system-body">
                   <Markdown of={getContent(message.content).text} />
-                  {getContent(message.content).images.map((url) => (
-                    <img src={url} alt="" class="message-image" />
+                  {getContent(message.content).images.map((url, index) => (
+                    <img src={url} alt={`Image ${index + 1} from system message`} class="message-image" />
                   ))}
                 </div>
               </div>
