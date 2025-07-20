@@ -21,6 +21,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
 
   // Keyboard shortcut handler and custom event listener
   useEffect(() => {
@@ -70,10 +71,46 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
     };
   }, [isOpen, results, selectedIndex]);
 
-  // Focus input when opened
+  // Focus management when opened/closed
   useEffect(() => {
-    if (isOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
+    if (isOpen) {
+      // Store the currently focused element
+      previousActiveElement.current = document.activeElement as HTMLElement;
+      
+      // Focus the search input
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
+      }
+      
+      // Add focus trap
+      const handleTabKey = (e: KeyboardEvent) => {
+        if (e.key === 'Tab' && overlayRef.current) {
+          const focusableElements = overlayRef.current.querySelectorAll(
+            'input, a[href], button, [tabindex]:not([tabindex="-1"])'
+          );
+          const firstFocusable = focusableElements[0] as HTMLElement;
+          const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
+          
+          if (e.shiftKey && document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable?.focus();
+          } else if (!e.shiftKey && document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable?.focus();
+          }
+        }
+      };
+      
+      document.addEventListener('keydown', handleTabKey);
+      
+      return () => {
+        document.removeEventListener('keydown', handleTabKey);
+      };
+    } else {
+      // Return focus to the previously focused element
+      if (previousActiveElement.current && previousActiveElement.current.focus) {
+        previousActiveElement.current.focus();
+      }
     }
   }, [isOpen]);
 
@@ -205,6 +242,9 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
 
         <div
           ref={overlayRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site search"
           className="relative w-full max-w-2xl transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-2xl transition-all"
         >
           <div className="border-b border-gray-200 dark:border-gray-700">
@@ -228,6 +268,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search site..."
+                aria-label="Search site"
                 className="flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none"
               />
               <kbd className="ml-3 hidden sm:inline-block rounded border border-gray-300 dark:border-gray-600 px-2 py-1 text-xs text-gray-500 dark:text-gray-400">

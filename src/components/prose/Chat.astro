@@ -59,7 +59,11 @@ function getContent(content: string | ContentItem[]): {
                 <div class="bubble user-bubble">
                   <Markdown of={getContent(message.content).text} />
                   {getContent(message.content).images.map((url, index) => (
-                    <img src={url} alt={`Image ${index + 1} from user message`} class="message-image" />
+                    <img
+                      src={url}
+                      alt={`Image ${index + 1} from user message`}
+                      class="message-image"
+                    />
                   ))}
                 </div>
               </div>
@@ -68,11 +72,15 @@ function getContent(content: string | ContentItem[]): {
           {message.role === "assistant" && (
             <div class="message assistant">
               <div class="message-content">
-                {model && <div class="model-label">{model}</div>}
+                <div class="model-label">{model || "Assistant"}</div>
                 <div class="bubble assistant-bubble">
                   <Markdown of={getContent(message.content).text} />
                   {getContent(message.content).images.map((url, index) => (
-                    <img src={url} alt={`Image ${index + 1} from ${model || 'assistant'} response`} class="message-image" />
+                    <img
+                      src={url}
+                      alt={`Image ${index + 1} from ${model || "assistant"} response`}
+                      class="message-image"
+                    />
                   ))}
                 </div>
               </div>
@@ -83,7 +91,11 @@ function getContent(content: string | ContentItem[]): {
               <div class="bubble system-bubble">
                 <Markdown of={getContent(message.content).text} />
                 {getContent(message.content).images.map((url, index) => (
-                  <img src={url} alt={`Image ${index + 1} from system message`} class="message-image" />
+                  <img
+                    src={url}
+                    alt={`Image ${index + 1} from system message`}
+                    class="message-image"
+                  />
                 ))}
               </div>
             </div>
