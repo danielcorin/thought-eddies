@@ -1,0 +1,86 @@
+---
+import { getContentPreview } from "@utils/text";
+import type { CollectionEntry } from "astro:content";
+
+export interface Props {
+    posts: CollectionEntry<"posts">[];
+}
+
+const { posts } = Astro.props;
+---
+
+{
+    posts.length > 0 && (
+        <section class="recommended-posts">
+            <h2>Recommended</h2>
+            <div class="recommended-list">
+                {posts.map((post) => {
+                    const preview =
+                        post.data.description ||
+                        getContentPreview(post.body || "", 150);
+                    return (
+                        <div class="recommended-item">
+                            <h3>
+                                <a href={`/posts/${post.id}`}>
+                                    {post.data.title}
+                                </a>
+                            </h3>
+                            <p class="recommended-excerpt">{preview}</p>
+                        </div>
+                    );
+                })}
+            </div>
+        </section>
+    )
+}
+
+<style>
+    .recommended-posts {
+        margin-top: calc(var(--spacing-xl) * 2);
+        padding-top: 0;
+    }
+
+    .recommended-posts h2 {
+        font-size: var(--text-lg);
+        margin-bottom: var(--spacing-lg);
+        color: var(--color-ink);
+        font-weight: 600;
+    }
+
+    .recommended-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .recommended-item h3 {
+        font-size: var(--text-base);
+        font-weight: 500;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .recommended-item h3 a {
+        color: var(--color-ink);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .recommended-item h3 a:hover {
+        color: var(--color-accent);
+        text-decoration: underline;
+    }
+
+    .recommended-excerpt {
+        font-size: var(--text-sm);
+        color: var(--color-ink-light);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .recommended-posts {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-xl);
+        }
+    }
+</style>
