@@ -1,19 +1,21 @@
 ---
-title: "Agent Coding Strategies"
+title: 'Agent Coding Strategies'
 createdAt: 2025-06-19T11:18:05-04:00
 updatedAt: 2025-07-18T11:18:05-04:00
 draft: false
 toc: true
 tags:
-- language_models
-- agents
+  - language_models
+  - agents
 ---
 
-import Sidenote from "@components/prose/Sidenote.astro";
-import Aside from "@components/prose/Aside.astro";
+import Sidenote from '@components/prose/Sidenote.astro';
+import Aside from '@components/prose/Aside.astro';
 
 <Aside type="note">
-Feel free to skip directly to the [strategies](/posts/2025/agent-coding-strategies#write-a-spec-first) if you don't need to be convinced using agents to write code is worth your time.
+  Feel free to skip directly to the
+  [strategies](/posts/2025/agent-coding-strategies#write-a-spec-first) if you
+  don't need to be convinced using agents to write code is worth your time.
 </Aside>
 
 If you've read any of my writing in the past year, you're probably aware I've heavily adopted agents to build much of the software I write now.
@@ -51,6 +53,7 @@ If the call is successful, show a green UI element.
 Otherwise show a red UI element and the full error from the call.
 Always allow the user to click the button to retry the connection and update the UI to show the new result.
 ```
+
 I took this idea from [Geoffrey Huntley](https://ghuntley.com/specs).
 
 The approach helps ensure that I know what I expect the agent to build.

@@ -1,17 +1,17 @@
 /** @type {import("prettier").Config} */
 export default {
-  plugins: ["prettier-plugin-astro", "@ianvs/prettier-plugin-sort-imports"],
+  plugins: ['prettier-plugin-astro', '@ianvs/prettier-plugin-sort-imports'],
   overrides: [
     {
-      files: "*.astro",
+      files: '*.astro',
       options: {
-        parser: "astro",
+        parser: 'astro',
       },
     },
     {
-      files: "*.mdx",
+      files: '*.mdx',
       options: {
-        parser: "mdx",
+        parser: 'mdx',
       },
     },
   ],

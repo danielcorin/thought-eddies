@@ -1,5 +1,5 @@
-import * as d3 from "d3";
-import { useEffect, useRef, useState } from "react";
+import * as d3 from 'd3';
+import { useEffect, useRef, useState } from 'react';
 
 interface Message {
   id: string;
@@ -40,16 +40,16 @@ export default function Tree({
       };
 
       // Clear existing SVG content
-      d3.select(svgRef.current).selectAll("*").remove();
+      d3.select(svgRef.current).selectAll('*').remove();
 
       const svg = d3
         .select(svgRef.current)
-        .attr("width", width)
-        .attr("height", height);
+        .attr('width', width)
+        .attr('height', height);
 
       const g = svg
-        .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
 
       // Convert flat messages array to hierarchical structure
       const stratify = d3
@@ -72,52 +72,53 @@ export default function Tree({
       const treeData = tree(root);
 
       // Add links
-      g.selectAll(".link")
+      g.selectAll('.link')
         .data(treeData.links())
-        .join("path")
-        .attr("class", "link")
-        .attr("fill", "none")
-        .attr("stroke", "#cbd5e1")
+        .join('path')
+        .attr('class', 'link')
+        .attr('fill', 'none')
+        .attr('stroke', '#cbd5e1')
         .attr(
-          "d",
+          'd',
           d3
             .linkVertical()
             .x((d) => d.x)
-            .y((d) => d.y),
+            .y((d) => d.y)
         );
 
       // Add nodes
       const nodes = g
-        .selectAll(".node")
+        .selectAll('.node')
         .data(treeData.descendants())
-        .join("g")
-        .attr("class", "node")
-        .attr("transform", (d) => `translate(${d.x},${d.y})`);
+        .join('g')
+        .attr('class', 'node')
+        .attr('transform', (d) => `translate(${d.x},${d.y})`);
 
       // Add node containers
       nodes
-        .append("foreignObject")
-        .attr("x", width < 640 ? -80 : -120)
-        .attr("y", -50)
-        .attr("width", width < 640 ? 160 : 240)
-        .attr("height", width < 640 ? 140 : 100)
-        .append("xhtml:div")
+        .append('foreignObject')
+        .attr('x', width < 640 ? -80 : -120)
+        .attr('y', -50)
+        .attr('width', width < 640 ? 160 : 240)
+        .attr('height', width < 640 ? 140 : 100)
+        .append('xhtml:div')
         .attr(
-          "class",
+          'class',
           (d) =>
-            `flex flex-col p-2 rounded-lg cursor-pointer border border-[var(--color-border)] overflow-hidden ${d.id === selectedId
-              ? "bg-[var(--color-bg-code)]"
-              : "bg-[var(--color-bg)] hover:bg-[var(--color-bg-code)]"
-            }`,
+            `flex flex-col p-2 rounded-lg cursor-pointer border border-[var(--color-border)] overflow-hidden ${
+              d.id === selectedId
+                ? 'bg-[var(--color-bg-code)]'
+                : 'bg-[var(--color-bg)] hover:bg-[var(--color-bg-code)]'
+            }`
         )
         .html(
           (d) => `
                 <div class="text-sm font-medium text-[var(--color-ink)] truncate">${d.data.prompt}</div>
                 <div class="h-px bg-[var(--color-border)] my-1"></div>
                 <div class="text-xs text-[var(--color-ink-light)] line-clamp-3">${d.data.response}</div>
-            `,
+            `
         )
-        .on("click", (event, d) => {
+        .on('click', (event, d) => {
           if (d.id) {
             setSelectedId(d.id);
             onNodeClick(d.id);

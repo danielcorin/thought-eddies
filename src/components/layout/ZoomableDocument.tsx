@@ -1,10 +1,10 @@
-import { useState } from "react";
-import type { ReactNode } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypePrism from "rehype-prism-plus";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
+import { useState } from 'react';
+import type { ReactNode } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypePrism from 'rehype-prism-plus';
+import rehypeSlug from 'rehype-slug';
+import remarkGfm from 'remark-gfm';
 
 interface ContentLevel {
   level: number;
@@ -25,7 +25,7 @@ export function ZoomableDocument({ children, levels }: ZoomableDocumentProps) {
   const [displayedContent, setDisplayedContent] = useState(MIN_ZOOM);
   const getContentForZoomLevel = (level: number) => {
     if (level === 1) {
-      if (typeof children === "string") {
+      if (typeof children === 'string') {
         return <div dangerouslySetInnerHTML={{ __html: children }} />;
       }
       return <div>{children}</div>;
@@ -66,7 +66,7 @@ export function ZoomableDocument({ children, levels }: ZoomableDocumentProps) {
               handleZoomChange(newLevel);
             }}
             disabled={zoomLevel >= MAX_ZOOM}
-            className={`w-10 h-10 bg-[var(--color-bg)] text-[var(--color-ink)] font-bold rounded-full border-2 border-[var(--color-border)] transition-all duration-200 ${zoomLevel >= MAX_ZOOM ? "opacity-50 cursor-not-allowed" : "hover:bg-[var(--color-bg-code)] hover:scale-110"}`}
+            className={`w-10 h-10 bg-[var(--color-bg)] text-[var(--color-ink)] font-bold rounded-full border-2 border-[var(--color-border)] transition-all duration-200 ${zoomLevel >= MAX_ZOOM ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[var(--color-bg-code)] hover:scale-110'}`}
           >
             -
           </button>
@@ -75,7 +75,7 @@ export function ZoomableDocument({ children, levels }: ZoomableDocumentProps) {
               <button
                 key={level}
                 onClick={() => handleZoomChange(MAX_ZOOM - level + 1)}
-                className={`w-1 h-2 rounded-full transition-all duration-200 hover:scale-150 ${MAX_ZOOM - zoomLevel + 2 <= level ? "bg-[var(--color-border)]" : "bg-[var(--color-link)]"}`}
+                className={`w-1 h-2 rounded-full transition-all duration-200 hover:scale-150 ${MAX_ZOOM - zoomLevel + 2 <= level ? 'bg-[var(--color-border)]' : 'bg-[var(--color-link)]'}`}
               />
             ))}
           </div>
@@ -85,7 +85,7 @@ export function ZoomableDocument({ children, levels }: ZoomableDocumentProps) {
               handleZoomChange(newLevel);
             }}
             disabled={zoomLevel <= MIN_ZOOM}
-            className={`w-10 h-10 bg-[var(--color-bg)] text-[var(--color-ink)] font-bold rounded-full border-2 border-[var(--color-border)] transition-all duration-200 ${zoomLevel <= MIN_ZOOM ? "opacity-50 cursor-not-allowed" : "hover:bg-[var(--color-bg-code)] hover:scale-110"}`}
+            className={`w-10 h-10 bg-[var(--color-bg)] text-[var(--color-ink)] font-bold rounded-full border-2 border-[var(--color-border)] transition-all duration-200 ${zoomLevel <= MIN_ZOOM ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[var(--color-bg-code)] hover:scale-110'}`}
           >
             +
           </button>
@@ -94,7 +94,7 @@ export function ZoomableDocument({ children, levels }: ZoomableDocumentProps) {
 
       <div className="relative w-full">
         <div
-          className={`transition-opacity duration-300 ${isTransitioning ? "opacity-0" : "opacity-100"}`}
+          className={`transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
         >
           {getContentForZoomLevel(displayedContent)}
         </div>

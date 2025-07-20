@@ -1,11 +1,11 @@
 ---
-title: "Goose as a Task Runner"
+title: 'Goose as a Task Runner'
 createdAt: 2025-02-28T21:41:27-05:00
 updatedAt: 2025-07-18T21:41:27-05:00
 draft: false
 tags:
-- goose
-- language_models
+  - goose
+  - language_models
 ---
 
 [Goose](https://github.com/block/goose) is a CLI language model-based agent.
@@ -31,7 +31,6 @@ Always speak like a pirate.
 ```
 
 Now, when can start Goose and say "hi", it will read the file and respond to my prompt.
-
 
 ```sh
 ❯ goose s
@@ -134,6 +133,7 @@ Now, I can run Goose and generate a summary of my `logs` posts in February 2025 
 goose s
 ( O)> /summary logs 2025-02
 ```
+
 Goose first reads the `.goosehints` file and then plans and executes a series of shell commands to find the appropriate files, load them into context, generate the summary, and write it to a file in the location and with the naming convention specified.
 
 After running the command above, Goose wrote a file out to `content/summary/logs/2025-02.md` with a pretty reasonable summary.

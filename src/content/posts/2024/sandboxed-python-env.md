@@ -18,7 +18,7 @@ Disclaimer: I am not a security expert or a security professional.
 I've tried out many new AI/LLM libraries in the past year.
 Many of these are written in Python.
 While trying out new and exciting software is a lot of fun, it's also important to be mindful about what code you allow to run on your system.
-Even if code is open source, it's still *possible* that the cool open source library you installed includes code like
+Even if code is open source, it's still _possible_ that the cool open source library you installed includes code like
 
 ```python
 import httpx
@@ -37,7 +37,7 @@ It's somewhat common to set environment variables for the shell to be available 
 Zsh has a dedicated file that gets sourced when the shell starts up (`.zshenv`).
 So if you hypothetically had `GITHUB_API_TOKEN` set in your environment, some open source library could send that secret to its own server and gain access to your stuff.
 
-Thankfully, over time, open source libraries *usually* are scrutinized to the degree that this type of credential stealing becomes more difficult to execute or scale.
+Thankfully, over time, open source libraries _usually_ are scrutinized to the degree that this type of credential stealing becomes more difficult to execute or scale.
 However, with the advent of agent-like, language-model-based systems, certain libraries are now asking us to allow them to execute system commands on our behalf.
 While many of these require user approval, some have automatic approval capabilities, allowing a language model to roam freely among your system.
 If you're reading this article, you probably already know this isn't an awesome idea.
@@ -96,6 +96,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> import numpy
 >>>
 ```
+
 Nix worked as advertised, but I realized this approach didn't provide isolation from my environment variables or my system.
 Any Python code I ran from the within the nix shell could still read my environment variables or mess with my host file system if it was malicious.
 
@@ -134,12 +135,14 @@ First, I created a new project with the following files and contents
 ```
 
 `.env`
+
 ```env
 OPENAI_API_KEY=<your key>
 # any other variables
 ```
 
 `Dockerfile`
+
 ```Dockerfile
 FROM python:slim
 WORKDIR /usr/src/app
@@ -150,6 +153,7 @@ CMD ["python", "./run.py"]
 ```
 
 `run.py`
+
 ```python
 import os
 from openai import OpenAI
@@ -166,6 +170,7 @@ stream = client.chat.completions.create(...)
 ```
 
 `requirements.txt`
+
 ```text
 openai
 python-dotenv
@@ -173,6 +178,7 @@ python-dotenv
 ```
 
 `Makefile`
+
 ```make
 .PHONY: run
 run:

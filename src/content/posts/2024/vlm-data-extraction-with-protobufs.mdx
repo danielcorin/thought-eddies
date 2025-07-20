@@ -10,7 +10,7 @@ draft: false
 githubUrl: 'https://github.com/danielcorin/impulse'
 ---
 
-import Chat from "@components/prose/Chat.astro";
+import Chat from '@components/prose/Chat.astro';
 
 In light of OpenAI releasing [structured output in the model API](https://openai.com/index/introducing-structured-outputs-in-the-api/), let's move output structuring another level up the stack to the microservice/RPC level.
 
@@ -56,28 +56,30 @@ It doesn't matter what language our caller or our server uses -- the following a
 
 ## A simple example
 
-<Chat model="gpt-4o" summary="Simple extraction with a protobuf" messages={
-[
-  {
-    "role": "user",
-    "content": [
-      {
-        "type": "text",
-        "text": "```proto\nsyntax = \"proto3\";\n\nmessage Receipt {\n    string id = 1;\n    string merchant = 2;\n    float total_amount = 3;\n    string date = 4;\n}\n```\n\nUsing the provided content, extract data as JSON in adherence to the above schema.\nNo talk. JSON only.\n\nContent:\nReceipt from Acme Groceries\nDate: 2024-03-15\nTotal: $42.99\nReceipt ID: R12345\n"
-      }
-    ]
-  },
-  {
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "```json\n{\n  \"id\": \"R12345\",\n  \"merchant\": \"Acme Groceries\",\n  \"total_amount\": 42.99,\n  \"date\": \"2024-03-15\"\n}\n```"
-      }
-    ]
-  }
-]
-} />
+<Chat
+  model="gpt-4o"
+  summary="Simple extraction with a protobuf"
+  messages={[
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: '```proto\nsyntax = "proto3";\n\nmessage Receipt {\n    string id = 1;\n    string merchant = 2;\n    float total_amount = 3;\n    string date = 4;\n}\n```\n\nUsing the provided content, extract data as JSON in adherence to the above schema.\nNo talk. JSON only.\n\nContent:\nReceipt from Acme Groceries\nDate: 2024-03-15\nTotal: $42.99\nReceipt ID: R12345\n',
+        },
+      ],
+    },
+    {
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: '```json\n{\n  "id": "R12345",\n  "merchant": "Acme Groceries",\n  "total_amount": 42.99,\n  "date": "2024-03-15"\n}\n```',
+        },
+      ],
+    },
+  ]}
+/>
 
 [We've seen this before.](/posts/2023/protobuf-contracts-with-llms)
 Let's try more things.
@@ -87,34 +89,36 @@ Let's try more things.
 We now have Vision Models can do inference and perform tasks with images in the context.
 Let's prompt the model to extract data from a screenshot I took while finetuning `gpt-3.5.turbo`.
 
-<Chat model="gpt-4o" summary="Extract fine-tuning job data" messages={
-[
-  {
-    "role": "user",
-    "content": [
-      {
-        "type": "text",
-        "text": "```proto\nsyntax = \"proto3\";\n\nmessage FinetuneJob {\n    string model_name = 1;\n    string job_id = 2;\n    string base_model = 3;\n    string created_at = 4;\n    int32 trained_tokens = 5;\n    int32 epochs = 6;\n    repeated File files = 7;\n    float training_loss = 8;\n    float validation_loss = 9;\n}\n\nmessage File {\n    string type = 1;\n    string name = 2;\n}\n```\n\nUsing the provided content and images, extract data as JSON in adherence to the above schema.\nIf multiple pages or images are provided, combine the information into a single JSON object.\nNo talk. JSON only."
-      },
-      {
-        "type": "image_url",
-        "image_url": {
-          "url": "https://danielcorin.com/img/posts/2024/fine-tuning-connections.png"
-        }
-      }
-    ]
-  },
-  {
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "```json\n{\n  \"model_name\": \"ft:gpt-3.5-turbo-1106:personal::8gOmJtRC\",\n  \"job_id\": \"ftjob-AzfQagaUHzzYkEgMVyIswzGK\",\n  \"base_model\": \"gpt-3.5-turbo-1106\",\n  \"created_at\": \"Jan 12, 2024, 9:55 PM\",\n  \"trained_tokens\": 111876,\n  \"epochs\": 3,\n  \"files\": [\n    {\n      \"type\": \"Training\",\n      \"name\": \"connections_prompts_train.jsonl\"\n    },\n    {\n      \"type\": \"Validation\",\n      \"name\": \"connections_prompts_test.jsonl\"\n    }\n  ],\n  \"training_loss\": 0.0658,\n  \"validation_loss\": 0.3531\n}\n```"
-      }
-    ]
-  }
-]
-} />
+<Chat
+  model="gpt-4o"
+  summary="Extract fine-tuning job data"
+  messages={[
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: '```proto\nsyntax = "proto3";\n\nmessage FinetuneJob {\n    string model_name = 1;\n    string job_id = 2;\n    string base_model = 3;\n    string created_at = 4;\n    int32 trained_tokens = 5;\n    int32 epochs = 6;\n    repeated File files = 7;\n    float training_loss = 8;\n    float validation_loss = 9;\n}\n\nmessage File {\n    string type = 1;\n    string name = 2;\n}\n```\n\nUsing the provided content and images, extract data as JSON in adherence to the above schema.\nIf multiple pages or images are provided, combine the information into a single JSON object.\nNo talk. JSON only.',
+        },
+        {
+          type: 'image_url',
+          image_url: {
+            url: 'https://danielcorin.com/img/posts/2024/fine-tuning-connections.png',
+          },
+        },
+      ],
+    },
+    {
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: '```json\n{\n  "model_name": "ft:gpt-3.5-turbo-1106:personal::8gOmJtRC",\n  "job_id": "ftjob-AzfQagaUHzzYkEgMVyIswzGK",\n  "base_model": "gpt-3.5-turbo-1106",\n  "created_at": "Jan 12, 2024, 9:55 PM",\n  "trained_tokens": 111876,\n  "epochs": 3,\n  "files": [\n    {\n      "type": "Training",\n      "name": "connections_prompts_train.jsonl"\n    },\n    {\n      "type": "Validation",\n      "name": "connections_prompts_test.jsonl"\n    }\n  ],\n  "training_loss": 0.0658,\n  "validation_loss": 0.3531\n}\n```',
+        },
+      ],
+    },
+  ]}
+/>
 
 This seems to work quite well.
 
@@ -122,23 +126,25 @@ This seems to work quite well.
 
 A parameterized version of the prompts above looks like this.
 
-<Chat model="gpt-4o" summary="Prompt template for data extraction" messages={
-[
-  {
-    "role": "user",
-    "content": [
-      {
-        "type": "text",
-        "text": "```proto\n{proto}\n```\n\nUsing the provided content and images, extract an instance of `{ProtoMessage}` as JSON in adherence to the above schema.\nIf multiple pages or images are provided, combine the information into a single JSON object.\nNo talk. JSON only."
-      },
-      {
-        "type": "text",
-        "text": "{some image}"
-      }
-    ]
-  }
-]
-} />
+<Chat
+  model="gpt-4o"
+  summary="Prompt template for data extraction"
+  messages={[
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: '```proto\n{proto}\n```\n\nUsing the provided content and images, extract an instance of `{ProtoMessage}` as JSON in adherence to the above schema.\nIf multiple pages or images are provided, combine the information into a single JSON object.\nNo talk. JSON only.',
+        },
+        {
+          type: 'text',
+          text: '{some image}',
+        },
+      ],
+    },
+  ]}
+/>
 
 This next part is a bit unusual but stick with me.
 
@@ -231,7 +237,6 @@ message File {
 ```
 
 Running the inference again with the same prompt above and updated protobufs, yields
-
 
 ```json
 {

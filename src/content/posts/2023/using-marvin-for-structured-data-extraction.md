@@ -50,84 +50,84 @@ The result:
 
 ```json
 {
-    "title": "KL Hokkien Mee",
-    "description": "Savoury chewy noodles smothered in a sweet salty soy sauce with prawns, pork belly, cabbage, and gai-lan. The perfect meal for dinner or lunch.",
-    "duration_minutes": 30,
-    "ingredients": [
-        {
-            "name": "thick egg noodles",
-            "quantity": 400.0,
-            "unit": "grams"
-        },
-        {
-            "name": "pork belly",
-            "quantity": 1.0,
-            "unit": "cup sliced"
-        },
-        {
-            "name": "large shrimp",
-            "quantity": 0.75,
-            "unit": "cup peeled and deveined"
-        },
-        {
-            "name": "Napa cabbage",
-            "quantity": 1.0,
-            "unit": "cup thinly sliced"
-        },
-        {
-            "name": "gai lan",
-            "quantity": 1.0,
-            "unit": "cup chopped"
-        },
-        {
-            "name": "chicken stock",
-            "quantity": 0.25,
-            "unit": "cup unsalted"
-        },
-        {
-            "name": "garlic",
-            "quantity": 2.0,
-            "unit": "cloves minced"
-        },
-        {
-            "name": "vegetable oil",
-            "quantity": 0.5,
-            "unit": "tablespoon"
-        },
-        {
-            "name": "dark soy sauce",
-            "quantity": 1.5,
-            "unit": "tablespoon"
-        },
-        {
-            "name": "kecap manis",
-            "quantity": 1.0,
-            "unit": "tablespoon"
-        },
-        {
-            "name": "white granulated sugar",
-            "quantity": 0.5,
-            "unit": "tablespoon"
-        },
-        {
-            "name": "cornstarch",
-            "quantity": 0.5,
-            "unit": "tablespoon"
-        },
-        {
-            "name": "water",
-            "quantity": 0.5,
-            "unit": "cup"
-        }
-    ],
-    "steps": [
-        "In a bowl, combine Sauce ingredients as listed above. Set aside.",
-        "In a wok filled halfway with water, bring to a boil. Blanch your noodles for only 20-30 seconds or until loosened. Strain immediately. Any longer and your noodles will be soggy.",
-        "Dry your wok and over medium heat, add oil and pork belly. Fry until the pork belly has released some fat and is browned on the edges.",
-        "Toss in garlic and shrimp. Fry until shrimp is 50% cooked.",
-        "Increase heat to medium high. Add noodles and Sauce. Mix the sauce into noodles allowing the sauce to reduce a bit, about 45-60 seconds.",
-        "Then add cabbage, gai-lan and chicken stock. Toss everything together and cook until there's a thin layer of sauce on the bottom of the wok. Remove off heat and enjoy!"
-    ]
+  "title": "KL Hokkien Mee",
+  "description": "Savoury chewy noodles smothered in a sweet salty soy sauce with prawns, pork belly, cabbage, and gai-lan. The perfect meal for dinner or lunch.",
+  "duration_minutes": 30,
+  "ingredients": [
+    {
+      "name": "thick egg noodles",
+      "quantity": 400.0,
+      "unit": "grams"
+    },
+    {
+      "name": "pork belly",
+      "quantity": 1.0,
+      "unit": "cup sliced"
+    },
+    {
+      "name": "large shrimp",
+      "quantity": 0.75,
+      "unit": "cup peeled and deveined"
+    },
+    {
+      "name": "Napa cabbage",
+      "quantity": 1.0,
+      "unit": "cup thinly sliced"
+    },
+    {
+      "name": "gai lan",
+      "quantity": 1.0,
+      "unit": "cup chopped"
+    },
+    {
+      "name": "chicken stock",
+      "quantity": 0.25,
+      "unit": "cup unsalted"
+    },
+    {
+      "name": "garlic",
+      "quantity": 2.0,
+      "unit": "cloves minced"
+    },
+    {
+      "name": "vegetable oil",
+      "quantity": 0.5,
+      "unit": "tablespoon"
+    },
+    {
+      "name": "dark soy sauce",
+      "quantity": 1.5,
+      "unit": "tablespoon"
+    },
+    {
+      "name": "kecap manis",
+      "quantity": 1.0,
+      "unit": "tablespoon"
+    },
+    {
+      "name": "white granulated sugar",
+      "quantity": 0.5,
+      "unit": "tablespoon"
+    },
+    {
+      "name": "cornstarch",
+      "quantity": 0.5,
+      "unit": "tablespoon"
+    },
+    {
+      "name": "water",
+      "quantity": 0.5,
+      "unit": "cup"
+    }
+  ],
+  "steps": [
+    "In a bowl, combine Sauce ingredients as listed above. Set aside.",
+    "In a wok filled halfway with water, bring to a boil. Blanch your noodles for only 20-30 seconds or until loosened. Strain immediately. Any longer and your noodles will be soggy.",
+    "Dry your wok and over medium heat, add oil and pork belly. Fry until the pork belly has released some fat and is browned on the edges.",
+    "Toss in garlic and shrimp. Fry until shrimp is 50% cooked.",
+    "Increase heat to medium high. Add noodles and Sauce. Mix the sauce into noodles allowing the sauce to reduce a bit, about 45-60 seconds.",
+    "Then add cabbage, gai-lan and chicken stock. Toss everything together and cook until there's a thin layer of sauce on the bottom of the wok. Remove off heat and enjoy!"
+  ]
 }
 ```
 
@@ -290,4 +290,3 @@ class Ingredient(BaseModel):
 
 `Gpt-4` is slower and more expensive and still does not do what I want.
 This small issue isn't difficult to correct in code, but it provides a bit of signal into how well the model follows instructions with this approach to prompting, which is a function of both the model and the prompt itself.
-

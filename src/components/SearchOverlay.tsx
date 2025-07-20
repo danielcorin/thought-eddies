@@ -47,7 +47,9 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
           setSelectedIndex((prev) => (prev + 1) % results.length);
         } else if (e.key === 'ArrowUp') {
           e.preventDefault();
-          setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
+          setSelectedIndex(
+            (prev) => (prev - 1 + results.length) % results.length
+          );
         } else if (e.key === 'Enter') {
           e.preventDefault();
           const selected = results[selectedIndex];
@@ -89,7 +91,9 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
             'input, a[href], button, [tabindex]:not([tabindex="-1"])'
           );
           const firstFocusable = focusableElements[0] as HTMLElement;
-          const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
+          const lastFocusable = focusableElements[
+            focusableElements.length - 1
+          ] as HTMLElement;
 
           if (e.shiftKey && document.activeElement === firstFocusable) {
             e.preventDefault();
@@ -108,7 +112,10 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
       };
     } else {
       // Return focus to the previously focused element
-      if (previousActiveElement.current && previousActiveElement.current.focus) {
+      if (
+        previousActiveElement.current &&
+        previousActiveElement.current.focus
+      ) {
         previousActiveElement.current.focus();
       }
     }
@@ -121,7 +128,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
       // Use scrollIntoView with block: 'nearest' for smooth scrolling
       selectedItem.scrollIntoView({
         block: 'nearest',
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   }, [selectedIndex]);
@@ -129,7 +136,10 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
   // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (overlayRef.current && !overlayRef.current.contains(event.target as Node)) {
+      if (
+        overlayRef.current &&
+        !overlayRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
         setQuery('');
         setResults([]);
@@ -139,7 +149,8 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isOpen]);
 
@@ -194,26 +205,28 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
     setSelectedIndex(0);
   }, [query, posts, logs]);
 
-  const formatDate = (item: CollectionEntry<'posts'> | CollectionEntry<'logs'>) => {
+  const formatDate = (
+    item: CollectionEntry<'posts'> | CollectionEntry<'logs'>
+  ) => {
     if ('publishedAt' in item.data && item.data.publishedAt) {
       return new Date(item.data.publishedAt).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       });
     }
     if ('date' in item.data) {
       return new Date(item.data.date).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       });
     }
     if ('createdAt' in item.data) {
       return new Date(item.data.createdAt).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       });
     }
     return '';
@@ -292,10 +305,11 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
                       itemRefs.current[index] = el;
                     }}
                     href={url}
-                    className={`block px-4 py-3 transition-colors ${isSelected
-                      ? 'bg-gray-100 dark:bg-gray-700'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                      }`}
+                    className={`block px-4 py-3 transition-colors ${
+                      isSelected
+                        ? 'bg-gray-100 dark:bg-gray-700'
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                    }`}
                     onMouseEnter={() => setSelectedIndex(index)}
                   >
                     <div className="flex items-start justify-between">
@@ -303,11 +317,12 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
                         <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                           {item.data.title}
                         </h3>
-                        {'description' in item.data && item.data.description && (
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                            {item.data.description}
-                          </p>
-                        )}
+                        {'description' in item.data &&
+                          item.data.description && (
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                              {item.data.description}
+                            </p>
+                          )}
                         {tags && tags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {tags.slice(0, 3).map((tag, i) => (

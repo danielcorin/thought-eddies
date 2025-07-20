@@ -193,7 +193,7 @@ With the new prompt, all outputs become
 
 ```json
 {
-    "order_id": null,
-    "message_type": "complaint"
+  "order_id": null,
+  "message_type": "complaint"
 }
 ```

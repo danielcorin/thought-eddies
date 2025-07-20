@@ -4,13 +4,13 @@ import {
   Circle,
   Square,
   XCircle,
-} from "lucide-react";
-import { useState } from "react";
+} from 'lucide-react';
+import { useState } from 'react';
 
 type Task = {
   id: string;
   text: string;
-  status: "todo" | "done" | "migrated" | "cancelled";
+  status: 'todo' | 'done' | 'migrated' | 'cancelled';
 };
 
 type DayEntry = {
@@ -21,31 +21,31 @@ type DayEntry = {
 export default function Calendar() {
   const [entries, setEntries] = useState<DayEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [newTask, setNewTask] = useState("");
+  const [newTask, setNewTask] = useState('');
 
   const addTask = () => {
     if (!newTask.trim()) return;
 
     setEntries((prev) => {
       const existingEntry = prev.find(
-        (entry) => entry.date.toDateString() === selectedDate.toDateString(),
+        (entry) => entry.date.toDateString() === selectedDate.toDateString()
       );
 
       if (existingEntry) {
         return prev.map((entry) =>
           entry.date.toDateString() === selectedDate.toDateString()
             ? {
-              ...entry,
-              tasks: [
-                ...entry.tasks,
-                {
-                  id: crypto.randomUUID(),
-                  text: newTask,
-                  status: "todo",
-                },
-              ],
-            }
-            : entry,
+                ...entry,
+                tasks: [
+                  ...entry.tasks,
+                  {
+                    id: crypto.randomUUID(),
+                    text: newTask,
+                    status: 'todo',
+                  },
+                ],
+              }
+            : entry
         );
       }
 
@@ -57,57 +57,59 @@ export default function Calendar() {
             {
               id: crypto.randomUUID(),
               text: newTask,
-              status: "todo",
+              status: 'todo',
             },
           ],
         },
       ];
     });
 
-    setNewTask("");
+    setNewTask('');
   };
 
-  const updateTaskStatus = (taskId: string, status: Task["status"]) => {
+  const updateTaskStatus = (taskId: string, status: Task['status']) => {
     setEntries((prev) =>
       prev.map((entry) => ({
         ...entry,
         tasks: entry.tasks.map((task) =>
-          task.id === taskId ? { ...task, status } : task,
+          task.id === taskId ? { ...task, status } : task
         ),
-      })),
+      }))
     );
   };
 
-  const getStatusIcon = (status: Task["status"]) => {
+  const getStatusIcon = (status: Task['status']) => {
     switch (status) {
-      case "todo":
+      case 'todo':
         return <Circle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />;
-      case "done":
+      case 'done':
         return (
           <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
         );
-      case "migrated":
+      case 'migrated':
         return <Square className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />;
-      case "cancelled":
+      case 'cancelled':
         return <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />;
     }
   };
 
   const currentEntry = entries.find(
-    (entry) => entry.date.toDateString() === selectedDate.toDateString(),
+    (entry) => entry.date.toDateString() === selectedDate.toDateString()
   );
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 sm:p-8 bg-white rounded-lg shadow-md">
       <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-8">
         <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
-        <h1 className="text-xl sm:text-2xl font-semibold text-gray-600">Bullet Journal</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold text-gray-600">
+          Bullet Journal
+        </h1>
       </div>
 
       <div className="mb-4 sm:mb-8">
         <input
           type="date"
-          value={selectedDate.toISOString().split("T")[0]}
+          value={selectedDate.toISOString().split('T')[0]}
           onChange={(e) => setSelectedDate(new Date(e.target.value))}
           className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -119,7 +121,7 @@ export default function Calendar() {
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Add new task..."
-          onKeyPress={(e) => e.key === "Enter" && addTask()}
+          onKeyPress={(e) => e.key === 'Enter' && addTask()}
           className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
@@ -138,11 +140,11 @@ export default function Calendar() {
           >
             <button
               onClick={() => {
-                const nextStatus: Record<Task["status"], Task["status"]> = {
-                  todo: "done",
-                  done: "migrated",
-                  migrated: "cancelled",
-                  cancelled: "todo",
+                const nextStatus: Record<Task['status'], Task['status']> = {
+                  todo: 'done',
+                  done: 'migrated',
+                  migrated: 'cancelled',
+                  cancelled: 'todo',
                 };
                 updateTaskStatus(task.id, nextStatus[task.status]);
               }}
@@ -151,7 +153,7 @@ export default function Calendar() {
               {getStatusIcon(task.status)}
             </button>
             <span
-              className={`text-sm sm:text-base ${task.status === "done" ? "line-through text-gray-500" : ""}`}
+              className={`text-sm sm:text-base ${task.status === 'done' ? 'line-through text-gray-500' : ''}`}
             >
               {task.text}
             </span>

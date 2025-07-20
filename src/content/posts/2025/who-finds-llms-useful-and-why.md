@@ -1,10 +1,10 @@
 ---
-title: "Who Finds LLMs Useful and Why"
+title: 'Who Finds LLMs Useful and Why'
 createdAt: 2025-06-17T19:53:15-04:00
 updatedAt: 2025-07-18T19:53:15-04:00
 draft: false
 tags:
-- language_models
+  - language_models
 ---
 
 Who is finding LLMs useful and who is not?

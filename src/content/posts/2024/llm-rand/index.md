@@ -17,7 +17,6 @@ I could also vary the temperature to see how that changed the distribution of th
 
 First, we import a bunch of libraries we'll use later
 
-
 ```python
 import json
 import matplotlib.pyplot as plt
@@ -36,20 +35,13 @@ The parser is very permissive.
 It grabs the first digit it finds in the output string, even if it's part of another string.
 For example:
 
-
 ```python
 s = "asd123fgh456"
 re.search(r'\d+', s)
 int(match.group())
 ```
 
-
-
-
     123
-
-
-
 
 ```python
 def create_openai_client():
@@ -101,7 +93,6 @@ def parse_random_number(output, min_=1, max_=100):
 
 Here's an example of the whole thing end to end with `llama3.2` and temperature 1.5
 
-
 ```python
 client = create_openai_client()
 output = generate_random_number(client, "llama3.2", 1.5)
@@ -118,11 +109,8 @@ number
 
     53
 
-
-
 We're also doing to do some runs with high temperatures, like 9 and 11.
 They outputs from the models using those temperatures are weird, but we can parse them some of the time.
-
 
 ```python
 client = create_openai_client()
@@ -140,15 +128,12 @@ number
 
     1
 
-
-
 There are lots of good, small models we can try this experiment on.
 We're going to loop through them and several different temperature values, attempting to generate 500 values for each model-temperature combination.
 If we can't parse a number from the model response, we just move on.
 We're going to count the number of successful samples later.
 We write the results to jsonl files, which makes it easier to resume the experiment in case something goes wrong along the way.
 Running this takes a while - 10s of minutes on my M3 MBP.
-
 
 ```python
 client = create_openai_client()
@@ -189,7 +174,6 @@ for model in models:
 ```
 
 Once we have the data in jsonl files, we can take a look at the distributions of the generated numbers
-
 
 ```python
 data = []
@@ -234,11 +218,7 @@ plt.show()
 
 ```
 
-
-    
 ![png](images/llm_rand_14_0.png)
-    
-
 
 That's a lot of data.
 My takeaways:
@@ -253,7 +233,6 @@ We're going to plot the number of valid outputs per model across temperature to 
 Keep in mind, our integer parsing is much more permissive than our instructions, so an output that can't be parsed is a pretty serious failure by the model.
 Here's an example what these look like:
 
-
 ```python
 client = create_openai_client()
 output = generate_random_number(client, "mistral", 11)
@@ -265,11 +244,9 @@ number
     random value in java script without additional logic:\``
     No number found in output: random value in java script without additional logic:\``
 
-
 Yikes!
 This is why we use models at temperatures in the 0-2 range.
 With that, let's see how these models breakdown.
-
 
 ```python
 valid_outputs = df.groupby(['Model', 'Temperature']).size().reset_index(name='Valid Outputs')
@@ -295,11 +272,7 @@ plt.show()
 
 ```
 
-
-    
 ![png](images/llm_rand_18_0.png)
-    
-
 
 As we'd expect, we start to have problems between temperatures 1 and 3.
 

@@ -17,7 +17,6 @@ Some engineers (I sometimes do) will talk about the problem of "poor quality cod
 We've since gained experience that allows us to view the contribution with deepened context and in a different light.
 As more proficient engineers, rather than just seeing a problem and pointing it out, we can do something productive to address the reason the poor code was written in the first place.
 
-
 I’ll propose a few strategies I’ve developed to try and turn an unavoidable part of life as an engineer into an opportunity for us to help each other continue to learn and get better at the work we do.
 
 When you find a file or function that is the perfect combination of unreadable and poorly named, misusing design patterns and languages features, violating abstractions and code base conventions:

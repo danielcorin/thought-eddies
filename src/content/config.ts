@@ -1,10 +1,10 @@
-import { defineCollection, z } from "astro:content";
-import { glob } from "astro/loaders";
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const posts = defineCollection({
-  loader: glob({ 
-    pattern: ["**/*.{md,mdx}", "!**/source.md"], 
-    base: "./src/content/posts"
+  loader: glob({
+    pattern: ['**/*.{md,mdx}', '!**/source.md'],
+    base: './src/content/posts',
   }),
   schema: z.object({
     title: z.string(),
@@ -23,7 +23,7 @@ const posts = defineCollection({
         z.object({
           level: z.number().int(),
           content: z.string(),
-        }),
+        })
       )
       .optional()
       .default([]),
@@ -32,16 +32,19 @@ const posts = defineCollection({
 });
 
 const home = defineCollection({
-  loader: glob({ pattern: "index.mdx", base: "./src/content/home" }),
+  loader: glob({ pattern: 'index.mdx', base: './src/content/home' }),
   schema: z.object({
     title: z.string(),
   }),
 });
 
 const logs = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/logs" }),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/logs' }),
   schema: z.object({
-    date: z.string().or(z.date()).transform((val) => new Date(val)),
+    date: z
+      .string()
+      .or(z.date())
+      .transform((val) => new Date(val)),
     title: z.string(),
     tags: z.array(z.string()).nullable().optional(),
     draft: z.boolean().optional().default(true),

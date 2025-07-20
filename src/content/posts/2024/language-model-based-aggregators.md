@@ -51,4 +51,3 @@ As a result of that shift, the models will have little good or interesting conte
 
 This degradation seems like a furthering of the consolidation of news organizations and social media platforms.
 I can see pluses and minuses for how models will help us learn and stay informed, but given how confusing things have become with social media, I am wary of the downsides and negatives resulting from a diet of mostly model-generated content.
-

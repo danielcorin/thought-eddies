@@ -34,8 +34,8 @@ Related: I need to start saving my model conversations in a consistent format.
 >
 > Please write client and server side code for this game, including any html and css
 
-
 Claude outputted code for the following files
+
 - `server.js`
 - `public/index.html`
 - `public/styles.css`

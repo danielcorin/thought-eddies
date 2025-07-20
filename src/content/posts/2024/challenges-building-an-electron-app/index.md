@@ -35,6 +35,7 @@ I decided to build my project with [`vite`](https://vite.dev/) and [`electron-fo
 ```sh
 npm init electron-app@latest delta -- --template=vite-typescript
 ```
+
 There have been challenges but it's not clear if I would have run into fewer challenges with different tools.
 
 ## Challenges
@@ -78,22 +79,21 @@ at Module._compile (node:internal/modules/cjs/loader:1484:14)
 at Module._extensions..js (node:internal/modules/cjs/loader:1564:10)
 ```
 
-
 A combination of adding an `electron-forge` hook for `packageAfterCopy` and the following `forge.config.ts` seemed to resolve most of the issues
 
 ```ts
 const config: ForgeConfig = {
   packagerConfig: {
     asar: {
-      unpack: "*.{node,dylib}",
-      unpackDir: "{better-sqlite3}",
+      unpack: '*.{node,dylib}',
+      unpackDir: '{better-sqlite3}',
     },
   },
   rebuildConfig: {
-    onlyModules: ["better-sqlite3"],
+    onlyModules: ['better-sqlite3'],
     force: true,
   },
-}
+};
 ```
 
 ### Using sqlite extensions
@@ -122,12 +122,12 @@ The solution combines the previous `forge.config.ts` with a `packageAfterCopy` h
 const config: ForgeConfig = {
   packagerConfig: {
     asar: {
-      unpack: "*.{node,dylib}",
-      unpackDir: "{better-sqlite3,sqlite-vec*,sqlite-vec-darwin-arm64}",
+      unpack: '*.{node,dylib}',
+      unpackDir: '{better-sqlite3,sqlite-vec*,sqlite-vec-darwin-arm64}',
     },
   },
   rebuildConfig: {
-    onlyModules: ["better-sqlite3", "sqlite-vec", "sqlite-vec-darwin-arm64"],
+    onlyModules: ['better-sqlite3', 'sqlite-vec', 'sqlite-vec-darwin-arm64'],
     force: true,
   },
 
@@ -136,16 +136,16 @@ const config: ForgeConfig = {
   hooks: {
     async packageAfterCopy(_forgeConfig, buildPath) {
       const requiredNativePackages = [
-        "better-sqlite3",
-        "bindings",
-        "file-uri-to-path",
+        'better-sqlite3',
+        'bindings',
+        'file-uri-to-path',
 
-        "sqlite-vec",
-        "sqlite-vec-darwin-arm64",
+        'sqlite-vec',
+        'sqlite-vec-darwin-arm64',
       ];
 
-      const sourceNodeModulesPath = path.resolve(__dirname, "node_modules");
-      const destNodeModulesPath = path.resolve(buildPath, "node_modules");
+      const sourceNodeModulesPath = path.resolve(__dirname, 'node_modules');
+      const destNodeModulesPath = path.resolve(buildPath, 'node_modules');
 
       await Promise.all(
         requiredNativePackages.map(async (packageName) => {
@@ -157,7 +157,7 @@ const config: ForgeConfig = {
             recursive: true,
             preserveTimestamps: true,
           });
-        }),
+        })
       );
     },
   },

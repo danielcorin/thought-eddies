@@ -110,14 +110,12 @@ Overall accuracy: 87.33%
 
 To attempt to guard against highly anomalous results, I generated a new set of images and ran both prompts again.
 
-
 | Intersection Count | Set 1, Prompt 1 | Set 1, Prompt 2 | Set 2, Prompt 1 | Set 2, Prompt 2 |
-|--------------------|-----------------|-----------------|-----------------|-----------------|
+| ------------------ | --------------- | --------------- | --------------- | --------------- |
 | 0                  | 77.78%          | 86.67%          | 77.14%          | 85.71%          |
 | 1                  | 79.17%          | 90.28%          | 90.91%          | 97.40%          |
 | 2                  | 78.79%          | 81.82%          | 84.21%          | 94.74%          |
 | Overall            | 78.67%          | 87.33%          | 86.00%          | 94.00%          |
-
 
 ## Conclusions
 

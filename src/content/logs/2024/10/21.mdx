@@ -1,27 +1,30 @@
 ---
-date: "2024-10-21T19:12:49Z"
-title: "2024-10-21"
+date: '2024-10-21T19:12:49Z'
+title: '2024-10-21'
 draft: false
 tags:
 ---
 
-import Chat from "@components/prose/Chat.astro";
+import Chat from '@components/prose/Chat.astro';
 
 Ran several experiments using local LLMs (~7b parameter models) like `llama3.2` and `phi3` to generate a random number between 1 and 100.
 The exact prompt was
 
-<Chat model="llama3.2" messages={
-[
+<Chat
+  model="llama3.2"
+  messages={[
     {
-        "role": "system",
-        "content": "You are a random number generator that provides a number between 1 and 100."
+      role: 'system',
+      content:
+        'You are a random number generator that provides a number between 1 and 100.',
     },
     {
-        "role": "user",
-        "content": "Generate a random number between 1 and 100. Provide the output in the following format: 'Random number: X', where X is the generated number. Ensure the number is an integer and do not include any additional text or explanations."
-    }
-]
-} />
+      role: 'user',
+      content:
+        "Generate a random number between 1 and 100. Provide the output in the following format: 'Random number: X', where X is the generated number. Ensure the number is an integer and do not include any additional text or explanations.",
+    },
+  ]}
+/>
 
 I didn't expect this approach to work as a uniform number generator, but it was interesting to see _how_ it doesn't work.
 At lower temperatures, most models only output a few different values in the range of 40-60.

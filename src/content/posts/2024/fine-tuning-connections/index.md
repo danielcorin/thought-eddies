@@ -108,6 +108,7 @@ The [OpenAI pricing page](https://openai.com/pricing) lists the price of the fin
 Additionally, the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning/estimate-costs) notes
 
 > To estimate the costs for a specific fine-tuning job, use the following formula:
+>
 > ```
 > base cost per 1k tokens * number of tokens in the input file * number of epochs trained
 > ```
@@ -191,7 +192,7 @@ words: level members
 ```
 
 A definite bummer.
-I did a quick search in my project directory for "words: level members", and found it *everywhere*.
+I did a quick search in my project directory for "words: level members", and found it _everywhere_.
 Oops!
 I built the dataset improperly.
 
@@ -261,7 +262,7 @@ Though occasionally it seemed to struggle to get the category right with `x ___`
 But honestly, I was a little stunned.
 Before this fine-tuning, the model could not come all that close to solving Connections puzzles and now it could generally get the 4 word groups right every time and the categories right most of the time.
 It seemed to good to be true.
-It *was*!
+It _was_!
 Can you spot the problem?
 The input words
 
@@ -371,7 +372,6 @@ if __name__ == "__main__":
 
 I ran a few tests
 
-
 ```text
 Here are the 16 words: adult, height, kiss, top, pair, tease, times, josh, peak, ten, score, gross, kid, dozen, max, rib
 ```
@@ -410,7 +410,7 @@ category: ___’s rib
 words: adam, carpenter, get, surprise
 ```
 
-The results are *ok*, but not incredible.
+The results are _ok_, but not incredible.
 It does get some groupings correct.
 There are hallucinations, adding words that don't exist.
 Also, most categories and grouping are not correct.

@@ -127,7 +127,7 @@ interface ZoomableDocumentProps {
 }
 ```
 
-import Chat from "@components/prose/Chat.astro";
+import Chat from '@components/prose/Chat.astro';
 
 To generate the data for those levels, with this (or any) document as context, we prompt
 
@@ -135,9 +135,10 @@ To generate the data for those levels, with this (or any) document as context, w
   model="claude-3-5-sonnet-20241022"
   messages={[
     {
-      role: "user",
-      content: "Using markdown (including headers, list and code if useful) given the content at Level 1, write Levels 2-5, maintaining the author's voice and provide increasingly general levels of specificity as the levels increase. Don't just summarize. Provide some of the same details as the original text at the lower levels. Do more summarizing at the higher levels. Use your best judgment to determine which details are relevant at each level. Remember, lower levels are like street and neighborhood views on Google Maps where you can see roads and buildings. Higher levels are like county, state and even country views where we get more of the general geography of a space but see fewer details."
-    }
+      role: 'user',
+      content:
+        "Using markdown (including headers, list and code if useful) given the content at Level 1, write Levels 2-5, maintaining the author's voice and provide increasingly general levels of specificity as the levels increase. Don't just summarize. Provide some of the same details as the original text at the lower levels. Do more summarizing at the higher levels. Use your best judgment to determine which details are relevant at each level. Remember, lower levels are like street and neighborhood views on Google Maps where you can see roads and buildings. Higher levels are like county, state and even country views where we get more of the general geography of a space but see fewer details.",
+    },
   ]}
 />
 

@@ -11,10 +11,9 @@ aliases:
   - /posts/2016-03-25-presto-cluster
 ---
 
-Creating a Presto Cluster
-=========================
+# Creating a Presto Cluster
 
-I first came across [Presto](https://prestodb.io/) when researching data virtualization - the idea that all of your data can be  integrated regardless of its format or storage location. One can use scripts or periodic jobs to mashup data or create regular reports from several independent sources. However, these methods don't scale well, especially when the queries change frequently or the data is ingested in realtime. Presto allows one to query a variety of data sources using SQL and presents the data in a standard table format, where it can be manipulated and `JOIN`ed like traditional relational data.
+I first came across [Presto](https://prestodb.io/) when researching data virtualization - the idea that all of your data can be integrated regardless of its format or storage location. One can use scripts or periodic jobs to mashup data or create regular reports from several independent sources. However, these methods don't scale well, especially when the queries change frequently or the data is ingested in realtime. Presto allows one to query a variety of data sources using SQL and presents the data in a standard table format, where it can be manipulated and `JOIN`ed like traditional relational data.
 
 In Facebook's words:
 
@@ -95,7 +94,7 @@ The above files can be configured as needed for your specific cluster. The optio
 Query 20160324_223423_00000_pdnyh failed: No worker nodes available
 ```
 
- For the workers, you need to create all the same files as above, but the `config.properties` file needs to look similar to the one below.
+For the workers, you need to create all the same files as above, but the `config.properties` file needs to look similar to the one below.
 
 Worker `config.properties`
 

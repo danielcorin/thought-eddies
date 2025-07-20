@@ -15,7 +15,11 @@
   --color-accent-light: #0984e3;
   --color-link-light: var(--color-accent-light);
   --color-border-light: #b4b4b4;
-  --color-highlight-light: color-mix(in srgb, var(--color-accent-light) 50%, transparent);
+  --color-highlight-light: color-mix(
+    in srgb,
+    var(--color-accent-light) 50%,
+    transparent
+  );
 
   /* Dark mode colors */
   --color-bg-note-dark: #1c1b17;
@@ -27,12 +31,20 @@
   --color-border-dark: #4a4a4a;
   --color-bg-dark: var(--color-bg-note-dark);
   --color-bg-code-dark: var(--color-bg-code-note-dark);
-  --color-highlight-dark: color-mix(in srgb, var(--color-accent-dark) 50%, transparent);
+  --color-highlight-dark: color-mix(
+    in srgb,
+    var(--color-accent-dark) 50%,
+    transparent
+  );
 
   /* Colors - set light theme as default to prevent flash */
   --color-bg: var(--color-bg-note-light);
   --color-bg-code: var(--color-bg-code-note-light);
-  --color-bg-hover: color-mix(in srgb, var(--color-bg-code-note-light) 70%, var(--color-accent-light) 30%);
+  --color-bg-hover: color-mix(
+    in srgb,
+    var(--color-bg-code-note-light) 70%,
+    var(--color-accent-light) 30%
+  );
   --color-ink: var(--color-ink-light-theme);
   --color-ink-light: var(--color-ink-light-light);
   --color-accent: var(--color-accent-light);
@@ -41,17 +53,17 @@
   --color-highlight: var(--color-highlight-light);
 
   /* Typography */
-  --font-post-primary: "Futura";
-  --font-post-prose: "Crimson Pro", Georgia, serif;
+  --font-post-primary: 'Futura';
+  --font-post-prose: 'Crimson Pro', Georgia, serif;
   --font-post-ui: system-ui, -apple-system, sans-serif;
-  --font-post-mono: "JetBrains Mono", monospace;
+  --font-post-mono: 'JetBrains Mono', monospace;
 
-  --font-note-primary: "Futura";
-  --font-note-prose: "Inter", Georgia, serif;
+  --font-note-primary: 'Futura';
+  --font-note-prose: 'Inter', Georgia, serif;
   --font-note-ui: system-ui, -apple-system, sans-serif;
-  --font-note-mono: "JetBrains Mono", monospace;
-  
-  --font-handwriting: "Inter", Georgia, serif;
+  --font-note-mono: 'JetBrains Mono', monospace;
+
+  --font-handwriting: 'Inter', Georgia, serif;
 
   --font-primary: var(--font-note-primary);
   --font-prose: var(--font-note-prose);
@@ -66,10 +78,8 @@
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
-    --text-4xl: 2.25rem;
+  --text-4xl: 2.25rem;
 }
-
-
 
 /* Light theme class override */
 :root.light {
@@ -87,7 +97,11 @@
 :root.dark {
   --color-bg: var(--color-bg-note-dark);
   --color-bg-code: var(--color-bg-code-note-dark);
-  --color-bg-hover: color-mix(in srgb, var(--color-bg-code-note-dark) 70%, var(--color-accent-dark) 30%);
+  --color-bg-hover: color-mix(
+    in srgb,
+    var(--color-bg-code-note-dark) 70%,
+    var(--color-accent-dark) 30%
+  );
   --color-ink: var(--color-ink-dark);
   --color-ink-light: var(--color-ink-light-dark);
   --color-accent: var(--color-accent-dark);

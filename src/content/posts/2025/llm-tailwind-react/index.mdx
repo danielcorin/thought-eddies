@@ -9,10 +9,10 @@ tags: null
 draft: false
 ---
 
-import Aside from "@components/prose/Aside.astro";
-import Chat from "@components/prose/Chat.astro";
-import CodeBlock from "@components/prose/CodeBlock.astro";
-import { Image } from "astro:assets";
+import Aside from '@components/prose/Aside.astro';
+import Chat from '@components/prose/Chat.astro';
+import CodeBlock from '@components/prose/CodeBlock.astro';
+import { Image } from 'astro:assets';
 
 If you've experimented with [Claude Artifacts](https://support.anthropic.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them) or [v0.dev](https://v0.dev/), maybe you've been delighted (as I have) that the language model can conjure a UI for an idea you describe.
 Most of my experience building software, especially professionally, comes from working on the "backend".
@@ -36,23 +36,25 @@ Given the following prompt, here's what `claude-3-5-sonnet-20241022` generates i
 </Aside>
 
 <Aside type="note" darkModeOnly>
-  I made minor adjustments to the color schemes of the components after generation to play nice with dark mode of this site.
-  The changes I made keep the color scheme true to what the model output rather than match the site style.
+  I made minor adjustments to the color schemes of the components after
+  generation to play nice with dark mode of this site. The changes I made keep
+  the color scheme true to what the model output rather than match the site
+  style.
 </Aside>
-
 
 <Chat
   model="claude-3-5-sonnet-20241022"
   messages={[
     {
-      role: "user",
-      content: "use react, tailwind and lucide-react to create an interface for a bullet-journal inspired calendar"
-    }
+      role: 'user',
+      content:
+        'use react, tailwind and lucide-react to create an interface for a bullet-journal inspired calendar',
+    },
   ]}
 />
 
-import { default as TailwindCalendarV1 } from "./components/TailwindCalendar.v1";
-import TailwindCalendarV1Source from "./components/TailwindCalendar.v1?raw";
+import { default as TailwindCalendarV1 } from './components/TailwindCalendar.v1';
+import TailwindCalendarV1Source from './components/TailwindCalendar.v1?raw';
 
 <TailwindCalendarV1 client:load />
 
@@ -66,14 +68,15 @@ import TailwindCalendarV1Source from "./components/TailwindCalendar.v1?raw";
   model="claude-3-5-sonnet-20241022"
   messages={[
     {
-      role: "user",
-      content: "use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with styles and a corresponding css module"
-    }
+      role: 'user',
+      content:
+        'use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with styles and a corresponding css module',
+    },
   ]}
 />
 
-import { default as ReactCalendarV1 } from "./components/ReactCalendar.v1";
-import ReactCalendarV1Source from "./components/ReactCalendar.v1?raw";
+import { default as ReactCalendarV1 } from './components/ReactCalendar.v1';
+import ReactCalendarV1Source from './components/ReactCalendar.v1?raw';
 
 <ReactCalendarV1 client:load />
 
@@ -98,14 +101,15 @@ Let's add a calendar component so we can see the number of tasks that have been 
   model="claude-3-5-sonnet-20241022"
   messages={[
     {
-      role: "user",
-      content: "update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day"
-    }
+      role: 'user',
+      content:
+        'update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day',
+    },
   ]}
 />
 
-import { default as TailwindCalendarV2 } from "./components/TailwindCalendar.v2";
-import TailwindCalendarV2Source from "./components/TailwindCalendar.v2?raw";
+import { default as TailwindCalendarV2 } from './components/TailwindCalendar.v2';
+import TailwindCalendarV2Source from './components/TailwindCalendar.v2?raw';
 
 <TailwindCalendarV2 client:load />
 
@@ -158,7 +162,7 @@ import {
   format,
   isSameDay,
   startOfMonth,
-} from "date-fns";
+} from 'date-fns';
 ```
 
 This type of things (arguably a hallucination of sorts) happens a lot less when making changes in a single file.
@@ -168,44 +172,38 @@ Let's put all the CSS styles in the same file then compare what it's like to ite
 <Chat
   messages={[
     {
-      role: "user",
-      content: "use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with css styles all in one file"
-    }
+      role: 'user',
+      content:
+        'use react and lucide-react to create an interface for a bullet-journal inspired calendar. output the react component with css styles all in one file',
+    },
   ]}
 />
 
-import { default as CssCalendarV1 } from "./components/CssCalendar.v1";
-import CssCalendarV1Source from "./components/CssCalendar.v1?raw";
+import { default as CssCalendarV1 } from './components/CssCalendar.v1';
+import CssCalendarV1Source from './components/CssCalendar.v1?raw';
 
 <CssCalendarV1 client:load />
 
-<CodeBlock
-  code={CssCalendarV1Source}
-  lang="tsx"
-  title="CssCalendar.v1.tsx"
-/>
+<CodeBlock code={CssCalendarV1Source} lang="tsx" title="CssCalendar.v1.tsx" />
 
 Now, let's transform that single file with the second prompt
 
 <Chat
   messages={[
     {
-      role: "user",
-      content: "update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day"
-    }
+      role: 'user',
+      content:
+        'update the component to add a calendar ui element. the calendar should display the count of the number of tasks and their types each day',
+    },
   ]}
 />
 
-import { default as CssCalendarV2 } from "./components/CssCalendar.v2";
-import CssCalendarV2Source from "./components/CssCalendar.v2?raw";
+import { default as CssCalendarV2 } from './components/CssCalendar.v2';
+import CssCalendarV2Source from './components/CssCalendar.v2?raw';
 
 <CssCalendarV2 client:load />
 
-<CodeBlock
-  code={CssCalendarV2Source}
-  lang="tsx"
-  title="CssCalendar.v2.tsx"
-/>
+<CodeBlock code={CssCalendarV2Source} lang="tsx" title="CssCalendar.v2.tsx" />
 
 Not bad!
 So what am I complaining about?
@@ -217,7 +215,7 @@ Why?
 The React component with in-file CSS styles has the following structure
 
 ```tsx showLineNumbers=false
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react';
 
 // other imports
 

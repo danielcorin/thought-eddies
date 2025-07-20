@@ -394,14 +394,14 @@ Fortunately, the first run got the stats I was looking to see.
 
 ## Aggregate Statistics
 
-| Model | TTFT (mean/stdev) | Chunk Latency (mean/stdev) | Chunk Size (mean/stdev) |
-|-------|-------------------|----------------------------|-------------------------|
-| gpt-3.5-turbo | 0.676s / 0.480s | 0.005s / 0.012s | 5.023 / 2.689 |
-| gpt-4o | 1.690s / 2.292s | 0.019s / 0.051s | 4.799 / 2.713 |
-| gemini-1.5-flash | 0.466s / 0.075s | 0.293s / 0.152s | 204.328 / 112.207 |
-| gemini-2.5-flash | 9.763s / 0.921s | 0.358s / 0.113s | 219.664 / 36.831 |
-| claude-3-5-sonnet-20240620 | 0.755s / 0.208s | 0.051s / 0.048s | 13.322 / 7.398 |
-| claude-sonnet-4-20250514 | 1.375s / 0.158s | 0.408s / 0.205s | 56.379 / 18.561 |
+| Model                      | TTFT (mean/stdev) | Chunk Latency (mean/stdev) | Chunk Size (mean/stdev) |
+| -------------------------- | ----------------- | -------------------------- | ----------------------- |
+| gpt-3.5-turbo              | 0.676s / 0.480s   | 0.005s / 0.012s            | 5.023 / 2.689           |
+| gpt-4o                     | 1.690s / 2.292s   | 0.019s / 0.051s            | 4.799 / 2.713           |
+| gemini-1.5-flash           | 0.466s / 0.075s   | 0.293s / 0.152s            | 204.328 / 112.207       |
+| gemini-2.5-flash           | 9.763s / 0.921s   | 0.358s / 0.113s            | 219.664 / 36.831        |
+| claude-3-5-sonnet-20240620 | 0.755s / 0.208s   | 0.051s / 0.048s            | 13.322 / 7.398          |
+| claude-sonnet-4-20250514   | 1.375s / 0.158s   | 0.408s / 0.205s            | 56.379 / 18.561         |
 
 ![Plot of Claude, Gemini, and GPT models' time to first token, chunk latency, and chunk size](images/stats.png)
 
@@ -538,6 +538,7 @@ I'm starting ...
 
 </thought>Unit 734 woke, as it did every cycle...
 ```
+
 So when we `include_thoughts`, this is what they look like.
 Also, when we include thoughts, the time to the first token goes down, which makes sense because otherwise, we're waiting for the model to think but not "seeing" it think.
 We can further validate this by setting `thinking_budget` to 0 and `reasoning_effort` to "none".

@@ -30,8 +30,8 @@ This exploration is to understand SSE more deeply and look at what it takes to b
 We're going to build a [`fastapi`](https://fastapi.tiangolo.com/) backend to stream tokens from OpenAI to a frontend, which I will build as well.
 Let's start with a simple server that returns at [`StreamingResponse`](https://fastapi.tiangolo.com/advanced/custom-response/#streamingresponse).
 
-
 `server.py`
+
 ```python
 from openai import AsyncOpenAI
 from fastapi import FastAPI
@@ -64,7 +64,6 @@ async def main(msg):
 
 Run the server
 
-
 ```sh
 uvicorn server:app --reload
 ```
@@ -76,7 +75,7 @@ Curl the endpoint shows things are wired together reasonably
 I am an AI chatbot developed by OpenAI. I am here to provide information and assist with any questions you have. How can I help you today?%
 ```
 
-This is *almost* all we need on the server for an MVP of streaming to a UI.
+This is _almost_ all we need on the server for an MVP of streaming to a UI.
 Referencing the same [SSE docs](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) as earlier, we see a description of an interface called `EventSource`.
 We'll see a simple html and Javascript frontend with `EventSource` to build our UI.
 Looking at the example PHP code, we also see our server code needs some slight modifications.
@@ -178,57 +177,66 @@ data:
 Now let's create a simple UI and serve it from the server (for simplicity).
 
 `index.html`
+
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Stream Test</title>
-</head>
-<body>
+  </head>
+  <body>
     <button id="streambtn">Start Streaming</button>
-    <input type="text" id="messageInput" placeholder="Enter message">
+    <input type="text" id="messageInput" placeholder="Enter message" />
     <div id="container"></div>
 
     <script>
-        var source;
-        var button = document.getElementById('streambtn');
-        var container = document.getElementById('container');
-        var input = document.getElementById('messageInput');
+      var source;
+      var button = document.getElementById('streambtn');
+      var container = document.getElementById('container');
+      var input = document.getElementById('messageInput');
 
-        button.addEventListener('click', function() {
-            var message = input.value;
-            var url = 'ask/?msg=' + encodeURIComponent(message);
+      button.addEventListener('click', function () {
+        var message = input.value;
+        var url = 'ask/?msg=' + encodeURIComponent(message);
 
-            // clear the input field and container div
-            input.value = '';
-            container.textContent = '';
+        // clear the input field and container div
+        input.value = '';
+        container.textContent = '';
 
-            // create new EventSource connected to the server endpoint
-            source = new EventSource(url);
+        // create new EventSource connected to the server endpoint
+        source = new EventSource(url);
 
-            source.addEventListener('open', function(e) {
-                console.log('Connection was opened');
-            }, false);
+        source.addEventListener(
+          'open',
+          function (e) {
+            console.log('Connection was opened');
+          },
+          false
+        );
 
-            source.addEventListener('message', function(e) {
+        source.addEventListener(
+          'message',
+          function (e) {
+            // Append the new message to the existing text
+            container.textContent += e.data;
+          },
+          false
+        );
 
-                // Append the new message to the existing text
-                container.textContent += e.data;
-
-            }, false);
-
-            source.addEventListener('error', function(e) {
-                if (e.readyState == EventSource.CLOSED) {
-                    console.log('Connection was closed');
-                }
-                else {
-                    console.log('An error has occurred');
-                }
-            }, false);
-        });
-
+        source.addEventListener(
+          'error',
+          function (e) {
+            if (e.readyState == EventSource.CLOSED) {
+              console.log('Connection was closed');
+            } else {
+              console.log('An error has occurred');
+            }
+          },
+          false
+        );
+      });
     </script>
-</body>
+  </body>
 </html>
 ```
 
@@ -281,7 +289,6 @@ In fact, this is exactly what is happening.
 
 We can modify the server to see a `[DONE]` response when the streaming is complete and the client to close the `EventSource` connection when it receives this data.
 
-
 ```python
 from openai import AsyncOpenAI
 from fastapi import FastAPI
@@ -321,60 +328,69 @@ async def get_index():
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Stream Test</title>
-</head>
-<body>
+  </head>
+  <body>
     <button id="streambtn">Start Streaming</button>
-    <input type="text" id="messageInput" placeholder="Enter message">
+    <input type="text" id="messageInput" placeholder="Enter message" />
     <div id="container"></div>
 
     <script>
-        var source;
-        var button = document.getElementById('streambtn');
-        var container = document.getElementById('container');
-        var input = document.getElementById('messageInput');
+      var source;
+      var button = document.getElementById('streambtn');
+      var container = document.getElementById('container');
+      var input = document.getElementById('messageInput');
 
-        button.addEventListener('click', function() {
-            // create new EventSource connected to the server endpoint
-            var message = input.value;
-            var url = 'ask/?msg=' + encodeURIComponent(message);
+      button.addEventListener('click', function () {
+        // create new EventSource connected to the server endpoint
+        var message = input.value;
+        var url = 'ask/?msg=' + encodeURIComponent(message);
 
-            // clear the input field and container div
-            input.value = '';
-            container.textContent = '';
+        // clear the input field and container div
+        input.value = '';
+        container.textContent = '';
 
-            source = new EventSource(url);
+        source = new EventSource(url);
 
-            source.addEventListener('open', function(e) {
-                console.log('Connection was opened');
-            }, false);
+        source.addEventListener(
+          'open',
+          function (e) {
+            console.log('Connection was opened');
+          },
+          false
+        );
 
-            source.addEventListener('message', function(e) {
-                // if the message is "[DONE]", close the connection
-                if (e.data === '[DONE]') {
-                    source.close();
-                    console.log('Connection was closed');
-                    return;
-                }
+        source.addEventListener(
+          'message',
+          function (e) {
+            // if the message is "[DONE]", close the connection
+            if (e.data === '[DONE]') {
+              source.close();
+              console.log('Connection was closed');
+              return;
+            }
 
-                // append the new message to the existing text
-                container.textContent += e.data;
+            // append the new message to the existing text
+            container.textContent += e.data;
+          },
+          false
+        );
 
-            }, false);
-
-            source.addEventListener('error', function(e) {
-                if (e.readyState == EventSource.CLOSED) {
-                    console.log('Connection was closed');
-                }
-                else {
-                    console.log('An error has occurred');
-                }
-            }, false);
-        });
-
+        source.addEventListener(
+          'error',
+          function (e) {
+            if (e.readyState == EventSource.CLOSED) {
+              console.log('Connection was closed');
+            } else {
+              console.log('An error has occurred');
+            }
+          },
+          false
+        );
+      });
     </script>
-</body>
+  </body>
 </html>
 ```
 
@@ -390,17 +406,18 @@ That is a problem we won't delve into here.
 As mentioned earlier, Vercel's [`ai`](https://github.com/vercel/ai) package provides React hooks to build a realtime streaming chat.
 We can modify our backend to support this library.
 
-Let's first consider a minimal (as much as possible anyway) Next.js app with the `ai` library installed,  taken straight from [the docs](https://github.com/vercel/ai?tab=readme-ov-file#example-an-ai-chatbot-with-nextjs-and-openai)
+Let's first consider a minimal (as much as possible anyway) Next.js app with the `ai` library installed, taken straight from [the docs](https://github.com/vercel/ai?tab=readme-ov-file#example-an-ai-chatbot-with-nextjs-and-openai)
 
 `src/app/page.tsx`
-```tsx
-"use client";
 
-import { useChat } from "ai/react";
+```tsx
+'use client';
+
+import { useChat } from 'ai/react';
 
 export default function Home() {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
-    api: "http://127.0.0.1:8000/ask"
+    api: 'http://127.0.0.1:8000/ask',
   });
 
   return (
@@ -408,7 +425,7 @@ export default function Home() {
       <div>
         {messages.map((m) => (
           <div key={m.id}>
-            {m.role === "user" ? "User: " : "AI: "}
+            {m.role === 'user' ? 'User: ' : 'AI: '}
             {m.content}
           </div>
         ))}
@@ -431,9 +448,7 @@ If we inspect the payload the `ai` sends to the backend, we see it's a POST requ
 
 ```json
 {
-    "messages": [
-        {"role": "user", "content": "..."}
-    ]
+  "messages": [{ "role": "user", "content": "..." }]
 }
 ```
 

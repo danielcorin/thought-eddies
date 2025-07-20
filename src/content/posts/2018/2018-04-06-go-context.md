@@ -59,6 +59,7 @@ func buildStackContext(ctx context.Context, name string) context.Context {
 }
 
 ```
+
 <https://play.golang.org/p/Q-2AmWQ-bf6>
 
 In the code above, we initialize an empty context in our `main` function, then pass it down into some methods: `Handler`, `Service` and `Gateway` respectively.
@@ -127,8 +128,8 @@ func buildStackContext(ctx context.Context) context.Context {
 }
 
 ```
-<https://play.golang.org/p/AXOPYBr5SKF>
 
+<https://play.golang.org/p/AXOPYBr5SKF>
 
 The above code yields the same output, `Handler:Service:Gateway`, but it allows us to arbitrarily add more function calls or change function names and still get the expected stack of function calls:
 
@@ -196,6 +197,7 @@ func buildStackContext(ctx context.Context) context.Context {
 }
 
 ```
+
 <https://play.golang.org/p/Eb8eZ5AfWke>
 
 The above prints: `Consumer:Service:Gateway:Client`.

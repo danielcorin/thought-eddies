@@ -14,6 +14,7 @@ At the beginning of 2023, I set some goals for myself.
 Here are those goals and how the year turned out.
 
 ## Learn a new word each week (50%)
+
 Clear and effective communication is important to me.
 My thought process was that I could improve as a communicator if I further developed my vocabulary.
 I also find it particularly satisfying to conjure the perfect word to describe a situation, experience, etc.
@@ -28,6 +29,7 @@ I'm not sure if I will try something like this again.
 I like the prospect of learning new words, but I think I'd prefer to do so less is a rote memorization kind of way and more in a “search and discover cool words” kind of way.
 
 ## Read a book each month (25%)
+
 In 2022, I read about a book a month from January through September, but after September I stopped.
 I aspired to get back to a similar cadence in 2023, but was unsuccessful.
 I read 3 books in 2023.
@@ -35,6 +37,7 @@ I didn't discover anything that really pulled me in, and I didn't make much of a
 I love getting wrapped up in a good book so this is something I will continue to pursue, likely in a different form, next year.
 
 ## Write 40 blog posts (100%)
+
 At the time of this writing, I've written 42 medium or long blog posts, not including any daily entries.
 I've had a public blog since 2013, and given my historical lack of consistency with writing, this goal was a stretch.
 As I've begun experimenting with language models, it's been exciting to learn and summarize my findings.
@@ -43,10 +46,12 @@ I typically write one of three types of entries.
 Longer form posts, a “today I learned” style post or a daily log of something interesting I'm thinking about or recently read.
 
 ## Move to NYC (100%)
+
 At the end of 2022 decided to move to New York.
 We did this in 2023.
 
 ## Learn to juggle four balls (10%)
+
 I learned to juggle three balls in 2022.
 I aspired to learn to juggle four in 2022, but was unsuccessful.
 I didn't practice the new pattern with enough consistency.

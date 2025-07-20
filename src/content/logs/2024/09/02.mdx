@@ -1,15 +1,18 @@
 ---
-date: "2024-09-02T09:52:11Z"
-title: "2024-09-02"
+date: '2024-09-02T09:52:11Z'
+title: '2024-09-02'
 draft: false
 tags:
-- cogno
-- snapcart
+  - cogno
+  - snapcart
 ---
 
 import { Tweet } from 'astro-embed';
 
-<Tweet theme="dark" id="https://twitter.com/zimmskal/status/1830564004592316745" />
+<Tweet
+  theme="dark"
+  id="https://twitter.com/zimmskal/status/1830564004592316745"
+/>
 
 Great to see more concrete results published on how different models are "the best" at writing different programming languages.
 
@@ -26,4 +29,3 @@ Calling it snapcart.
 
 Having used [`fasthtml`](https://fastht.ml/) and sqlite of a couple projects now, I was interested in trying to run an app as a Cloudflare Worker to make use of D1, which is a serverless, sqlite compatible database.
 It looks like the library needs to be added to the worker runtime first, according to [this issue](https://github.com/cloudflare/workerd/discussions/2488).
-

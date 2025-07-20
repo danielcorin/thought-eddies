@@ -1,11 +1,11 @@
 ---
-title: "Vibe Coding in early 2025"
+title: 'Vibe Coding in early 2025'
 createdAt: 2025-04-06T09:50:16-04:00
 updatedAt: 2025-07-18T09:50:16-04:00
 draft: false
 tags:
-- vibe_coding
-- agents
+  - vibe_coding
+  - agents
 ---
 
 This post is an edit and repost of my [rant from Bluesky](https://bsky.app/profile/danielcorin.com/post/3llhwuxml2k25)

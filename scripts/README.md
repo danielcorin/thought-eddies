@@ -74,20 +74,22 @@ The script converts frontmatter to match this schema:
 ## Example
 
 Before:
+
 ```yaml
 ---
 aliases:
-- /code/2018/04/06/go-context.html
-- /posts/2018-04-06-go-context
+  - /code/2018/04/06/go-context.html
+  - /posts/2018-04-06-go-context
 categories: code
 date: '2018-04-06T21:00:00Z'
 tags:
-- go
+  - go
 title: Tracking a call stack in Go with context
 ---
 ```
 
 After:
+
 ```yaml
 ---
 title: Tracking a call stack in Go with context

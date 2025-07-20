@@ -18,12 +18,13 @@ While there continues to be advancement in model-driven agents which can autonom
 If we accept the premise that the job of software engineer will exist in some capacity for the next several years, it becomes interesting to explore how widespread use of language models in software development will affect the job and evolution of the field.
 
 ## Models could hurt software quality
+
 I've heard some variant of the following refrain a few times:
 
 > Writing software with language models will result in more bugs and security vulnerabilities
 
 I don't think more bugs and security vulnerabilities are a necessary outcome of using language models to write code, but I expect some software written with language models will be buggy and insecure.
-I suspect these vulnerabilities and bugs will *mostly* be created in codebases by developers with less experience writing software.
+I suspect these vulnerabilities and bugs will _mostly_ be created in codebases by developers with less experience writing software.
 Most likely, by folks who never would have attempted to write code had language models not made writing software more accessible.
 
 This is not to say existing software engineers won't make any or even more mistakes by writing code with language models, but that experienced engineers are typically more familiar with tools and approaches that can help prevent these mistakes from making it to production (e.g.
@@ -79,6 +80,7 @@ Models will eventually lead businesses to expect more out of their engineering t
 For now, they may temporarily create the slack you need to get your team or organization into a better state and will likely decrease the absolute cost of org-wide changes and migrations.
 
 ## Model change how we interview for engineering roles
+
 When I entered the software industry, many interviews required me to write code on a whiteboard.
 This constraint was frustrating because the actual job wasn't to write code on a whiteboard, it was to write code on a computer.
 I think we're in the midst of seeing a similar transition in software interviewing.
@@ -103,4 +105,3 @@ I don't claim to have a solution to the age-old problem of how to identify talen
 
 If you're interesting in chatting more about any of these areas or think I'm very wrong in my assessments, I'd love to hear from you.
 Feel free to reach out over [email](mailto:dcorin6@gmail.com) or [DM me](https://twitter.com/danielcorin1).
-

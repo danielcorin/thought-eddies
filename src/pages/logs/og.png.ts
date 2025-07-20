@@ -1,13 +1,13 @@
-import { getCollection } from "astro:content";
-import { generateOGImage } from "@utils/og";
+import { getCollection } from 'astro:content';
+import { generateOGImage } from '@utils/og';
 
-const logs = await getCollection("logs", ({ data }) => !data.draft);
+const logs = await getCollection('logs', ({ data }) => !data.draft);
 
 export async function GET() {
-    const logsCount = logs.length;
+  const logsCount = logs.length;
 
-    return generateOGImage({
-        title: "Logs",
-        description: `${logsCount} daily logs and reflections`,
-    });
+  return generateOGImage({
+    title: 'Logs',
+    description: `${logsCount} daily logs and reflections`,
+  });
 }

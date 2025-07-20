@@ -10,7 +10,6 @@ tags:
 draft: false
 ---
 
-
 I've been using [Pocket](https://getpocket.com) for a long time to keep track of things on the web that I want to read later.
 I save articles on my mobile or from my browser, then revisit them, usually on my desktop.
 Some articles I get to quickly.
@@ -34,8 +33,10 @@ My requirements were:
 - A nice reader mode on desktop
 
 Nice to have:
+
 - An API to view the articles I've saved and any metadata
 - Nice reader on mobile
+
 ## Why I chose Raindrop
 
 Both Instapaper and Raindrop both met my requirements.
@@ -61,7 +62,11 @@ With that, I've fully transitioned from Pocket to Raindrop.
 Ironically, the `html` file I exported from Pocket seems to contain the timestamp I was looking for.
 
 ```html
-<li><a href="https://example.com" time_added="1717501846" tags="">Example bookmark</a></li>
+<li>
+  <a href="https://example.com" time_added="1717501846" tags=""
+    >Example bookmark</a
+  >
+</li>
 ```
 
 Unfortunately, Pocket doesn't seem to expose this in an easy-to-find way in their UI.

@@ -1,12 +1,12 @@
 ---
-date: "2024-07-21T21:53:08Z"
-title: "2024-07-21"
+date: '2024-07-21T21:53:08Z'
+title: '2024-07-21'
 draft: false
 ---
 
 import { Tweet } from 'astro-embed';
 
-import Chat from "@components/prose/Chat.astro";
+import Chat from '@components/prose/Chat.astro';
 
 ## espanso
 
@@ -19,7 +19,10 @@ The tool seems to support far more complex configuration that I still need to lo
 
 ## `gpt-4o-mini`
 
-<Tweet theme="dark" id="https://twitter.com/dadkins_/status/1815048314439532685" />
+<Tweet
+  theme="dark"
+  id="https://twitter.com/dadkins_/status/1815048314439532685"
+/>
 
 Admittedly, I have not gone to deep yet using `gpt-4o-mini`.
 I've been quite happy with `claude-3.5-sonnet` and I typically use the most advanced model I can because I'm not running a huge number of model inferences per day at the moment.
@@ -34,25 +37,28 @@ I need to use `gpt-4o-mini` more to understand if that is what's in fact happeni
 One interesting thing I learned as I started to try it out -- it seems to think it's trained on the GPT-3.5 architecture.
 Does this mean OpenAI back ported other improvement to an old model architecture, data set or training approach?
 I'm trying to figure out if there is any concrete information on this.
+
 <Chat
   model="gpt-4o-mini"
   messages={[
     {
-      role: "user",
-      content: "what model architecture do you use?"
+      role: 'user',
+      content: 'what model architecture do you use?',
     },
     {
-      role: "assistant",
-      content: "I'm based on the GPT-3 architecture, which is a transformer-based model. The transformer architecture employs mechanisms like self-attention and feedforward neural networks to process and generate text. If you have specific questions about the architecture or how it works, feel free to ask!"
+      role: 'assistant',
+      content:
+        "I'm based on the GPT-3 architecture, which is a transformer-based model. The transformer architecture employs mechanisms like self-attention and feedforward neural networks to process and generate text. If you have specific questions about the architecture or how it works, feel free to ask!",
     },
     {
-      role: "user",
-      content: "when is your knowledge cutoff?"
+      role: 'user',
+      content: 'when is your knowledge cutoff?',
     },
     {
-      role: "assistant",
-      content: "My knowledge cutoff date is October 2021. This means I have information and data available up to that point, but I don't have access to events or developments that occurred after that date. If you have questions about anything up to that time, feel free to ask!"
-    }
+      role: 'assistant',
+      content:
+        "My knowledge cutoff date is October 2021. This means I have information and data available up to that point, but I don't have access to events or developments that occurred after that date. If you have questions about anything up to that time, feel free to ask!",
+    },
   ]}
 />
 

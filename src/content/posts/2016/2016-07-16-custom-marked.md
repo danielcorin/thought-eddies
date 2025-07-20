@@ -24,7 +24,7 @@ The `target="_blank"` attribute is the part of interest. Markdown gives a terse 
 
 ```js
 var marked = require('marked');
-var myContent = "[Cool site](https://google.com)"
+var myContent = '[Cool site](https://google.com)';
 var htmlContent = marked(myContent);
 //=> '<p><a href="https://google.com">Cool site</a></p>\n'
 ```
@@ -33,13 +33,13 @@ So, we have pretty much everything we need except the `target` attribute on the 
 
 ```js
 var marked = require('marked');
-var myContent = "[Cool site](https://google.com)"
+var myContent = '[Cool site](https://google.com)';
 var myRenderer = new marked.Renderer();
-myRenderer.link = function(href, title, text) {
-    return `<a href="${href}" target="_blank">${text}</a>`;
-}
+myRenderer.link = function (href, title, text) {
+  return `<a href="${href}" target="_blank">${text}</a>`;
+};
 var htmlContent = marked(myContent, {
-    renderer: myRenderer
+  renderer: myRenderer,
 });
 //=> '<p><a href="https://google.com" target="_blank">Cool site</a></p>\n'
 ```

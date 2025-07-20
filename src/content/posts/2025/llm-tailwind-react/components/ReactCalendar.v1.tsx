@@ -4,14 +4,14 @@ import {
   Circle,
   Square,
   XCircle,
-} from "lucide-react";
-import { useState } from "react";
-import styles from "./ReactCalendar.v1.module.css";
+} from 'lucide-react';
+import { useState } from 'react';
+import styles from './ReactCalendar.v1.module.css';
 
 type Task = {
   id: string;
   text: string;
-  status: "todo" | "done" | "migrated" | "cancelled";
+  status: 'todo' | 'done' | 'migrated' | 'cancelled';
 };
 
 type DayEntry = {
@@ -22,14 +22,14 @@ type DayEntry = {
 export default function Calendar() {
   const [entries, setEntries] = useState<DayEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [newTask, setNewTask] = useState("");
+  const [newTask, setNewTask] = useState('');
 
   const addTask = () => {
     if (!newTask.trim()) return;
 
     setEntries((prev) => {
       const existingEntry = prev.find(
-        (entry) => entry.date.toDateString() === selectedDate.toDateString(),
+        (entry) => entry.date.toDateString() === selectedDate.toDateString()
       );
 
       if (existingEntry) {
@@ -42,11 +42,11 @@ export default function Calendar() {
                   {
                     id: crypto.randomUUID(),
                     text: newTask,
-                    status: "todo",
+                    status: 'todo',
                   },
                 ],
               }
-            : entry,
+            : entry
         );
       }
 
@@ -58,42 +58,42 @@ export default function Calendar() {
             {
               id: crypto.randomUUID(),
               text: newTask,
-              status: "todo",
+              status: 'todo',
             },
           ],
         },
       ];
     });
 
-    setNewTask("");
+    setNewTask('');
   };
 
-  const updateTaskStatus = (taskId: string, status: Task["status"]) => {
+  const updateTaskStatus = (taskId: string, status: Task['status']) => {
     setEntries((prev) =>
       prev.map((entry) => ({
         ...entry,
         tasks: entry.tasks.map((task) =>
-          task.id === taskId ? { ...task, status } : task,
+          task.id === taskId ? { ...task, status } : task
         ),
-      })),
+      }))
     );
   };
 
-  const getStatusIcon = (status: Task["status"]) => {
+  const getStatusIcon = (status: Task['status']) => {
     switch (status) {
-      case "todo":
+      case 'todo':
         return <Circle className={styles.icon} />;
-      case "done":
+      case 'done':
         return <CheckCircle2 className={styles.icon} />;
-      case "migrated":
+      case 'migrated':
         return <Square className={styles.icon} />;
-      case "cancelled":
+      case 'cancelled':
         return <XCircle className={styles.icon} />;
     }
   };
 
   const currentEntry = entries.find(
-    (entry) => entry.date.toDateString() === selectedDate.toDateString(),
+    (entry) => entry.date.toDateString() === selectedDate.toDateString()
   );
 
   return (
@@ -108,7 +108,7 @@ export default function Calendar() {
       <div className={styles.dateSelector}>
         <input
           type="date"
-          value={selectedDate.toISOString().split("T")[0]}
+          value={selectedDate.toISOString().split('T')[0]}
           onChange={(e) => setSelectedDate(new Date(e.target.value))}
         />
       </div>
@@ -119,7 +119,7 @@ export default function Calendar() {
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Add new task..."
-          onKeyPress={(e) => e.key === "Enter" && addTask()}
+          onKeyPress={(e) => e.key === 'Enter' && addTask()}
         />
         <button onClick={addTask}>Add</button>
       </div>
@@ -130,18 +130,18 @@ export default function Calendar() {
             <button
               className={styles.statusButton}
               onClick={() => {
-                const nextStatus: Record<Task["status"], Task["status"]> = {
-                  todo: "done",
-                  done: "migrated",
-                  migrated: "cancelled",
-                  cancelled: "todo",
+                const nextStatus: Record<Task['status'], Task['status']> = {
+                  todo: 'done',
+                  done: 'migrated',
+                  migrated: 'cancelled',
+                  cancelled: 'todo',
                 };
                 updateTaskStatus(task.id, nextStatus[task.status]);
               }}
             >
               {getStatusIcon(task.status)}
             </button>
-            <span className={task.status === "done" ? styles.completed : ""}>
+            <span className={task.status === 'done' ? styles.completed : ''}>
               {task.text}
             </span>
           </div>

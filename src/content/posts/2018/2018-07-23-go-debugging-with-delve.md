@@ -106,6 +106,6 @@ We can even cast values:
 []uint8 len: 8, cap: 8, [74,111,104,110,32,68,111,101]
 ```
 
-To allow the program to continue, type  `c` or `continue` again. To exit the debugger, type `exit` or `Ctrl-d`.
+To allow the program to continue, type `c` or `continue` again. To exit the debugger, type `exit` or `Ctrl-d`.
 
 The nice part about using delve this way is it doesn't have a dependence on any one IDE or editor. Happy hacking.
