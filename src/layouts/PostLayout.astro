@@ -1,6 +1,8 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
+import RecommendedPosts from "@components/RecommendedPosts.astro";
 import Tag from "@components/Tag.astro";
+import { findSimilarPosts } from "@utils/findSimilarPosts";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
@@ -25,6 +27,15 @@ const currentIndex = sortedPosts.findIndex(
 const prevPost =
   currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+
+// Find the current post object
+const currentPost = sortedPosts[currentIndex];
+
+// Find similar posts, excluding prev and next
+const excludePosts = [prevPost, nextPost].filter(Boolean) as typeof sortedPosts;
+const similarPosts = currentPost
+  ? findSimilarPosts(currentPost, sortedPosts, 3, excludePosts)
+  : [];
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage}>
@@ -88,6 +99,8 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
     <div class="content">
       <slot />
     </div>
+
+    <RecommendedPosts posts={similarPosts} />
 
     <nav class="post-navigation">
       <div class="nav-item nav-prev-wrapper">

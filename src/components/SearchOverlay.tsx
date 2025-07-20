@@ -76,12 +76,12 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
     if (isOpen) {
       // Store the currently focused element
       previousActiveElement.current = document.activeElement as HTMLElement;
-      
+
       // Focus the search input
       if (searchInputRef.current) {
         searchInputRef.current.focus();
       }
-      
+
       // Add focus trap
       const handleTabKey = (e: KeyboardEvent) => {
         if (e.key === 'Tab' && overlayRef.current) {
@@ -90,7 +90,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
           );
           const firstFocusable = focusableElements[0] as HTMLElement;
           const lastFocusable = focusableElements[focusableElements.length - 1] as HTMLElement;
-          
+
           if (e.shiftKey && document.activeElement === firstFocusable) {
             e.preventDefault();
             lastFocusable?.focus();
@@ -100,9 +100,9 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
           }
         }
       };
-      
+
       document.addEventListener('keydown', handleTabKey);
-      
+
       return () => {
         document.removeEventListener('keydown', handleTabKey);
       };
@@ -158,7 +158,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
     posts.forEach((post) => {
       let score = 0;
       const title = post.data.title.toLowerCase();
-      const content = post.body.toLowerCase();
+      const content = post.body?.toLowerCase() || '';
       const description = post.data.description?.toLowerCase() || '';
       const tags = post.data.tags?.join(' ').toLowerCase() || '';
 
@@ -176,7 +176,7 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
     logs.forEach((log) => {
       let score = 0;
       const title = log.data.title.toLowerCase();
-      const content = log.body.toLowerCase();
+      const content = log.body?.toLowerCase() || '';
       const tags = log.data.tags?.join(' ').toLowerCase() || '';
 
       if (title.includes(searchQuery)) score += 10;
@@ -288,7 +288,9 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
                 return (
                   <a
                     key={index}
-                    ref={(el) => (itemRefs.current[index] = el)}
+                    ref={(el) => {
+                      itemRefs.current[index] = el;
+                    }}
                     href={url}
                     className={`block px-4 py-3 transition-colors ${isSelected
                       ? 'bg-gray-100 dark:bg-gray-700'

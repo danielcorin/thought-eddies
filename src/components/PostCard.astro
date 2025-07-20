@@ -5,24 +5,34 @@ import { getContentPreview } from "@utils/text";
 import type { CollectionEntry } from "astro:content";
 
 export interface Props {
-    post: CollectionEntry<'posts'> | CollectionEntry<'logs'>;
-    type?: 'post' | 'log';
+    post: CollectionEntry<"posts"> | CollectionEntry<"logs">;
+    type?: "post" | "log";
     variant?: "list" | "grid";
     showTypeLabel?: boolean;
 }
 
-const { post, type = 'post', variant = "list", showTypeLabel = false } = Astro.props;
+const {
+    post,
+    type = "post",
+    variant = "list",
+    showTypeLabel = false,
+} = Astro.props;
 
 // Get date based on type
-const date = new Date(type === 'log' ? (post.data as any).date : ((post.data as any).publishedAt || (post.data as any).createdAt));
+const date = new Date(
+    type === "log"
+        ? (post.data as any).date
+        : (post.data as any).publishedAt || (post.data as any).createdAt,
+);
 
 // Format date components
 const year = date.getFullYear();
-const month = String(date.getMonth() + 1).padStart(2, '0');
-const day = String(date.getDate()).padStart(2, '0');
+const month = String(date.getMonth() + 1).padStart(2, "0");
+const day = String(date.getDate()).padStart(2, "0");
 
 // Build URL and formatted date
-const url = type === 'log' ? `/logs/${year}/${month}/${day}` : `/posts/${post.id}`;
+const url =
+    type === "log" ? `/logs/${year}/${month}/${day}` : `/posts/${post.id}`;
 const formattedDate = `${year}-${month}-${day}`;
 const contentPreview = getContentPreview(post.body || "");
 const tags = post.data.tags || [];
@@ -35,22 +45,30 @@ const tags = post.data.tags || [];
         </time>
         {showTypeLabel && <TypeLabel type={type} />}
     </div>
-    
+
     <div class={variant === "list" ? "entry-content" : ""}>
         <h2 class={variant === "grid" ? "post-title" : ""}>
             <a href={url}>{post.data.title}</a>
         </h2>
-        
-        {post.data.description && (
-            <p class={variant === "list" ? "entry-description" : "post-description"}>
-                {post.data.description}
-            </p>
-        )}
-        
+
+        {
+            "description" in post.data && (
+                <p
+                    class={
+                        variant === "list"
+                            ? "entry-description"
+                            : "post-description"
+                    }
+                >
+                    {post.data.description}
+                </p>
+            )
+        }
+
         <p class={variant === "list" ? "entry-preview" : "post-preview"}>
             {contentPreview}
         </p>
-        
+
         <div class={variant === "list" ? "entry-footer" : "post-footer"}>
             <div class="tags">
                 {tags.map((tag: string) => <Tag tag={tag} />)}
