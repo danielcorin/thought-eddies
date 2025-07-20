@@ -146,12 +146,12 @@ I selected the `gpt-3.5-turbo-1106` model then uploaded my training and test dat
 As the job ran, I could see this dashboard.
 Here's what it looked like when it finished.
 
-![Fine-tuning progress. A loss graph with two lines, slowly decreasing starting around 3 and down to around 0.2](/img/posts/2024/fine-tuning-connections.png)
+![Fine-tuning progress. A loss graph with two lines, slowly decreasing starting around 3 and down to around 0.2](images/fine-tuning-connections.png)
 
 And it cost \\$0.90.
 According to the fine-tune metrics, 3 epochs (given my estimated cost of \\$0.37) as mentioned [fine-tune training guide](https://platform.openai.com/docs/guides/fine-tuning/estimate-costs) though I don't recall setting that or seeing it anywhere else.
 
-![Fine-tuning cost screenshot](/img/posts/2024/fine-tuning-cost.png)
+![Fine-tuning cost screenshot](images/fine-tuning-cost.png)
 
 ## Testing the fine-tune
 
@@ -253,7 +253,7 @@ I put up my feet and waited for the fine-tune to run.
 
 The first run of the fine-tune.
 
-![fine-tune run model output](/img/posts/2024/fine-tune-run-model-output.png)
+![fine-tune run model output](images/fine-tune-run-model-output.png)
 
 I'm very glad I had more validation data because I couldn't believe it when I saw it work.
 I ran several more and each time, it got the word groups correct.

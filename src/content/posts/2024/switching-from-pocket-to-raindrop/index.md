@@ -40,7 +40,8 @@ Nice to have:
 
 Both Instapaper and Raindrop both met my requirements.
 What truly convinced me to choose Raindrop was the capability to add extra metadata such as notes and tags on iOS when I save an article.
-<img src="/img/posts/2024/raindrop-link-saving.jpeg" alt="Saving an article with Raindrop on iOS" style="width:25%;">
+
+![Saving an article with Raindrop on iOS](images/raindrop-link-saving.png)
 
 I anticipate this will be useful for creating [log](/logs) posts about things I enjoyed reading -- something I do now, but didn't do when I started using Pocket.
 In contrast, Instapaper just saves the link immediately (a behavior closer to Pocket's).

@@ -126,7 +126,7 @@ I played around with adding additional context (for fun) but all my attempts see
 I think it's also worth calling attention to a specific class of model "mistakes".
 The following is an example:
 
-![Example of a model "mistake" in counting line intersections](/img/posts/2024/vlms-arent-blind-example.png)
+![Example of a model "mistake" in counting line intersections](images/vlms-arent-blind-example.png)
 
 In this image, the model "incorrectly" identifies that there are two intersections between the blue and red lines.
 The ground truth says there is only one intersection because the lines do not overlap in Cartesian space but the lines in the image actually do overlap due to the thickness of the lines.

@@ -1,4 +1,6 @@
 ---
+import { marked } from 'marked';
+
 interface Props {
   anchor: string;
   content: string;
@@ -6,6 +8,7 @@ interface Props {
 
 const { anchor, content } = Astro.props;
 const id = Math.random().toString(36).substring(7);
+const htmlContent = marked.parseInline(content);
 ---
 
 <script>
@@ -49,9 +52,7 @@ const id = Math.random().toString(36).substring(7);
     class="sidenote-checkbox"
     aria-hidden="true"
   />
-  <span class="sidenote-content" role="note">
-    {content}
-  </span>
+  <span class="sidenote-content" role="note" set:html={htmlContent} />
 </span>
 
 <style>
