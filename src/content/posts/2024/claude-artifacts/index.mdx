@@ -17,7 +17,7 @@ I started with this prompt
 
 > I want to see what you can do. Can you please create a 2d rendering of fluid moving around obstacles of different shapes?
 
-<Sidenote anchor="In effort to not spend this whole post quoting prompts" content="I need to figure out a better way to share conversations from all the different models I interact with, including multi-modal models. Ideally, I could export these in a consistent JSON structure to make rendering them in a standard conversation format easier. Static media (images, video, etc.) would be straightforward but things like Artifacts, which are rendered by the Claude UI fit this structure less cohesively." />, I've [exported the whole conversation](/files/posts/2024/claude-artifacts.json) returned from the Anthropic API, using the response from the following <Sidenote anchor="endpoint" content="This API may change in the future. It isn't an externally-documented API." />.
+<Sidenote anchor="In effort to not spend this whole post quoting prompts" content="I need to figure out a better way to share conversations from all the different models I interact with, including multi-modal models. Ideally, I could export these in a consistent JSON structure to make rendering them in a standard conversation format easier. Static media (images, video, etc.) would be straightforward but things like Artifacts, which are rendered by the Claude UI fit this structure less cohesively." />, I've [exported the whole conversation](files/claude-artifacts.json) returned from the Anthropic API, using the response from the following <Sidenote anchor="endpoint" content="This API may change in the future. It isn't an externally-documented API." />.
 
 ```text
 https://claude.ai/api/organizations/<org_id>/chat_conversations/<conversation_id>?tree=True&rendering_mode=raw
@@ -41,7 +41,7 @@ I also tried to make it so I could click and drag around the shapes with my mous
 I (Claude) never fully got any of these working.
 Some generations were incrementally closer, but didn't quite accomplish was I was aiming for.
 
-![Claude Artifacts example](/img/posts/2024/claude-artifacts.gif)
+![Claude Artifacts example](images/claude-artifacts.gif)
 
 When I prompted Claude to make an improvement or fix a mistake, it occasionally simplified the problem to try and get a working version of the isolated feature I was asking for, like when I prompted to add the ability to move the shapes around with the mouse.
 This helped it get back on track, but wasn't really what I wanted, which was to have the feature added to the working version of the code we were iterating on.

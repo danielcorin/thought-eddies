@@ -272,7 +272,7 @@ async def get_index():
 We can open the site at http://localhost:8000 and enter a message to the model.
 Then click "Start Streaming".
 
-![Language model streaming without close](/img/posts/2024/lm-streaming-without-close.png)
+![Language model streaming without close](images/lm-streaming-without-close.png)
 
 We see the response from the model showing up in real-time!
 Something funny happens though.
@@ -480,4 +480,4 @@ async def ask(req: dict):
 
 Here's how it looks (sorry, no fancy UI):
 
-![Demo using Vercel](/img/posts/2024/vercel-ai-demo.png)
+![Demo using Vercel](images/vercel-ai-demo.png)

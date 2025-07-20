@@ -34,6 +34,7 @@
     "d3": "^7.9.0",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.525.0",
+    "marked": "^16.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^9.0.3",

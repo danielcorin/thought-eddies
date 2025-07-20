@@ -157,7 +157,7 @@ With the aforementioned approach, `claude-3-5-sonnet-20240620` solved 39.96% of 
 In numerous cases, the model correctly guessed some of the categories without getting all 4 correct.
 Here was the breakdown of the correct category guesses across levels of difficulty.
 
-![Distribution of correct category guesses by difficulty level](/img/posts/2024/sonnet-connections-category-distribution.png)
+![Distribution of correct category guesses by difficulty level](images/sonnet-connections-category-distribution.png)
 
 Across all attempts to solve the 468 puzzles, for 342 (73%), the model was able to guess the easiest category.
 As one might expect, the model most frequently guessed the easiest category and the likelihood that it guessed the harder categories decreased as the difficulty increased.
@@ -167,7 +167,7 @@ Number of wins and correct category four guesses don't match exactly because in 
 
 Here is the distribution of how many categories the model guessed correctly, independent of level of difficulty:
 
-![Distribution of correct category guesses](/img/posts/2024/sonnet-connections-distribution-correct-categories.png)
+![Distribution of correct category guesses](images/sonnet-connections-distribution-correct-categories.png)
 
 Expectedly, we see almost no outcomes with 3/4 categories correct because, if only four words remain, the final grouping is trivial to guess.
 I don't have the logs for these failures but they likely occurred due to the scorer ending the guessing early due to some edge case, like repeated failure by the model to guess a valid category.
@@ -179,7 +179,7 @@ Early in the process, the win percentage was surprisingly high: far above the ~4
 As the runs progressed, the win rate started to return to levels I recognized.
 To try and understand what happened, I plotted cumulative win rate along with 5-puzzle percentage win rate buckets over time.
 
-![Cumulative win percentage over time](/img/posts/2024/sonnet-connections-cumulative-win-percentage.png)
+![Cumulative win percentage over time](images/sonnet-connections-cumulative-win-percentage.png)
 
 Here, we see win rate remains well over 50% for the first 1/3 of puzzles.
 I have a couple theories for why this happened but no hard evidence.
