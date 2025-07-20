@@ -9,7 +9,7 @@ tags: null
 draft: false
 ---
 
-import Alert from "@components/prose/Alert.astro";
+import Aside from "@components/prose/Aside.astro";
 import Chat from "@components/prose/Chat.astro";
 import CodeBlock from "@components/prose/CodeBlock.astro";
 import { Image } from "astro:assets";
@@ -30,15 +30,15 @@ For the language model, co-locating the component styling with the structural ma
 
 Given the following prompt, here's what `claude-3-5-sonnet-20241022` generates in Cursor (the components below are real, working React code - try them out!).
 
-<Alert type="note" mobileOnly>
+<Aside type="note" mobileOnly>
   I made a few minor adjustments post-generation to the components to ensure
   they render nicely on small screens
-</Alert>
+</Aside>
 
-<Alert type="note" darkModeOnly>
+<Aside type="note" darkModeOnly>
   I made minor adjustments to the color schemes of the components after generation to play nice with dark mode of this site.
   The changes I made keep the color scheme true to what the model output rather than match the site style.
-</Alert>
+</Aside>
 
 
 <Chat
