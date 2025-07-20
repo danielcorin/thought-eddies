@@ -16,6 +16,7 @@ aliases:
 > Supervisor is a client/server system that allows its users to monitor and control a number of processes on UNIX-like operating systems.
 
 ### Installation
+
 `supervisor` can be installed with `pip`
 
 ```sh

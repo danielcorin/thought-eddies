@@ -9,7 +9,7 @@ tags: null
 draft: false
 ---
 
-import Chat from "@components/prose/Chat.astro";
+import Chat from '@components/prose/Chat.astro';
 
 I'm on a flight and wanted to write code to work on an idea.
 After a few moments of shifting mental gears, I popped open [Zed](https://zed.dev/), which allows me to code with a local LLM using [ollama](https://ollama.com/).
@@ -41,27 +41,28 @@ import json
 from datetime import datetime
 
 def create_markdown_file(file_name, created_at):
-    data = {
-        "created_at": created_at.strftime('%Y-%m-%d %H:%M:%S')
-    }
-    with open(f'{file_name}.md', 'w') as f:
-        json.dump(data, f)
-        f.write('\\n---\\n')
+data = {
+"created_at": created_at.strftime('%Y-%m-%d %H:%M:%S')
+}
+with open(f'{file_name}.md', 'w') as f:
+json.dump(data, f)
+f.write('\\n---\\n')
 
 # create a markdown file
+
 create_markdown_file('example', datetime.now())
 \`\`\`
 `
-    }
-  ]}
+}
+]}
 />
 
 This code creates an `example.md` containing
 
 ```md
-{"created_at": "2025-04-08 12:45:00"}
----
+## {"created_at": "2025-04-08 12:45:00"}
 ```
+
 Maybe not exactly what I had in mind but gets enough of the way there that the output with minor modifications will do what I want.
 This reminds me of the days I used to use ChatGPT to help write code.
 I would toss in a prompt like the one above and get code that was a helpful starting point for the direction I was headed in.

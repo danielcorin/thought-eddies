@@ -69,7 +69,6 @@ Nothing too surprising so far.
 Now is the interesting part.
 Let's wire up a call to OpenAI that uses `functions` and our `Recipe` schema to structure the response:
 
-
 ```python
 import json
 import openai

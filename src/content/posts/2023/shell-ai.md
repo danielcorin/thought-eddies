@@ -20,7 +20,7 @@ I'll describe a tool I've created, called "Shell AI" (`sai`) that integrates a l
 
 ## The concept
 
-*Disclaimer: I run macOS and I haven't tested this for any other OS.*
+_Disclaimer: I run macOS and I haven't tested this for any other OS._
 
 I'm in the shell and I need to create a folder for every day of the next week, including today named with the date formatted as "yyyy-mm-dd".
 
@@ -147,6 +147,7 @@ You can find the code and rough installation instructions [on Github](https://gi
 
 There are so many ways one can extend this idea and I'm tempted to add more capabilities, but in the spirit of doing one thing well, I'll stop here.
 
-[^1]: The command was different on my second run of the program.
-These minor variations frequently occur with language models.
-You can reduce the [`temperature`](https://platform.openai.com/docs/api-reference/chat/create#chat/create-temperature) to get less variance in the results.
+[^1]:
+    The command was different on my second run of the program.
+    These minor variations frequently occur with language models.
+    You can reduce the [`temperature`](https://platform.openai.com/docs/api-reference/chat/create#chat/create-temperature) to get less variance in the results.

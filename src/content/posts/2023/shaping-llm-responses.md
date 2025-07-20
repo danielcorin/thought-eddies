@@ -15,6 +15,7 @@ It's necessary to pay attention to the shape of a language model's response when
 You can't programmatically tap into the power of a language model if you can't reliably parse its response.
 In the past, I have mostly used a combination of prose and examples to define the shape of the language model response in my prompts.
 Something like:
+
 > Respond using JSON with the following shape:
 >
 > ```json

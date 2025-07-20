@@ -13,12 +13,15 @@ This year included a lot of writing and learning new things.
 My goals for the year were the following
 
 > Train a machine learning model and write about it
+>
 > - I've been learning ML in reverse, first playing with language models and now learning more about what it actually takes to construct a system capable of ML inference. Training my own models feels like the next step to develop depth of understanding in this area.
 >
 > Build search for my blog
+>
 > - As I've continued writing more, I've started to reference past work in my newer work or just to check how I solved a problem I know I've seen before. Adding search to this blog, which contains things I've learned, ideas and projects I've worked on makes retrieving that information easier.
 >
 > Setup a digital garden
+>
 > - I'm continuously trying to remove boundaries to if and when I write about things. I find writing helps clarify my thought process and so my aim is to setup an environment for myself so I do more of it. I view my digital garden as a space for playing around with ideas in a less structured way than a proper "post". Sometimes things from the garden may evolve into something else but there is no expectation they will.
 
 ## Things I did
@@ -40,16 +43,15 @@ My goals for the year were the following
 
 (Calculated with [this](https://github.com/danielcorin/blog/tree/main/scripts/year_review.py) quick and dirty script)
 
-| Category | Posts | Words |
-|----------|-------|-------|
-| [🏗️ Projects](/projects) | 4 | 791 |
-| [📍 Now](/now) | 1 | 63 |
-| [📖 Posts](/posts) | 21 | 25415 |
-| [🌱 Garden](/garden) | 4 | 4827 |
-| [✏️ Logs](/logs) | 140 | 22687 |
-| [📝 Today I Learned](/til) | 47 | 35214 |
-| **Total** | **217** | **88997** |
-
+| Category                   | Posts   | Words     |
+| -------------------------- | ------- | --------- |
+| [🏗️ Projects](/projects)   | 4       | 791       |
+| [📍 Now](/now)             | 1       | 63        |
+| [📖 Posts](/posts)         | 21      | 25415     |
+| [🌱 Garden](/garden)       | 4       | 4827      |
+| [✏️ Logs](/logs)           | 140     | 22687     |
+| [📝 Today I Learned](/til) | 47      | 35214     |
+| **Total**                  | **217** | **88997** |
 
 The "logs" section of this site has become a helpful scratchpad for ideas and capture of what I am up to for myself to go back and reference.
 I don't actively surface these entries anywhere on the site, but you can find them [here](/logs).

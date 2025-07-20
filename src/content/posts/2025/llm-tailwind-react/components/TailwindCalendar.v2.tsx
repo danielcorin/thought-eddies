@@ -4,13 +4,13 @@ import {
   Circle,
   Square,
   XCircle,
-} from "lucide-react";
-import { useState } from "react";
+} from 'lucide-react';
+import { useState } from 'react';
 
 type Task = {
   id: string;
   text: string;
-  status: "todo" | "done" | "migrated" | "cancelled";
+  status: 'todo' | 'done' | 'migrated' | 'cancelled';
 };
 
 type DayEntry = {
@@ -21,31 +21,31 @@ type DayEntry = {
 export default function Calendar() {
   const [entries, setEntries] = useState<DayEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [newTask, setNewTask] = useState("");
+  const [newTask, setNewTask] = useState('');
 
   const addTask = () => {
     if (!newTask.trim()) return;
 
     setEntries((prev) => {
       const existingEntry = prev.find(
-        (entry) => entry.date.toDateString() === selectedDate.toDateString(),
+        (entry) => entry.date.toDateString() === selectedDate.toDateString()
       );
 
       if (existingEntry) {
         return prev.map((entry) =>
           entry.date.toDateString() === selectedDate.toDateString()
             ? {
-              ...entry,
-              tasks: [
-                ...entry.tasks,
-                {
-                  id: crypto.randomUUID(),
-                  text: newTask,
-                  status: "todo",
-                },
-              ],
-            }
-            : entry,
+                ...entry,
+                tasks: [
+                  ...entry.tasks,
+                  {
+                    id: crypto.randomUUID(),
+                    text: newTask,
+                    status: 'todo',
+                  },
+                ],
+              }
+            : entry
         );
       }
 
@@ -57,44 +57,44 @@ export default function Calendar() {
             {
               id: crypto.randomUUID(),
               text: newTask,
-              status: "todo",
+              status: 'todo',
             },
           ],
         },
       ];
     });
 
-    setNewTask("");
+    setNewTask('');
   };
 
-  const updateTaskStatus = (taskId: string, status: Task["status"]) => {
+  const updateTaskStatus = (taskId: string, status: Task['status']) => {
     setEntries((prev) =>
       prev.map((entry) => ({
         ...entry,
         tasks: entry.tasks.map((task) =>
-          task.id === taskId ? { ...task, status } : task,
+          task.id === taskId ? { ...task, status } : task
         ),
-      })),
+      }))
     );
   };
 
-  const getStatusIcon = (status: Task["status"]) => {
+  const getStatusIcon = (status: Task['status']) => {
     switch (status) {
-      case "todo":
+      case 'todo':
         return <Circle className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />;
-      case "done":
+      case 'done':
         return (
           <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
         );
-      case "migrated":
+      case 'migrated':
         return <Square className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />;
-      case "cancelled":
+      case 'cancelled':
         return <XCircle className="w-4 h-4 md:w-5 md:h-5 text-red-600" />;
     }
   };
 
   const currentEntry = entries.find(
-    (entry) => entry.date.toDateString() === selectedDate.toDateString(),
+    (entry) => entry.date.toDateString() === selectedDate.toDateString()
   );
 
   const getDaysInMonth = (date: Date) => {
@@ -117,7 +117,7 @@ export default function Calendar() {
 
   const getTaskStats = (date: Date) => {
     const entry = entries.find(
-      (e) => e.date.toDateString() === date.toDateString(),
+      (e) => e.date.toDateString() === date.toDateString()
     );
     if (!entry) return null;
 
@@ -139,11 +139,13 @@ export default function Calendar() {
     <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white rounded-lg shadow-md">
       <div className="flex items-center gap-2 md:gap-4 mb-6 md:mb-8">
         <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
-        <h1 className="text-xl md:text-2xl font-semibold text-gray-600">Bullet Journal</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-600">
+          Bullet Journal
+        </h1>
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-6 md:mb-8 text-center text-sm md:text-base">
-        {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day) => (
           <div key={day} className="font-semibold py-1 md:py-2">
             {day}
           </div>
@@ -151,7 +153,7 @@ export default function Calendar() {
         {getDaysInMonth(selectedDate).map((date, i) => (
           <div
             key={i}
-            className={`p-1 md:p-2 min-h-[60px] md:min-h-[100px] border ${date?.toDateString() === selectedDate.toDateString() ? "border-blue-500" : "border-gray-200"} rounded-md ${date ? "cursor-pointer hover:bg-gray-50" : ""}`}
+            className={`p-1 md:p-2 min-h-[60px] md:min-h-[100px] border ${date?.toDateString() === selectedDate.toDateString() ? 'border-blue-500' : 'border-gray-200'} rounded-md ${date ? 'cursor-pointer hover:bg-gray-50' : ''}`}
             onClick={() => date && setSelectedDate(date)}
           >
             {date && (
@@ -168,10 +170,10 @@ export default function Calendar() {
                             key={status}
                             className="flex items-center justify-between"
                           >
-                            {getStatusIcon(status as Task["status"])}
+                            {getStatusIcon(status as Task['status'])}
                             <span>{count}</span>
                           </div>
-                        ),
+                        )
                     )}
                   </div>
                 )}
@@ -187,7 +189,7 @@ export default function Calendar() {
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Add new task..."
-          onKeyPress={(e) => e.key === "Enter" && addTask()}
+          onKeyPress={(e) => e.key === 'Enter' && addTask()}
           className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
@@ -206,11 +208,11 @@ export default function Calendar() {
           >
             <button
               onClick={() => {
-                const nextStatus: Record<Task["status"], Task["status"]> = {
-                  todo: "done",
-                  done: "migrated",
-                  migrated: "cancelled",
-                  cancelled: "todo",
+                const nextStatus: Record<Task['status'], Task['status']> = {
+                  todo: 'done',
+                  done: 'migrated',
+                  migrated: 'cancelled',
+                  cancelled: 'todo',
                 };
                 updateTaskStatus(task.id, nextStatus[task.status]);
               }}
@@ -220,7 +222,7 @@ export default function Calendar() {
             </button>
             <span
               className={
-                task.status === "done" ? "line-through text-gray-500" : ""
+                task.status === 'done' ? 'line-through text-gray-500' : ''
               }
             >
               {task.text}

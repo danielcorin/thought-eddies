@@ -11,8 +11,7 @@ aliases:
   - /posts/2016-01-28-first-elixir-module
 ---
 
-Creating an Elixir module
-=========================
+# Creating an Elixir module
 
 To get a better handle on Elixir, I developed a simple CLI tool for sending files in [Slack](https://slack.com/).
 

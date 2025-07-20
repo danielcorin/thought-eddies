@@ -16,8 +16,7 @@ Since [`text-davinci-003`](https://platform.openai.com/docs/deprecations), getti
 As adoption has picked up, OpenAI has released features to make it easier to get JSON output from a model.
 Here are three examples using [structured outputs](https://platform.openai.com/docs/guides/structured-outputs/), [function calling](https://platform.openai.com/docs/guides/function-calling) and just prompting respectively.
 
-
-```python
+````python
 from pydantic import BaseModel
 from openai import OpenAI
 from typing import List
@@ -157,7 +156,7 @@ if __name__ == "__main__":
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2f} seconds")
     print_recipe(recipe_schema_in_prompt)
-```
+````
 
 Running the script (output objects truncated) yields
 
@@ -205,4 +204,5 @@ The bottom line is we need these models to respond with structure, but we don't 
 I need to do some testing to see if the quality of the model's response varies depending on which approach is used.
 
 [^1]: https://platform.openai.com/docs/guides/function-calling
+
 [^2]: https://openai.com/index/introducing-structured-outputs-in-the-api

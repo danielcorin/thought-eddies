@@ -1,47 +1,49 @@
 ---
-date: "2024-07-22T18:25:16Z"
-title: "2024-07-22"
+date: '2024-07-22T18:25:16Z'
+title: '2024-07-22'
 draft: false
 tags:
-- shortcodes
-- language_models
+  - shortcodes
+  - language_models
 ---
 
-import Chat from "@components/prose/Chat.astro";
+import Chat from '@components/prose/Chat.astro';
 
 I've been wanting to create a chat component for this site for a while, because I really don't like quoting conversations and manually formatting them each time.
 When using a model playground, usually there is a code snippet option that generates Python code you can copy out intro a script.
 Using that feature, I can now copy the message list and paste it as JSON into a Hugo shortcode and get results like this:
 
-
-<Chat model="gpt-4o-mini" messages={[
-  {
-    "role": "system",
-    "content": [
-      {
-        "type": "text",
-        "text": "You should respond with the understanding they are an experienced software engineer"
-      }
-    ]
-  },
-  {
-    "role": "user",
-    "content": [
-      {
-        "type": "text",
-        "text": "Can you explain what a Hugo shortcode is in a few sentences?"
-      }
-    ]
-  },
-  {
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "Sure! A Hugo shortcode is a lightweight templating mechanism used in the Hugo static site generator to embed dynamic content within markdown files. They allow you to easily insert complex HTML or reusable components without cluttering your markdown with HTML tags. Shortcodes can accept parameters and can be used to simplify the inclusion of elements like videos, alerts, or even custom HTML blocks, enhancing the maintainability and readability of your content. You can create your own shortcodes or use predefined ones that come with Hugo."
-      }
-    ]
-  }
-]} />
+<Chat
+  model="gpt-4o-mini"
+  messages={[
+    {
+      role: 'system',
+      content: [
+        {
+          type: 'text',
+          text: 'You should respond with the understanding they are an experienced software engineer',
+        },
+      ],
+    },
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: 'Can you explain what a Hugo shortcode is in a few sentences?',
+        },
+      ],
+    },
+    {
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: 'Sure! A Hugo shortcode is a lightweight templating mechanism used in the Hugo static site generator to embed dynamic content within markdown files. They allow you to easily insert complex HTML or reusable components without cluttering your markdown with HTML tags. Shortcodes can accept parameters and can be used to simplify the inclusion of elements like videos, alerts, or even custom HTML blocks, enhancing the maintainability and readability of your content. You can create your own shortcodes or use predefined ones that come with Hugo.',
+        },
+      ],
+    },
+  ]}
+/>
 
 I'd also like to add a copy button like this site has for code snippets to to copy the raw JSON conversation to the clipboard but this is a nice starting point.

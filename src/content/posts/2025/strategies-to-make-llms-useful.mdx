@@ -1,11 +1,11 @@
 ---
-title: "A few strategies to make LLMs useful for you"
+title: 'A few strategies to make LLMs useful for you'
 createdAt: 2025-06-24T19:39:33-04:00
 updatedAt: 2025-07-18T19:39:33-04:00
 draft: false
 ---
 
-import Chat from "@components/prose/Chat.astro";
+import Chat from '@components/prose/Chat.astro';
 
 > I was reading your [blog](/posts/2025/who-finds-llms-useful-and-why) and had a question about this:
 >
@@ -22,33 +22,33 @@ I've found this process is highly effective for getting good results from LLMs a
 But it's not always so easy to just start writing.
 
 Let's say your university CS class project is to build a snake game.
-If you prompt an LLM to build you a [snake game](https://en.wikipedia.org/wiki/Snake_(video_game_genre)), it can probably do it with no further prompts.
+If you prompt an LLM to build you a [snake game](<https://en.wikipedia.org/wiki/Snake_(video_game_genre)>), it can probably do it with no further prompts.
 There are tons of open source implementations of snake games and even if there weren't, the model already knows how the game works, the rules, the mechanics, and the win conditions.
 
 However if you just prompt
 
-<Chat messages={
-[
-  {
-    "role": "user",
-    "content": [
-      {
-        "type": "text",
-        "text": "write me a snake game"
-      }
-    ]
-  },
-  {
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "I'll create a Snake game using Python and Pygame. Here's a complete implementation:\n\n```python\nimport pygame\nimport random\nimport sys\n\n# Initialize Pygame\npygame.init()\n\n# Constants\nWINDOW_WIDTH = 800\nWINDOW_HEIGHT = 600\nGRID_SIZE = 20\nGRID_WIDTH = WINDOW_WIDTH // GRID_SIZE\nGRID_HEIGHT = WINDOW_HEIGHT // GRID_SIZE\n\n# Colors\nBLACK = (0, 0, 0)\nGREEN = (0, 255, 0)\nRED = (255, 0, 0)\nWHITE = (255, 255, 255)\nDARK_GREEN = (0, 150, 0)\n\n# Directions\nUP = (0, -1)\nDOWN = (0, 1)\nLEFT = (-1, 0)\nRIGHT = (1, 0)\n\nclass Snake:\n    def __init__(self):\n        ...\n```"
-      }
-    ]
-  }
-]
-} />
+<Chat
+  messages={[
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: 'write me a snake game',
+        },
+      ],
+    },
+    {
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: "I'll create a Snake game using Python and Pygame. Here's a complete implementation:\n\n```python\nimport pygame\nimport random\nimport sys\n\n# Initialize Pygame\npygame.init()\n\n# Constants\nWINDOW_WIDTH = 800\nWINDOW_HEIGHT = 600\nGRID_SIZE = 20\nGRID_WIDTH = WINDOW_WIDTH // GRID_SIZE\nGRID_HEIGHT = WINDOW_HEIGHT // GRID_SIZE\n\n# Colors\nBLACK = (0, 0, 0)\nGREEN = (0, 255, 0)\nRED = (255, 0, 0)\nWHITE = (255, 255, 255)\nDARK_GREEN = (0, 150, 0)\n\n# Directions\nUP = (0, -1)\nDOWN = (0, 1)\nLEFT = (-1, 0)\nRIGHT = (1, 0)\n\nclass Snake:\n    def __init__(self):\n        ...\n```",
+        },
+      ],
+    },
+  ]}
+/>
 
 the model will have to fill in a vast number of details to build the game to completion.
 
@@ -74,38 +74,37 @@ After you send your first prompt, the model prompts you for more details.
 
 You can add a system prompt to any language model you are working with to get it to do this for you whenever you want.
 
-<Chat messages={
-[
-  {
-    "role": "system",
-    "content": [
-      {
-        "type": "text",
-        "text": "You are an assistant to a user in a coding task. When they ask you to help them do something, prompt them for more information if anything about the task is unclear or requires more details."
-      }
-    ]
-  },
-  {
-    "role": "user",
-    "content": [
-      {
-        "type": "text",
-        "text": "write me a snake game"
-      }
-    ]
-  },
-  {
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "I'd be happy to help you create a Snake game! To make sure I build exactly what you're looking for, could you provide some more details?\n\n1. **Platform/Technology**: What would you like me to use?\n   - Python with Pygame\n   - JavaScript (HTML5 Canvas)\n   - Python with Tkinter\n   - Another language/framework?\n\n2. **Features**: What functionality do you want?\n   - Basic snake movement and food collection\n   - Score tracking\n   - Game over screen\n   - Different difficulty levels\n   - Sound effects\n   - High score saving\n\n3. **Visual style**: Any preferences for:\n   - Window size\n   - Colors\n   - Grid-based or smooth movement\n\n4. **Controls**: \n   - Arrow keys\n   - WASD keys\n   - Both options\n\nLet me know your preferences and I'll create a Snake game tailored to your needs!"
-      }
-    ]
-  }
-]
-} />
-
+<Chat
+  messages={[
+    {
+      role: 'system',
+      content: [
+        {
+          type: 'text',
+          text: 'You are an assistant to a user in a coding task. When they ask you to help them do something, prompt them for more information if anything about the task is unclear or requires more details.',
+        },
+      ],
+    },
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: 'write me a snake game',
+        },
+      ],
+    },
+    {
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: "I'd be happy to help you create a Snake game! To make sure I build exactly what you're looking for, could you provide some more details?\n\n1. **Platform/Technology**: What would you like me to use?\n   - Python with Pygame\n   - JavaScript (HTML5 Canvas)\n   - Python with Tkinter\n   - Another language/framework?\n\n2. **Features**: What functionality do you want?\n   - Basic snake movement and food collection\n   - Score tracking\n   - Game over screen\n   - Different difficulty levels\n   - Sound effects\n   - High score saving\n\n3. **Visual style**: Any preferences for:\n   - Window size\n   - Colors\n   - Grid-based or smooth movement\n\n4. **Controls**: \n   - Arrow keys\n   - WASD keys\n   - Both options\n\nLet me know your preferences and I'll create a Snake game tailored to your needs!",
+        },
+      ],
+    },
+  ]}
+/>
 
 This difference in behavior is already a substantially different approach to working with a language model.
 In the first case, you are largely delegating work to the model.
@@ -119,28 +118,28 @@ Maybe you don't care about _most_ of the details but now you have the opportunit
 
 A follow up prompt as simple as
 
-<Chat messages={
-[
-  {
-    "role": "user",
-    "content": [
-      {
-        "type": "text",
-        "text": "use python. let's get to work"
-      }
-    ]
-  },
-  {
-    "role": "assistant",
-    "content": [
-      {
-        "type": "text",
-        "text": "Perfect! I'll create a Snake game in Python using Pygame. Let me build a complete, playable version for you: ..."
-      }
-    ]
-  }
-]
-} />
+<Chat
+  messages={[
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: "use python. let's get to work",
+        },
+      ],
+    },
+    {
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: "Perfect! I'll create a Snake game in Python using Pygame. Let me build a complete, playable version for you: ...",
+        },
+      ],
+    },
+  ]}
+/>
 
 is enough to send the agent to work, but a lot of good things happen in the interim.
 

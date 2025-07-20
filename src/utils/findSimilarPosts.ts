@@ -1,9 +1,15 @@
-import type { CollectionEntry } from "astro:content";
+import type { CollectionEntry } from 'astro:content';
 
 // Simple function to calculate common words between two strings
 function getCommonWords(str1: string, str2: string): number {
-  const words1 = str1.toLowerCase().split(/\W+/).filter((w) => w.length > 3);
-  const words2 = str2.toLowerCase().split(/\W+/).filter((w) => w.length > 3);
+  const words1 = str1
+    .toLowerCase()
+    .split(/\W+/)
+    .filter((w) => w.length > 3);
+  const words2 = str2
+    .toLowerCase()
+    .split(/\W+/)
+    .filter((w) => w.length > 3);
   const set1 = new Set(words1);
   const set2 = new Set(words2);
 
@@ -18,22 +24,23 @@ function getCommonWords(str1: string, str2: string): number {
 function extractKeywords(content: string, limit = 10): string[] {
   // Remove common stop words
   const stopWords = new Set([
-    "the",
-    "and",
-    "for",
-    "that",
-    "this",
-    "with",
-    "from",
-    "have",
-    "been",
-    "are",
-    "was",
-    "were",
-    "been",
+    'the',
+    'and',
+    'for',
+    'that',
+    'this',
+    'with',
+    'from',
+    'have',
+    'been',
+    'are',
+    'was',
+    'were',
+    'been',
   ]);
 
-  const words = content.toLowerCase()
+  const words = content
+    .toLowerCase()
     .split(/\W+/)
     .filter((w) => w.length > 4 && !stopWords.has(w));
 
@@ -51,15 +58,15 @@ function extractKeywords(content: string, limit = 10): string[] {
 }
 
 export function findSimilarPosts(
-  currentPost: CollectionEntry<"posts">,
-  allPosts: CollectionEntry<"posts">[],
+  currentPost: CollectionEntry<'posts'>,
+  allPosts: CollectionEntry<'posts'>[],
   limit = 3,
-  excludePosts: CollectionEntry<"posts">[] = [],
-): CollectionEntry<"posts">[] {
+  excludePosts: CollectionEntry<'posts'>[] = []
+): CollectionEntry<'posts'>[] {
   const currentTags = currentPost.data.tags || [];
   const currentSeries = currentPost.data.series;
   const currentTitle = currentPost.data.title;
-  const currentKeywords = extractKeywords(currentPost.body || "");
+  const currentKeywords = extractKeywords(currentPost.body || '');
 
   // Filter out the current post, draft posts, and excluded posts (prev/next)
   const excludeIds = excludePosts.map((p) => p.id);
@@ -67,8 +74,8 @@ export function findSimilarPosts(
     (post) =>
       post.id !== currentPost.id &&
       !post.data.draft &&
-      !post.id.includes("[zoom_") &&
-      !excludeIds.includes(post.id),
+      !post.id.includes('[zoom_') &&
+      !excludeIds.includes(post.id)
   );
 
   // Calculate similarity scores
@@ -90,7 +97,7 @@ export function findSimilarPosts(
     score += titleCommonWords * 2;
 
     // Content keyword similarity
-    const postKeywords = extractKeywords(post.body || "");
+    const postKeywords = extractKeywords(post.body || '');
     const sharedKeywords = currentKeywords.filter((kw) =>
       postKeywords.includes(kw)
     );
@@ -100,7 +107,7 @@ export function findSimilarPosts(
     if (currentPost.data.description && post.data.description) {
       const descCommonWords = getCommonWords(
         currentPost.data.description,
-        post.data.description,
+        post.data.description
       );
       score += descCommonWords * 1.5;
     }
@@ -108,7 +115,7 @@ export function findSimilarPosts(
     // Small boost for recency (posts closer in time)
     const timeDiff = Math.abs(
       new Date(currentPost.data.createdAt).getTime() -
-        new Date(post.data.createdAt).getTime(),
+        new Date(post.data.createdAt).getTime()
     );
     const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
     if (daysDiff < 30) score += 2;

@@ -11,8 +11,7 @@ aliases:
   - /posts/2016-04-22-first-go-module
 ---
 
-Creating a Go module
-====================
+# Creating a Go module
 
 We're going to create a CLI tool for sending a message to a channel in Slack using the command line. This post is similar to my earlier post: [Creating an Elixir Module](/posts/2016/2016-01-28-first-elixir-module). We'll be using the [chat.postMessage](https://api.slack.com/methods/chat.postMessage) Slack API endpoint. Also, make sure you have a [Slack API token](https://api.slack.com/tokens).
 

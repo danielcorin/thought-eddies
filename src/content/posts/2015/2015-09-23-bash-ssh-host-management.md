@@ -53,8 +53,7 @@ The output of the command is:
 myserver="x.x.x.x"
 ```
 
-for each of your `Host`s in your `config` file. *NOTE*: I recommend only using this trick for server names with exclusively alphanumeric characters. Otherwise, you may see strange errors like `-bash: <server_name>=<host_name>: command not found` when the shell initializes.
-
+for each of your `Host`s in your `config` file. _NOTE_: I recommend only using this trick for server names with exclusively alphanumeric characters. Otherwise, you may see strange errors like `-bash: <server_name>=<host_name>: command not found` when the shell initializes.
 
 You can add this to your bash initialization to get access to all your `HostName`s as variables from your ssh `config`.
 

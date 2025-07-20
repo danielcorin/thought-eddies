@@ -91,7 +91,6 @@ Output:
 2
 ```
 
-
 We confirm that both functions return the value that `value` has during the last iteration of the loop.
 
 We can use a closure to get the behavior we want. That is, that each function returns the correct value from the initial map:

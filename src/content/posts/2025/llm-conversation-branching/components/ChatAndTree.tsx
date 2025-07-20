@@ -1,6 +1,6 @@
-import { useState } from "react";
-import Chat from "./Chat";
-import Tree from "./Tree";
+import { useState } from 'react';
+import Chat from './Chat';
+import Tree from './Tree';
 
 interface Message {
   id: string;
@@ -11,8 +11,8 @@ interface Message {
 }
 
 export default function ChatAndTree({ messages }: { messages: Message[] }) {
-  const [selectedNodeId, setSelectedNodeId] = useState<string>("1");
-  const [activeView, setActiveView] = useState<"tree" | "chat">("tree");
+  const [selectedNodeId, setSelectedNodeId] = useState<string>('1');
+  const [activeView, setActiveView] = useState<'tree' | 'chat'>('tree');
 
   const getPathToRoot = (nodeId: string): Message[] => {
     const path: Message[] = [];
@@ -22,7 +22,7 @@ export default function ChatAndTree({ messages }: { messages: Message[] }) {
       const message = messages.find((m) => m.id === currentId);
       if (!message) break;
       path.unshift(message);
-      currentId = message.parent_id || "";
+      currentId = message.parent_id || '';
     }
 
     return path;

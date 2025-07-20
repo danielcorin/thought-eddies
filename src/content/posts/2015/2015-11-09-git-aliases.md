@@ -19,7 +19,6 @@ Here's a quick post for managing your `git` shortcuts. If you use `git` regularl
     name = Your name
 ```
 
-
 You can add an `alias` section like so:
 
 ```sh
@@ -31,7 +30,6 @@ You can add an `alias` section like so:
     ls = log --oneline
     uom = push -u origin master
 ```
-
 
 These aliases can be used like so:
 

@@ -29,7 +29,9 @@
 
 html {
   scroll-behavior: smooth;
-  transition: color 300ms, background-color 300ms;
+  transition:
+    color 300ms,
+    background-color 300ms;
   transition-behavior: allow-discrete;
 }
 
@@ -42,7 +44,9 @@ body {
   background-size: 20px 20px;
   background-position: 0 0;
   background-color: var(--color-bg);
-  transition: color 300ms, background-color 300ms;
+  transition:
+    color 300ms,
+    background-color 300ms;
   transition-behavior: allow-discrete;
 }
 
@@ -245,7 +249,6 @@ td {
 tr:last-child td {
   border-bottom: none;
 }
-
 
 code {
   font-family: var(--font-mono);

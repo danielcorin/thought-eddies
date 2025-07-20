@@ -65,6 +65,7 @@ func main() {
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
+
 </figure>
 
 We run the server to accept incoming requests:
@@ -164,6 +165,7 @@ func request(channel chan<- string) {
 }
 
 ```
+
 </figure>
 
 When we run this code against the same (restarted) server, we get the following output:

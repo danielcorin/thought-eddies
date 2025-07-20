@@ -1,13 +1,16 @@
 ---
-date: "2024-12-19T16:58:07Z"
-title: "2024-12-19"
+date: '2024-12-19T16:58:07Z'
+title: '2024-12-19'
 draft: false
 tags:
 ---
 
 import { BlueskyPost } from 'astro-embed';
 
-<BlueskyPost theme="dark" id="https://bsky.app/profile/danielcorin.com/post/3ldosi76gts2n" />
+<BlueskyPost
+  theme="dark"
+  id="https://bsky.app/profile/danielcorin.com/post/3ldosi76gts2n"
+/>
 
 To create this animation for a day in the mind of Claude Sonnet, I used Sonnet to write the following code
 
@@ -85,28 +88,27 @@ No talk, no code fences. Code only."""
 ```js
 const puppeteer = require('puppeteer');
 
-
 async function createGif() {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-    await page.setViewport({
-        width: 800,
-        height: 600
+  await page.setViewport({
+    width: 800,
+    height: 600,
+  });
+
+  const htmlFiles = [
+    // paths to html files
+  ];
+
+  for (let i = 0; i < htmlFiles.length; i++) {
+    await page.goto(`file://${__dirname}/${htmlFiles[i]}`);
+    await page.screenshot({
+      path: `frame${i}.png`,
     });
+  }
 
-    const htmlFiles = [
-        // paths to html files
-    ];
-
-    for (let i = 0; i < htmlFiles.length; i++) {
-        await page.goto(`file://${__dirname}/${htmlFiles[i]}`);
-        await page.screenshot({
-            path: `frame${i}.png`
-        });
-    }
-
-    await browser.close();
+  await browser.close();
 }
 
 createGif();

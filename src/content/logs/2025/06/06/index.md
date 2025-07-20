@@ -1,9 +1,9 @@
 ---
-date: "2025-06-06T20:33:16Z"
-title: "2025-06-06"
+date: '2025-06-06T20:33:16Z'
+title: '2025-06-06'
 draft: false
 tags:
-- cursor
+  - cursor
 ---
 
 Today I learned the quote
@@ -28,6 +28,5 @@ And as I write these words, I just received an email at 6pm PT from Cursor about
 ![alt text](image.png)
 
 Not exactly hype if you are burying the launch email at dinner on a Friday.
-
 
 This is all speculation -- I have no inside information.

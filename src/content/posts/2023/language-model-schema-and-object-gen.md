@@ -230,13 +230,7 @@ The output schema I got for my run of the language model is as follows:
           }
         }
       },
-      "required": [
-        "id",
-        "name",
-        "price",
-        "image",
-        "options"
-      ]
+      "required": ["id", "name", "price", "image", "options"]
     },
     "option": {
       "type": "object",
@@ -251,10 +245,7 @@ The output schema I got for my run of the language model is as follows:
           }
         }
       },
-      "required": [
-        "name",
-        "values"
-      ]
+      "required": ["name", "values"]
     }
   }
 }
@@ -454,10 +445,7 @@ The output when run:
       "options": [
         {
           "name": "Color",
-          "values": [
-            "White",
-            "Black"
-          ]
+          "values": ["White", "Black"]
         }
       ]
     },
@@ -469,10 +457,7 @@ The output when run:
       "options": [
         {
           "name": "Color",
-          "values": [
-            "White",
-            "Black"
-          ]
+          "values": ["White", "Black"]
         }
       ]
     }

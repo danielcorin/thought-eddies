@@ -1,5 +1,5 @@
-import * as d3 from "d3";
-import { useEffect, useRef } from "react";
+import * as d3 from 'd3';
+import { useEffect, useRef } from 'react';
 
 interface Message {
   id: string;
@@ -29,16 +29,16 @@ export default function ZoomableTree({
 
     const svg = d3
       .select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height);
+      .attr('width', width)
+      .attr('height', height);
 
     const g = svg
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Create separate groups for links and nodes to control layering
-    const linksGroup = g.append("g").attr("class", "links");
-    const nodesGroup = g.append("g").attr("class", "nodes");
+    const linksGroup = g.append('g').attr('class', 'links');
+    const nodesGroup = g.append('g').attr('class', 'nodes');
 
     const stratify = d3
       .stratify<Message>()
@@ -59,13 +59,13 @@ export default function ZoomableTree({
 
     const simulation = d3
       .forceSimulation(treeData.descendants())
-      .force("collide", d3.forceCollide().radius(80))
+      .force('collide', d3.forceCollide().radius(80))
       .force(
-        "y",
+        'y',
         d3
           .forceY()
           .strength(0.1)
-          .y((d) => (d as any).y),
+          .y((d) => (d as any).y)
       )
       .stop();
 
@@ -76,70 +76,70 @@ export default function ZoomableTree({
     });
 
     linksGroup
-      .selectAll(".link")
+      .selectAll('.link')
       .data(treeData.links())
-      .join("path")
-      .attr("class", "link")
-      .attr("fill", "none")
-      .attr("stroke", "#cbd5e1")
+      .join('path')
+      .attr('class', 'link')
+      .attr('fill', 'none')
+      .attr('stroke', '#cbd5e1')
       .attr(
-        "d",
+        'd',
         d3
           .linkVertical()
           .x((d) => d.x)
-          .y((d) => d.y),
+          .y((d) => d.y)
       );
 
     const depthColors = [
-      "#f0f9ff", // sky-50
-      "#ffe4e6", // rose-100
-      "#dbeafe", // blue-100
-      "#fef3c7", // amber-100
-      "#dcfce7", // emerald-100
+      '#f0f9ff', // sky-50
+      '#ffe4e6', // rose-100
+      '#dbeafe', // blue-100
+      '#fef3c7', // amber-100
+      '#dcfce7', // emerald-100
     ];
 
     const nodes = nodesGroup
-      .selectAll(".node")
+      .selectAll('.node')
       .data(treeData.descendants())
-      .join("g")
-      .attr("class", "node")
-      .attr("transform", (d) => `translate(${d.x},${d.y})`);
+      .join('g')
+      .attr('class', 'node')
+      .attr('transform', (d) => `translate(${d.x},${d.y})`);
 
     nodes
-      .append("foreignObject")
-      .attr("x", -120)
-      .attr("y", -50)
-      .attr("width", 240)
-      .attr("height", 100)
-      .append("xhtml:div")
-      .attr("class", "flex flex-col p-2 rounded-lg border hover:bg-slate-200")
+      .append('foreignObject')
+      .attr('x', -120)
+      .attr('y', -50)
+      .attr('width', 240)
+      .attr('height', 100)
+      .append('xhtml:div')
+      .attr('class', 'flex flex-col p-2 rounded-lg border hover:bg-slate-200')
       .style(
-        "background-color",
-        (d) => depthColors[d.depth % depthColors.length],
+        'background-color',
+        (d) => depthColors[d.depth % depthColors.length]
       )
       .html(
         (d) => `
                 <div class="text-sm font-medium text-slate-700 truncate">${d.data.prompt}</div>
                 <div class="h-px bg-slate-300 my-1"></div>
                 <div class="text-xs text-slate-600 line-clamp-3">${d.data.response}</div>
-            `,
+            `
       );
 
     nodes
-      .on("mouseover", function (event, d) {
+      .on('mouseover', function (event, d) {
         const nodeGroup = d3.select(this);
         nodeGroup.raise();
         nodeGroup
-          .select("foreignObject div")
+          .select('foreignObject div')
           .style(
-            "background-color",
-            d3.color(depthColors[d.depth % depthColors.length])?.darker(0.1),
+            'background-color',
+            d3.color(depthColors[d.depth % depthColors.length])?.darker(0.1)
           );
       })
-      .on("mouseout", function (event, d) {
+      .on('mouseout', function (event, d) {
         d3.select(this)
-          .select("foreignObject div")
-          .style("background-color", depthColors[d.depth % depthColors.length]);
+          .select('foreignObject div')
+          .style('background-color', depthColors[d.depth % depthColors.length]);
       });
 
     // Calculate bounds
@@ -148,7 +148,7 @@ export default function ZoomableTree({
       const scale =
         Math.min(
           width / (bounds.width + margin.left + margin.right),
-          height / (bounds.height + margin.top + margin.bottom),
+          height / (bounds.height + margin.top + margin.bottom)
         ) * 1.1;
 
       const dx = (width - bounds.width * scale) / 2;
@@ -158,17 +158,17 @@ export default function ZoomableTree({
       const initialTransform = d3.zoomIdentity.translate(dx, dy).scale(scale);
 
       // Apply initial transform
-      g.attr("transform", initialTransform.toString());
+      g.attr('transform', initialTransform.toString());
 
       // Setup zoom behavior after initial transform
       const zoom = d3
         .zoom<SVGSVGElement, unknown>()
         .scaleExtent([scale * 0.5, scale * 2.5])
-        .on("zoom", (event) => {
-          g.attr("transform", event.transform);
+        .on('zoom', (event) => {
+          g.attr('transform', event.transform);
           const currentScale = event.transform.k;
           nodes
-            .select("foreignObject div")
+            .select('foreignObject div')
             .html((d) => {
               if (currentScale < summaryZoomLevel) {
                 return `<div class="text-base font-medium text-slate-700">${d.data.summary}</div>`;
@@ -180,8 +180,8 @@ export default function ZoomableTree({
                             `;
             })
             .style(
-              "background-color",
-              (d) => depthColors[d.depth % depthColors.length],
+              'background-color',
+              (d) => depthColors[d.depth % depthColors.length]
             );
         });
 
