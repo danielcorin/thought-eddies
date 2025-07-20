@@ -1,0 +1,114 @@
+---
+interface Props {
+  inline?: boolean;
+}
+
+const { inline = true } = Astro.props;
+
+const tagName = inline ? "span" : "div";
+const className = inline ? "inline-spoiler" : "block-spoiler";
+const id = `spoiler-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<style>
+  .inline-spoiler,
+  .block-spoiler {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .block-spoiler {
+    margin: 1rem 0;
+  }
+
+  /* Spoiler toggle button */
+  .spoiler-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--sl-color-gray-6);
+    color: var(--color-ink, var(--sl-color-text));
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-family: var(--font-prose, inherit);
+    transition: background-color 0.2s ease;
+    border: 1px solid var(--sl-color-gray-5);
+    cursor: pointer;
+  }
+
+  .spoiler-toggle:hover {
+    background-color: var(--sl-color-gray-5);
+  }
+
+  /* Arrow icon */
+  .spoiler-toggle::before {
+    content: '▶';
+    font-size: 0.625rem;
+  }
+
+  .inline-spoiler.revealed .spoiler-toggle::before,
+  .block-spoiler.revealed .spoiler-toggle::before {
+    content: '▼';
+  }
+
+  /* Hide button when content is revealed */
+  .inline-spoiler.revealed .spoiler-toggle,
+  .block-spoiler.revealed .spoiler-toggle {
+    display: none;
+  }
+
+  /* Content styling */
+  .spoiler-content {
+    display: none;
+  }
+
+  .inline-spoiler.revealed .spoiler-content {
+    display: inline;
+  }
+
+  .block-spoiler.revealed .spoiler-content {
+    display: block;
+    margin-top: 0.75rem;
+  }
+
+  /* For inline spoilers, make it more compact */
+  .inline-spoiler .spoiler-toggle {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document
+      .querySelectorAll(".inline-spoiler, .block-spoiler")
+      .forEach((spoiler) => {
+        spoiler.addEventListener("click", () => {
+          spoiler.classList.toggle("revealed");
+        });
+      });
+  });
+</script>
+
+<Fragment>
+  {
+    tagName === "span" ? (
+      <span class={className} id={id}>
+        <button class="spoiler-toggle">Show spoiler</button>
+        <span class="spoiler-content">
+          <slot />
+        </span>
+      </span>
+    ) : (
+      <div class={className} id={id}>
+        <button class="spoiler-toggle">Show spoilers</button>
+        <div class="spoiler-content">
+          <slot />
+        </div>
+      </div>
+    )
+  }
+</Fragment>
