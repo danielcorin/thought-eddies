@@ -39,18 +39,6 @@ const ogImage = `/posts/og.png`;
   <main>
     <h1 class="page-title">Posts</h1>
 
-    {
-      page.lastPage > 1 && (
-        <Pagination
-          currentPage={page.currentPage}
-          lastPage={page.lastPage}
-          prevUrl={page.url.prev}
-          nextUrl={page.url.next}
-          baseUrl="/posts"
-        />
-      )
-    }
-
     <div class="toc">
       {
         page.data.map((post: any) => (
