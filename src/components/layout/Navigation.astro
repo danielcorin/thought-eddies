@@ -1,166 +1,180 @@
 ---
-import "@styles/base.css";
-import { Icon } from "astro-icon/components";
+import '@styles/base.css';
+import { Icon } from 'astro-icon/components';
 
 interface Props {
-    selected?: string;
+  selected?: string;
 }
 
 const { selected } = Astro.props;
 ---
 
 <nav class="site-nav">
-    {
-        ["", "posts"].map((item) => (
-            <a
-                href={`/${item === "" ? "" : item}`}
-                class={
-                    selected === item || (item === "" && selected === "home")
-                        ? "nav-link selected"
-                        : "nav-link"
-                }
-                aria-current={selected === item || (item === "" && selected === "home") ? "page" : undefined}
-            >
-                <span class="nav-item">
-                    <Icon
-                        name={`ph:${item === "" ? "house" : "note"}`}
-                        class="inline-icon"
-                    />
-                    <span class="nav-text">
-                        {item === ""
-                            ? "Home"
-                            : item.charAt(0).toUpperCase() + item.slice(1)}
-                    </span>
-                </span>
-            </a>
-        ))
-    }
-    <div class="nav-icons-group" style="margin-left: auto;">
-        <button id="search-toggle" class="nav-link nav-icon-link" aria-label="Search (⌘K)" aria-keyshortcuts="Cmd+K">
-            <span class="nav-item">
-                <Icon name="ph:magnifying-glass" class="inline-icon nav-icon" />
-            </span>
-        </button>
-        <a href="/rss.xml" class="nav-link nav-icon-link" aria-label="RSS Feed">
-            <span class="nav-item">
-                <Icon name="ph:rss" class="inline-icon nav-icon" />
-            </span>
-        </a>
-        <button id="theme-toggle" class="nav-link nav-icon-link" aria-label="Toggle theme" aria-pressed="false">
-            <span class="nav-item">
-                <span id="sun-wrapper" class="sun-wrapper">
-                    <Icon name="ph:sun" class="inline-icon nav-icon" />
-                </span>
-                <span id="moon-wrapper" class="moon-wrapper hidden">
-                    <Icon name="ph:moon" class="inline-icon nav-icon" />
-                </span>
-            </span>
-        </button>
-    </div>
+  {
+    ['', 'posts', 'logs', 'feeds'].map((item) => (
+      <a
+        href={`/${item === '' ? '' : item}`}
+        class={
+          selected === item || (item === '' && selected === 'home')
+            ? 'nav-link selected'
+            : 'nav-link'
+        }
+        aria-current={
+          selected === item || (item === '' && selected === 'home')
+            ? 'page'
+            : undefined
+        }
+      >
+        <span class="nav-item">
+          <Icon
+            name={`ph:${item === '' ? 'house' : item === 'posts' ? 'note' : item === 'logs' ? 'pencil-line' : 'rss'}`}
+            class="inline-icon"
+          />
+          <span class="nav-text">
+            {item === ''
+              ? 'Home'
+              : item.charAt(0).toUpperCase() + item.slice(1)}
+          </span>
+        </span>
+      </a>
+    ))
+  }
+  <div class="nav-icons-group" style="margin-left: auto;">
+    <button
+      id="search-toggle"
+      class="nav-link nav-icon-link"
+      aria-label="Search (⌘K)"
+      aria-keyshortcuts="Cmd+K"
+    >
+      <span class="nav-item">
+        <Icon name="ph:magnifying-glass" class="inline-icon nav-icon" />
+      </span>
+    </button>
+    <a href="/rss.xml" class="nav-link nav-icon-link" aria-label="RSS Feed">
+      <span class="nav-item">
+        <Icon name="ph:rss" class="inline-icon nav-icon" />
+      </span>
+    </a>
+    <button
+      id="theme-toggle"
+      class="nav-link nav-icon-link"
+      aria-label="Toggle theme"
+      aria-pressed="false"
+    >
+      <span class="nav-item">
+        <span id="sun-wrapper" class="sun-wrapper">
+          <Icon name="ph:sun" class="inline-icon nav-icon" />
+        </span>
+        <span id="moon-wrapper" class="moon-wrapper hidden">
+          <Icon name="ph:moon" class="inline-icon nav-icon" />
+        </span>
+      </span>
+    </button>
+  </div>
 </nav>
 
 <script is:inline>
-    // Search button functionality
-    (function () {
-        const searchToggle = document.getElementById("search-toggle");
-        if (searchToggle) {
-            searchToggle.addEventListener("click", () => {
-                // Dispatch a custom event to trigger the search overlay
-                window.dispatchEvent(new CustomEvent("openSearch"));
-            });
+  // Search button functionality
+  (function () {
+    const searchToggle = document.getElementById('search-toggle');
+    if (searchToggle) {
+      searchToggle.addEventListener('click', () => {
+        // Dispatch a custom event to trigger the search overlay
+        window.dispatchEvent(new CustomEvent('openSearch'));
+      });
+    }
+  })();
+
+  // Theme button functionality using global utilities
+  (function () {
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunWrapper = document.getElementById('sun-wrapper');
+    const moonWrapper = document.getElementById('moon-wrapper');
+
+    function updateIconsForTheme() {
+      if (!sunWrapper || !moonWrapper) return;
+
+      const currentTheme = window.themeUtils
+        ? window.themeUtils.getCurrentTheme()
+        : document.documentElement.className;
+      const isDark = currentTheme === 'dark';
+
+      sunWrapper.classList.toggle('hidden', isDark);
+      moonWrapper.classList.toggle('hidden', !isDark);
+
+      // Update aria-pressed attribute
+      if (themeToggle) {
+        themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+      }
+    }
+
+    // Initialize icons when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateIconsForTheme);
+    } else {
+      updateIconsForTheme();
+    }
+
+    // Listen for theme changes from other sources
+    window.addEventListener('themeChanged', updateIconsForTheme);
+
+    // Handle click events
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        if (window.themeUtils) {
+          window.themeUtils.toggleTheme();
         }
-    })();
-
-    // Theme button functionality using global utilities
-    (function () {
-        const themeToggle = document.getElementById("theme-toggle");
-        const sunWrapper = document.getElementById("sun-wrapper");
-        const moonWrapper = document.getElementById("moon-wrapper");
-
-        function updateIconsForTheme() {
-            if (!sunWrapper || !moonWrapper) return;
-
-            const currentTheme = window.themeUtils
-                ? window.themeUtils.getCurrentTheme()
-                : document.documentElement.className;
-            const isDark = currentTheme === "dark";
-
-            sunWrapper.classList.toggle("hidden", isDark);
-            moonWrapper.classList.toggle("hidden", !isDark);
-            
-            // Update aria-pressed attribute
-            if (themeToggle) {
-                themeToggle.setAttribute("aria-pressed", isDark ? "true" : "false");
-            }
-        }
-
-        // Initialize icons when DOM is ready
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", updateIconsForTheme);
-        } else {
-            updateIconsForTheme();
-        }
-
-        // Listen for theme changes from other sources
-        window.addEventListener("themeChanged", updateIconsForTheme);
-
-        // Handle click events
-        if (themeToggle) {
-            themeToggle.addEventListener("click", () => {
-                if (window.themeUtils) {
-                    window.themeUtils.toggleTheme();
-                }
-                updateIconsForTheme();
-            });
-        }
-    })();
+        updateIconsForTheme();
+      });
+    }
+  })();
 </script>
 
 <style>
-    .nav-icon-link {
-        display: inline-flex;
-        align-items: center;
-        vertical-align: middle;
-    }
-    
-    .nav-icon-link .nav-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 1.5rem;
-    }
-    
-    .nav-icon {
-        vertical-align: middle !important;
-        margin: 0;
-        display: block;
-    }
-    
-    /* Ensure both icons have the same size as footer */
-    .nav-icon-link svg {
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-    
-    /* Group icons together with controlled spacing */
-    .nav-icons-group {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-    
-    /* Button styles to match links */
-    #search-toggle {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-        color: var(--color-ink);
-        transition: opacity 0.2s;
-    }
-    
-    #search-toggle:hover {
-        opacity: 0.8;
-        color: var(--color-accent);
-    }
+  .nav-icon-link {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+
+  .nav-icon-link .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.5rem;
+  }
+
+  .nav-icon {
+    vertical-align: middle !important;
+    margin: 0;
+    display: block;
+  }
+
+  /* Ensure both icons have the same size as footer */
+  .nav-icon-link svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  /* Group icons together with controlled spacing */
+  .nav-icons-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* Button styles to match links */
+  #search-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--color-ink);
+    transition: opacity 0.2s;
+  }
+
+  #search-toggle:hover {
+    opacity: 0.8;
+    color: var(--color-accent);
+  }
 </style>
