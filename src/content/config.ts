@@ -59,4 +59,24 @@ const feeds = defineCollection({
   }),
 });
 
-export const collections = { posts, home, logs, feeds };
+const uses = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/uses" }),
+  schema: z.object({
+    date: z
+      .string()
+      .or(z.date())
+      .transform((val) => new Date(val)),
+  }),
+});
+
+const now = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/now" }),
+  schema: z.object({
+    date: z
+      .string()
+      .or(z.date())
+      .transform((val) => new Date(val)),
+  }),
+});
+
+export const collections = { posts, home, logs, feeds, uses, now };
