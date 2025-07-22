@@ -1,0 +1,126 @@
+---
+import Navigation from '@components/layout/Navigation.astro';
+import Layout from '@layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+// Get all now entries and sort by date to get the most recent
+const nowEntries = await getCollection('now');
+const sortedEntries = nowEntries.sort((a, b) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+// Get the most recent entry
+const latestEntry = sortedEntries[0];
+
+if (!latestEntry) {
+  return Astro.redirect('/404');
+}
+
+const { Content } = await render(latestEntry);
+const lastUpdated = new Date(latestEntry.data.date).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<Layout title="Now" description="What I'm focused on at this point in my life">
+  <Navigation selected="now" />
+  <main>
+    <div class="page-header">
+      <h1 class="page-title">Now</h1>
+      <p class="last-updated">Last updated: {lastUpdated}</p>
+    </div>
+    <article class="prose">
+      <Content />
+    </article>
+  </main>
+</Layout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .last-updated {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    margin-top: var(--spacing-sm);
+  }
+
+  .prose {
+    max-width: 100%;
+  }
+
+  .prose :global(h2) {
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+  }
+
+  .prose :global(h3) {
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--text-xl);
+    font-weight: 600;
+  }
+
+  .prose :global(p) {
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-lg);
+  }
+
+  .prose :global(li) {
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .prose :global(a) {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .prose :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  .prose :global(code) {
+    background: var(--color-bg-code);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+
+  .prose :global(pre) {
+    background: var(--color-bg-code);
+    padding: var(--spacing-md);
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .prose :global(blockquote) {
+    border-left: 4px solid var(--color-accent);
+    padding-left: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    font-style: italic;
+    color: var(--color-ink-light);
+  }
+
+  .prose :global(small) {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+  }
+
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: var(--spacing-xl) 0;
+  }
+</style>
