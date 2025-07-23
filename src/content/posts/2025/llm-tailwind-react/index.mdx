@@ -53,8 +53,8 @@ Given the following prompt, here's what `claude-3-5-sonnet-20241022` generates i
   ]}
 />
 
-import { default as TailwindCalendarV1 } from './components/TailwindCalendar.v1';
-import TailwindCalendarV1Source from './components/TailwindCalendar.v1?raw';
+import { default as TailwindCalendarV1 } from './components/TailwindCalendarv1';
+import TailwindCalendarV1Source from './components/TailwindCalendarv1?raw';
 
 <TailwindCalendarV1 client:load />
 
@@ -108,8 +108,8 @@ Let's add a calendar component so we can see the number of tasks that have been 
   ]}
 />
 
-import { default as TailwindCalendarV2 } from './components/TailwindCalendar.v2';
-import TailwindCalendarV2Source from './components/TailwindCalendar.v2?raw';
+import { default as TailwindCalendarV2 } from './components/TailwindCalendarv2';
+import TailwindCalendarV2Source from './components/TailwindCalendarv2?raw';
 
 <TailwindCalendarV2 client:load />
 
@@ -179,8 +179,8 @@ Let's put all the CSS styles in the same file then compare what it's like to ite
   ]}
 />
 
-import { default as CssCalendarV1 } from './components/CssCalendar.v1';
-import CssCalendarV1Source from './components/CssCalendar.v1?raw';
+import { default as CssCalendarV1 } from './components/CssCalendarv1';
+import CssCalendarV1Source from './components/CssCalendarv1?raw';
 
 <CssCalendarV1 client:load />
 
@@ -198,12 +198,12 @@ Now, let's transform that single file with the second prompt
   ]}
 />
 
-import { default as CssCalendarV2 } from './components/CssCalendar.v2';
-import CssCalendarV2Source from './components/CssCalendar.v2?raw';
+import { default as CssCalendarV2 } from './components/CssCalendarv2';
+import CssCalendarV2Source from './components/CssCalendarv2?raw';
 
 <CssCalendarV2 client:load />
 
-<CodeBlock code={CssCalendarV2Source} lang="tsx" title="CssCalendar.v2.tsx" />
+<CodeBlock code={CssCalendarV2Source} lang="tsx" title="CssCalendarv2.tsx" />
 
 Not bad!
 So what am I complaining about?

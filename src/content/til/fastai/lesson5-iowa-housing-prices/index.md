@@ -270,7 +270,6 @@ viz_model.view(
 
 <img src="images/notebook_34_0.svg" alt="Decision tree visualization">
 
-
 Let's do the same experimentation in Chapter 9.
 We'll build a bigger tree with no stopping criteria.
 
