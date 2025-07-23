@@ -60,7 +60,7 @@ const category = post.collection === "til" && (post.data as any).category ? (pos
             <a href={url}>{formattedDate}</a>
         </time>
         {showTypeLabel && <TypeLabel type={type} />}
-        {category && post.collection === "til" && (
+        {!showTypeLabel && category && post.collection === "til" && (
             <span class="category-label">
                 <a href={`/til/${post.id.split('/')[0]}`}>{post.id.split('/')[0]}</a>
             </span>

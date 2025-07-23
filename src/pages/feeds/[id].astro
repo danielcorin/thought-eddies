@@ -2,6 +2,7 @@
 import Navigation from '@components/layout/Navigation.astro';
 import Layout from '@layouts/Layout.astro';
 import RSSFeedLinksClient from '@components/RSSFeedLinksClient.tsx';
+import { Icon } from 'astro-icon/components';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -21,13 +22,25 @@ const { Content } = await render(feed);
 const { title, feed_url: feedUrl } = feed.data;
 ---
 
-<Layout title={title} description={feed.body} ogImage="/og.png">
+<Layout title={title} ogImage="/og.png">
   <Navigation selected="feeds" />
   <main>
-    <h1 class="page-title">{title}</h1>
-    <div class="page-description">
-      <Content />
-    </div>
+    <article>
+      <header>
+        <h1>{title}</h1>
+        <div class="metadata">
+          <span class="icon-text-wrapper rss-link-wrapper">
+            <a href={feedUrl} target="_blank" rel="noopener noreferrer">
+              <Icon name="ph:rss" class="inline-icon meta-icon" />
+              <span class="rss-text">RSS Feed</span>
+            </a>
+          </span>
+        </div>
+      </header>
+      <div class="page-description">
+        <Content />
+      </div>
+    </article>
     <RSSFeedLinksClient client:load feedUrl={feedUrl} title="" limit={30} />
   </main>
 </Layout>
@@ -37,14 +50,63 @@ const { title, feed_url: feedUrl } = feed.data;
     margin-bottom: 0;
   }
 
+  /* Let the global styles from base.css handle article header and h1 */
+
+  .metadata {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .icon-text-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-right: 1rem;
+  }
+
+  .meta-icon {
+    opacity: 0.7;
+  }
+
+  .rss-text {
+    font-family: var(--font-mono);
+  }
+
+  .rss-link-wrapper a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-ink-light);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .rss-link-wrapper a:hover {
+    opacity: 0.8;
+    color: var(--color-accent);
+  }
+
   .page-description {
     font-size: var(--text-lg);
     color: var(--color-ink-light);
     margin-bottom: var(--spacing-xl);
+    text-align: left;
   }
 
   .page-description p {
     margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    article header h1 {
+      font-size: var(--text-3xl);
+    }
+
+    .icon-text-wrapper {
+      margin-right: 0.75rem;
+    }
   }
 
   /* RSS Feed component styles */
@@ -71,7 +133,6 @@ const { title, feed_url: feedUrl } = feed.data;
     background: var(--color-bg-code);
     border-radius: 0.5rem;
   }
-
 
   :global(.feed-header) {
     margin-bottom: var(--spacing-sm);

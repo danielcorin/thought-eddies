@@ -1,7 +1,6 @@
 ---
 title: 'Create a Link Blog'
 createdAt: 2025-05-06T21:05:24-04:00
-updatedAt: 2025-07-18T21:05:24-04:00
 draft: false
 tags:
   - rss
