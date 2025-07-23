@@ -11,7 +11,7 @@ const { selected } = Astro.props;
 
 <nav class="site-nav">
   {
-    ['', 'posts', 'logs', 'feeds'].map((item) => (
+    ['', 'posts', 'til', 'logs', 'feeds'].map((item) => (
       <a
         href={`/${item === '' ? '' : item}`}
         class={
@@ -27,12 +27,14 @@ const { selected } = Astro.props;
       >
         <span class="nav-item">
           <Icon
-            name={`ph:${item === '' ? 'house' : item === 'posts' ? 'note' : item === 'logs' ? 'pencil-line' : 'rss'}`}
+            name={`ph:${item === '' ? 'house' : item === 'posts' ? 'note' : item === 'til' ? 'lightbulb' : item === 'logs' ? 'pencil-line' : 'rss'}`}
             class="inline-icon"
           />
           <span class="nav-text">
             {item === ''
               ? 'Home'
+              : item === 'til'
+              ? 'TIL'
               : item.charAt(0).toUpperCase() + item.slice(1)}
           </span>
         </span>

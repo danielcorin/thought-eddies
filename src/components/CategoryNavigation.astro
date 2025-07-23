@@ -1,0 +1,83 @@
+---
+interface Props {
+  categories: string[];
+  basePath: string;
+  currentCategory?: string;
+}
+
+const { categories, basePath, currentCategory } = Astro.props;
+---
+
+<nav class="category-navigation">
+  <h3 class="category-title">Categories</h3>
+  <div class="category-list">
+    {categories.map((category) => (
+      <a 
+        href={`${basePath}/${category}`} 
+        class={`category-item ${currentCategory === category ? 'active' : ''}`}
+      >
+        {category}
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .category-navigation {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+  }
+
+  .category-title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--spacing-md);
+    color: var(--color-ink);
+  }
+
+  .category-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .category-item {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    transition: all 0.2s;
+  }
+
+  .category-item:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .category-item.active {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border-color: var(--color-accent);
+  }
+
+  @media (max-width: 640px) {
+    .category-navigation {
+      padding: var(--spacing-md);
+    }
+
+    .category-list {
+      gap: 0.5rem;
+    }
+
+    .category-item {
+      font-size: var(--text-xs);
+      padding: 0.2rem 0.5rem;
+    }
+  }
+</style>

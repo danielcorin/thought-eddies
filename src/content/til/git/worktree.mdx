@@ -1,0 +1,239 @@
+---
+title: Git Worktree
+createdAt: 2025-05-10T10:08:45.000Z
+updatedAt: 2025-05-10T10:08:45.000Z
+publishedAt: 2025-05-10T10:08:45.000Z
+tags:
+  - git
+  - worktree
+draft: false
+---
+
+import Chat from '@components/prose/Chat.astro';
+
+These days I use agents that write code often.
+When I am trying to build a new feature, I first write a markdown spec, then point the agent at it and send it on its way.
+
+There are a lot of tools and choices today in the agent space.
+I regularly use 3-4 different ones, and I expect that number to continue to vary.
+
+When you send an agent off to write code, you need to wait.
+If you have more work to do, especially work that is unrelated to the current changes the agent is making, it would be nice to unblock that work as well.
+
+Git worktree makes this possible
+
+> A git repository can support multiple working trees, allowing you to check out more than one branch at a time.
+> — https://git-scm.com/docs/git-worktree
+
+## Let's build a simple project
+
+_Feel free to skip to the [Worktrees](#worktrees) section if you already have a project you want to work on or come up with your own example._
+
+If we go from zero, let's set up a new git repo and make a commit.
+
+```sh
+mkdir -p our-project-with-worktrees
+cd our-project-with-worktrees
+git init
+echo "Hello, world\!" > README.md
+git add README.md
+git commit -m "initial commit"
+```
+
+Now, let's set up a simple `fastapi` web server which will be the base of the two tasks we send the agents off to do.
+
+<Chat model="gemini-2.5-pro" messages={
+[
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "text",
+                "text": "- Create a fastapi web server that listens on port 8000 and returns 'Hello, world!'.\n- Next, create a readme for how to setup and run the project.\n- Finally, follow those steps and ensure everything worked"
+            }
+        ]
+    }
+]
+} />
+
+Gemini was a little lazy here and didn't create the virtualenv itself.
+Instead, it just wanted to install the dependencies to the system Python.
+
+So we did this part ourselves:
+
+```
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Also, we add a `.gitignore` for a Python project with the very convenient
+
+```sh
+npx gitignore python
+```
+
+We run the project with
+
+```sh
+uvicorn main:app --reload
+```
+
+and validate it works as expected
+
+```sh
+curl http://localhost:8000
+```
+
+```json
+{"message":"Hello, world!"}%
+```
+
+Cool.
+
+Now one more modification to make our task a little more interesting.
+
+```python {title="main.py"}
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/")
+async def root(name: str = "world"):
+    return {"message": f"Hello, {name}!"}
+```
+
+And let's commit the results.
+
+```sh
+git add -A
+git commit -m "Simple server"
+```
+
+## The task
+
+We're going to ask an agent to write a CLI to call the web server, supporting arguments, the input parameters, and dealing with the different HTTP methods for us.
+This is a pretty contrived and even ill-defined task.
+In my head, a successful outcome could be something like a hybrid between `rails routes` and `curl`.
+But also, I'm not too worried about the outcome.
+I just needed an excuse to use a worktree.
+
+> Write a generic CLI that can call the web server. The CLI should inspect the server route and input args to determine the inputs and flags to call the server.
+> It should automatically extend to future routes added with no additional modification required, supporting optional and required arguments and enforcing type constraints.
+> For example, based on the existing main.py, the CLI should support
+>
+> ```sh
+> python cli.py root --name=Alice
+> ```
+>
+> which outputs
+>
+> ```json
+> {"message":"Hello, Alice!"}
+> ```
+>
+> and
+>
+> ```sh
+> python cli.py / --name=Bob
+> ```
+>
+> which outputs
+>
+> ```json
+> {"message":"Hello, Bob!"}
+> ```
+
+Let's see what the agent comes up with.
+
+## Worktrees
+
+Let's create a new worktree.
+
+```sh
+git worktree add ../claude-code-1
+cd ../claude-code-1
+```
+
+We've just created a new folder at the same level as our original project.
+
+Now let's send [`claude-code`](https://github.com/anthropics/claude-code) off to work with the prompt above.
+
+These days, I paste my prompts or specs into a `specs` folder, then prompt the agent with something like "Implement @specs/cli.md"
+
+I've been meaning to try OpenAI's [Codex](https://github.com/openai/codex), so let's create another worktree and send it off on the same task.
+
+```sh
+git worktree add ../openai-codex
+cd ../openai-codex
+```
+
+OpenAI sent me a email because they noticed I hadn't tried the `gpt-4.1` model.
+I'm not sure I want to reward that behavior and give them a conversion, mostly because it just means I'll get more emails but I digress.
+
+I launched `codex` and set it on its way
+
+```sh
+codex -m gpt-4.1
+```
+
+I sent it the same prompt as `claude-code`, referencing the spec file I wrote.
+
+`codex` and `gpt-4.1` seemed to have a pretty hard time with this ask.
+The agent spent most of its time checking dependency installation, trying to run the web server, and looking around the project.
+
+I started over, ensuring I had the dependencies installed and the virtualenv activated.
+This second attempt, I tried with `o4-mini`.
+It felt noticeably slower than `gpt-4.1`, but it did eventually write the CLI.
+
+For both models with `codex`, it was kind of hard to understand what the agent was intending to accomplish.
+`codex` prompts you to approve the commands it runs at each step but doesn't provide much context on why it wants to run them.
+You can read them to ensure they are safe, but it's hard to assess whether the agent is on the right path -- something that in my experience is pretty critical to getting good results.
+
+## Finishing up with the worktree
+
+I decided I liked what `claude-code` built better, so now let's commit in the worktree.
+
+```sh
+git add -A
+git commit -m "Implement generic CLI to add endpoints"
+```
+
+and now let's get the changes back into the main branch.
+
+First, we go to the main branch in the original project folder.
+Clarify we're in the right spot by running
+
+```sh
+❯ git branch
++ claude-code
+* main
++ openai-codex
+```
+
+Now, we can merge the changes from the worktree.
+
+```sh
+git merge claude-code
+```
+
+and finally we can delete the worktree.
+
+From the project folder:
+
+```sh
+git worktree remove claude-code
+```
+
+and cleanup the branch as well
+
+```sh
+git branch -d claude-code
+```
+
+## Takeaways
+
+Git worktrees provide a straightforward primitive to working on multiple independent tasks within a project at the same time using agents.
+I don't feel like my work here actually benefitted from using worktrees mostly because the agents didn't actually take that much time to write the code relative to me figuring out how to make worktrees.
+That said, with a larger task or test suite that I could point the agent at as a goal, I could see worktrees being highly useful for longer agent runs, if you set up and task scope allow for it.

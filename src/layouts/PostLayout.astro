@@ -9,37 +9,41 @@ import Layout from "./Layout.astro";
 
 const { frontmatter, ogImage } = Astro.props;
 
-// Get all posts to find prev/next
-const allPosts = await getCollection("posts");
-const sortedPosts = allPosts
-  .filter((post) => !post.data.draft)
+// Determine collection type
+const collectionType = frontmatter.collection || "posts";
+const isTil = collectionType === "til";
+
+// Get all posts/tils to find prev/next
+const allEntries = await getCollection(collectionType);
+const sortedEntries = allEntries
+  .filter((entry) => !entry.data.draft)
   .sort(
     (a, b) =>
       new Date(b.data.createdAt).getTime() -
       new Date(a.data.createdAt).getTime(),
   );
 
-// Find current post index
-const currentIndex = sortedPosts.findIndex(
-  (post) => post.data.title === frontmatter.title,
+// Find current entry index
+const currentIndex = sortedEntries.findIndex(
+  (entry) => entry.data.title === frontmatter.title,
 );
 
-const prevPost =
-  currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
-const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+const prevEntry =
+  currentIndex < sortedEntries.length - 1 ? sortedEntries[currentIndex + 1] : null;
+const nextEntry = currentIndex > 0 ? sortedEntries[currentIndex - 1] : null;
 
-// Find the current post object
-const currentPost = sortedPosts[currentIndex];
+// Find the current entry object
+const currentEntry = sortedEntries[currentIndex];
 
-// Find similar posts, excluding prev and next
-const excludePosts = [prevPost, nextPost].filter(Boolean) as typeof sortedPosts;
-const similarPosts = currentPost
-  ? findSimilarPosts(currentPost, sortedPosts, 3, excludePosts)
+// Find similar entries, excluding prev and next
+const excludeEntries = [prevEntry, nextEntry].filter(Boolean) as typeof sortedEntries;
+const similarEntries = currentEntry
+  ? findSimilarPosts(currentEntry, sortedEntries, 3, excludeEntries)
   : [];
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage}>
-  <Navigation selected="posts" />
+  <Navigation selected={isTil ? "til" : "posts"} />
   <article>
     <header>
       <h1>{frontmatter.title}</h1>
@@ -85,6 +89,16 @@ const similarPosts = currentPost
             </span>
           )
         }
+        {
+          frontmatter.category && isTil && (
+            <span class="icon-text-wrapper category">
+              <Icon name="ph:folder" class="inline-icon meta-icon" />
+              <a href={`/til/${frontmatter.category}`} class="category-link">
+                {frontmatter.category}
+              </a>
+            </span>
+          )
+        }
       </div>
       {
         frontmatter.tags && frontmatter.tags.length > 0 && (
@@ -100,17 +114,17 @@ const similarPosts = currentPost
       <slot />
     </div>
 
-    <RecommendedPosts posts={similarPosts} />
+    {!isTil && <RecommendedPosts posts={similarEntries} />}
 
     <nav class="post-navigation">
       <div class="nav-item nav-prev-wrapper">
         {
-          prevPost && (
-            <a href={`/posts/${prevPost.id}`} class="nav-prev">
+          prevEntry && (
+            <a href={isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` : `/posts/${prevEntry.id}`} class="nav-prev">
               <Icon name="ph:arrow-left" />
               <div class="nav-content">
                 <span class="nav-label">Previous</span>
-                <span class="nav-title">{prevPost.data.title}</span>
+                <span class="nav-title">{prevEntry.data.title}</span>
               </div>
             </a>
           )
@@ -118,11 +132,11 @@ const similarPosts = currentPost
       </div>
       <div class="nav-item nav-next-wrapper">
         {
-          nextPost && (
-            <a href={`/posts/${nextPost.id}`} class="nav-next">
+          nextEntry && (
+            <a href={isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` : `/posts/${nextEntry.id}`} class="nav-next">
               <div class="nav-content">
                 <span class="nav-label">Next</span>
-                <span class="nav-title">{nextPost.data.title}</span>
+                <span class="nav-title">{nextEntry.data.title}</span>
               </div>
               <Icon name="ph:arrow-right" />
             </a>
@@ -289,6 +303,18 @@ const similarPosts = currentPost
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 1rem;
+  }
+
+  .category-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    transition: opacity 0.2s;
+  }
+
+  .category-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
   }
 </style>
 

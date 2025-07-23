@@ -79,4 +79,21 @@ const now = defineCollection({
   }),
 });
 
-export const collections = { posts, home, logs, feeds, uses, now };
+const til = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/til" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    location: z.string().optional(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+    publishedAt: z.date().optional(),
+    tags: z.array(z.string()).nullable().optional(),
+    image: z.string().optional(),
+    draft: z.boolean().optional().default(false),
+    aliases: z.array(z.string()).optional(),
+    githubUrl: z.string().url().optional(),
+  }),
+});
+
+export const collections = { posts, home, logs, feeds, uses, now, til };

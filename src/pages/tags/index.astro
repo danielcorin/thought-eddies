@@ -1,16 +1,18 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
+import CategoryGrid from "@components/CategoryGrid.astro";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 
-// Get all posts and logs
+// Get all posts, logs, and tils
 const posts = await getCollection("posts");
 const logs = await getCollection("logs");
+const tils = await getCollection("til");
 
 // Count tags across all collections
 const tagCounts = new Map<string, number>();
 
-[...posts, ...logs].forEach(item => {
+[...posts, ...logs, ...tils].forEach(item => {
   if (!item.data.draft && item.data.tags && Array.isArray(item.data.tags)) {
     item.data.tags.forEach(tag => {
       tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
@@ -23,7 +25,8 @@ const sortedTags = Array.from(tagCounts.entries())
   .sort((a, b) => {
     if (b[1] !== a[1]) return b[1] - a[1];
     return a[0].localeCompare(b[0]);
-  });
+  })
+  .map(([name, count]) => ({ name, count }));
 
 const ogImage = `/tags/og.png`;
 ---
@@ -32,19 +35,12 @@ const ogImage = `/tags/og.png`;
   <Navigation />
   <main>
     <h1 class="page-title">Tags</h1>
-    <p class="page-description">Explore content by topic across posts and logs</p>
+    <p class="page-description">Explore content by topic across posts, logs, and TILs</p>
     
-    <div class="tags-grid">
-      {sortedTags.map(([tag, count]) => (
-        <a href={`/tags/${encodeURIComponent(tag)}`} class="tag-card">
-          <div class="tag-content">
-            <span class="tag-hash">#</span>
-            <span class="tag-name">{tag}</span>
-          </div>
-          <span class="tag-count">{count}</span>
-        </a>
-      ))}
-    </div>
+    <CategoryGrid 
+      items={sortedTags}
+      baseUrl="/tags"
+    />
   </main>
 </Layout>
 
@@ -59,107 +55,5 @@ const ogImage = `/tags/og.png`;
     color: var(--color-ink-light);
     margin-bottom: var(--spacing-xl);
     text-align: center;
-  }
-  
-  .tags-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-xl);
-  }
-  
-  .tag-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  }
-  
-  .tag-card:hover {
-    background: var(--color-ink-light);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .tag-card:hover .tag-content,
-  .tag-card:hover .tag-count {
-    color: var(--color-bg);
-  }
-  
-  .tag-content {
-    display: flex;
-    align-items: baseline;
-    gap: 0.25rem;
-    color: var(--color-ink);
-    min-width: 0;
-    flex: 1;
-  }
-  
-  .tag-hash {
-    font-size: var(--text-base);
-    opacity: 0.4;
-    font-weight: 300;
-    flex-shrink: 0;
-  }
-  
-  .tag-name {
-    font-size: var(--text-base);
-    font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  .tag-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2.25rem;
-    height: 2.25rem;
-    padding: 0 0.625rem;
-    background: rgba(0, 0, 0, 0.1);
-    color: var(--color-ink);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    border-radius: 9999px;
-    flex-shrink: 0;
-  }
-  
-  .tag-card:hover .tag-count {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--color-bg);
-  }
-  
-  @media (max-width: 768px) {
-    .tags-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--spacing-md);
-    }
-    
-    .tag-card {
-      padding: var(--spacing-sm) var(--spacing-md);
-    }
-    
-    .page-description {
-      font-size: var(--text-base);
-    }
-    
-    .tag-hash,
-    .tag-name {
-      font-size: var(--text-sm);
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .tags-grid {
-      grid-template-columns: 1fr;
-    }
   }
 </style>

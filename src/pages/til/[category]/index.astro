@@ -1,0 +1,86 @@
+---
+import Navigation from "@components/layout/Navigation.astro";
+import PostCard from "@components/PostCard.astro";
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const tils = await getCollection("til");
+  const publishedTils = tils.filter((til) => !til.data.draft);
+  
+  // Get all unique categories
+  const categories = [...new Set(publishedTils.map(til => til.id.split('/')[0]))];
+  
+  return categories.map(category => ({
+    params: { category }
+  }));
+}
+
+const { category } = Astro.params;
+
+// Get all TILs for this category
+const allTils = await getCollection("til");
+const categoryTils = allTils
+  .filter((til) => !til.data.draft && til.id.split('/')[0] === category)
+  .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
+
+const ogImage = `/til/${category}/og.png`;
+---
+
+<Layout title={`TIL - ${category}`} ogImage={ogImage}>
+  <Navigation selected="til" />
+  <main>
+    <div class="page-header">
+      <h1 class="page-title">{category}</h1>
+      <p class="entry-count">{categoryTils.length} {categoryTils.length === 1 ? 'entry' : 'entries'}</p>
+    </div>
+
+    <nav class="breadcrumb">
+      <a href="/til">← All TILs</a>
+    </nav>
+
+    <div class="toc">
+      {
+        categoryTils.map((til) => (
+          <PostCard post={til} variant="list" />
+        ))
+      }
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .page-header h1 {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .entry-count {
+    color: var(--color-ink-light);
+    font-size: var(--text-sm);
+    margin: 0;
+  }
+
+  .breadcrumb {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .breadcrumb a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: var(--text-sm);
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .toc {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+</style>
