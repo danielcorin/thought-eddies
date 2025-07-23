@@ -1,0 +1,100 @@
+---
+import Navigation from '@components/layout/Navigation.astro';
+import Pagination from '@components/Pagination.astro';
+import PostCard from '@components/PostCard.astro';
+import CategoryGrid from '@components/CategoryGrid.astro';
+import Layout from '@layouts/Layout.astro';
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+
+export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
+  const tils = await getCollection('til');
+  const sortedTils = tils
+    .filter((til) => !til.data.draft)
+    .sort((a, b) => {
+      const dateA = a.data.publishedAt || a.data.createdAt;
+      const dateB = b.data.publishedAt || b.data.createdAt;
+      return dateB.valueOf() - dateA.valueOf();
+    });
+
+  // Use Astro's paginate function with 10 items per page (same as posts)
+  return paginate(sortedTils, { pageSize: 10 });
+};
+
+const { page } = Astro.props as { page: any };
+
+// Get all categories from TIL posts for navigation
+const allTils = await getCollection('til');
+const publishedTils = allTils.filter((til) => !til.data.draft);
+const categoriesWithCounts = [
+  ...new Set(publishedTils.map((til) => til.id.split('/')[0])),
+]
+  .map((category) => ({
+    name: category,
+    count: publishedTils.filter((til) => til.id.split('/')[0] === category)
+      .length,
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const ogImage = `/til/og.png`;
+---
+
+<Layout title="TIL (Today I Learned)" ogImage={ogImage}>
+  <Navigation selected="til" />
+  <main>
+    <h1 class="page-title">Today I Learned</h1>
+
+    <CategoryGrid
+      items={categoriesWithCounts}
+      baseUrl="/til"
+      title="Browse by Category:"
+    />
+
+    <div class="toc">
+      {
+        page.data.map((til: any) => {
+          const category = til.id.split('/')[0];
+          return (
+            <PostCard
+              post={{
+                ...til,
+                collection: 'til',
+                data: {
+                  ...til.data,
+                  category,
+                },
+              }}
+              variant="list"
+            />
+          );
+        })
+      }
+    </div>
+
+    {
+      page.lastPage > 1 && (
+        <div class="pagination-bottom">
+          <Pagination
+            currentPage={page.currentPage}
+            lastPage={page.lastPage}
+            prevUrl={page.url.prev}
+            nextUrl={page.url.next}
+            baseUrl="/til"
+          />
+        </div>
+      )
+    }
+  </main>
+</Layout>
+
+<style>
+  .page-description {
+    color: var(--color-ink-light);
+    margin-bottom: var(--spacing-lg);
+    max-width: 65ch;
+  }
+
+  .pagination-bottom {
+    margin-top: var(--spacing-xl);
+  }
+</style>

@@ -16,9 +16,10 @@ interface Props {
 const { title = "", ogImage } = Astro.props;
 const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 
-// Get all posts and logs for search
+// Get all posts, logs, and tils for search
 const posts = await getCollection('posts', ({ data }) => !data.draft);
 const logs = await getCollection('logs', ({ data }) => !data.draft);
+const tils = await getCollection('til', ({ data }) => !data.draft);
 
 const sortedPosts = posts.sort((a, b) => {
   const dateA = a.data.publishedAt || a.data.createdAt;
@@ -28,6 +29,12 @@ const sortedPosts = posts.sort((a, b) => {
 
 const sortedLogs = logs.sort((a, b) => {
   return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+});
+
+const sortedTils = tils.sort((a, b) => {
+  const dateA = a.data.publishedAt || a.data.createdAt;
+  const dateB = b.data.publishedAt || b.data.createdAt;
+  return dateB.getTime() - dateA.getTime();
 });
 ---
 
@@ -126,7 +133,7 @@ const sortedLogs = logs.sort((a, b) => {
 			<Footer />
 		</main>
 		<ScrollToTop />
-		<SearchOverlay posts={sortedPosts} logs={sortedLogs} client:load />
+		<SearchOverlay posts={sortedPosts} logs={sortedLogs} tils={sortedTils} client:load />
 		<script
 			data-goatcounter="https://thought-eddies.goatcounter.com/count"
 			async

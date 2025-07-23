@@ -1,0 +1,38 @@
+---
+import TableOfContents from "@components/layout/TableOfContents.astro";
+import PostLayout from "@layouts/PostLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+export const prerender = true;
+export async function getStaticPaths() {
+  const tils = await getCollection("til");
+  return tils.map((til: CollectionEntry<"til">) => {
+    const [category, ...slugParts] = til.id.split('/');
+    const slug = slugParts.join('/').replace(/\.(md|mdx)$/, '');
+    
+    return {
+      params: { 
+        category,
+        slug 
+      },
+      props: { til },
+    };
+  });
+}
+
+const { til } = Astro.props as { til: CollectionEntry<"til"> };
+const { Content, headings } = await render(til);
+const ogImage = `/til/${til.id.replace(/\.(md|mdx)$/, '')}/og.png`;
+
+// Add category to frontmatter for layout
+const frontmatterWithCategory = {
+  ...til.data,
+  category: til.id.split('/')[0],
+  collection: 'til'
+};
+---
+
+<PostLayout frontmatter={frontmatterWithCategory} ogImage={ogImage}>
+  <TableOfContents title={til.data.title} headings={headings} />
+  <Content />
+</PostLayout>

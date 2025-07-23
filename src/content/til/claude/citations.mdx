@@ -1,0 +1,102 @@
+---
+title: Claude Citations
+createdAt: 2025-01-23T17:45:38.000Z
+updatedAt: 2025-01-23T17:45:38.000Z
+publishedAt: 2025-01-23T17:45:38.000Z
+tags:
+  - anthropic
+  - claude
+  - citations
+draft: false
+---
+
+import Sidenote from '@components/prose/Sidenote.astro';
+
+[Today](https://www.anthropic.com/news/introducing-citations-api), Anthropic released [Citations](https://docs.anthropic.com/en/docs/build-with-claude/citations) for Claude.
+
+In the release, Anthropic disclosed the following customer case study:
+
+> "With Anthropic's Citations, we reduced source hallucinations and formatting issues from 10% to 0% and saw a 20% increase in references per response. This removed the need for elaborate prompt engineering around references and improved our accuracy when conducting complex, multi-stage financial research,” said Tarun Amasa, CEO, Endex.
+
+I decided to kick the tires on this feature as I thought it could slot in very nicely with a project I am actively working on.
+Also, I couldn't quickly find Python code I could copy and run so I conjured some.
+
+Note: the following document in this example is 100% model generated and chosen by the model and is meant to illustrate how the API can be used in Python.
+
+Here's the code
+
+```python
+import os
+from anthropic import Anthropic
+
+client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+
+message = client.messages.create(
+    max_tokens=1024,
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "document",
+                    "source": {
+                        "type": "text",
+                        "media_type": "text/plain",
+                        "data": "Interview with Sarah Chen, Product Manager at TechCorp\n\nQ: What made you switch from your previous role to product management?\nA: I was working as a software engineer for 5 years, but I kept finding myself drawn to user research and product strategy. I loved coding, but I realized I was more passionate about understanding user problems and designing solutions.\n\nQ: What's been the biggest challenge in the transition?\nA: The context switching. As an engineer, I could focus deeply on technical problems. As a PM, I'm constantly shifting between user research, data analysis, engineering discussions, and stakeholder management.\n\nQ: How do you measure success in your current role?\nA: It's a mix of quantitative and qualitative metrics. We track user engagement and retention numbers, but I also put a lot of weight on user feedback and satisfaction scores.",
+                    },
+                    "title": "PM Career Transition Interview",
+                    "context": "Interview conducted on March 15, 2024 as part of UX research",
+                    "citations": {"enabled": True},
+                },
+                {
+                    "type": "text",
+                    "text": "What were the main reasons the interviewee transitioned to product management and what challenges did they face?",
+                },
+            ],
+        }
+    ],
+    model="claude-3-5-sonnet-latest",
+)
+
+answer = ""
+citations = []
+
+for block in message.content:
+    if block.type == "text":
+        answer += block.text
+        if block.citations:
+            citations.extend(block.citations)
+
+print("\nAnswer:")
+print(answer)
+print("\nCitations:")
+for citation in citations:
+    source_text = citation.cited_text.strip()
+    start_idx = citation.start_char_index
+    end_idx = citation.end_char_index
+    print(f'- "{source_text}" [{start_idx}:{end_idx}] from {citation.document_title}')
+```
+When we run, we get the answer to our question along with the _exact slice_ of the source document from which the information is extracted, which I've added in square brackets.
+
+
+> Answer:
+> Based on the interview, here are the key points about Sarah Chen's transition to product management:
+>
+> Reasons for the transition:
+> While working as a software engineer for 5 years, she found herself naturally drawn to user research and product strategy. Although she enjoyed coding, her true passion lay in understanding user problems and designing solutions.
+>
+> Main challenges:
+> The biggest challenge in her transition has been context switching. This was a significant change from her engineering role, where she could focus deeply on technical problems. As a Product Manager, she has to constantly shift between multiple responsibilities including:
+> - User research
+> - Data analysis
+> - Engineering discussions
+> - Stakeholder management
+>
+> This showcases how the role of a PM requires juggling multiple responsibilities and a different skill set compared to her previous technical role.
+>
+> Citations:
+> - "A: I was working as a software engineer for 5 years, but I kept finding myself drawn to user research and product strategy. I loved coding, but I realized I was more passionate about understanding user problems and designing solutions." [127:364] from PM Career Transition Interview
+> - "A: The context switching. As an engineer, I could focus deeply on technical problems. As a PM, I'm constantly shifting between user research, data analysis, engineering discussions, and stakeholder management." [420:631] from PM Career Transition Interview
+
+This feature gives anyone who knows how to call an API the ability to create Perplexity-like, inline citations from sources.
+I've thus far not had the need or patience to prompt an LLM to do this work myself, so I can't speak to how difficult it is to do "by hand", but it's a useful and satisfying feature to have native to the <Sidenote anchor="model API" content="And is yet another divergence from the OpenAI API spec" />.

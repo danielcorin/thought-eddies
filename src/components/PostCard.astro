@@ -5,17 +5,19 @@ import { getContentPreview } from "@utils/text";
 import type { CollectionEntry } from "astro:content";
 
 export interface Props {
-    post: CollectionEntry<"posts"> | CollectionEntry<"logs">;
-    type?: "post" | "log";
+    post: CollectionEntry<"posts"> | CollectionEntry<"logs"> | CollectionEntry<"til">;
+    type?: "post" | "log" | "til";
     variant?: "list" | "grid";
     showTypeLabel?: boolean;
+    baseUrl?: string;
 }
 
 const {
     post,
-    type = "post",
+    type = post.collection === "til" ? "til" : post.collection === "logs" ? "log" : "post",
     variant = "list",
     showTypeLabel = false,
+    baseUrl,
 } = Astro.props;
 
 // Get date based on type
@@ -31,11 +33,25 @@ const month = String(date.getMonth() + 1).padStart(2, "0");
 const day = String(date.getDate()).padStart(2, "0");
 
 // Build URL and formatted date
-const url =
-    type === "log" ? `/logs/${year}/${month}/${day}` : `/posts/${post.id}`;
+let url: string;
+if (type === "log") {
+    url = `/logs/${year}/${month}/${day}`;
+} else if (post.collection === "til") {
+    const category = post.id.split('/')[0];
+    const slug = post.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '');
+    url = `/til/${category}/${slug}`;
+} else if (baseUrl) {
+    url = `${baseUrl}/${post.id}`;
+} else {
+    url = `/posts/${post.id}`;
+}
+
 const formattedDate = `${year}-${month}-${day}`;
 const contentPreview = getContentPreview(post.body || "");
 const tags = post.data.tags || [];
+
+// Get category for TIL posts
+const category = post.collection === "til" && (post.data as any).category ? (post.data as any).category : null;
 ---
 
 <article class={variant === "list" ? "entry" : "post-card"}>
@@ -44,6 +60,11 @@ const tags = post.data.tags || [];
             <a href={url}>{formattedDate}</a>
         </time>
         {showTypeLabel && <TypeLabel type={type} />}
+        {category && post.collection === "til" && (
+            <span class="category-label">
+                <a href={`/til/${post.id.split('/')[0]}`}>{post.id.split('/')[0]}</a>
+            </span>
+        )}
     </div>
 
     <div class={variant === "list" ? "entry-content" : ""}>
@@ -226,5 +247,25 @@ const tags = post.data.tags || [];
         .post-description {
             font-size: var(--text-base);
         }
+    }
+
+    .category-label {
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+    }
+
+    .category-label a {
+        color: var(--color-accent);
+        text-decoration: none;
+        padding: 0.125rem 0.5rem;
+        background: var(--color-bg);
+        border: 1px solid var(--color-accent);
+        border-radius: 0.25rem;
+        transition: all 0.2s;
+    }
+
+    .category-label a:hover {
+        background: var(--color-accent);
+        color: var(--color-bg);
     }
 </style>

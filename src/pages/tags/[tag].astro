@@ -6,14 +6,15 @@ import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // Get all posts and logs
+  // Get all posts, logs, and tils
   const posts = await getCollection("posts");
   const logs = await getCollection("logs");
+  const tils = await getCollection("til");
   
   // Extract all unique tags
   const allTags = new Set<string>();
   
-  [...posts, ...logs].forEach(item => {
+  [...posts, ...logs, ...tils].forEach(item => {
     if (item.data.tags && Array.isArray(item.data.tags)) {
       item.data.tags.forEach(tag => allTags.add(tag));
     }
@@ -32,6 +33,7 @@ const { tag } = Astro.props;
 // Get all content with this tag
 const posts = await getCollection("posts");
 const logs = await getCollection("logs");
+const tils = await getCollection("til");
 
 // Filter and combine content
 const taggedPosts = posts
@@ -50,8 +52,17 @@ const taggedLogs = logs
     date: log.data.date
   }));
 
+const taggedTils = tils
+  .filter(til => !til.data.draft && til.data.tags?.includes(tag))
+  .map(til => ({
+    ...til,
+    type: 'til' as const,
+    date: til.data.createdAt,
+    collection: 'til'
+  }));
+
 // Combine and sort by date
-const allTaggedContent = [...taggedPosts, ...taggedLogs]
+const allTaggedContent = [...taggedPosts, ...taggedLogs, ...taggedTils]
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 const ogImage = `/tags/${encodeURIComponent(tag)}/og.png`;
@@ -60,27 +71,35 @@ const ogImage = `/tags/${encodeURIComponent(tag)}/og.png`;
 <Layout title={`Tag: ${tag}`} ogImage={ogImage}>
   <Navigation />
   <main>
-    <h1 class="page-title">
-      Tag: <span class="tag-highlight">{tag}</span>
-      <span class="count">({allTaggedContent.length} {allTaggedContent.length === 1 ? 'item' : 'items'})</span>
-    </h1>
+    <div class="page-header">
+      <h1 class="page-title">Tag: <span class="tag-highlight">{tag}</span></h1>
+      <p class="entry-count">{allTaggedContent.length} {allTaggedContent.length === 1 ? 'entry' : 'entries'}</p>
+    </div>
+    
+    <nav class="breadcrumb">
+      <a href="/tags">← All tags</a>
+    </nav>
     
     <div class="content-list">
       {allTaggedContent.map(item => (
         <PostCard post={item} type={item.type} showTypeLabel={true} />
       ))}
     </div>
-    
-    <div class="back-link">
-      <a href="/tags">← All tags</a>
-    </div>
   </main>
 </Layout>
 
 <style>
+  .page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .page-header h1 {
+    margin-bottom: var(--spacing-sm);
+  }
+
   .page-title {
     font-size: var(--text-3xl);
-    margin-bottom: var(--spacing-lg);
   }
   
   .tag-highlight {
@@ -88,11 +107,10 @@ const ogImage = `/tags/${encodeURIComponent(tag)}/og.png`;
     font-weight: 600;
   }
   
-  .count {
-    font-size: var(--text-xl);
+  .entry-count {
     color: var(--color-ink-light);
-    font-weight: normal;
-    margin-left: var(--spacing-sm);
+    font-size: var(--text-sm);
+    margin: 0;
   }
   
   .content-list {
@@ -100,17 +118,17 @@ const ogImage = `/tags/${encodeURIComponent(tag)}/og.png`;
   }
   
   
-  .back-link {
-    margin-top: var(--spacing-xl);
-    text-align: center;
+  .breadcrumb {
+    margin-bottom: var(--spacing-xl);
   }
   
-  .back-link a {
-    color: var(--color-ink-light);
-    text-decoration: none;
-  }
-  
-  .back-link a:hover {
+  .breadcrumb a {
     color: var(--color-accent);
+    text-decoration: none;
+    font-size: var(--text-sm);
+  }
+  
+  .breadcrumb a:hover {
+    text-decoration: underline;
   }
 </style>

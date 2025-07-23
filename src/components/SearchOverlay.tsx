@@ -4,15 +4,16 @@ import type { CollectionEntry } from 'astro:content';
 interface SearchOverlayProps {
   posts: CollectionEntry<'posts'>[];
   logs: CollectionEntry<'logs'>[];
+  tils: CollectionEntry<'til'>[];
 }
 
 interface SearchResult {
-  type: 'post' | 'log';
-  item: CollectionEntry<'posts'> | CollectionEntry<'logs'>;
+  type: 'post' | 'log' | 'til';
+  item: CollectionEntry<'posts'> | CollectionEntry<'logs'> | CollectionEntry<'til'>;
   score: number;
 }
 
-export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
+export default function SearchOverlay({ posts, logs, tils }: SearchOverlayProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -199,14 +200,34 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
       }
     });
 
+    // Search tils
+    tils.forEach((til) => {
+      let score = 0;
+      const title = til.data.title.toLowerCase();
+      const content = til.body?.toLowerCase() || '';
+      const description = til.data.description?.toLowerCase() || '';
+      const tags = til.data.tags?.join(' ').toLowerCase() || '';
+      const category = til.id.split('/')[0].toLowerCase();
+
+      if (title.includes(searchQuery)) score += 10;
+      if (description.includes(searchQuery)) score += 5;
+      if (category.includes(searchQuery)) score += 4;
+      if (tags.includes(searchQuery)) score += 3;
+      if (content.includes(searchQuery)) score += 1;
+
+      if (score > 0) {
+        searchResults.push({ type: 'til', item: til, score });
+      }
+    });
+
     // Sort by score and limit results
     searchResults.sort((a, b) => b.score - a.score);
     setResults(searchResults.slice(0, 10));
     setSelectedIndex(0);
-  }, [query, posts, logs]);
+  }, [query, posts, logs, tils]);
 
   const formatDate = (
-    item: CollectionEntry<'posts'> | CollectionEntry<'logs'>
+    item: CollectionEntry<'posts'> | CollectionEntry<'logs'> | CollectionEntry<'til'>
   ) => {
     if ('publishedAt' in item.data && item.data.publishedAt) {
       return new Date(item.data.publishedAt).toLocaleDateString('en-US', {
@@ -236,13 +257,18 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
     if (result.type === 'post') {
       const post = result.item as CollectionEntry<'posts'>;
       return `/posts/${post.id}`;
-    } else {
+    } else if (result.type === 'log') {
       const log = result.item as CollectionEntry<'logs'>;
       const date = new Date(log.data.date);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       return `/logs/${year}/${month}/${day}`;
+    } else {
+      const til = result.item as CollectionEntry<'til'>;
+      const [category, ...slugParts] = til.id.split('/');
+      const slug = slugParts.join('/').replace(/\.(md|mdx)$/, '');
+      return `/til/${category}/${slug}`;
     }
   };
 
@@ -345,11 +371,11 @@ export default function SearchOverlay({ posts, logs }: SearchOverlayProps) {
                       </div>
                       <div className="ml-4 flex-shrink-0 text-right">
                         <a
-                          href={result.type === 'post' ? '/posts' : '/logs'}
+                          href={result.type === 'post' ? '/posts' : result.type === 'log' ? '/logs' : '/til'}
                           className="inline-block px-3 py-1 text-xs rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900 text-blue-800 dark:text-blue-200 transition-all hover:bg-blue-100 hover:border-blue-300 dark:hover:bg-blue-800 no-underline font-medium"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          {result.type === 'post' ? 'Posts' : 'Logs'}
+                          {result.type === 'post' ? 'Posts' : result.type === 'log' ? 'Logs' : 'TIL'}
                         </a>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {formatDate(item)}
