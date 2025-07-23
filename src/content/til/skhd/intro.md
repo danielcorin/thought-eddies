@@ -14,6 +14,7 @@ I learned about [`skhd`](https://github.com/koekeishiya/skhd) recently, actually
 I've been toying with the idea of moving away from [Hammerspoon](https://www.hammerspoon.org/) for my hotkey and window management, so I took the opportunity to explore `skhd` as a possible alternative.
 
 ## Initial setup
+
 To get started on macOS, I followed the guide in the project [README](https://github.com/koekeishiya/skhd#install).
 First, I installed `skhd` via `brew`.
 

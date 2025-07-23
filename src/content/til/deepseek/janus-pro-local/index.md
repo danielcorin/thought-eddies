@@ -206,6 +206,7 @@ Here is a diff of the script changes to give you a better sense of what changes 
 +    parallel_size=1,
  )
 ```
+
 Let's run it.
 
 Note: prepare to wait for the 15GB of model weights to download if this is your first time pulling the model.
@@ -213,6 +214,7 @@ Note: prepare to wait for the 15GB of model weights to download if this is your 
 ```sh
 python generate.py
 ```
+
 If all goes well, you can find the output image in the `generated_samples` folder called `img_0.jpg`.
 
 On my machine, this run took 3:51.

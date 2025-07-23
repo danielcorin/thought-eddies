@@ -69,6 +69,7 @@ Move into the project directory and you can run the dev server with
 ```sh
 npm run dev
 ```
+
 The first things I notice is the builtin debug tool in the bottom center of the page.
 
 The page reads
@@ -98,84 +99,85 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
 const SimpleD3Chart = () => {
-    const svgRef = useRef<SVGSVGElement>(null);
-    const [data, setData] = useState([4, 8, 15, 16, 23, 42]);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [data, setData] = useState([4, 8, 15, 16, 23, 42]);
 
-    useEffect(() => {
-        if (!svgRef.current) return;
+  useEffect(() => {
+    if (!svgRef.current) return;
 
-        d3.select(svgRef.current).selectAll('*').remove();
+    d3.select(svgRef.current).selectAll('*').remove();
 
-        const width = 400;
-        const height = 200;
-        const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const width = 400;
+    const height = 200;
+    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
 
-        const svg = d3
-            .select(svgRef.current)
-            .attr('width', width)
-            .attr('height', height);
+    const svg = d3
+      .select(svgRef.current)
+      .attr('width', width)
+      .attr('height', height);
 
-        const xScale = d3
-            .scaleBand()
-            .domain(data.map((_, i) => i.toString()))
-            .range([margin.left, width - margin.right])
-            .padding(0.1);
+    const xScale = d3
+      .scaleBand()
+      .domain(data.map((_, i) => i.toString()))
+      .range([margin.left, width - margin.right])
+      .padding(0.1);
 
-        const yScale = d3
-            .scaleLinear()
-            .domain([0, d3.max(data) || 0])
-            .nice()
-            .range([height - margin.bottom, margin.top]);
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, d3.max(data) || 0])
+      .nice()
+      .range([height - margin.bottom, margin.top]);
 
-        svg
-            .selectAll('rect')
-            .data(data)
-            .join('rect')
-            .attr('x', (_, i) => xScale(i.toString()) || 0)
-            .attr('y', (d) => yScale(d))
-            .attr('width', xScale.bandwidth())
-            .attr('height', (d) => yScale(0) - yScale(d))
-            .attr('fill', 'steelblue');
+    svg
+      .selectAll('rect')
+      .data(data)
+      .join('rect')
+      .attr('x', (_, i) => xScale(i.toString()) || 0)
+      .attr('y', (d) => yScale(d))
+      .attr('width', xScale.bandwidth())
+      .attr('height', (d) => yScale(0) - yScale(d))
+      .attr('fill', 'steelblue');
 
-        svg
-            .append('g')
-            .attr('transform', `translate(0,${height - margin.bottom})`)
-            .call(d3.axisBottom(xScale));
+    svg
+      .append('g')
+      .attr('transform', `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(xScale));
 
-        svg
-            .append('g')
-            .attr('transform', `translate(${margin.left},0)`)
-            .call(d3.axisLeft(yScale));
-    }, [data]);
+    svg
+      .append('g')
+      .attr('transform', `translate(${margin.left},0)`)
+      .call(d3.axisLeft(yScale));
+  }, [data]);
 
-    const handleInputChange = (index: number, value: string) => {
-        const newValue = Math.max(0, parseInt(value) || 0);
-        const newData = [...data];
-        newData[index] = newValue;
-        setData(newData);
-    };
+  const handleInputChange = (index: number, value: string) => {
+    const newValue = Math.max(0, parseInt(value) || 0);
+    const newData = [...data];
+    newData[index] = newValue;
+    setData(newData);
+  };
 
-    return (
-        <div>
-            <div style={{ marginBottom: '1rem' }}>
-                {data.map((value, index) => (
-                    <input
-                        key={index}
-                        type="number"
-                        min="0"
-                        value={value}
-                        onChange={(e) => handleInputChange(index, e.target.value)}
-                        style={{ width: '60px', marginRight: '0.5rem' }}
-                    />
-                ))}
-            </div>
-            <svg ref={svgRef}></svg>
-        </div>
-    );
+  return (
+    <div>
+      <div style={{ marginBottom: '1rem' }}>
+        {data.map((value, index) => (
+          <input
+            key={index}
+            type="number"
+            min="0"
+            value={value}
+            onChange={(e) => handleInputChange(index, e.target.value)}
+            style={{ width: '60px', marginRight: '0.5rem' }}
+          />
+        ))}
+      </div>
+      <svg ref={svgRef}></svg>
+    </div>
+  );
 };
 
 export default SimpleD3Chart;
 ```
+
 This component is a bar graph with six values, which also exposes number selectors for each bar.
 The user can interactively raise/lower the numeric value and the graph updates accordingly.
 We can test this out by adding it to the `src/components/Welcome.astro` file.
@@ -210,4 +212,3 @@ import background from '../assets/background.svg';
 I found that to be pretty straightforward.
 
 Next, I'll be working to setup an interactive digital garden like space for UI/UX experiments.
-

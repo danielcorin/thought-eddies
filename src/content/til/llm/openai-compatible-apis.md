@@ -19,6 +19,7 @@ Quick note upfront, according to the [docs](https://api-docs.deepseek.com/quick_
 > From now until 2025-02-08 16:00 (UTC), all users can enjoy the discounted prices of DeepSeek API
 
 To get started
+
 - [register for an account](https://platform.deepseek.com/)
 - [create an API key](https://platform.deepseek.com/api_keys)
 - [add some funds](https://platform.deepseek.com/top_up)
@@ -27,8 +28,7 @@ Deepseek exposes an [OpenAI compatible API](https://api-docs.deepseek.com/).
 Because of this, it's easy to call via curl, Python, or Node.js using OpenAI's clients and a `base_url` override, as shown in Deepseek's documentation.
 
 A little searching also revealed the [`llm`](https://github.com/simonw/llm) CLI tool can support making calls to OpenAI compatible APIs with a `extra-openai-models.yaml` [configuration file](https://github.com/simonw/llm/blob/000e984def983aa36384a24df42d4dbb558b5bb1/docs/other-models.md#openai-compatible-models).
-[Here](https://github.com/search?q=repo%3Asimonw%2Fllm++extra-openai-models.yaml&type=code
-) are several examples of how a config file like this might look.
+[Here](https://github.com/search?q=repo%3Asimonw%2Fllm++extra-openai-models.yaml&type=code) are several examples of how a config file like this might look.
 
 To make this all work, I stored my Deepseek API key so `llm` knows about it with
 
@@ -42,7 +42,7 @@ then created a file at `~/Library/Application\ Support/io.datasette.llm/extra-op
 # https://api-docs.deepseek.com/
 - model_id: deepseek-v3 # my name for calling the model, e.g. `llm -m deepseek-v3`
   model_name: deepseek-chat # the name Deepseek using in their documentation
-  api_base: "https://api.deepseek.com/v1"
+  api_base: 'https://api.deepseek.com/v1'
   api_key_name: deepseek # which we set earlier
 ```
 

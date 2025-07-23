@@ -34,34 +34,42 @@ npm install typechat
 In `src/main.ts` I wrote the following:
 
 ```ts
-import path from "path";
-import dotenv from "dotenv";
-import { createLanguageModel, createJsonTranslator, processRequests } from "typechat";
+import path from 'path';
+import dotenv from 'dotenv';
+import {
+  createLanguageModel,
+  createJsonTranslator,
+  processRequests,
+} from 'typechat';
 
-dotenv.config({ path: path.join(__dirname, "../.env") });
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const model = createLanguageModel(process.env);
 
 interface SentimentResponse {
-    sentiment: "negative" | "neutral" | "positive";  // The sentiment of the text
+  sentiment: 'negative' | 'neutral' | 'positive'; // The sentiment of the text
 }
 
 const schema = `
 interface SentimentResponse {
     sentiment: "negative" | "neutral" | "positive";  // The sentiment of the text
 }
-`
+`;
 
-const translator = createJsonTranslator<SentimentResponse>(model, schema, "SentimentResponse");
+const translator = createJsonTranslator<SentimentResponse>(
+  model,
+  schema,
+  'SentimentResponse'
+);
 
 // Process requests interactively or from the input file specified on the command line
-processRequests("😀> ", process.argv[2], async (request) => {
-    const response = await translator.translate(request);
-    if (!response.success) {
-        console.log(response);
-        return;
-    }
-    console.log(`The sentiment is ${response.data.sentiment}`);
+processRequests('😀> ', process.argv[2], async (request) => {
+  const response = await translator.translate(request);
+  if (!response.success) {
+    console.log(response);
+    return;
+  }
+  console.log(`The sentiment is ${response.data.sentiment}`);
 });
 ```
 
@@ -78,24 +86,20 @@ Finally, I created a `tsconfig.js` file with configs similar to those from the [
 
 ```json
 {
-    "compilerOptions": {
-        "target": "es2021",
-        "lib": [
-            "es2021"
-        ],
-        "module": "node16",
-        "types": [
-            "node"
-        ],
-        "outDir": "dist", // updated from "../dist"
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "exactOptionalPropertyTypes": true,
-        "inlineSourceMap": true
-    }
+  "compilerOptions": {
+    "target": "es2021",
+    "lib": ["es2021"],
+    "module": "node16",
+    "types": ["node"],
+    "outDir": "dist", // updated from "../dist"
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "inlineSourceMap": true
+  }
 }
 ```
 
@@ -141,10 +145,10 @@ Each of the example projects has the following `postbuild` script in its `packag
 
 ```json
 {
-    "scripts": {
-        "build": "tsc -p src",
-        "postbuild": "copyfiles -u 1 src/**/*Schema.ts src/**/*.txt dist"
-    },
+  "scripts": {
+    "build": "tsc -p src",
+    "postbuild": "copyfiles -u 1 src/**/*Schema.ts src/**/*.txt dist"
+  }
 }
 ```
 
@@ -154,18 +158,22 @@ A little hacky 🙃.
 I modified the `main.ts` to paste a [recipe](https://www.bonappetit.com/recipe/basque-burnt-cheesecake) I found into the schema extraction code.
 
 ```ts
-import fs from "fs";
-import path from "path";
-import dotenv from "dotenv";
-import { createLanguageModel, createJsonTranslator, processRequests } from "typechat";
-import { Recipe } from "./recipeSchema";
+import fs from 'fs';
+import path from 'path';
+import dotenv from 'dotenv';
+import {
+  createLanguageModel,
+  createJsonTranslator,
+  processRequests,
+} from 'typechat';
+import { Recipe } from './recipeSchema';
 
 // TODO: use local .env file.
-dotenv.config({ path: path.join(__dirname, "../../../.env") });
+dotenv.config({ path: path.join(__dirname, '../../../.env') });
 
 const model = createLanguageModel(process.env);
-const schema = fs.readFileSync(path.join(__dirname, "recipeSchema.ts"), "utf8");
-const translator = createJsonTranslator<Recipe>(model, schema, "Recipe");
+const schema = fs.readFileSync(path.join(__dirname, 'recipeSchema.ts'), 'utf8');
+const translator = createJsonTranslator<Recipe>(model, schema, 'Recipe');
 
 const recipe = `
 Unsalted butter (for pan)
@@ -199,16 +207,16 @@ Step 6
 Let cool slightly (it will fall drastically as it cools), then unmold. Let cool completely. Carefully peel away parchment from sides of cheesecake. Slice into wedges and serve at room temperature, preferably with a glass of sherry alongside.
 
 Do Ahead: Cheesecake be made 1 day ahead. Cover and chill. Be sure to let cheesecake sit for several hours at room temperature to remove chill before serving.
-`
+`;
 
 // Process requests interactively or from the input file specified on the command line
-processRequests("😀> ", process.argv[2], async (_request) => {
-    const response = await translator.translate(recipe);
-    if (!response.success) {
-        console.log(response.message);
-        return;
-    }
-    console.log(response.data);
+processRequests('😀> ', process.argv[2], async (_request) => {
+  const response = await translator.translate(recipe);
+  if (!response.success) {
+    console.log(response.message);
+    return;
+  }
+  console.log(response.data);
 });
 ```
 
@@ -216,13 +224,13 @@ where `recipeSchema.ts` is
 
 ```ts
 export interface Recipe {
-    title: string;
-    description: string;
-    ingredients: Ingredient[];
-    instructions: string[];
-    prepTime: number;
-    cookTime: number;
-    servings: number;
+  title: string;
+  description: string;
+  ingredients: Ingredient[];
+  instructions: string[];
+  prepTime: number;
+  cookTime: number;
+  servings: number;
 }
 ```
 
@@ -267,19 +275,19 @@ I changed `recipeSchema.ts` to be
 
 ```ts
 type Ingredient = {
-    name: string;
-    quantity: number;
-    unit: string;
-}
+  name: string;
+  quantity: number;
+  unit: string;
+};
 
 export interface Recipe {
-    title: string;
-    description: string;
-    ingredients: Ingredient[];
-    instructions: string[];
-    prepTime: number;
-    cookTime: number;
-    servings: number;
+  title: string;
+  description: string;
+  ingredients: Ingredient[];
+  instructions: string[];
+  prepTime: number;
+  cookTime: number;
+  servings: number;
 }
 ```
 

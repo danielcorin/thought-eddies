@@ -13,9 +13,9 @@ draft: false
 I wanted to stop the Obsidian editor cursor from blinking.
 Something like VS Code's
 
-```json 
+```json
 {
-    "editor.cursorBlinking": "solid"
+  "editor.cursorBlinking": "solid"
 }
 ```
 

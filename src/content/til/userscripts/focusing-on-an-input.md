@@ -34,7 +34,7 @@ I created a new userscript with the following content:
 Next, I wrote some simple Javascript that I tested successfully in the console.
 
 ```js
-document.getElementById("the-code").focus();
+document.getElementById('the-code').focus();
 ```
 
 Unfortunately, this didn't work.
@@ -42,20 +42,20 @@ After logging `document.getElementById("the-code")`, I determined the page hadn'
 I tried a few different variants of waiting for the page to load, but eventually got it working with this beauty
 
 ```js
-(function() {
-    'use strict';
+(function () {
+  'use strict';
 
-    function focusOnLoad() {
-        var inputElement = document.getElementById("the-code");
-        if (inputElement) {
-            inputElement.focus();
-        }
+  function focusOnLoad() {
+    var inputElement = document.getElementById('the-code');
+    if (inputElement) {
+      inputElement.focus();
     }
+  }
 
-    window.addEventListener('load', function() {
-        // Delay to ensure the page is fully loaded
-        setTimeout(focusOnLoad, 2000);
-    });
+  window.addEventListener('load', function () {
+    // Delay to ensure the page is fully loaded
+    setTimeout(focusOnLoad, 2000);
+  });
 })();
 ```
 

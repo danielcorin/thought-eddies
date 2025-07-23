@@ -43,7 +43,6 @@ Now let's breakdown the rule
 
 If we want to add more mappings for applications to launch with this `simlayer`, we can augment the rule like so
 
-
 ```clojure
 {:simlayers {:launch-mode {:key :period}},
  :templates {:open-app "open -a \"%s\""},
@@ -58,7 +57,6 @@ If we want to add more mappings for applications to launch with this `simlayer`,
 ```
 
 Lastly, let's add another template and another rule in "launch mode" using that template, meaning we will still use the period key to trigger the rule.
-
 
 ```clojure
 {:simlayers {:launch-mode {:key :period}},

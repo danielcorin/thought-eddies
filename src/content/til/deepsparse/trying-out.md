@@ -126,7 +126,6 @@ ChatGPT told me the following with regards to the `model_path` I pass into `deep
 > - `squad` : This indicates the specific dataset on which the pre-trained model has been fine-tuned. In this case, it is the Stanford Question Answering Dataset (SQuAD).
 > - `base-none` : This refers to the specific version of the pre-trained model. In this case, it is the base version with no further modifications or enhancements.
 
-
 That helps a bit.
 There are a lot of options that I need to understand better.
 

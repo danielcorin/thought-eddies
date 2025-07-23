@@ -43,7 +43,9 @@ which rebuilds the original post markdown according to the definition in `layout
 {{ $params = $params | append (printf "%s: %v" $key $value) }}
 {{- end -}}
 {{- end -}}
+
 ---
+
 {{ range $param := $params }}{{ $param }}
 {{ end }}---
 {{ .RawContent }}

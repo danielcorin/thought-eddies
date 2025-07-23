@@ -1,8 +1,8 @@
 ---
-import { Markdown } from "@astropub/md";
+import { Markdown } from '@astropub/md';
 
 interface ContentItem {
-  type: "text" | "image_url";
+  type: 'text' | 'image_url';
   text?: string;
   image_url?: {
     url: string;
@@ -10,7 +10,7 @@ interface ContentItem {
 }
 
 interface Message {
-  role: "system" | "user" | "assistant" | "function";
+  role: 'system' | 'user' | 'assistant' | 'function';
   content: string | ContentItem[];
   name?: string;
   function_call?: {
@@ -30,18 +30,18 @@ function getContent(content: string | ContentItem[]): {
   text: string;
   images: string[];
 } {
-  if (typeof content === "string") return { text: content, images: [] };
+  if (typeof content === 'string') return { text: content, images: [] };
 
   const images: string[] = [];
   const text = content
     .map((item) => {
-      if (item.type === "image_url" && item.image_url) {
+      if (item.type === 'image_url' && item.image_url) {
         images.push(item.image_url.url);
-        return "";
+        return '';
       }
-      return item.text || "";
+      return item.text || '';
     })
-    .join("");
+    .join('');
 
   return { text, images };
 }
@@ -52,7 +52,7 @@ function getContent(content: string | ContentItem[]): {
     {
       messages.map((message) => (
         <div class="message-container">
-          {message.role === "user" && (
+          {message.role === 'user' && (
             <div class="message user">
               <div class="message-content">
                 <div class="user-label">User</div>
@@ -69,16 +69,16 @@ function getContent(content: string | ContentItem[]): {
               </div>
             </div>
           )}
-          {message.role === "assistant" && (
+          {message.role === 'assistant' && (
             <div class="message assistant">
               <div class="message-content">
-                <div class="model-label">{model || "Assistant"}</div>
+                <div class="model-label">{model || 'Assistant'}</div>
                 <div class="bubble assistant-bubble">
                   <Markdown of={getContent(message.content).text} />
                   {getContent(message.content).images.map((url, index) => (
                     <img
                       src={url}
-                      alt={`Image ${index + 1} from ${model || "assistant"} response`}
+                      alt={`Image ${index + 1} from ${model || 'assistant'} response`}
                       class="message-image"
                     />
                   ))}
@@ -86,7 +86,7 @@ function getContent(content: string | ContentItem[]): {
               </div>
             </div>
           )}
-          {message.role === "system" && (
+          {message.role === 'system' && (
             <div class="message system">
               <div class="bubble system-bubble">
                 <Markdown of={getContent(message.content).text} />
@@ -201,7 +201,7 @@ function getContent(content: string | ContentItem[]): {
     margin-top: 0.5rem;
     border-radius: 0.5rem;
     max-width: 100%;
-    max-height: 250px;
+    max-height: 500px;
     object-fit: contain;
   }
 

@@ -67,7 +67,6 @@ which outputs
 
 OpenAI models to not seem to respect this prefilling approach
 
-
 ```python
 import openai
 
@@ -102,7 +101,7 @@ Running this code typically outputs
 
 or
 
-```text
+````text
 ```json
 {
   "day_of_week": "Tuesday",
@@ -110,7 +109,7 @@ or
   "day": 3,
   "year": 2024,
   "location": "New York, NY"
-```
+````
 
 Prefilling is a [documented feature](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/prefill-claudes-response) of Claude's whereas I can't seem to find anything on if OpenAI supports the approach.
 OpenAI supports [Structured Output](https://platform.openai.com/docs/guides/structured-outputs) which probably covers similar use cases.
@@ -157,7 +156,6 @@ Output:
 Here, the stop sequence terminates the inference output before the end of the JSON object and prevents generation for `location`.
 Using the XML-based approach Eugene describes can help with this issue.
 That approach would look like this:
-
 
 ```python
 import anthropic

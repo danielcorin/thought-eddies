@@ -144,7 +144,6 @@ cd .
 
 which should output a bunch of stuff like
 
-
 ```sh
 $ cd .
 direnv: loading ~/dev/workshop/myproj/.envrc

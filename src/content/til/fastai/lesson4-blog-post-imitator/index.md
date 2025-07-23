@@ -17,12 +17,10 @@ From this, we'll attempt to prompt the model to generate a post for a topic I mi
 
 Let's import `fastai` and disable warnings since these pollute the notebook a lot when I'm trying to convert these notebooks into posts (I am writing this as a notebook and converting it to a markdown file with [this script](https://github.com/danielcorin/blog/blob/8181116943a7e4a8583edcf9d64c2b08b41cbf34/scripts/convert_notebook.py)).
 
-
 ```python
 from fastai.text.all import *
 from pathlib import Path
 ```
-
 
 ```python
 import warnings
@@ -57,7 +55,6 @@ dls_lm = DataBlock(
 There were a few modifications I needed to make with the approach.
 For starters, we were loading `.md` files rather than text files, so initially I tried to do this with
 
-
 ```python
 path = Path("./data/content")
 files = get_files(path, extensions='.md', recurse=True)
@@ -68,7 +65,6 @@ for f in files[:3]:
     data/content/posts/2013/2013-07-05-qc.md
     data/content/posts/2024/models-writing-about-coding-with-models.md
     data/content/posts/2024/vlms-hallucinate.md
-
 
 However, these seemed to cause opaque and confusing issues with `DataBlock` or `DataLoaders` that manifested something like this
 
@@ -126,8 +122,7 @@ src_file.read_text(encoding=encoding)
 
 There is also a function called `clean_content` which I will address later.
 
-
-```python
+````python
 import re
 
 
@@ -177,14 +172,13 @@ def copy_and_rename_files():
             print(f"Error processing {src_file}: {str(e)}")
 
 copy_and_rename_files()
-```
+````
 
 ## Training the model
 
 With the needed adjustments to the dataset made, and the model-ready content now in the `data/cleaned_content` folder, we can load and tokenize that data with `fastai`.
 
 We validate that we can read the files paths with our code
-
 
 ```python
 path = Path("./data/cleaned_content")
@@ -197,9 +191,7 @@ for f in files[:3]:
     data/cleaned_content/posts/2024/language-model-based-aggregators.txt
     data/cleaned_content/posts/2024/making-your-vision-real.txt
 
-
 Then we create a `DataBlock` and view the loaded, tokenized content
-
 
 ```python
 get = partial(get_text_files, folders=['posts', 'til', 'logs', 'projects'])
@@ -218,8 +210,6 @@ dls_lm = DataBlock(
 )
 ```
 
-
-
 <style>
     /* Turns off some styling */
     progress {
@@ -236,17 +226,9 @@ dls_lm = DataBlock(
     }
 </style>
 
-
-
-
-
-
-
-
 ```python
 dls_lm.show_batch(max_n=2)
 ```
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -270,10 +252,8 @@ dls_lm.show_batch(max_n=2)
   </tbody>
 </table>
 
-
 That looks good, so we create a learner then run the same approach as is done in Chapter 10, checkpointing as we go.
 We don't _have_ to do it this way -- we could just call `fit_one_cycle` the number of times we want -- but it was helpful for me to validate the process end-to-end once more.
-
 
 ```python
 learn = language_model_learner(
@@ -282,12 +262,9 @@ learn = language_model_learner(
 ).to_fp16()
 ```
 
-
 ```python
 learn.fit_one_cycle(1, 2e-2)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -304,9 +281,6 @@ learn.fit_one_cycle(1, 2e-2)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -331,19 +305,11 @@ learn.fit_one_cycle(1, 2e-2)
   </tbody>
 </table>
 
-
-
 ```python
 learn.save('1epoch')
 ```
 
-
-
-
     Path('data/cleaned_content/models/1epoch.pth')
-
-
-
 
 ```python
 learn = learn.load('1epoch')
@@ -351,13 +317,10 @@ learn = learn.load('1epoch')
 
 Now, we do the bulk of the fine-tuning.
 
-
 ```python
 learn.unfreeze()
 learn.fit_one_cycle(10, 2e-3)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -374,9 +337,6 @@ learn.fit_one_cycle(10, 2e-3)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -473,8 +433,6 @@ learn.fit_one_cycle(10, 2e-3)
   </tbody>
 </table>
 
-
-
 ```python
 learn.save_encoder('finetuned')
 ```
@@ -484,15 +442,12 @@ learn.save_encoder('finetuned')
 With the fine-tuned model, we can run inference!
 We define the beginning of the content we want the model to output in `TEXT`, then we call `learn.predict` for the number of tokens we want the model to output and set temperature to determine the randomness/creativity of the output.
 
-
 ```python
 TEXT = "I am interacting with a language model as a thought partner to"
 N_WORDS = 256
 TEMP = 0.75
 pred = learn.predict(TEXT, N_WORDS, temperature=TEMP)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -510,31 +465,23 @@ pred = learn.predict(TEXT, N_WORDS, temperature=TEMP)
     }
 </style>
 
-
-
-
-
-
-
-
 ```python
 print(pred)
 ```
 
-    i am interacting with a language model as a thought partner to train . 
-     I think it should be more difficult to use Sonnet but it is often difficult to get to because i am a very familiar language model . 
-    
-     In this way , i wanted to use the phrase Sonnet > rather than just see the phrase as a word . 
-     He 's also using the word " prompt " , which is a word word that is used in art , then as a title to describe a language model that extract structured data from an individual 's experience . 
-     I 've used this idea to describe how a language model has a structure with a single structure and i can try and solve this with the following following Sonnet code : i n't have such a thead for a language model . 
-     Being like this is an easy way to design an [ initial Sonnet ] . 
-     In another example , where you would have written a single word to explicitly describe a language model , i had to use the following word usage : < inline_code > 
-     < / INLINE_CODE > : The word i used to read the script in a language model and then describe the word as an JSON object . 
-    
-     This working was quite different from my JSON code and Python CODE > 
-    
-     the most recent model to use this PYTHON code
+    i am interacting with a language model as a thought partner to train .
+     I think it should be more difficult to use Sonnet but it is often difficult to get to because i am a very familiar language model .
 
+     In this way , i wanted to use the phrase Sonnet > rather than just see the phrase as a word .
+     He 's also using the word " prompt " , which is a word word that is used in art , then as a title to describe a language model that extract structured data from an individual 's experience .
+     I 've used this idea to describe how a language model has a structure with a single structure and i can try and solve this with the following following Sonnet code : i n't have such a thead for a language model .
+     Being like this is an easy way to design an [ initial Sonnet ] .
+     In another example , where you would have written a single word to explicitly describe a language model , i had to use the following word usage : < inline_code >
+     < / INLINE_CODE > : The word i used to read the script in a language model and then describe the word as an JSON object .
+
+     This working was quite different from my JSON code and Python CODE >
+
+     the most recent model to use this PYTHON code
 
 The output is a little wild but it _kinda sorta_ makes sense and isn't too bad for a model I trained in a couple minutes on my MacBook.
 

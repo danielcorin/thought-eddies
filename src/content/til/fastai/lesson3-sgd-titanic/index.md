@@ -22,18 +22,15 @@ I kept those because I wanted to preserve print outs of the models' accuracy.
 
 The Titanic data set can be downloaded from the link above or with:
 
-
 ```python
 !kaggle competitions download -c titanic
 ```
 
 To start, we install and import the dependencies we'll need:
 
-
 ```python
 %pip install torch pandas scikit-learn fastai
 ```
-
 
 ```python
 import pandas as pd
@@ -45,8 +42,7 @@ from fastai.tabular.all import *
 from sklearn.preprocessing import StandardScaler
 ```
 
-Next, we import the training data 
-
+Next, we import the training data
 
 ```python
 df = pd.read_csv('titanic/train.csv')
@@ -56,9 +52,6 @@ X = df[features].copy()
 y = df['Survived'].copy()
 X.head(5)
 ```
-
-
-
 
 <div>
 <style scoped>
@@ -73,6 +66,7 @@ X.head(5)
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -136,10 +130,7 @@ X.head(5)
 </table>
 </div>
 
-
-
 Now, we define two functions to normalize and fill in holes in the data so we can train on it.
-
 
 ```python
 def process_training_data(X):
@@ -156,14 +147,10 @@ def process_test_data(X):
     return X
 ```
 
-
 ```python
 X = process_training_data(X)
 X.head(5)
 ```
-
-
-
 
 <div>
 <style scoped>
@@ -178,6 +165,7 @@ X.head(5)
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -241,8 +229,6 @@ X.head(5)
 </table>
 </div>
 
-
-
 We need to scale the numeric values to be between 0 and 1, otherwise we'll get
 
 ```
@@ -251,7 +237,6 @@ RuntimeError: all elements of input should be between 0 and 1
 
 We'll do this with `StandardScaler` for the both the training and test data, per Sonnet's recommendation.
 `StandardScaler` doesn't actually constrain the data between 0 and 1 but it seems to get the job done for the needs of the model architecture I selected.
-
 
 ```python
 scaler = StandardScaler()
@@ -266,7 +251,6 @@ y_test = y_test_df['Survived']
 ```
 
 Turn these `numpy` arrays into PyTorch tensors and define the model architecture.
-
 
 ```python
 X_train_tensor = torch.FloatTensor(X_scaled)
@@ -284,7 +268,6 @@ model = nn.Sequential(
 
 Also, define a loss function and an optimizer:
 
-
 ```python
 criterion = nn.BCELoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
@@ -292,7 +275,6 @@ optimizer = optim.SGD(model.parameters(), lr=0.01)
 
 Finally, we can train the model.
 Sonnet wrote this code.
-
 
 ```python
 num_epochs = 1000
@@ -325,9 +307,7 @@ for epoch in range(num_epochs):
     Epoch [900/1000], Loss: 0.2955
     Epoch [1000/1000], Loss: 0.2937
 
-
 With the model trained, we can run inference on the test set and compare the results to the "Survived" column in the test set from `gender_submission.csv`.
-
 
 ```python
 model.eval()
@@ -344,10 +324,8 @@ with torch.no_grad():
     Correct predictions: 368 out of 418
     Accuracy: 88.04%
 
-
 Now, let's build what I think is a similar model with `fastai` primitives.
 Load the data again to avoid any unintentional contamination.
-
 
 ```python
 train_df = pd.read_csv('titanic/train.csv')
@@ -360,7 +338,6 @@ The `TabularDataLoaders` from `fastai` needs the following configuration to crea
 - `cont_names`: the names of the continuous variables
 - `y_names`: the names of the dependent variables
 
-
 ```python
 cat_names = ['Pclass', 'Sex']
 cont_names = ['Age', 'SibSp', 'Parch', 'Fare']
@@ -368,7 +345,6 @@ dep_var = 'Survived'
 ```
 
 Following a pattern similar to the one used in [chapter 1](https://github.com/fastai/fastbook/blob/master/01_intro.ipynb), we train the model:
-
 
 ```python
 procs = [Categorify, FillMissing, Normalize]
@@ -390,14 +366,11 @@ learn.fit_one_cycle(5, 1e-2)
 
     /Users/danielcorin/dev/lab/fastbook_projects/sgd_titanic/.venv/lib/python3.12/site-packages/fastai/tabular/core.py:314: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
     The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
-    
+
     For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
-    
-    
+
+
       to[n].fillna(self.na_dict[n], inplace=True)
-
-
-
 
 <style>
     /* Turns off some styling */
@@ -414,9 +387,6 @@ learn.fit_one_cycle(5, 1e-2)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -467,16 +437,13 @@ learn.fit_one_cycle(5, 1e-2)
   </tbody>
 </table>
 
-
 For some reason, `learn.dls.test_dl` does not apply `FillMissing`, for the 'Fare` column of the test data, so we do that manually here.
-
 
 ```python
 test_df['Fare'] = test_df['Fare'].fillna(test_df['Fare'].median())
 ```
 
 We run the test set through the model, then compare the results to the ground truth labels and calculate the model accuracy.
-
 
 ```python
 test_dl = learn.dls.test_dl(test_df)
@@ -496,14 +463,11 @@ print(f"Accuracy: {acc:.2%}")
 
     /Users/danielcorin/dev/lab/fastbook_projects/sgd_titanic/.venv/lib/python3.12/site-packages/fastai/tabular/core.py:314: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
     The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
-    
+
     For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
-    
-    
+
+
       to[n].fillna(self.na_dict[n], inplace=True)
-
-
-
 
 <style>
     /* Turns off some styling */
@@ -521,19 +485,11 @@ print(f"Accuracy: {acc:.2%}")
     }
 </style>
 
-
-
-
-
-
-
     Correct predictions: 377 out of 418
     Accuracy: 90.19%
-
 
 The accuracies of the two models are about the same!
 For a first pass at training neural networks (with plenty of help from Sonnet), I think this went pretty well.
 If you know things about deep learning, let me know if I made any major mistakes.
 It's a bit tough to know if you're doing things correctly in isolation.
 I suppose that's why Kaggle competitions can be useful for learning.
-

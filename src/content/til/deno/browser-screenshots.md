@@ -27,7 +27,7 @@ deno-browser-screenshots
 Now, add some code to render an SVG with Chrome via `puppeteer`.
 
 ```ts
-import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
+import puppeteer from 'https://deno.land/x/puppeteer@16.2.0/mod.ts';
 
 const svgString = `
 <svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
@@ -40,7 +40,7 @@ if (import.meta.main) {
   try {
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox"],
+      args: ['--no-sandbox'],
     });
 
     const page = await browser.newPage();
@@ -49,7 +49,7 @@ if (import.meta.main) {
     await page.setContent(svgString);
 
     await page.screenshot({
-      path: "output.png",
+      path: 'output.png',
       clip: {
         x: 0,
         y: 0,
@@ -60,8 +60,8 @@ if (import.meta.main) {
 
     await browser.close();
   } catch (error) {
-    console.error("Error occurred:", error);
-    console.error("Make sure Chrome is installed and the path is correct");
+    console.error('Error occurred:', error);
+    console.error('Make sure Chrome is installed and the path is correct');
     throw error;
   }
 }
@@ -99,7 +99,7 @@ It turns out the `npx` command install the browser to `~/.cache/puppeteer`.
 To use it, we need the following modifications to our code to provide an `executablePath`.
 
 ```ts
-import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
+import puppeteer from 'https://deno.land/x/puppeteer@16.2.0/mod.ts';
 
 const svgString = `
 <svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
@@ -112,9 +112,10 @@ if (import.meta.main) {
   try {
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox"],
-      executablePath: Deno.env.get("HOME") +
-        "/.cache/puppeteer/chrome/mac_arm-131.0.6778.108/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+      args: ['--no-sandbox'],
+      executablePath:
+        Deno.env.get('HOME') +
+        '/.cache/puppeteer/chrome/mac_arm-131.0.6778.108/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
     });
 
     const page = await browser.newPage();
@@ -129,7 +130,7 @@ if (import.meta.main) {
     `);
 
     await page.screenshot({
-      path: "output.png",
+      path: 'output.png',
       clip: {
         x: 0,
         y: 0,
@@ -140,12 +141,13 @@ if (import.meta.main) {
 
     await browser.close();
   } catch (error) {
-    console.error("Error occurred:", error);
-    console.error("Make sure Chrome is installed and the path is correct");
+    console.error('Error occurred:', error);
+    console.error('Make sure Chrome is installed and the path is correct');
     throw error;
   }
 }
 ```
+
 With that, the code runs successfully and we get `output.png` in our working directory.
 
 ## Using `astral`
@@ -156,7 +158,7 @@ I was curious to see how the DX compared for this simple use case.
 The following code worked for me without issue
 
 ```ts
-import { launch } from "jsr:@astral/astral";
+import { launch } from 'jsr:@astral/astral';
 
 const svgString = `
 <svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
@@ -180,11 +182,11 @@ if (import.meta.main) {
     `);
 
     const screenshot = await page.screenshot();
-    Deno.writeFileSync("output_astral.png", screenshot);
+    Deno.writeFileSync('output_astral.png', screenshot);
 
     await browser.close();
   } catch (error) {
-    console.error("Error occurred:", error);
+    console.error('Error occurred:', error);
     throw error;
   }
 }
@@ -208,13 +210,12 @@ This code works but unexpectedly outputs a PNG with size 1024 x 1024 and I'm not
 Adding the following not-very-nice-looking code seemed to fix this issue - maybe there is a better way.
 
 ```ts
-    await page.unsafelyGetCelestialBindings().Emulation
-      .setDeviceMetricsOverride({
-        width: 512,
-        height: 512,
-        deviceScaleFactor: 1,
-        mobile: false,
-      });
+await page.unsafelyGetCelestialBindings().Emulation.setDeviceMetricsOverride({
+  width: 512,
+  height: 512,
+  deviceScaleFactor: 1,
+  mobile: false,
+});
 ```
 
 With each approach, there were different rough edges.

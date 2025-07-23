@@ -92,4 +92,3 @@ This configuration creates a plist file at `/Users/danielcorin/Library/LaunchAge
 
 Now, when I create a new shell session and run `ollama list`, it just works.
 [Here](https://github.com/danielcorin/nix-config/commit/4727a12fcc3fb80f7d2f9be6ae2f9f852c84e060) is the code diff where I added this in my nix config.
-

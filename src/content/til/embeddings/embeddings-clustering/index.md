@@ -26,7 +26,6 @@ The visualizations helped build intuition about how these embeddings relate to e
 We start by setting up functions to call `ollama` locally to generate embeddings and words for several categories.
 The `generate_words` function occasionally doesn't adhere to instructions, but the end results are largely unaffected.
 
-
 ```python
 from openai import OpenAI
 
@@ -41,7 +40,6 @@ def get_embedding(text):
 
     return response.data[0].embedding
 ```
-
 
 ```python
 def generate_words(category, num_words=25):
@@ -65,7 +63,6 @@ def generate_words(category, num_words=25):
     return []
 ```
 
-
 ```python
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
@@ -73,7 +70,6 @@ import numpy as np
 ```
 
 Now we call the functions to actually generate the words and their embeddings.
-
 
 ```python
 category_names = [
@@ -101,14 +97,12 @@ for category, words in categories.items():
 
 Here are the first few sets of words:
 
-
 ```python
 for category in list(categories.keys())[:3]:
     print(f"\n{category.upper()}:")
     print(", ".join(categories[category]))
 print("\n...")
 ```
-
 
     FRUITS:
     apple, banana, mango, orange, grapes, watermelon, pineapple, strawberry, cherry, lemon, peach, kiwi, blueberry, pears, apricot, plum, guava, papaya, cantaloupe, raspberry, blackberry, fig, acai berry, starfruit, pomegranate, avocado
@@ -121,9 +115,7 @@ print("\n...")
 
     ...
 
-
 From here, we can visualize a 3D scatter plot of the embeddings from multiple angles.
-
 
 ```python
 from sklearn.decomposition import PCA
@@ -162,11 +154,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-
-
 ![png](images/notebook_12_0.png)
-
-
 
 We can definitely see some clustering, but it's a bit of a mess.
 The next cell uses `plotly` to create an interactive visualization, where the visibility of the categories can be toggled.

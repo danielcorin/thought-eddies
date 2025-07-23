@@ -52,6 +52,7 @@ Backspace and they autoclear.
 It's a very nice and clear CLI tool.
 
 ## Bash Mode
+
 There is also "Bash Mode" which seems to be a direct passthrough to run commands in your shell.
 These don't appear to be stored in the context, though you can instruct Claude Code to run shell commands on your behalf and the results will be stored in the context window.
 Claude Code prompts you when it is going to run a shell command.
@@ -73,6 +74,7 @@ I prompted to make several, then asked it to undo the first change I asked for o
 This can sometimes get a bit messy and it wasn't entirely transparent about _how_ it did it, but Claude Code proposed file edits and it seemed to undo the changes correctly which was impressive.
 
 ## Final thoughts
+
 It's hard to exactly compare the capabilities against other tools because `claude-3-7-sonnet-20250219` just came out and I haven't had the chance to try all these other coding with this new model yet.
 Nevertheless, Claude Code seems to be a highly competent agentic coding tool and is a welcome addition to the kitchen sink of things I can throw at coding problems.
 These days I run Cursor with a CLI LLM agent tool in the embedded terminal.

@@ -9,6 +9,7 @@ tags:
   - linux
 draft: false
 ---
+
 I was following [this guide](https://nixcademy.com/2024/01/15/nix-on-macos/) to setup `nix-darwin` on a new Mac when I ran into an issue following the section about cross-compiling Linux binaries.
 I put this issue to the side when I first encountered it because I was trying to setup dependency management for my new system and this problem didn't prevent that.
 However, I was reminded when I read another [article](https://nixcademy.com/2024/02/12/macos-linux-builder/) by Jacek, which motivated me to figure out what the problem was.
@@ -66,6 +67,7 @@ error:
 It seems `nixpkgs` references a "channel" that I had not yet added using `nix channel`.
 
 After running
+
 ```sh
 nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
 nix-channel --update

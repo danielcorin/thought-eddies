@@ -39,6 +39,7 @@ programs.tmux = {
     '';
 };
 ```
+
 This config also allows for pane selection by clicking and selection within a single pane. Pretty nice.
 
 ## What could be better

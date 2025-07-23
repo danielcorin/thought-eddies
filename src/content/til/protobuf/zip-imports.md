@@ -52,6 +52,7 @@ Within `simple_pb2_grpc.py` we see this import
 ```python
 import simple_pb2 as simple__pb2
 ```
+
 This import can be problematic because it assumes that the generated code exists at the root of the project.
 If you want to keep your project structure organized, you probably want to put the generated code into a subfolder and gitignore it.
 The `protoc` tool doesn't seem to support any options for Python code that will write these import statements differently.
