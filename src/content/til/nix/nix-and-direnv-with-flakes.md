@@ -58,7 +58,6 @@ It outputted
 
 Next I prompted it to install the python library `arrow` and it gave me
 
-
 ```nix
 {
   description = "A shell with Hugo and Python";

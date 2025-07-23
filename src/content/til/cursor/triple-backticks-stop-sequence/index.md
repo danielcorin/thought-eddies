@@ -40,7 +40,6 @@ The most noticeable way in which it does this for me is when attempting to gener
 
 In a blog post, they look like this
 
-
 ```python
 def hello_world():
     print("Hello, World!")

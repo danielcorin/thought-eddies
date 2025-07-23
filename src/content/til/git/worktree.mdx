@@ -42,19 +42,20 @@ git commit -m "initial commit"
 
 Now, let's set up a simple `fastapi` web server which will be the base of the two tasks we send the agents off to do.
 
-<Chat model="gemini-2.5-pro" messages={
-[
+<Chat
+  model="gemini-2.5-pro"
+  messages={[
     {
-        "role": "user",
-        "content": [
-            {
-                "type": "text",
-                "text": "- Create a fastapi web server that listens on port 8000 and returns 'Hello, world!'.\n- Next, create a readme for how to setup and run the project.\n- Finally, follow those steps and ensure everything worked"
-            }
-        ]
-    }
-]
-} />
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: "- Create a fastapi web server that listens on port 8000 and returns 'Hello, world!'.\n- Next, create a readme for how to setup and run the project.\n- Finally, follow those steps and ensure everything worked",
+        },
+      ],
+    },
+  ]}
+/>
 
 Gemini was a little lazy here and didn't create the virtualenv itself.
 Instead, it just wanted to install the dependencies to the system Python.
@@ -130,7 +131,7 @@ I just needed an excuse to use a worktree.
 > which outputs
 >
 > ```json
-> {"message":"Hello, Alice!"}
+> { "message": "Hello, Alice!" }
 > ```
 >
 > and
@@ -142,7 +143,7 @@ I just needed an excuse to use a worktree.
 > which outputs
 >
 > ```json
-> {"message":"Hello, Bob!"}
+> { "message": "Hello, Bob!" }
 > ```
 
 Let's see what the agent comes up with.

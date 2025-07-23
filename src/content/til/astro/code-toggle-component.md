@@ -13,12 +13,12 @@ The idea was to create a simple wrapper around a React (or other interactive com
 Usage looks like this:
 
 ```tsx
-import { default as TailwindCalendarV1 } from "./components/TailwindCalendar.v1";
-import TailwindCalendarV1Source from "./components/TailwindCalendar.v1?raw";
+import { default as TailwindCalendarV1 } from './components/TailwindCalendar.v1';
+import TailwindCalendarV1Source from './components/TailwindCalendar.v1?raw';
 
 <CodeToggle source={TailwindCalendarV1Source}>
   <TailwindCalendarV1 client:load />
-</CodeToggle>
+</CodeToggle>;
 ```
 
 The implementation of `CodeToggle.astro` looked like this

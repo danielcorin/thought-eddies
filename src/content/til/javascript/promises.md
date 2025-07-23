@@ -16,7 +16,6 @@ draft: false
 In Javascript, using `async`/`await` is a cleaner approach compared to use of callbacks.
 Occasionally, you run into useful but older modules that you'd like to use in the more modern way.
 
-
 Take [`fluent-ffmpeg`](https://www.npmjs.com/package/fluent-ffmpeg/v/1.7.0), a 10 year old package that uses callbacks to handle various events like `start`, `progress`, `end` and `error`.
 
 Using callbacks, we have code that looks like this:
@@ -72,7 +71,10 @@ function convertVideo(inputPath, outputPath) {
 // Async function to use the Promise-based conversion function
 async function main() {
   try {
-    const result = await convertVideo('/path/to/input.avi', '/path/to/output.mp4');
+    const result = await convertVideo(
+      '/path/to/input.avi',
+      '/path/to/output.mp4'
+    );
     console.log('Video conversion completed:', result);
   } catch (err) {
     console.error('Video conversion failed:', err);

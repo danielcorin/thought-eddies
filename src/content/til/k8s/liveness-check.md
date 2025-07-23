@@ -21,16 +21,16 @@ metadata:
   name: liveness-http
 spec:
   containers:
-  - name: liveness
-    image: k8s.gcr.io/liveness
-    args:
-    - /server
-    livenessProbe:
-      httpGet:
-        path: "/health"
-        port: 8080
-      initialDelaySeconds: 3
-      periodSeconds: 3
+    - name: liveness
+      image: k8s.gcr.io/liveness
+      args:
+        - /server
+      livenessProbe:
+        httpGet:
+          path: '/health'
+          port: 8080
+        initialDelaySeconds: 3
+        periodSeconds: 3
 ```
 
 When setting up a new app to be deployed on Kubernetes, ideally, the liveness endpoint is defined in a service scaffold (this is company and framework dependent), but in the case it isn't, you just need to add a simple HTTP handler for the route configured in the yaml file.

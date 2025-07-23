@@ -11,8 +11,8 @@ draft: false
 updated_at: 2024-07-21T13:32:28.000Z
 ---
 
-*Edit (2024-07-21): Vercel has updated the [`ai` package](https://github.com/vercel/ai) to use different abstractions than the examples below.
-Consider reading [their docs](https://sdk.vercel.ai/docs/introduction) first before using the example below, which is out of date.*
+_Edit (2024-07-21): Vercel has updated the [`ai` package](https://github.com/vercel/ai) to use different abstractions than the examples below.
+Consider reading [their docs](https://sdk.vercel.ai/docs/introduction) first before using the example below, which is out of date._
 
 Vercel has a library called [`ai`](https://github.com/vercel/ai), that is useful for building language model chat applications.
 I used it to help build [Write Partner](/projects/write-partner)
@@ -25,41 +25,42 @@ When designing Write Partner, I started the chat session with the following mess
 
 ```javascript
 [
-    {
-        id: "0",
-        role: "system",
-        content: "You are a thoughtful assistant that asks the user followup questions about their idea to help them deepen their thought process."
-    },
-    {
-        id: "1",
-        role: "assistant",
-        content: "What would you like to write about?",
-    }
-]
+  {
+    id: '0',
+    role: 'system',
+    content:
+      'You are a thoughtful assistant that asks the user followup questions about their idea to help them deepen their thought process.',
+  },
+  {
+    id: '1',
+    role: 'assistant',
+    content: 'What would you like to write about?',
+  },
+];
 ```
 
 If you want to follow along, you can create a new Next.js project (`npx create-next-app`) and use this simple `page.tsx` file:
 
-
 ```tsx
-"use client";
+'use client';
 
-import { useChat } from "ai/react";
+import { useChat } from 'ai/react';
 
 export default function Home() {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     initialMessages: [
       {
-        id: "0",
-        role: "system",
-        content: "You are a thoughtful assistant that asks the user followup questions about their idea to help them deepen their thought process."
+        id: '0',
+        role: 'system',
+        content:
+          'You are a thoughtful assistant that asks the user followup questions about their idea to help them deepen their thought process.',
       },
       {
-        id: "1",
-        role: "assistant",
-        content: "What would you like to write about?",
+        id: '1',
+        role: 'assistant',
+        content: 'What would you like to write about?',
       },
-    ]
+    ],
   });
 
   return (
@@ -152,7 +153,7 @@ The model can't handling having an assistant message before a user message.
 I tried again with another model
 
 ```typescript
-model: 'accounts/fireworks/models/llama-v2-70b-chat'
+model: 'accounts/fireworks/models/llama-v2-70b-chat';
 ```
 
 but got the same error.
@@ -192,7 +193,6 @@ export async function POST(req: Request) {
 ```
 
 I first tried a message with the system and assistant prompt and got the following error
-
 
 ```text
  ⨯ node_modules/@anthropic-ai/sdk/error.mjs (36:19) @ APIError.generate

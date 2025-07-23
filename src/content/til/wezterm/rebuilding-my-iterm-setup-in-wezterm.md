@@ -27,12 +27,10 @@ Getting this working probably took me 30 minutes spread across a few sessions as
 - Moving between words in the command prompt with option-arrow
 - Hotkey to clear terminal
 
-
 ## What went well
 
 I found achieving these configurations to be much easier in WezTerm than Alacritty, or at least, it took me less time.
 The blend of native UI with dotfile-style configurable settings hits a sweet spot for my preferences as well, and I haven't even scratched the surface of scripting things with Lua.
-
 
 ## What could be better
 
@@ -118,5 +116,3 @@ return {
 Finally, [here's a commit](https://github.com/danielcorin/nix-config/commit/4f6596c3c558daa85a2a467308943d2c5267ab4d) adding the above config to my Nix config (placed at `~/.config/wezterm/wezterm.lua`)
 
 ![my starting WezTerm terminal setup](/img/til/wezterm/wezterm.png)
-
-

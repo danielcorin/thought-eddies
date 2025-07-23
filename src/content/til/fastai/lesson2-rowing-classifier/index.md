@@ -11,7 +11,6 @@ series: Fast.ai Course
 toc: true
 ---
 
-
 The following is the notebook I used to experiment training an image model to classify types of rowing shells (with people rowing them) and the same dataset by rowing technique (sweep vs. scull).
 There are a few cells that output a batch of the data.
 I decided not to include these because the rowers in these images didn't ask to be on my website.
@@ -21,11 +20,9 @@ I'll keep this in mind when selecting future datasets as I think showing the dat
 
 First, we install and import the `fastai` dependencies we'll need
 
-
 ```python
 !pip install fastai
 ```
-
 
 ```python
 from fastcore.all import *
@@ -35,7 +32,6 @@ from fastai.vision.all import *
 Next, we'll query DuckDuckGo to find images of all (most) of the different racing shell types.
 This code can safely be run multiple times without overwriting the output folders.
 E.g. if you want to run a query for a single type again, you can delete that folder and re-run the whole loop below.
-
 
 ```python
 def search_images(term, max_images=200):
@@ -55,12 +51,10 @@ def search_images(term, max_images=200):
     return L(urls)[:max_images]
 ```
 
-
 ```python
 types = '8+ eight', '4+ four', '4x quad', '2- pair', '2x double', '1x single'
 path = Path('boat_images')
 ```
-
 
 ```python
 if not path.exists():
@@ -79,7 +73,6 @@ for o in types:
 Clean up any bad images we that won't be able to use to train the model.
 I also manually classified the images into the appropriate folders to fix any confusion in the search.
 There were a fair amount of issues here and many images needed to be thrown out as they weren't of boats.
-
 
 ```python
 for subfolder in path.iterdir():
@@ -104,9 +97,7 @@ for subfolder in path.iterdir():
     boat_images/2x double
     []
 
-
 Output the counts of each boat type
-
 
 ```python
 path = Path('boat_images')
@@ -125,9 +116,7 @@ for subfolder in path.iterdir():
     4+ four: 94 images
     2x double: 98 images
 
-
 Load the data, apply transforms and train the model
-
 
 ```python
 rowing = DataBlock(
@@ -139,7 +128,6 @@ rowing = DataBlock(
 dls = rowing.dataloaders(path)
 dls.valid.show_batch(max_n=4, nrows=1)
 ```
-
 
 ```python
 custom_aug_transforms = [
@@ -156,13 +144,10 @@ rowing = rowing.new(
 dls = rowing.dataloaders(path)
 ```
 
-
 ```python
 learn = vision_learner(dls, resnet18, metrics=error_rate)
 learn.fine_tune(4)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -179,9 +164,6 @@ learn.fine_tune(4)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -204,9 +186,6 @@ learn.fine_tune(4)
   </tbody>
 </table>
 
-
-
-
 <style>
     /* Turns off some styling */
     progress {
@@ -222,9 +201,6 @@ learn.fine_tune(4)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -268,16 +244,28 @@ learn.fine_tune(4)
   </tbody>
 </table>
 
-
 View the confusion matrix and top losses to get a sense of what types of images the model incorrectly classified
-
 
 ```python
 interp = ClassificationInterpretation.from_learner(learn)
 interp.plot_confusion_matrix()
 ```
 
-
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
 
 <style>
     /* Turns off some styling */
@@ -295,49 +283,13 @@ interp.plot_confusion_matrix()
     }
 </style>
 
-
-
-
-
-
-
-
-
-<style>
-    /* Turns off some styling */
-    progress {
-        /* gets rid of default border in Firefox and Opera. */
-        border: none;
-        /* Needs to be in here for Safari polyfill so background images work as expected. */
-        background-size: auto;
-    }
-    progress:not([value]), progress:not([value])::-webkit-progress-bar {
-        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
-    }
-    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-        background: #F44336;
-    }
-</style>
-
-
-
-
-
-
-
-
-    
 ![png](images/lesson2-rowing-classifier_18_4.png)
-    
-
-
 
 ```python
 interp.plot_top_losses(9, nrows=3)
 ```
 
 Export the model to be run on Huggingface Spaces with `gradio`
-
 
 ```python
 learn.export('boat_export.pkl')
@@ -346,7 +298,6 @@ learn.export('boat_export.pkl')
 Now, using the same boat photos, we can split the dataset differently by photos of sweep and sculling boats.
 Eight (8+), fours (4+) and pairs (2-) are sweep boats.
 Quads (4x), doubles (2x) and single (1x) are sculling boats.
-
 
 ```python
 import shutil
@@ -378,7 +329,6 @@ for folder in source_path.iterdir():
 
 Using a similar approach, train the model and view the confusion matrix and top losses
 
-
 ```python
 path = Path('sweep_scull_images')
 custom_aug_transforms = [
@@ -395,13 +345,10 @@ dls = rowing.dataloaders(path)
 dls.valid.show_batch(max_n=4, nrows=1)
 ```
 
-
 ```python
 learn = vision_learner(dls, resnet18, metrics=error_rate)
 learn.fine_tune(4)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -418,9 +365,6 @@ learn.fine_tune(4)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -443,9 +387,6 @@ learn.fine_tune(4)
   </tbody>
 </table>
 
-
-
-
 <style>
     /* Turns off some styling */
     progress {
@@ -461,9 +402,6 @@ learn.fine_tune(4)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -507,14 +445,26 @@ learn.fine_tune(4)
   </tbody>
 </table>
 
-
-
 ```python
 interp = ClassificationInterpretation.from_learner(learn)
 interp.plot_confusion_matrix()
 ```
 
-
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    progress:not([value]), progress:not([value])::-webkit-progress-bar {
+        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
 
 <style>
     /* Turns off some styling */
@@ -532,42 +482,7 @@ interp.plot_confusion_matrix()
     }
 </style>
 
-
-
-
-
-
-
-
-
-<style>
-    /* Turns off some styling */
-    progress {
-        /* gets rid of default border in Firefox and Opera. */
-        border: none;
-        /* Needs to be in here for Safari polyfill so background images work as expected. */
-        background-size: auto;
-    }
-    progress:not([value]), progress:not([value])::-webkit-progress-bar {
-        background: repeating-linear-gradient(45deg, #7e7e7e, #7e7e7e 10px, #5c5c5c 10px, #5c5c5c 20px);
-    }
-    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-        background: #F44336;
-    }
-</style>
-
-
-
-
-
-
-
-
-    
 ![png](images/lesson2-rowing-classifier_27_4.png)
-    
-
-
 
 ```python
 interp.plot_top_losses(10, nrows=2)

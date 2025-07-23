@@ -53,13 +53,13 @@ In `route.ts`, let's write a simple HTTP handler for a `POST` to `/api/submit`.
 In `src/app/api/submit/route.ts`
 
 ```ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-    const data = await request.json()
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    console.log("3 seconds passed");
-    return NextResponse.json(data)
+  const data = await request.json();
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  console.log('3 seconds passed');
+  return NextResponse.json(data);
 }
 ```
 
@@ -97,35 +97,35 @@ cd src/app/api/job
 touch route.ts
 ```
 
-In  `src/app/api/job/route.ts`, we write
+In `src/app/api/job/route.ts`, we write
 
 ```ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-    const data = await request.json()
-    await new Promise(resolve => setTimeout(resolve, 3000))
-    console.log("3 seconds passed");
-    return NextResponse.json(data)
+  const data = await request.json();
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  console.log('3 seconds passed');
+  return NextResponse.json(data);
 }
 ```
 
 We also modify `src/app/api/submit/route.ts` to read
 
 ```ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-    const data = await request.json()
+  const data = await request.json();
 
-    fetch(`http://localhost:3000/api/job`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    return NextResponse.json(data)
+  fetch(`http://localhost:3000/api/job`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return NextResponse.json(data);
 }
 ```
 
@@ -158,33 +158,33 @@ Vercel sets `VERCEL_URL` automatically in projects.
 Update `src/app/api/submit/route.ts`
 
 ```ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-    const data = await request.json()
-    const url = `${getUrl()}/api/job`
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    return NextResponse.json(data)
+  const data = await request.json();
+  const url = `${getUrl()}/api/job`;
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return NextResponse.json(data);
 }
 
 function getUrl(): string {
-    const envVar = process.env.VERCEL_URL
+  const envVar = process.env.VERCEL_URL;
 
-    if (!envVar) {
-        return ""
-    }
+  if (!envVar) {
+    return '';
+  }
 
-    if (envVar.includes("localhost")) {
-        return `http://${envVar}`
-    } else {
-        return `https://${envVar}`
-    }
+  if (envVar.includes('localhost')) {
+    return `http://${envVar}`;
+  } else {
+    return `https://${envVar}`;
+  }
 }
 ```
 

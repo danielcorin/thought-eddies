@@ -64,7 +64,6 @@ Again, from the the `llama.cpp` folder run
 This runs llama-cpp in the command line, in conversation mode (`-cnv`), offloading the whole model to the GPU (`-ngl 80`) and with a system prompt (`-p`).
 When everything is loaded, you'll be given a command prompt to type into:
 
-
 ```text
 You are a helpful assistant
 

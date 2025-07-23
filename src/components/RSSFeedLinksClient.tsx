@@ -16,7 +16,11 @@ interface RSSFeedLinksClientProps {
   limit?: number;
 }
 
-export default function RSSFeedLinksClient({ feedUrl, title, limit = 10 }: RSSFeedLinksClientProps) {
+export default function RSSFeedLinksClient({
+  feedUrl,
+  title,
+  limit = 10,
+}: RSSFeedLinksClientProps) {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -30,13 +30,13 @@ Cursor prompted me to cache the import and its dependencies, so I ran that and i
 With Hono imported and cached, I modified my Hello World example to the following
 
 ```ts
-import { logger } from "https://deno.land/x/hono@v3.11.11/middleware.ts";
-import { Context, Hono } from "https://deno.land/x/hono@v3.11.11/mod.ts";
+import { logger } from 'https://deno.land/x/hono@v3.11.11/middleware.ts';
+import { Context, Hono } from 'https://deno.land/x/hono@v3.11.11/mod.ts';
 const app = new Hono();
 
-app.use("*", logger());
-app.get("/", (c: Context) => {
-  return c.text("Hello World!");
+app.use('*', logger());
+app.get('/', (c: Context) => {
+  return c.text('Hello World!');
 });
 
 Deno.serve(app.fetch);
@@ -130,31 +130,37 @@ After a refinement, requesting it to be more concise, I got this
 
 ```ts
 const helloAudioUploadable = new File(
-  [await Deno.readFile("hello.mp3")], "hello.mp3", { type: 'audio/mpeg' }
+  [await Deno.readFile('hello.mp3')],
+  'hello.mp3',
+  { type: 'audio/mpeg' }
 );
 ```
 
 That seemed to work, so I wired up the rest of the code
 
 ```ts
-import { logger } from "https://deno.land/x/hono@v3.11.11/middleware.ts";
-import { Context, Hono } from "https://deno.land/x/hono@v3.11.11/mod.ts";
-import OpenAI from "https://deno.land/x/openai@v4.25.0/mod.ts";
-import { Transcription } from "https://deno.land/x/openai@v4.25.0/resources/audio/transcriptions.ts";
+import { logger } from 'https://deno.land/x/hono@v3.11.11/middleware.ts';
+import { Context, Hono } from 'https://deno.land/x/hono@v3.11.11/mod.ts';
+import OpenAI from 'https://deno.land/x/openai@v4.25.0/mod.ts';
+import { Transcription } from 'https://deno.land/x/openai@v4.25.0/resources/audio/transcriptions.ts';
 
 const app = new Hono();
 const client = new OpenAI();
 
 const helloAudioUploadable = new File(
-  [await Deno.readFile("hello.mp3")], "hello.mp3", { type: 'audio/mpeg' }
+  [await Deno.readFile('hello.mp3')],
+  'hello.mp3',
+  { type: 'audio/mpeg' }
 );
 
-app.use("*", logger());
-app.get("/", async (c: Context) => {
-  const transcription: Transcription = await client.audio.transcriptions.create({
-    file: helloAudioUploadable,
-    model: "whisper-1",
-  })
+app.use('*', logger());
+app.get('/', async (c: Context) => {
+  const transcription: Transcription = await client.audio.transcriptions.create(
+    {
+      file: helloAudioUploadable,
+      model: 'whisper-1',
+    }
+  );
   return c.text(transcription.text);
 });
 
@@ -174,7 +180,6 @@ Deno protecting my system again.
 Nice.
 A couple iterations later and I had it working (I could have just used `-A`).
 
-
 ```sh
 ❯ deno run --allow-net --allow-env --allow-read server.ts
 Listening on http://localhost:8000/
@@ -189,5 +194,5 @@ Hello, Dan here.%
 
 Indeed, that was what I said.
 
-I *really* enjoyed using Deno.
+I _really_ enjoyed using Deno.
 I'm definitely going to continue to use it in my projects.

@@ -19,12 +19,12 @@ In a few seconds, the editor output
 
 ```yaml
 ---
-title: "Cursor Introduction"
+title: 'Cursor Introduction'
 date: 2023-08-12T20:00:00-04:00
 draft: false
 tags:
-- cursor
-- intro
+  - cursor
+  - intro
 ---
 ```
 

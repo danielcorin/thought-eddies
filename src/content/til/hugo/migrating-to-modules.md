@@ -11,7 +11,6 @@ tags:
 draft: false
 ---
 
-
 Go introduced modules several years ago as part of a dependency management system.
 My Hugo site is still using git submodules to manage its theme.
 I attempted to migrate to Go's submodules but eventually ran into a snag when trying to deploy the site.

@@ -94,6 +94,7 @@ Finetune the model
 learn = vision_learner(dls, resnet18, metrics=error_rate)
 learn.fine_tune(3)
 ```
+
 Once the training was finished, I took a screenshot of some Python code I had locally and downloaded an image of Ruby from online.
 The model classified both images as Ruby with very high confidence.
 I also tried running some of the images from the training data through the model.
@@ -123,8 +124,8 @@ It was taking a while to train, so I walked away for a while.
 
 Here are the <Sidenote anchor="results" content="Extracted by pasting an image of the table from the notebook into a Cursor/Sonnet prompt" /> from training the `resnet50` model:
 
-| epoch | train_loss | valid_loss | error_rate | time |
-|-------|------------|------------|------------|------|
+| epoch | train_loss | valid_loss | error_rate | time  |
+| ----- | ---------- | ---------- | ---------- | ----- |
 | 0     | 0.381366   | 0.679645   | 0.365854   | 05:26 |
 | 1     | 0.250793   | 0.250266   | 0.073171   | 05:59 |
 | 2     | 0.185864   | 0.125285   | 0.048780   | 04:42 |
@@ -211,14 +212,13 @@ learn.fine_tune(5)
 
 These were the training stats:
 
-| epoch | train_loss | valid_loss | error_rate | time |
-|-------|------------|------------|------------|------|
+| epoch | train_loss | valid_loss | error_rate | time  |
+| ----- | ---------- | ---------- | ---------- | ----- |
 | 0     | 0.391036   | 0.955989   | 0.461538   | 00:33 |
 | 1     | 0.249562   | 0.801549   | 0.384615   | 00:33 |
 | 2     | 0.181186   | 0.321640   | 0.153846   | 00:32 |
 | 3     | 0.138594   | 0.184952   | 0.076923   | 00:32 |
 | 4     | 0.114745   | 0.121491   | 0.051282   | 00:32 |
-
 
 This time it worked pretty well!
 It got 4/4 of my tests correct with high accuracy.
@@ -229,14 +229,13 @@ Finally with some success, I decided to try to introduce a few more voices (Ava 
 Training took a bit longer with a doubling of the amount of training data.
 These were the training results:
 
-| epoch | train_loss | valid_loss | error_rate | time |
-|-------|------------|------------|------------|------|
+| epoch | train_loss | valid_loss | error_rate | time  |
+| ----- | ---------- | ---------- | ---------- | ----- |
 | 0     | 0.685900   | 0.776896   | 0.253165   | 01:06 |
 | 1     | 0.390314   | 0.473427   | 0.126582   | 01:07 |
 | 2     | 0.250393   | 0.252311   | 0.075949   | 01:06 |
 | 3     | 0.179241   | 0.205531   | 0.050633   | 01:06 |
 | 4     | 0.131612   | 0.164919   | 0.050633   | 01:05 |
-
 
 I tried 8 test examples, 2 of each voice.
 The model got 8/8 correct!
@@ -268,8 +267,8 @@ Training seemed to take about as long (around 5 minutes).
 
 Here are the training results for the smaller model (resnet18):
 
-| epoch | train_loss | valid_loss | error_rate | time |
-|-------|------------|------------|------------|------|
+| epoch | train_loss | valid_loss | error_rate | time  |
+| ----- | ---------- | ---------- | ---------- | ----- |
 | 0     | 0.641440   | 0.961596   | 0.430380   | 01:02 |
 | 1     | 0.416878   | 0.264568   | 0.063291   | 01:03 |
 | 2     | 0.275593   | 0.207364   | 0.037975   | 01:02 |

@@ -72,7 +72,6 @@ I ran each model on this image from [the game Sonnet 3.5 built for me](/posts/20
 I pulled down the image locally since that is what `ollama` requires.
 Here are the outputs for the four models I tried.
 
-
 `moondream`
 
 > A computer game interface displays two options for a player to choose from: "Tactic" and "Combat".
@@ -81,11 +80,9 @@ Here are the outputs for the four models I tried.
 
 > The image shows a comparison of two puzzle games. Both games involve the same pattern, where a square is split into four smaller squares. On the left side of the image, there are four smaller squares, each containing another smaller square within it, creating a nesting effect. On the right side, the game pieces have been rearranged differently from the original arrangement on the left. The objective of the puzzle appears to be to match the arrangement of the game pieces with the original pattern. At the bottom of the image, there is text that reads "TÁCITO," which translates to "SOLVE" in English.
 
-
 `llava-llama3`
 
 > Two squares that say X and O with the words Tactics on each.
-
 
 `llava-phi3`
 

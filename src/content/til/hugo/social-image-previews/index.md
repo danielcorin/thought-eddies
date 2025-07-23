@@ -25,7 +25,6 @@ The key changes:
 - Replace `imageConfig` with the image resource itself to get dimensions
 - Update paths to use the image resource's `RelPermalink`
 
-
 This allows images in page bundles to be used for social previews rather than requiring them to be in the site's assets folder, which would grow unruly if it had all the images for all my posts.
 
 The changes are against [layouts/partials/head/meta.html](https://github.com/lukeorth/poison/blob/07485e85f0247518bc64ed0cc6fd6b39abe3d90d/layouts/partials/head/meta.html).

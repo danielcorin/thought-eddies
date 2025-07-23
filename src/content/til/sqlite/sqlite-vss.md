@@ -183,12 +183,12 @@ I may return to this benchmarking exercise separately.
 
 ## Size of the data at various points in the process
 
-| Dataset | Size |
-|---------|------|
-| Kaggle JSON | 28 MB |
-| SQLite db loaded from JSON | 74.2 MB |
-| SQLite with embeddings added | 860.5 MB |
-| SQLite with vss virtual table | 1.83 GB |
+| Dataset                       | Size     |
+| ----------------------------- | -------- |
+| Kaggle JSON                   | 28 MB    |
+| SQLite db loaded from JSON    | 74.2 MB  |
+| SQLite with embeddings added  | 860.5 MB |
+| SQLite with vss virtual table | 1.83 GB  |
 
 The embeddings seem to contribute the majority of the data size.
 Creating the virtual table seems to be an effective doubling, which makes sense since we're copying the embeddings to another table.

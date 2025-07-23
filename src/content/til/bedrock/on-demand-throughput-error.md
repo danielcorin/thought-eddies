@@ -23,6 +23,7 @@ messages = [{"role": "user", "content": [{"text": "What is 2+2?"}]}]
 res = bedrock.converse(modelId="anthropic.claude-3-5-sonnet-20241022-v2:0", messages=messages)
 print(res['output']['message']['content'][0]['text'])
 ```
+
 We can find this model name in the `us-east-2` [model catalog](https://us-east-2.console.aws.amazon.com/bedrock/home?region=us-east-2#/model-catalog/serverless/anthropic.claude-3-5-sonnet-20241022-v2:0) (requires sign in).
 
 [Anthropic's documentation](https://docs.anthropic.com/en/api/claude-on-amazon-bedrock) also mentions these model names.
@@ -32,6 +33,7 @@ I was working with SageMaker and dealing with a restrictive VPC setup, but when 
 ```
 An error occurred (ValidationException) when calling the Converse operation: Invocation of model ID anthropic.claude-3-5-sonnet-20241022-v2:0 with on-demand throughput isn't supported
 ```
+
 This was confusing specifically because I wasn't sure if I was having AWS permissions and access issues or inference issues.
 
 It turned out, prefixing the model id with `us.`, i.e.gs `us.anthropic.claude-3-5-sonnet-20241022-v2:0` was all I needed to get things working for my setup.

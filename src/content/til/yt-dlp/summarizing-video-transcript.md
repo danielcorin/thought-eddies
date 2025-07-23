@@ -51,7 +51,6 @@ Run it like this
 
 To further customize the script, you can add support for a second argument to the command, which can serve as an additional prompt (usually some kind of question about the prior context) to the model.
 
-
 ```sh
 #!/etc/profiles/per-user/danielcorin/bin/zsh
 

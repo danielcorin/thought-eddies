@@ -114,6 +114,7 @@ With that confirmed, I added the MCP server to Claude code, so I could start exp
 ```sh
 claude mcp add mcp-dates -- /Users/danielcorin/dev/mcp_dates/main.py
 ```
+
 It took me a while to figure out a working combination of the shebang in the server and using the absolute path in the `claude mcp add` command.
 
 Debugging this issue wasn't straightforward.
@@ -312,6 +313,7 @@ Wed Jun  4 23:44:00 EDT 2025
 ❯ now 1749091440
 Wed Jun  4 22:44:00 EDT 2025
 ```
+
 But how this library works is beside the point.
 We're now two layers into dealing with this date parsing conversion issue and we've hit "edge cases" almost immediately with each proposed solution.
 

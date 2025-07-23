@@ -173,17 +173,14 @@ When run, the tool looks like this.
 
 With around 40 movies rated and saved in `my_ratings.dat`, let's install `fastai`, suppress warnings to make the notebook cleaner and import the libraries we'll need to train the model.
 
-
 ```python
 !pip install fastai
 ```
-
 
 ```python
 import warnings
 warnings.filterwarnings('ignore')
 ```
-
 
 ```python
 import pandas as pd
@@ -195,22 +192,18 @@ user_id = 99999
 ```
 
 Looking at the [README](https://files.grouplens.org/datasets/movielens/ml-10m-README.html) for the dataset, we see it has the following structure
+
 ```text
-MovieID::Title::Genres 
+MovieID::Title::Genres
 ```
 
 We can import that as a csv
-
-
 
 ```python
 movies = pd.read_csv('ml-10M100K/movies.dat', sep='::', names=['id', 'name', 'genre'])
 movies['year'] = movies['name'].str.extract(r'\((\d{4})\)')
 movies.head()
 ```
-
-
-
 
 <div>
 <style scoped>
@@ -225,6 +218,7 @@ movies.head()
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -276,10 +270,7 @@ movies.head()
 </table>
 </div>
 
-
-
 Next, we load the ratings from the dataset and concatenate them with the ratings I created so that I could generate predictions for myself (user id `99999`).
-
 
 ```python
 ratings = pd.concat([
@@ -288,9 +279,6 @@ ratings = pd.concat([
 ])
 ratings.tail()
 ```
-
-
-
 
 <div>
 <style scoped>
@@ -305,6 +293,7 @@ ratings.tail()
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -356,10 +345,7 @@ ratings.tail()
 </table>
 </div>
 
-
-
 Once we load the ratings, we can check the ratings distribution to validate it seems diverse enough to be a good dataset.
-
 
 ```python
 ratings['rating'].hist(bins=20, figsize=(10,6))
@@ -369,17 +355,12 @@ plt.ylabel('Count')
 plt.show()
 ```
 
-
-    
 ![png](images/notebook_12_0.png)
-    
-
 
 ## Train some models
 
 Now we'll lean heavily on `fastai` and create and train a collaborative learner from the ratings data, training it for 5 epochs.
 This process will likely take some time.
-
 
 ```python
 dls = CollabDataLoaders.from_df(
@@ -391,11 +372,9 @@ dls = CollabDataLoaders.from_df(
 )
 ```
 
-
 ```python
 dls.show_batch()
 ```
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -470,8 +449,6 @@ dls.show_batch()
   </tbody>
 </table>
 
-
-
 ```python
 learner = collab_learner(
     dls,
@@ -481,8 +458,6 @@ learner = collab_learner(
 
 learner.fit_one_cycle(3)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -499,9 +474,6 @@ learner.fit_one_cycle(3)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -534,28 +506,18 @@ learner.fit_one_cycle(3)
   </tbody>
 </table>
 
-
 Let's save a checkpoint of the model, then reload it and run two more epochs.
-
 
 ```python
 learner.save('collab_model_20_factors_256_bs')
 ```
 
-
-
-
     Path('models/collab_model_20_factors_256_bs.pth')
-
-
-
 
 ```python
 learner = learner.load('collab_model_20_factors_256_bs')
 learner.fit_one_cycle(2)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -572,9 +534,6 @@ learner.fit_one_cycle(2)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -601,7 +560,6 @@ learner.fit_one_cycle(2)
   </tbody>
 </table>
 
-
 It looks like the loss doesn't improve too much with the additional two training epochs, which is good to know for future model training.
 
 I'm intentionally keeping the training time relatively fast at this point.
@@ -611,7 +569,6 @@ Once I get a better sense of that, I'll increase things like `n_factors` and tra
 Now that we've trained the model, let's get movie recommendations for me -- user `99999`.
 To do this, we'll predict ratings for all movies and sort them by highest predicted rating.
 These values are what the model thinks we'll rate these movies given our rating history.
-
 
 ```python
 def get_preds(learner, user_id=99999, num_recs=20):
@@ -631,8 +588,6 @@ recommendations = get_preds(learner)
 recommendations
 ```
 
-
-
 <style>
     /* Turns off some styling */
     progress {
@@ -649,15 +604,6 @@ recommendations
     }
 </style>
 
-
-
-
-
-
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -671,6 +617,7 @@ recommendations
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -827,23 +774,16 @@ recommendations
 </table>
 </div>
 
-
-
 These recommendations seem pretty good.
 I've actually seen and liked some of these movies the model is recommending.
 Something I didn't expect is also happening.
 The model is generating predictions for movies I've already rated.
 Movie id `58559` is already in `my_ratings.dat`
 
-
-
 ```python
 ratings[(ratings['userId'] == 99999) & (ratings['movieId'] == 58559)]
 
 ```
-
-
-
 
 <div>
 <style scoped>
@@ -858,6 +798,7 @@ ratings[(ratings['userId'] == 99999) & (ratings['movieId'] == 58559)]
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -881,15 +822,9 @@ ratings[(ratings['userId'] == 99999) & (ratings['movieId'] == 58559)]
 </table>
 </div>
 
-
-
-
 ```python
 recommendations[recommendations['movie_id'] == 58559]
 ```
-
-
-
 
 <div>
 <style scoped>
@@ -904,6 +839,7 @@ recommendations[recommendations['movie_id'] == 58559]
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -927,10 +863,7 @@ recommendations[recommendations['movie_id'] == 58559]
 </table>
 </div>
 
-
-
 Let's modify `get_preds` to filter these duplicates out
-
 
 ```python
 def get_preds(learner, ratings, user_id=99999, num_recs=20):
@@ -954,8 +887,6 @@ recommendations = get_preds(learner, ratings)
 recommendations
 ```
 
-
-
 <style>
     /* Turns off some styling */
     progress {
@@ -972,15 +903,6 @@ recommendations
     }
 </style>
 
-
-
-
-
-
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -994,6 +916,7 @@ recommendations
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -1150,8 +1073,6 @@ recommendations
 </table>
 </div>
 
-
-
 Now we're getting clean predictions.
 
 Since I've seen some of these movies (but haven't added ratings for them yet), it would be nice to do that so I can generate new recommendations with additional data.
@@ -1161,7 +1082,6 @@ I could _just_ filter out the IDs of the recommendations I've already watched an
 However, these would still only take into account the original ratings I trained the model on for my user, which means we're not making great use of the data.
 
 It would be nice to retrain the model on this augmented data, simulating what real system retraining could look like.
-
 
 ```python
 import time
@@ -1185,9 +1105,6 @@ new_ratings_df = add_new_ratings(user_id, new_ratings)
 new_ratings_df
 ```
 
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1201,6 +1118,7 @@ new_ratings_df
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -1238,16 +1156,10 @@ new_ratings_df
 </table>
 </div>
 
-
-
-
 ```python
 ratings2 = pd.concat([ratings, new_ratings_df], ignore_index=True)
 ratings2.tail(5)
 ```
-
-
-
 
 <div>
 <style scoped>
@@ -1262,6 +1174,7 @@ ratings2.tail(5)
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -1313,10 +1226,7 @@ ratings2.tail(5)
 </table>
 </div>
 
-
-
 We validate our new ratings have been added, then train a new model with 3 epochs this time (because I am impatient).
-
 
 ```python
 dls = CollabDataLoaders.from_df(
@@ -1334,12 +1244,9 @@ learner2 = collab_learner(
 )
 ```
 
-
 ```python
 learner2.fit_one_cycle(3)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -1356,9 +1263,6 @@ learner2.fit_one_cycle(3)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -1391,13 +1295,9 @@ learner2.fit_one_cycle(3)
   </tbody>
 </table>
 
-
-
 ```python
 get_preds(learner2, ratings2)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -1415,15 +1315,6 @@ get_preds(learner2, ratings2)
     }
 </style>
 
-
-
-
-
-
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1437,6 +1328,7 @@ get_preds(learner2, ratings2)
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -1593,14 +1485,11 @@ get_preds(learner2, ratings2)
 </table>
 </div>
 
-
-
 We see these ratings are a bit different and not _just_ that the three ratings I added are removed from the predictions.
 These predictions seem ok, but the movies skew a bit older than I typically like.
 It's hard to explain quantitatively, but I think we can improve on this.
 
 With the model training process down reasonably well, we're going to train a model with more factors to see how the predictions change and hopefully improve.
-
 
 ```python
 dls = CollabDataLoaders.from_df(
@@ -1618,12 +1507,9 @@ learner3 = collab_learner(
 )
 ```
 
-
 ```python
 learner3.fit_one_cycle(3)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -1640,9 +1526,6 @@ learner3.fit_one_cycle(3)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -1675,17 +1558,13 @@ learner3.fit_one_cycle(3)
   </tbody>
 </table>
 
-
 This model ended up training faster than I expected.
 Here are the recommendations:
-
 
 ```python
 recommendations = get_preds(learner3, ratings2)
 recommendations
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -1703,15 +1582,6 @@ recommendations
     }
 </style>
 
-
-
-
-
-
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -1725,6 +1595,7 @@ recommendations
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -1881,12 +1752,9 @@ recommendations
 </table>
 </div>
 
-
-
 The predictions are pretty similar to the previous models.
 It seems like I misunderstood the meaning of `bs` (batch size) which when larger, can get stuck in local minima.
 The `fastai` `bs` [default](https://docs.fast.ai/collab.html) is 64, so let's try training another model with that.
-
 
 ```python
 dls = CollabDataLoaders.from_df(
@@ -1904,12 +1772,9 @@ learner4 = collab_learner(
 )
 ```
 
-
 ```python
 learner4.fit_one_cycle(3)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -1926,9 +1791,6 @@ learner4.fit_one_cycle(3)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -1961,17 +1823,13 @@ learner4.fit_one_cycle(3)
   </tbody>
 </table>
 
-
 Forty five minutes later and our model is trained.
 Let's see how we did.
-
 
 ```python
 recommendations = get_preds(learner4, ratings2)
 recommendations
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -1989,15 +1847,6 @@ recommendations
     }
 </style>
 
-
-
-
-
-
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -2011,6 +1860,7 @@ recommendations
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -2167,8 +2017,6 @@ recommendations
 </table>
 </div>
 
-
-
 Qualitatively, I think these predictions are an improvement.
 The movies are a bit newer than surfaced by the other models and there are more in this list that either I've already seen or that have been recommended to me by friends.
 
@@ -2176,7 +2024,6 @@ Let's see if we can reduce `n_factors` and still get what appear to be good resu
 
 My goal is to find a balance of prediction quality and speed of training that makes it reasonable to retrain a model whenever I update my ratings list.
 It's possible faster training will sacrifice quality too much on my hardware but let's see.
-
 
 ```python
 dls = CollabDataLoaders.from_df(
@@ -2194,12 +2041,9 @@ learner5 = collab_learner(
 )
 ```
 
-
 ```python
 learner5.fit_one_cycle(3)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -2216,9 +2060,6 @@ learner5.fit_one_cycle(3)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -2251,14 +2092,10 @@ learner5.fit_one_cycle(3)
   </tbody>
 </table>
 
-
-
 ```python
 recommendations = get_preds(learner5, ratings2)
 recommendations
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -2276,15 +2113,6 @@ recommendations
     }
 </style>
 
-
-
-
-
-
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -2298,6 +2126,7 @@ recommendations
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -2454,19 +2283,14 @@ recommendations
 </table>
 </div>
 
-
-
 These seem reasonably similar.
 Not so surprisingly if you haven't seen Lord of the Rings or Star Wars, the model thinks you should.
 
 Do things change with further training?
 
-
 ```python
 learner5.fit_one_cycle(2)
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -2483,9 +2307,6 @@ learner5.fit_one_cycle(2)
         background: #F44336;
     }
 </style>
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -2512,14 +2333,10 @@ learner5.fit_one_cycle(2)
   </tbody>
 </table>
 
-
-
 ```python
 recommendations = get_preds(learner5, ratings2)
 recommendations
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -2537,15 +2354,6 @@ recommendations
     }
 </style>
 
-
-
-
-
-
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -2559,6 +2367,7 @@ recommendations
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -2715,12 +2524,9 @@ recommendations
 </table>
 </div>
 
-
-
 Not too different.
 
 Let's add some more filtering capabilities to our prediction generator.
-
 
 ```python
 def get_preds(learner, ratings, user_id=99999, num_recs=20, exclude_terms=None):
@@ -2745,13 +2551,10 @@ def get_preds(learner, ratings, user_id=99999, num_recs=20, exclude_terms=None):
 
 ```
 
-
 ```python
 recommendations = get_preds(learner5, ratings2, exclude_terms=['Star Wars', 'Lord of the Rings'])
 recommendations
 ```
-
-
 
 <style>
     /* Turns off some styling */
@@ -2769,15 +2572,6 @@ recommendations
     }
 </style>
 
-
-
-
-
-
-
-
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -2791,6 +2585,7 @@ recommendations
     .dataframe thead th {
         text-align: right;
     }
+
 </style>
 <table border="1" class="dataframe">
   <thead>
@@ -2946,8 +2741,6 @@ recommendations
   </tbody>
 </table>
 </div>
-
-
 
 Nice.
 Lots of movies I have heard of or have seen but haven't added ratings for (which I liked).

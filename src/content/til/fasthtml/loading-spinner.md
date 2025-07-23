@@ -14,7 +14,6 @@ I'm still getting used to it but it almost no effort at all to deploy.
 Recently, I built an app that would benefit from having a loading spinner upon submitting a form, but I couldn't quite figure out how I would do that with [`htmx`](https://htmx.org/) in FastHTML, so I built a small project to experiment with various approaches.
 This is what I came up with:
 
-
 ```python
 import time
 from fasthtml.common import *
@@ -110,16 +109,16 @@ Using this CSS flips the visibility of the button copy and the bars loading anim
 
 ```css
 .indicator {
-    display: none;
+  display: none;
 }
 .htmx-request .indicator {
-    display: inline-block;
+  display: inline-block;
 }
 .button-content {
-    display: inline-block;
+  display: inline-block;
 }
 .htmx-request .button-content {
-    display: none;
+  display: none;
 }
 ```
 

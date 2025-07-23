@@ -9,11 +9,18 @@ interface SearchOverlayProps {
 
 interface SearchResult {
   type: 'post' | 'log' | 'til';
-  item: CollectionEntry<'posts'> | CollectionEntry<'logs'> | CollectionEntry<'til'>;
+  item:
+    | CollectionEntry<'posts'>
+    | CollectionEntry<'logs'>
+    | CollectionEntry<'til'>;
   score: number;
 }
 
-export default function SearchOverlay({ posts, logs, tils }: SearchOverlayProps) {
+export default function SearchOverlay({
+  posts,
+  logs,
+  tils,
+}: SearchOverlayProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -227,7 +234,10 @@ export default function SearchOverlay({ posts, logs, tils }: SearchOverlayProps)
   }, [query, posts, logs, tils]);
 
   const formatDate = (
-    item: CollectionEntry<'posts'> | CollectionEntry<'logs'> | CollectionEntry<'til'>
+    item:
+      | CollectionEntry<'posts'>
+      | CollectionEntry<'logs'>
+      | CollectionEntry<'til'>
   ) => {
     if ('publishedAt' in item.data && item.data.publishedAt) {
       return new Date(item.data.publishedAt).toLocaleDateString('en-US', {
@@ -371,11 +381,21 @@ export default function SearchOverlay({ posts, logs, tils }: SearchOverlayProps)
                       </div>
                       <div className="ml-4 flex-shrink-0 text-right">
                         <a
-                          href={result.type === 'post' ? '/posts' : result.type === 'log' ? '/logs' : '/til'}
+                          href={
+                            result.type === 'post'
+                              ? '/posts'
+                              : result.type === 'log'
+                                ? '/logs'
+                                : '/til'
+                          }
                           className="inline-block px-3 py-1 text-xs rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900 text-blue-800 dark:text-blue-200 transition-all hover:bg-blue-100 hover:border-blue-300 dark:hover:bg-blue-800 no-underline font-medium"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          {result.type === 'post' ? 'Posts' : result.type === 'log' ? 'Logs' : 'TIL'}
+                          {result.type === 'post'
+                            ? 'Posts'
+                            : result.type === 'log'
+                              ? 'Logs'
+                              : 'TIL'}
                         </a>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {formatDate(item)}
