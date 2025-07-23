@@ -6,7 +6,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
-import styles from './ReactCalendar.v1.module.css';
+import styles from './ReactCalendarv1.module.css';
 
 type Task = {
   id: string;
@@ -36,16 +36,16 @@ export default function Calendar() {
         return prev.map((entry) =>
           entry.date.toDateString() === selectedDate.toDateString()
             ? {
-                ...entry,
-                tasks: [
-                  ...entry.tasks,
-                  {
-                    id: crypto.randomUUID(),
-                    text: newTask,
-                    status: 'todo',
-                  },
-                ],
-              }
+              ...entry,
+              tasks: [
+                ...entry.tasks,
+                {
+                  id: crypto.randomUUID(),
+                  text: newTask,
+                  status: 'todo',
+                },
+              ],
+            }
             : entry
         );
       }
