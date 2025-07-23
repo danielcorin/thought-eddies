@@ -1,7 +1,6 @@
 ---
 title: 'Developing a Mental Model for using Models'
 createdAt: 2025-02-14T17:29:28Z
-updatedAt: 2025-07-18T17:29:28Z
 draft: false
 tags:
   - language_models

@@ -1,0 +1,84 @@
+---
+import Navigation from '@components/layout/Navigation.astro';
+import Pagination from '@components/Pagination.astro';
+import PostCard from '@components/PostCard.astro';
+import Layout from '@layouts/Layout.astro';
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+
+export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
+  // Get both posts and TILs
+  const posts = await getCollection('posts');
+  const tils = await getCollection('til');
+
+  // Filter and prepare posts
+  const publishedPosts = posts
+    .filter((post) => !post.data.draft && !post.id.includes('level'))
+    .map((post) => ({
+      ...post,
+      collection: 'posts' as const,
+      displayDate: post.data.publishedAt || post.data.createdAt,
+    }));
+
+  // Filter and prepare TILs
+  const publishedTils = tils
+    .filter((til) => !til.data.draft)
+    .map((til) => ({
+      ...til,
+      collection: 'til' as const,
+      displayDate: til.data.publishedAt || til.data.createdAt,
+      data: {
+        ...til.data,
+        category: til.id.split('/')[0],
+      },
+    }));
+
+  // Combine and sort by date
+  const allContent = [...publishedPosts, ...publishedTils].sort(
+    (a, b) => b.displayDate.valueOf() - a.displayDate.valueOf()
+  );
+
+  // Use Astro's paginate function
+  return paginate(allContent, { pageSize: 10 });
+};
+
+const { page } = Astro.props as { page: any };
+const ogImage = `/og.png`;
+---
+
+<Layout ogImage={ogImage}>
+  <Navigation selected="home" />
+  <main>
+    <h1 class="page-title">Thought Eddies</h1>
+
+    <div class="toc">
+      {page.data.map((item: any) => <PostCard post={item} variant="list" showTypeLabel={true} />)}
+    </div>
+
+    {
+      page.lastPage > 1 && (
+        <div class="pagination-bottom">
+          <Pagination
+            currentPage={page.currentPage}
+            lastPage={page.lastPage}
+            prevUrl={page.url.prev}
+            nextUrl={page.url.next}
+            baseUrl="/page"
+          />
+        </div>
+      )
+    }
+  </main>
+</Layout>
+
+<style>
+  .page-subtitle {
+    color: var(--color-ink-light);
+    margin-top: calc(var(--spacing-base) * -1);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .pagination-bottom {
+    margin-top: var(--spacing-xl);
+  }
+</style>

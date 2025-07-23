@@ -1,21 +1,88 @@
 ---
-import Navigation from "@components/layout/Navigation.astro";
-import Layout from "@layouts/Layout.astro";
-import { getCollection, render, type CollectionEntry } from "astro:content";
+import Navigation from '@components/layout/Navigation.astro';
+import Pagination from '@components/Pagination.astro';
+import PostCard from '@components/PostCard.astro';
+import Layout from '@layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
-const collection = "home";
-const homeEntries = await getCollection(collection);
-const home = homeEntries[0] as CollectionEntry<"home">;
-const { Content } = await render(home);
+// Get both posts and TILs
+const posts = await getCollection('posts');
+const tils = await getCollection('til');
+
+// Filter and prepare posts
+const publishedPosts = posts
+  .filter((post) => !post.data.draft && !post.id.includes('level'))
+  .map((post) => ({
+    ...post,
+    collection: 'posts' as const,
+    displayDate: post.data.publishedAt || post.data.createdAt,
+  }));
+
+// Filter and prepare TILs
+const publishedTils = tils
+  .filter((til) => !til.data.draft)
+  .map((til) => ({
+    ...til,
+    collection: 'til' as const,
+    displayDate: til.data.publishedAt || til.data.createdAt,
+    data: {
+      ...til.data,
+      category: til.id.split('/')[0],
+    },
+  }));
+
+// Combine and sort by date
+const allContent = [...publishedPosts, ...publishedTils].sort(
+  (a, b) => b.displayDate.valueOf() - a.displayDate.valueOf()
+);
+
+// Manual pagination for the first page
+const pageSize = 10;
+const currentPage = 1;
+const totalItems = allContent.length;
+const lastPage = Math.ceil(totalItems / pageSize);
+const paginatedContent = allContent.slice(0, pageSize);
+
 const ogImage = `/og.png`;
 ---
 
 <Layout ogImage={ogImage}>
-  <Navigation selected={collection} />
+  <Navigation selected="home" />
   <main>
-    <h1 class="page-title">{home.data.title}</h1>
-    <div class="content">
-      <Content />
+    <h1 class="page-title">Thought Eddies</h1>
+
+    <div class="toc">
+      {
+        paginatedContent.map((item: any) => (
+          <PostCard post={item} variant="list" showTypeLabel={true} />
+        ))
+      }
     </div>
+
+    {
+      lastPage > 1 && (
+        <div class="pagination-bottom">
+          <Pagination
+            currentPage={currentPage}
+            lastPage={lastPage}
+            prevUrl={null}
+            nextUrl="/page/2"
+            baseUrl="/"
+          />
+        </div>
+      )
+    }
   </main>
 </Layout>
+
+<style>
+  .page-subtitle {
+    color: var(--color-ink-light);
+    margin-top: calc(var(--spacing-base) * -1);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .pagination-bottom {
+    margin-top: var(--spacing-xl);
+  }
+</style>

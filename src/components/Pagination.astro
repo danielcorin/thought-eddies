@@ -25,6 +25,9 @@ const pageNumbers = Array.from(
 
 // Helper to generate page URL
 function getPageUrl(pageNum: number): string {
+  if (baseUrl === '/') {
+    return pageNum === 1 ? '/' : `/page/${pageNum}`;
+  }
   return pageNum === 1 ? baseUrl : `${baseUrl}/${pageNum}`;
 }
 ---
@@ -42,7 +45,7 @@ function getPageUrl(pageNum: number): string {
   <div class="page-numbers">
     {startPage > 1 && (
       <>
-        <a href={baseUrl} class="page-number">
+        <a href={getPageUrl(1)} class="page-number">
           1
         </a>
         {startPage > 2 && <span class="ellipsis">...</span>}

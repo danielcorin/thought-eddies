@@ -11,7 +11,7 @@ const { selected } = Astro.props;
 
 <nav class="site-nav">
   {
-    ['', 'posts', 'til', 'logs', 'feeds'].map((item) => (
+    ['', 'posts', 'til', 'logs', 'feeds', 'about'].map((item) => (
       <a
         href={`/${item === '' ? '' : item}`}
         class={
@@ -27,15 +27,15 @@ const { selected } = Astro.props;
       >
         <span class="nav-item">
           <Icon
-            name={`ph:${item === '' ? 'house' : item === 'posts' ? 'note' : item === 'til' ? 'lightbulb' : item === 'logs' ? 'pencil-line' : 'rss'}`}
+            name={`ph:${item === '' ? 'house' : item === 'posts' ? 'note' : item === 'til' ? 'lightbulb' : item === 'logs' ? 'pencil-line' : item === 'feeds' ? 'rss' : 'user'}`}
             class="inline-icon"
           />
           <span class="nav-text">
             {item === ''
               ? 'Home'
               : item === 'til'
-              ? 'TIL'
-              : item.charAt(0).toUpperCase() + item.slice(1)}
+                ? 'TIL'
+                : item.charAt(0).toUpperCase() + item.slice(1)}
           </span>
         </span>
       </a>
@@ -52,11 +52,6 @@ const { selected } = Astro.props;
         <Icon name="ph:magnifying-glass" class="inline-icon nav-icon" />
       </span>
     </button>
-    <a href="/rss.xml" class="nav-link nav-icon-link" aria-label="RSS Feed">
-      <span class="nav-item">
-        <Icon name="ph:rss" class="inline-icon nav-icon" />
-      </span>
-    </a>
     <button
       id="theme-toggle"
       class="nav-link nav-icon-link"
