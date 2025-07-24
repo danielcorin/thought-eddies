@@ -143,7 +143,7 @@ OPENAI_API_KEY=<your key>
 
 `Dockerfile`
 
-```Dockerfile
+```txt
 FROM python:slim
 WORKDIR /usr/src/app
 COPY requirements.txt ./

@@ -16,6 +16,6 @@ const { Content } = await render(log);
 const ogImage = `/logs/${log.id}/og.png`;
 ---
 
-<LogLayout frontmatter={log.data} ogImage={ogImage}>
+<LogLayout frontmatter={log.data} ogImage={ogImage} slug={log.id}>
     <Content />
 </LogLayout>

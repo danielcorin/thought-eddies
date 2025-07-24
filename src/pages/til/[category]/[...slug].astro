@@ -32,7 +32,7 @@ const frontmatterWithCategory = {
 };
 ---
 
-<PostLayout frontmatter={frontmatterWithCategory} ogImage={ogImage}>
+<PostLayout frontmatter={frontmatterWithCategory} ogImage={ogImage} slug={til.id}>
   <TableOfContents title={til.data.title} headings={headings} />
   <Content />
 </PostLayout>

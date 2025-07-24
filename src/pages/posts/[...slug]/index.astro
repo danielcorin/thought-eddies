@@ -29,7 +29,7 @@ const ogImage = `/posts/${post.id}/og.png`;
       <Content />
     </ZoomableNoteLayout>
   ) : (
-    <PostLayout frontmatter={post.data} ogImage={ogImage}>
+    <PostLayout frontmatter={post.data} ogImage={ogImage} slug={post.id}>
       <TableOfContents title={post.data.title} headings={headings} />
       <Content />
     </PostLayout>
