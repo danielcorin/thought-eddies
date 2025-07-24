@@ -5,7 +5,7 @@ import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
 
-const { frontmatter, ogImage } = Astro.props;
+const { frontmatter, ogImage, slug } = Astro.props;
 
 // Get all logs to find prev/next
 const allLogs = await getCollection("logs");
@@ -106,6 +106,13 @@ const nextLog =
 
       <div class="content">
         <slot />
+      </div>
+
+      <div class="raw-link">
+        <a href={`/logs/${slug.replace(/\.(md|mdx)$/, '')}/index.md`} class="raw-button">
+          <Icon name="ph:code" />
+          <span>raw</span>
+        </a>
       </div>
     </article>
   </main>
@@ -220,6 +227,36 @@ const nextLog =
     gap: 0.5rem;
     margin-top: 1rem;
     margin-bottom: 1rem;
+  }
+
+  .raw-link {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: var(--spacing-xl);
+  }
+
+  .raw-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-bg-code);
+    color: var(--color-ink);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .raw-button:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-accent);
+  }
+
+  .raw-button svg {
+    width: 1rem;
+    height: 1rem;
   }
 </style>
 
