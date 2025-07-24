@@ -51,7 +51,7 @@ hugo mod get -u
 
 which should add the module to the `go.mod` file
 
-```mod
+```text
 module github.com/danielcorin/blog
 
 go 1.19

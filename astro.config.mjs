@@ -18,6 +18,9 @@ export default defineConfig({
     host: true,
     allowedHosts: ['local.danielcorin.com'],
   },
+  build: {
+    concurrency: 5,
+  },
   integrations: [
     react(),
     expressiveCode(),
