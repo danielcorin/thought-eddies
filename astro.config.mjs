@@ -6,6 +6,8 @@ import vercel from '@astrojs/vercel';
 import icon from 'astro-icon';
 import { defineConfig } from 'astro/config';
 import markdownIntegration from '@astropub/md';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 import sitemap from '@astrojs/sitemap';
 
@@ -21,7 +23,30 @@ export default defineConfig({
   integrations: [
     react(),
     expressiveCode(),
-    mdx(),
+    mdx({
+      rehypePlugins: [
+        rehypeSlug,
+        [
+          rehypeAutolinkHeadings,
+          {
+            behavior: 'after',
+            properties: {
+              className: ['anchor-link'],
+              ariaHidden: true,
+              tabIndex: -1,
+            },
+            content: {
+              type: 'element',
+              tagName: 'span',
+              properties: {
+                className: ['anchor-hash'],
+              },
+              children: [{ type: 'text', value: '#' }],
+            },
+          },
+        ],
+      ],
+    }),
     tailwind(),
     icon(),
     sitemap(),
@@ -32,6 +57,28 @@ export default defineConfig({
       theme: 'monokai',
       wrap: true,
     },
+    rehypePlugins: [
+      rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: 'after',
+          properties: {
+            className: ['anchor-link'],
+            ariaHidden: true,
+            tabIndex: -1,
+          },
+          content: {
+            type: 'element',
+            tagName: 'span',
+            properties: {
+              className: ['anchor-hash'],
+            },
+            children: [{ type: 'text', value: '#' }],
+          },
+        },
+      ],
+    ],
   },
   adapter: vercel(),
 });

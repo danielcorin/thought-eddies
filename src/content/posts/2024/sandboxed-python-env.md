@@ -136,7 +136,7 @@ First, I created a new project with the following files and contents
 
 `.env`
 
-```env
+```txt
 OPENAI_API_KEY=<your key>
 # any other variables
 ```
