@@ -10,7 +10,7 @@ tags: ["agents", "checkpoints", "context_engineering", "vibe_coding"]
 
 import Sidenote from '@components/prose/Sidenote.astro';
 
-Cursor was my first experience with the UX pattern of checkpoints when working with a coding agent.
+Working with Cursor was my first experience with the UX pattern of checkpoints when working with a coding agent.
 If you're not familiar, it works like this.
 
 - The user types a message into an agent-based IDE tool like Cursor, Windsurf, or [Cline](https://github.com/cline/cline) and submits it to the agent.
@@ -27,15 +27,15 @@ If you're not, this is probably the main feature value proposition of Cursor ove
 
 Managing the side effects of coding agents is one of the hardest parts of using them.
 
-For non-engineers, editing a code project is like editing 10s of text documents simultaneously and the undo hotkey doesn't work.
-They send a prompt and a ton of stuff happens.
+For non-engineers, editing a code project is like editing dozens of text documents simultaneously and the undo hotkey doesn't work.
+You send a prompt and a ton of stuff happens.
 The IDE tool shows them which lines were added and which were removed but it is low-value signal for them.
 The non-engineer's primary tool for figuring out if the agent did what it was prompted to do is to verify it looks and behaves how they intended.
 
-When verification fails they must go back to the last prior working state.
+When verification fails you must go back to the last prior working state.
 This is where checkpoints are critical.
 
-The ability to revert to the state to "what was working right before I did that last thing" is the fundamental loop that makes creating software as a non-engineer possible.
+The ability to revert to the state of "what was working right before I did that last thing" is the fundamental loop that makes creating software as a non-engineer possible.
 It's the ability to go back to a prior state and try again.
 
 Software engineers underrate this challenge for two reasons:
@@ -65,7 +65,7 @@ But this doesn't just mean clearing the session often.
 It means carefully deciding when you choose to continue a conversation and when you throw the agent's response away and revert to a prior snapshot of the codebase.
 
 The goal is to find a <Sidenote content="Like a physical groove in wood or a vinyl record. But also like a musical groove where you _feel_ aligned with the rhythm. It's called 'vibe coding' for a reason. There is as much art to this as there is science.">groove</Sidenote> with the agent.
-Agents are relatively good at finding the relevant files in a codebase that needed editing to implement instructions described in a prompt but they don't always get this right.
+Agents are relatively good at finding the relevant files in a codebase that need editing to implement instructions described in a prompt but they don't always get this right.
 
 Trained software engineers might take a more active role in managing the code included as context for the agent.
 But, as a non-engineer, if you don't know what any of the code does, you still need to find a way to get the agent to do the work.
@@ -78,9 +78,9 @@ You begin a new conversation probing around in latency space, trying to find a g
 This is a confluence of the right prompt that elicits the agent to search the codebase such that it finds the right files, then changes those files in a way that is consistent with the prompt, confirmed by the user's own verification.
 
 Once you catch this groove, you are in a great position.
-You can continue to follow the groove and send follow up prompts to the agent to refine the first implementation to get it more aligned with your intent.
+You can continue to follow the groove and send follow-up prompts to the agent to refine the first implementation to get it more aligned with your intent.
 But if you find that the agent is all of a sudden out of the groove, stop.
-Retrace your steps and try to get back onto the well worn path.
+Retrace your steps and try to get back onto the well-worn path.
 
 Don't try and correct the agent.
 Go back to the previous prompt and correct yourself.
