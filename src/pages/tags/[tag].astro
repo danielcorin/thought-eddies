@@ -65,7 +65,7 @@ const taggedTils = tils
 const allTaggedContent = [...taggedPosts, ...taggedLogs, ...taggedTils]
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-const ogImage = `/tags/${encodeURIComponent(tag)}/og.png`;
+const ogImage = `/tags/og.png`;
 ---
 
 <Layout title={`Tag: ${tag}`} ogImage={ogImage}>

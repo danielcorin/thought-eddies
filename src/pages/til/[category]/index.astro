@@ -24,7 +24,7 @@ const categoryTils = allTils
   .filter((til) => !til.data.draft && til.id.split('/')[0] === category)
   .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
 
-const ogImage = `/til/${category}/og.png`;
+const ogImage = `/til/og.png`;
 ---
 
 <Layout title={`TIL - ${category}`} ogImage={ogImage}>
