@@ -41,6 +41,8 @@ export interface OGContent {
   title: string;
   description?: string;
   subtitle?: string;
+  category?: string;
+  date?: string;
 }
 
 export async function generateOGImage(content: OGContent): Promise<Response> {
@@ -56,8 +58,6 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
           flexDirection: 'column',
           width: '100%',
           height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
           background:
             'linear-gradient(135deg, #1c1b17 0%, #2a2620 50%, #1a1814 100%)',
           position: 'relative',
@@ -96,7 +96,34 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
               },
             },
           },
-          // Main content container
+          // Header with site name
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                top: '60px',
+                left: '60px',
+                right: '60px',
+                display: 'flex',
+                alignItems: 'center',
+              },
+              children: {
+                type: 'span',
+                props: {
+                  style: {
+                    fontSize: '32px',
+                    fontWeight: 600,
+                    letterSpacing: '0.1em',
+                    color: '#cccccc',
+                    textTransform: 'uppercase',
+                  },
+                  children: 'Thought Eddies',
+                },
+              },
+            },
+          },
+          // Main content - centered
           {
             type: 'div',
             props: {
@@ -105,116 +132,168 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: isMainPage ? '80px 60px' : '60px 60px',
-                maxWidth: '1000px',
-                textAlign: 'center',
+                flex: 1,
+                padding: '120px 60px',
                 position: 'relative',
                 zIndex: 1,
               },
-              children: [
-                // Main title
-                {
-                  type: 'h1',
-                  props: {
-                    style: {
-                      fontSize: isMainPage ? '84px' : '68px',
-                      fontWeight: 700,
-                      margin: '0 0 ' + (isMainPage ? '32px' : '24px') + ' 0',
-                      background:
-                        'linear-gradient(135deg, #cccccc 0%, #ffffff 30%, #e8e8e8 70%, #cccccc 100%)',
-                      backgroundClip: 'text',
-                      color: 'transparent',
-                      lineHeight: 1.25,
-                      letterSpacing: '-0.02em',
-                      textShadow: '0 0 40px rgba(204,204,204,0.2)',
-                      paddingBottom: '12px',
-                    },
-                    children: content.title,
-                  },
-                },
-                // Description
-                content.description
-                  ? {
-                      type: 'p',
+              children: isMainPage
+                ? [
+                    // Main page title
+                    {
+                      type: 'h1',
                       props: {
                         style: {
-                          fontSize: isMainPage ? '32px' : '28px',
-                          fontWeight: 400,
-                          margin:
-                            '0 0 ' + (isMainPage ? '40px' : '32px') + ' 0',
-                          color: '#a8a8a8',
-                          lineHeight: 1.4,
-                          letterSpacing: '-0.01em',
-                          maxWidth: '800px',
+                          fontSize: '96px',
+                          fontWeight: 700,
+                          margin: '0 0 32px 0',
+                          background:
+                            'linear-gradient(135deg, #cccccc 0%, #ffffff 30%, #e8e8e8 70%, #cccccc 100%)',
+                          backgroundClip: 'text',
+                          color: 'transparent',
+                          lineHeight: 1.2,
+                          letterSpacing: '-0.02em',
+                          textShadow: '0 0 40px rgba(204,204,204,0.2)',
+                          textAlign: 'center',
                         },
-                        children: content.description,
+                        children: content.title,
                       },
-                    }
-                  : null,
-                // Subtitle/metadata bar
-                {
-                  type: 'div',
-                  props: {
-                    style: {
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '24px',
-                      padding: '16px 32px',
-                      background: 'rgba(204, 204, 204, 0.08)',
-                      backdropFilter: 'blur(12px)',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(74, 74, 74, 0.4)',
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
                     },
-                    children: content.subtitle
-                      ? content.subtitle
-                          .split(' • ')
-                          .map((part, index, array) => [
-                            {
-                              type: 'span',
-                              props: {
-                                style: {
-                                  fontSize: isMainPage ? '20px' : '18px',
-                                  fontWeight: 500,
-                                  color: '#cccccc',
-                                },
-                                children: part,
-                              },
+                    // Main page description
+                    content.description
+                      ? {
+                          type: 'p',
+                          props: {
+                            style: {
+                              fontSize: '36px',
+                              fontWeight: 400,
+                              margin: '0',
+                              color: '#a8a8a8',
+                              lineHeight: 1.4,
+                              letterSpacing: '-0.01em',
+                              textAlign: 'center',
                             },
-                            index < array.length - 1
-                              ? {
-                                  type: 'span',
-                                  props: {
-                                    style: {
-                                      color: '#4a4a4a',
-                                      fontSize: '16px',
-                                    },
-                                    children: '•',
-                                  },
-                                }
-                              : null,
-                          ])
-                          .flat()
-                          .filter(Boolean)
-                      : [
-                          {
-                            type: 'span',
-                            props: {
-                              style: {
-                                fontSize: isMainPage ? '20px' : '18px',
-                                fontWeight: 600,
-                                color: '#cccccc',
-                              },
-                              children: 'Thought Eddies',
-                            },
+                            children: content.description,
                           },
-                        ],
-                  },
-                },
-              ].filter(Boolean),
+                        }
+                      : null,
+                  ].filter(Boolean)
+                : [],
             },
           },
+          // Bottom section with title and metadata (for non-main pages)
+          !isMainPage
+            ? {
+                type: 'div',
+                props: {
+                  style: {
+                    position: 'absolute',
+                    bottom: '60px',
+                    left: '60px',
+                    right: '60px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '24px',
+                  },
+                  children: [
+                    // Title
+                    {
+                      type: 'h1',
+                      props: {
+                        style: {
+                          fontSize: '64px',
+                          fontWeight: 700,
+                          margin: '0',
+                          background:
+                            'linear-gradient(135deg, #cccccc 0%, #ffffff 30%, #e8e8e8 70%, #cccccc 100%)',
+                          backgroundClip: 'text',
+                          color: 'transparent',
+                          lineHeight: 1.2,
+                          letterSpacing: '-0.02em',
+                          textShadow: '0 0 40px rgba(204,204,204,0.2)',
+                        },
+                        children: content.title,
+                      },
+                    },
+                    // Description
+                    content.description
+                      ? {
+                          type: 'p',
+                          props: {
+                            style: {
+                              fontSize: '28px',
+                              fontWeight: 400,
+                              margin: '0',
+                              color: '#a8a8a8',
+                              lineHeight: 1.4,
+                              letterSpacing: '-0.01em',
+                              maxWidth: '900px',
+                            },
+                            children: content.description,
+                          },
+                        }
+                      : null,
+                    // Metadata row
+                    {
+                      type: 'div',
+                      props: {
+                        style: {
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '20px',
+                          flexWrap: 'wrap',
+                        },
+                        children: [
+                          // Category
+                          content.category
+                            ? {
+                                type: 'span',
+                                props: {
+                                  style: {
+                                    fontSize: '22px',
+                                    fontWeight: 500,
+                                    color: '#cccccc',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em',
+                                  },
+                                  children: content.category,
+                                },
+                              }
+                            : null,
+                          // Separator
+                          content.category && content.date
+                            ? {
+                                type: 'span',
+                                props: {
+                                  style: {
+                                    color: '#4a4a4a',
+                                    fontSize: '22px',
+                                  },
+                                  children: '•',
+                                },
+                              }
+                            : null,
+                          // Date
+                          content.date
+                            ? {
+                                type: 'span',
+                                props: {
+                                  style: {
+                                    fontSize: '22px',
+                                    fontWeight: 400,
+                                    color: '#a8a8a8',
+                                  },
+                                  children: content.date,
+                                },
+                              }
+                            : null,
+                        ].filter(Boolean),
+                      },
+                    },
+                  ].filter(Boolean),
+                },
+              }
+            : null,
           // Decorative elements
           {
             type: 'div',
@@ -248,7 +327,7 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
               },
             },
           },
-        ],
+        ].filter(Boolean),
       },
     };
 

@@ -21,13 +21,15 @@ Try it yourself!
 You will probably receive a response quite similar to what I got.
 Related: I need to start saving my model conversations in a consistent format.
 
-<Chat messages={[
-  {
-    role: 'user',
-    content: "Hi! I want to create a simple game using web technology. The game is a variation on tic-tac-toe. It will use the same board but the mechanics of playing are slightly changed. The game has two players. Each player proposes two moves then submits them. The server receives these two moves then awards the square to a player only that player was the only one of the two to propose the move. If both players propose a move at the same position, neither player gets the square. If neither player proposes a move at a square, nothing happens.<br/><br/>We will start simple. The game cannot start until two players connect to the web server. Manage these two connections over a websocket. When both players join, match them on the server, then notify the client whether it is playing as X or O. From here, both players will need to submit moves. Each should select two unoccupied spots from the board, then click a \"lock\" button in the UI. Once, both players select lock, the server should determine the new board state based on the logic described above, then send the new board state to both players. This process repeats until on player gets tic-tac-toe or it's not longer possible for either player to win.<br/><br/>When it's no longer possible for either player to win, the client should display a \"new game\" button to both players on the client. If either player clicks this button, a new game with an empty board should begin.<br/><br/>Please write client and server side code for this game, including any html and css"
-  }
-]} />
-
+<Chat
+  messages={[
+    {
+      role: 'user',
+      content:
+        'Hi! I want to create a simple game using web technology. The game is a variation on tic-tac-toe. It will use the same board but the mechanics of playing are slightly changed. The game has two players. Each player proposes two moves then submits them. The server receives these two moves then awards the square to a player only that player was the only one of the two to propose the move. If both players propose a move at the same position, neither player gets the square. If neither player proposes a move at a square, nothing happens.<br/><br/>We will start simple. The game cannot start until two players connect to the web server. Manage these two connections over a websocket. When both players join, match them on the server, then notify the client whether it is playing as X or O. From here, both players will need to submit moves. Each should select two unoccupied spots from the board, then click a "lock" button in the UI. Once, both players select lock, the server should determine the new board state based on the logic described above, then send the new board state to both players. This process repeats until on player gets tic-tac-toe or it\'s not longer possible for either player to win.<br/><br/>When it\'s no longer possible for either player to win, the client should display a "new game" button to both players on the client. If either player clicks this button, a new game with an empty board should begin.<br/><br/>Please write client and server side code for this game, including any html and css',
+    },
+  ]}
+/>
 
 Claude outputted code for the following files
 
@@ -53,16 +55,20 @@ Next, I started trying to submit moves.
 The server seemed to be receiving the moves but not notifying the clients of the new board state after calculating it.
 I asked Cursor in chat (also using Sonnet) to look at `server.js` and `public/script.js` to figure out why the clients weren't updating.
 
-<Chat messages={[
-  {
-    role: 'user',
-    content: "look at @script.js and @server.js and help me figure out why my clients aren't receiving the boardUpdate event"
-  },
-  {
-    role: 'assistant',
-    content: "The issue seems to be with the way you're trying to emit the 'boardUpdate' event to a specific room in your server.js file. The `io.to(gameId).emit('boardUpdate', { board: newBoard, turn: game.turn });` line is trying to emit an event to a room that doesn't exist.<br/><br/>In Socket.IO, rooms are a way of broadcasting an event to a specific group of sockets. You can add a socket to a room using the `socket.join(room)` method. However, in your code, you never add the sockets to a room."
-  }
-]} />
+<Chat
+  messages={[
+    {
+      role: 'user',
+      content:
+        "look at @script.js and @server.js and help me figure out why my clients aren't receiving the boardUpdate event",
+    },
+    {
+      role: 'assistant',
+      content:
+        "The issue seems to be with the way you're trying to emit the 'boardUpdate' event to a specific room in your server.js file. The `io.to(gameId).emit('boardUpdate', { board: newBoard, turn: game.turn });` line is trying to emit an event to a room that doesn't exist.<br/><br/>In Socket.IO, rooms are a way of broadcasting an event to a specific group of sockets. You can add a socket to a room using the `socket.join(room)` method. However, in your code, you never add the sockets to a room.",
+    },
+  ]}
+/>
 
 Then, it suggested a code change to `server.js` to fix this, which just worked.
 

@@ -22,5 +22,6 @@ export async function GET({ params }: { params: { year: string } }) {
   return generateOGImage({
     title: `Logs ${year}`,
     description: `${yearLogs.length} logs from ${year}`,
+    category: 'Archive',
   });
 }

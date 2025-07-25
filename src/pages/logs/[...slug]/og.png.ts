@@ -26,6 +26,8 @@ export async function GET({ params }: { params: { slug: string } }) {
 
   return generateOGImage({
     title: log.data.title,
-    description: formattedDate,
+    description: log.data.description,
+    category: 'Logs',
+    date: formattedDate,
   });
 }

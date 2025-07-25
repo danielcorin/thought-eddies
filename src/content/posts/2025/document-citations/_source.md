@@ -16,9 +16,9 @@ Previously, developers relied on complex prompts that instruct Claude to include
 
 With Citations, developers can create AI solutions that offer enhanced accountability across use cases like:
 
-*   Document summarization: Generate concise summaries of long documents, like case files, with each key point linked back to its original source.
-*   Complex Q&A: Provide detailed answers to user queries across a large corpus of documents, like financial statements, with each response element traced back to specific sections of relevant texts.
-*   Customer support: Create support systems that can answer complex queries by referencing multiple product manuals, FAQs, and support tickets, always citing the exact source of information.
+- Document summarization: Generate concise summaries of long documents, like case files, with each key point linked back to its original source.
+- Complex Q&A: Provide detailed answers to user queries across a large corpus of documents, like financial statements, with each response element traced back to specific sections of relevant texts.
+- Customer support: Create support systems that can answer complex queries by referencing multiple product manuals, FAQs, and support tickets, always citing the exact source of information.
 
 ## How it works
 

@@ -55,5 +55,6 @@ export async function GET({
   return generateOGImage({
     title: `${monthName} ${year}`,
     description: `${monthLogs.length} logs from ${monthName} ${year}`,
+    category: 'Archive',
   });
 }

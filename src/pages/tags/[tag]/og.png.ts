@@ -30,5 +30,6 @@ export async function GET({ params }: { params: { tag: string } }) {
   return generateOGImage({
     title: params.tag,
     description: `${totalCount} ${totalCount === 1 ? 'entry' : 'entries'} tagged with #${params.tag}`,
+    category: 'Tags',
   });
 }

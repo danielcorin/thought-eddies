@@ -9,5 +9,6 @@ export async function GET() {
   return generateOGImage({
     title: 'Posts',
     description: `${postsCount} posts and experiments`,
+    category: 'Archive',
   });
 }
