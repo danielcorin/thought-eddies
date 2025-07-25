@@ -18,17 +18,20 @@ export const GET: APIRoute = async ({ params }) => {
 
   try {
     const entry = await getEntry('logs', slug);
-    
+
     if (!entry) {
       return new Response('Not found', { status: 404 });
     }
 
     // Reconstruct the full markdown with frontmatter
     const frontmatter = Object.entries(entry.data)
-      .filter(([_, value]) => value !== null && !(Array.isArray(value) && value.length === 0))
+      .filter(
+        ([_, value]) =>
+          value !== null && !(Array.isArray(value) && value.length === 0)
+      )
       .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
       .join('\n');
-    
+
     const fullContent = `---\n${frontmatter}\n---\n\n${entry.body}`;
 
     return new Response(fullContent, {

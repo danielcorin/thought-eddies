@@ -36,16 +36,16 @@ export default function Calendar() {
         return prev.map((entry) =>
           entry.date.toDateString() === selectedDate.toDateString()
             ? {
-              ...entry,
-              tasks: [
-                ...entry.tasks,
-                {
-                  id: crypto.randomUUID(),
-                  text: newTask,
-                  status: 'todo',
-                },
-              ],
-            }
+                ...entry,
+                tasks: [
+                  ...entry.tasks,
+                  {
+                    id: crypto.randomUUID(),
+                    text: newTask,
+                    status: 'todo',
+                  },
+                ],
+              }
             : entry
         );
       }

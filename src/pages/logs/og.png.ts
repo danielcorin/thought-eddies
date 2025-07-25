@@ -9,5 +9,6 @@ export async function GET() {
   return generateOGImage({
     title: 'Logs',
     description: `${logsCount} daily logs and reflections`,
+    category: 'Archive',
   });
 }

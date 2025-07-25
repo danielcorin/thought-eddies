@@ -8,10 +8,10 @@ export async function getStaticPaths() {
   return tilEntries.map((entry) => {
     const [category, ...slugParts] = entry.id.split('/');
     const slug = slugParts.join('/').replace(/\.(md|mdx)$/, '');
-    
+
     return {
       params: { category, slug },
-      props: { entryId: entry.id }
+      props: { entryId: entry.id },
     };
   });
 }
@@ -25,17 +25,20 @@ export const GET: APIRoute = async ({ params }) => {
   try {
     const entryId = `${category}/${slug}`;
     const entry = await getEntry('til', entryId);
-    
+
     if (!entry) {
       return new Response('Not found', { status: 404 });
     }
 
     // Reconstruct the full markdown with frontmatter
     const frontmatter = Object.entries(entry.data)
-      .filter(([_, value]) => value !== null && !(Array.isArray(value) && value.length === 0))
+      .filter(
+        ([_, value]) =>
+          value !== null && !(Array.isArray(value) && value.length === 0)
+      )
       .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
       .join('\n');
-    
+
     const fullContent = `---\n${frontmatter}\n---\n\n${entry.body}`;
 
     return new Response(fullContent, {

@@ -214,6 +214,13 @@ const currentYear = new Date().getFullYear();
     display: block;
   }
 
+  /* Reduce gap on mobile to prevent line wrap */
+  @media (max-width: 639px) {
+    .footer-links {
+      gap: 0.75rem;
+    }
+  }
+
   @media (min-width: 640px) {
     .footer-content {
       flex-direction: row;

@@ -16,6 +16,7 @@ export async function GET({ params }: { params: Params }) {
     description: `${yearPosts.length} ${
       yearPosts.length === 1 ? 'post' : 'posts'
     }`,
+    category: 'Archive',
   });
 }
 

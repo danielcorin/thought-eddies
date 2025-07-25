@@ -11,19 +11,19 @@ export async function GET({ params }: { params: Params }) {
     return new Response('Post not found', { status: 404 });
   }
 
-  const subtitle = [
-    'Thought Eddies',
-    post.data.createdAt
-      ? new Date(post.data.createdAt).toISOString().split('T')[0]
-      : null,
-  ]
-    .filter(Boolean)
-    .join(' • ');
+  const date = post.data.createdAt
+    ? new Date(post.data.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : undefined;
 
   return generateOGImage({
     title: post.data.title,
     description: post.data.description,
-    subtitle,
+    category: 'Posts',
+    date,
   });
 }
 

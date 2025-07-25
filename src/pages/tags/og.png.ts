@@ -13,5 +13,6 @@ export async function GET() {
   return generateOGImage({
     title: 'Tags',
     description: `Browse content by ${allTags.size} tags`,
+    category: 'Archive',
   });
 }
