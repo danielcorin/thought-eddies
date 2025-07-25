@@ -100,7 +100,7 @@ const nextMonth = currentIndex > 0 ? sortedMonths[currentIndex - 1] : null;
 // Get all tags used this month
 const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
 
-const ogImage = `/logs/${year}/${String(month).padStart(2, '0')}/og.png`;
+const ogImage = `/logs/og.png`;
 ---
 
 <Layout title={`${monthName} ${year} Logs`} ogImage={ogImage}>

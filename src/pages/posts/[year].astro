@@ -37,7 +37,7 @@ const currentYearIndex = yearsWithPosts.indexOf(parseInt(year));
 const prevYear = currentYearIndex < yearsWithPosts.length - 1 ? yearsWithPosts[currentYearIndex + 1] : null;
 const nextYear = currentYearIndex > 0 ? yearsWithPosts[currentYearIndex - 1] : null;
 
-const ogImage = `/posts/${year}/og.png`;
+const ogImage = `/posts/og.png`;
 ---
 
 <Layout title={`Posts from ${year}`} ogImage={ogImage}>
