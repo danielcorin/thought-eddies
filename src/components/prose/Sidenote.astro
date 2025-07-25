@@ -2,11 +2,10 @@
 import { marked } from 'marked';
 
 interface Props {
-  anchor: string;
   content: string;
 }
 
-const { anchor, content } = Astro.props;
+const { content } = Astro.props;
 const id = Math.random().toString(36).substring(7);
 const htmlContent = marked.parseInline(content);
 ---
@@ -45,7 +44,7 @@ const htmlContent = marked.parseInline(content);
     tabindex="0"
     role="button"
     aria-label={`Toggle sidenote: ${content.substring(0, 50)}...`}
-  ><span class="sidenote-anchor">{anchor.trim()}</span></label>
+  ><span class="sidenote-anchor"><slot /></span></label>
   <input 
     type="checkbox" 
     id={`sidenote-toggle-${id}`} 

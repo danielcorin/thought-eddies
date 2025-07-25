@@ -1,0 +1,98 @@
+---
+title: "Find the Groove: Using Checkpoints with Coding Agents"
+createdAt: 2025-07-24T20:35:04.630040
+updatedAt: 2025-07-24T20:35:04.630040
+description: "Checkpointing is the current moat between IDE and CLI-based coding assistants."
+location: "NYC"
+draft: false
+tags: ["agents", "checkpoints", "context_engineering", "vibe_coding"]
+---
+
+import Sidenote from '@components/prose/Sidenote.astro';
+
+Cursor was my first experience with the UX pattern of checkpoints when working with a coding agent.
+If you're not familiar, it works like this.
+
+- The user types a message into an agent-based IDE tool like Cursor, Windsurf, or [Cline](https://github.com/cline/cline) and submits it to the agent.
+- The agent reads files, edits them, maybe makes new files.
+- The user returns to their prior message to edit it and the entire state of the codebase is reverted to how it was before the user typed that prompt.
+- The user can either edit that prompt or change it completely, then submit it.
+- The agent then continues from that point in the codebase's history.
+
+If you're a software engineer you're probably thinking, "yes, I do that with Git."
+
+If you're not, this is probably the main feature value proposition of Cursor over a CLI-based tool like Claude Code.
+
+## Managing side effects
+
+Managing the side effects of coding agents is one of the hardest parts of using them.
+
+For non-engineers, editing a code project is like editing 10s of text documents simultaneously and the undo hotkey doesn't work.
+They send a prompt and a ton of stuff happens.
+The IDE tool shows them which lines were added and which were removed but it is low-value signal for them.
+The non-engineer's primary tool for figuring out if the agent did what it was prompted to do is to verify it looks and behaves how they intended.
+
+When verification fails they must go back to the last prior working state.
+This is where checkpoints are critical.
+
+The ability to revert to the state to "what was working right before I did that last thing" is the fundamental loop that makes creating software as a non-engineer possible.
+It's the ability to go back to a prior state and try again.
+
+Software engineers underrate this challenge for two reasons:
+
+1. Engineers are comfortable with Git and have a good understanding of how to use it to revert changes to their code.
+2. Engineers can read and understand the code itself, so even if something weird happens, they can rely on skills they possess to fix issues with the code if all else fails.
+
+## So why don't you just go learn Git?
+
+I remember learning to use Git.
+Git is not easy to learn.
+Git is not easy to use.
+Git requires an abstract understanding of the filesystem that most computer work does not require.
+
+I know several folks who are not engineers who build software with Cursor.
+I've tried to teach them to use Git, in the abstract, then by example.
+It often does not go particularly well.
+The most success I've had for adopting Git is having them prompt their agent to use Git for them.
+
+Git's learning curve is why checkpointing is one of the most sticky features of Cursor, and why non-engineers struggle to adopt CLI-based tools like Claude Code.
+But the benefits of checkpoints go even further than just a Git replacement.
+
+## Context engineering
+
+To get great results out of a coding agent, managing the context window of the LLM is crucial.
+But this doesn't just mean clearing the session often.
+It means carefully deciding when you choose to continue a conversation and when you throw the agent's response away and revert to a prior snapshot of the codebase.
+
+The goal is to find a <Sidenote content="Like a physical groove in wood or a vinyl record. But also like a musical groove where you _feel_ aligned with the rhythm. It's called 'vibe coding' for a reason. There is as much art to this as there is science.">groove</Sidenote> with the agent.
+Agents are relatively good at finding the relevant files in a codebase that needed editing to implement instructions described in a prompt but they don't always get this right.
+
+Trained software engineers might take a more active role in managing the code included as context for the agent.
+But, as a non-engineer, if you don't know what any of the code does, you still need to find a way to get the agent to do the work.
+
+Finding the right groove where you've prompted the agent in such a way that it has properly sourced the correct context, then meticulously context-managing that conversation until it can no longer be productive is how you make this work.
+
+## Finding the groove
+
+You begin a new conversation probing around in latency space, trying to find a groove to drop into that will show you the way forward.
+This is a confluence of the right prompt that elicits the agent to search the codebase such that it finds the right files, then changes those files in a way that is consistent with the prompt, confirmed by the user's own verification.
+
+Once you catch this groove, you are in a great position.
+You can continue to follow the groove and send follow up prompts to the agent to refine the first implementation to get it more aligned with your intent.
+But if you find that the agent is all of a sudden out of the groove, stop.
+Retrace your steps and try to get back onto the well worn path.
+
+Don't try and correct the agent.
+Go back to the previous prompt and correct yourself.
+Refine your description.
+Reference the proper context (if you are familiar enough with the codebase to do this).
+
+You must retrace your steps because you are out of the groove.
+The context window is poisoned.
+It's fine to poke around in this area to see what the agent seems to be trying to do or understands at this point but chances are, to get a good result, you are going to want to go back to the last point where things were moving in the right direction.
+
+This is how you use snapshots to find and maintain a groove when working with an agent.
+It's partially vibes based, but once you are going in the right direction you make sure that they continue to do so.
+
+You don't forge forward through the agent's struggles.
+You retrace your steps to stay in the groove.

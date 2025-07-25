@@ -125,10 +125,11 @@ export const qaPairs = [
 ];
 
 import DocumentCitations from '@components/prose/DocumentCitations.astro';
+import sourceMarkdown from './_source.md?raw';
 
 <DocumentCitations
   qaPairs={qaPairs}
-  sourcePath="2025/document-citations/source.md"
+  sourceMarkdown={sourceMarkdown}
 />
 
 ---
