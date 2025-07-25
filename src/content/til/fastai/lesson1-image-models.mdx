@@ -122,7 +122,7 @@ Out of ideas of things to try with the data for the time being, I decided to try
 I picked `resnet50` from [this list](https://fastai1.fast.ai/vision.models.html#Computer-Vision-models-zoo) because I don't know any better.
 It was taking a while to train, so I walked away for a while.
 
-Here are the <Sidenote anchor="results" content="Extracted by pasting an image of the table from the notebook into a Cursor/Sonnet prompt" /> from training the `resnet50` model:
+Here are the <Sidenote content="Extracted by pasting an image of the table from the notebook into a Cursor/Sonnet prompt">results</Sidenote> from training the `resnet50` model:
 
 | epoch | train_loss | valid_loss | error_rate | time  |
 | ----- | ---------- | ---------- | ---------- | ----- |
@@ -203,7 +203,7 @@ Here is what these images looked like (this is an example from later when I was 
 This didn't seem to work at all -- even less well than the programming language classification.
 I tried a few different approaches at creating visuals from the audio files but none seemed to work.
 I only had 25 examples though, so I decided to create some more data to see if that could help.
-I <Sidenote anchor="generated another 75 examples" content="Visual inspection of the labeled images in the `Datablock` didn't reveal any obvious difference between the two voices, so I was relying on some model magic to happen with the finetuning" /> per voice then trained `resnet34` again.
+I <Sidenote content="Visual inspection of the labeled images in the `Datablock` didn't reveal any obvious difference between the two voices, so I was relying on some model magic to happen with the finetuning">generated another 75 examples</Sidenote> per voice then trained `resnet34` again.
 
 ```python
 learn = vision_learner(dls, resnet34, metrics=error_rate)

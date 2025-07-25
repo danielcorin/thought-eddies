@@ -119,7 +119,7 @@ class MyBatchWorkflow:
 The main parts to focus on are `await workflow.start_child_workflow`, which creates a future that we can `await` on to get the workflow result.
 Instead of calling `await` explicitly, we use `await asyncio.gather(*workflow_futures)`, which gets us all the results together.
 
-In this example, we use `dataclass`es as the inputs and outputs to all activities and workflows to allow us to evolve the inputs and outputs without breaking the data contract between the <Sidenote anchor="workflow components" content="For example, if an activity returned `str`, we would struggle to add an additional return parameter without changing the return type. We can get in front of this issue by always returning classes." />.
+In this example, we use `dataclass`es as the inputs and outputs to all activities and workflows to allow us to evolve the inputs and outputs without breaking the data contract between the <Sidenote content="For example, if an activity returned `str`, we would struggle to add an additional return parameter without changing the return type. We can get in front of this issue by always returning classes.">workflow components</Sidenote>.
 
 Finally, we can run `MyBatchWorkflow`.
 

@@ -17,16 +17,10 @@ I started with this prompt
 
 > I want to see what you can do. Can you please create a 2d rendering of fluid moving around obstacles of different shapes?
 
-<Sidenote
-  anchor="In effort to not spend this whole post quoting prompts"
-  content="I need to figure out a better way to share conversations from all the different models I interact with, including multi-modal models. Ideally, I could export these in a consistent JSON structure to make rendering them in a standard conversation format easier. Static media (images, video, etc.) would be straightforward but things like Artifacts, which are rendered by the Claude UI fit this structure less cohesively."
-/>
+<Sidenote content="I need to figure out a better way to share conversations from all the different models I interact with, including multi-modal models. Ideally, I could export these in a consistent JSON structure to make rendering them in a standard conversation format easier. Static media (images, video, etc.) would be straightforward but things like Artifacts, which are rendered by the Claude UI fit this structure less cohesively.">In effort to not spend this whole post quoting prompts</Sidenote>
 , I've [exported the whole conversation](/files/claude-artifacts.json) returned
 from the Anthropic API, using the response from the following
-<Sidenote
-  anchor="endpoint"
-  content="This API may change in the future. It isn't an externally-documented API."
-/>
+<Sidenote content="This API may change in the future. It isn't an externally-documented API.">endpoint</Sidenote>
 .
 
 ```text
@@ -42,7 +36,7 @@ I told Claude and it created a different version with its own simple physics.
 
 This result was a nice, working example.
 It wasn't exactly what I had in mind, which was something like this [WebGL Fluid Simulation](https://paveldogreat.github.io/WebGL-Fluid-Simulation/), but I'll concede that that isn't exactly what I asked for.
-I didn't know the right <Sidenote anchor="terminology" content="I tried starting a new conversation, prompting Claude to 'Create a fluid simulation with WebGL' but got 'Output blocked by content filtering policy' which was disappointing." /> when I started.
+I didn't know the right <Sidenote content="I tried starting a new conversation, prompting Claude to 'Create a fluid simulation with WebGL' but got 'Output blocked by content filtering policy' which was disappointing.">terminology</Sidenote> when I started.
 
 ## Iterating on the Artifact
 

@@ -18,7 +18,7 @@ import vlmsHallucinateImage from './images/vlms-hallucinate.png';
 I've done some experimentation extracting structured data from documents using VLMs.
 A summary of one approach I've tried can be found in my repo, [`impulse`](https://github.com/danielcorin/impulse).
 I've found using Protobufs to be a relatively effective approach for extracting values from documents.
-The high-level idea is you write a Protobuf as your target data model then <Sidenote anchor="use that Protobuf itself as most of the prompt" content="I really need a name for this as I reference the concept so frequently." />.
+The high-level idea is you write a Protobuf as your target data model then <Sidenote content="I really need a name for this as I reference the concept so frequently.">use that Protobuf itself as most of the prompt</Sidenote>.
 I discussed the approach in more detail in [this post](/posts/2024/vlm-data-extraction-with-protobufs) so I am going to jump right into it.
 
 ## The problem
@@ -94,7 +94,7 @@ Looking at the model output, we see `subtotal`, `tax` and `total` in the respons
 
 Why?
 
-In the Protobuf, we specified these fields as optional, yet the model has <Sidenote anchor="output them anyway" content="In some of my testing, I've seen the model even output correct values for `subtotal`, `tax` and `total`, but I am definitely not ready to trust them to do math using inference alone." />.
+In the Protobuf, we specified these fields as optional, yet the model has <Sidenote content="In some of my testing, I've seen the model even output correct values for `subtotal`, `tax` and `total`, but I am definitely not ready to trust them to do math using inference alone.">output them anyway</Sidenote>.
 This doesn't happen every time but it happens far more often than I would like.
 
 We could handwave these results away and say more prompt engineering would help but it doesn't seem like it does, at least not reliably.

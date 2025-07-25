@@ -13,15 +13,8 @@ interface QAPair {
     }[];
 }
 
-const { qaPairs, sourcePath } = Astro.props;
-const rawContent = await import.meta.glob<{
-    file: string;
-    rawContent: () => string;
-}>("../../content/posts/**/*.md", { eager: true });
-const sourceFile = Object.values(rawContent).find((file) =>
-    file.file.includes(sourcePath),
-);
-const rawMarkdown = sourceFile?.rawContent() || "";
+const { qaPairs, sourceMarkdown } = Astro.props;
+const rawMarkdown = sourceMarkdown || "";
 
 function highlightCitations(citations: QAPair["citations"], content: string) {
     let highlightedContent = content;
