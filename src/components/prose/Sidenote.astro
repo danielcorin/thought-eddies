@@ -12,18 +12,34 @@ const htmlContent = marked.parseInline(content);
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Handle clicking outside to close sidenotes
-    document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      const isToggle = target.classList.contains('sidenote-toggle');
-      const isContent = target.closest('.sidenote-content');
-      
-      if (!isToggle && !isContent) {
-        // Close all sidenotes
-        document.querySelectorAll('.sidenote-checkbox:checked').forEach((checkbox) => {
-          (checkbox as HTMLInputElement).checked = false;
-        });
-      }
+    // Handle toggle click to open/close sidenote
+    document.querySelectorAll('.sidenote-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const checkbox = toggle.nextElementSibling as HTMLInputElement;
+        checkbox.checked = !checkbox.checked;
+        
+        if (checkbox.checked) {
+          // Focus the sidenote content when opened
+          const content = checkbox.nextElementSibling as HTMLElement;
+          content.setAttribute('tabindex', '-1');
+          content.focus();
+        }
+      });
+    });
+    
+    // Handle blur to close sidenotes
+    document.addEventListener('focusout', (e) => {
+      setTimeout(() => {
+        const activeElement = document.activeElement;
+        const sidenoteContent = (e.target as HTMLElement).closest('.sidenote-content');
+        
+        if (sidenoteContent && !sidenoteContent.contains(activeElement)) {
+          // Lost focus from sidenote content
+          const checkbox = sidenoteContent.previousElementSibling as HTMLInputElement;
+          checkbox.checked = false;
+        }
+      }, 0);
     });
     
     // Handle escape key to close sidenotes
@@ -77,9 +93,7 @@ const htmlContent = marked.parseInline(content);
   }
 
   .sidenote-toggle:focus {
-    outline: 2px solid var(--color-link);
-    outline-offset: 2px;
-    border-radius: 2px;
+    outline: none;
   }
 
   .sidenote-checkbox {
@@ -94,7 +108,7 @@ const htmlContent = marked.parseInline(content);
     margin-top: 0.5rem;
     padding: var(--spacing-sm);
     background: var(--color-bg);
-    border: 1px solid var(--color-bg-code);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     font-size: var(--text-xs);
     line-height: 1.5;
@@ -107,6 +121,11 @@ const htmlContent = marked.parseInline(content);
       transform var(--transition-speed) ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 100;
+    outline: none;
+  }
+  
+  .sidenote-content:focus {
+    outline: none;
   }
 
   .sidenote-checkbox:checked ~ .sidenote-content,
@@ -120,13 +139,14 @@ const htmlContent = marked.parseInline(content);
   /* Mobile styles - show below content */
   @media (max-width: 768px) {
     .sidenote-content {
-      position: fixed;
-      left: var(--spacing-md);
-      right: var(--spacing-md);
-      bottom: var(--spacing-md);
-      top: auto;
-      width: auto;
-      transform: translateY(100%);
+      position: absolute;
+      left: calc(-1 * var(--spacing-md));
+      right: calc(-1 * var(--spacing-md));
+      top: 100%;
+      bottom: auto;
+      width: calc(100vw - 2 * var(--spacing-md));
+      transform: translateY(10px);
+      margin-top: 0.5rem;
       border-radius: 8px;
       padding: var(--spacing-md);
       font-size: var(--text-sm);
