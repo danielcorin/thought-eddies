@@ -171,18 +171,21 @@ function getContent(content: string | ContentItem[]): {
     background: var(--color-ink-light);
     color: var(--color-bg);
     border-bottom-right-radius: 0;
+    text-align: left;
   }
 
   .assistant-bubble {
     background: var(--color-bg-code);
     color: var(--color-ink);
     border-bottom-left-radius: 0;
+    text-align: left;
   }
 
   .system-bubble {
     background: var(--color-bg-code);
     color: var(--color-ink-light);
     font-style: italic;
+    text-align: left;
   }
 
   .model-label,
@@ -308,14 +311,26 @@ function getContent(content: string | ContentItem[]): {
     .bubble {
       width: 100%;
       display: block;
+      max-width: 100%;
     }
 
     .message-content {
       max-width: 100%;
+      width: 100%;
     }
 
     .message.user .message-content {
       align-items: stretch;
+    }
+
+    .user-label {
+      text-align: right;
+    }
+
+    .user-bubble,
+    .assistant-bubble,
+    .system-bubble {
+      width: 100%;
     }
 
     .user-bubble {
