@@ -1,0 +1,38 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Navigation from '@components/layout/Navigation.astro';
+import { getCollection } from 'astro:content';
+import SearchPage from '@components/SearchPage';
+
+// Get all content for search
+const allPosts = await getCollection('posts', ({ data }) => {
+  return import.meta.env.PROD ? data.draft !== true : true;
+});
+
+const allLogs = await getCollection('logs');
+const allTils = await getCollection('til');
+
+// Sort by date
+const posts = allPosts.sort((a, b) => 
+  new Date(b.data.publishedAt || b.data.createdAt).getTime() -
+  new Date(a.data.publishedAt || a.data.createdAt).getTime()
+);
+
+const logs = allLogs.sort((a, b) =>
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const tils = allTils.sort((a, b) =>
+  new Date(b.data.createdAt).getTime() - new Date(a.data.createdAt).getTime()
+);
+
+const ogImage = `/search/og.png`;
+---
+
+<Layout title="Search" ogImage={ogImage}>
+  <Navigation selected="search" />
+  <main>
+    <h1 class="page-title">Search</h1>
+    <SearchPage posts={posts} logs={logs} tils={tils} client:load />
+  </main>
+</Layout>
