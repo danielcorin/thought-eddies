@@ -11,20 +11,20 @@ More interesting still, Sonnet actually seems to resist speaking in the first pe
 Fascinating research and evolution of the models' behaviors.
 After reading a bit more, apparently this type of model behavior has been around at least since [Bing/Sydney (paywall, sorry)](https://www.nytimes.com/2023/02/16/technology/bing-chatbot-microsoft-chatgpt.html).
 
-![Mirror Test Part 1](/img/logs/2024-06-26/mirror1.png)
+![Mirror Test Part 1](images/mirror1.png)
 
-![Mirror Test Part 2](/img/logs/2024-06-26/mirror2.png)
+![Mirror Test Part 2](images/mirror2.png)
 
-![Mirror Test Part 3](/img/logs/2024-06-26/mirror3.png)
+![Mirror Test Part 3](images/mirror3.png)
 
-![Mirror Test Part 4](/img/logs/2024-06-26/mirror4.png)
+![Mirror Test Part 4](images/mirror4.png)
 
-![Mirror Test Part 5](/img/logs/2024-06-26/mirror5.png)
+![Mirror Test Part 5](images/mirror5.png)
 
-![Mirror Test Part 6](/img/logs/2024-06-26/mirror6.png)
+![Mirror Test Part 6](images/mirror6.png)
 
 ---
 
 https://onemillioncheckboxes.com is an amusing, massively-parallel art project(?)
 
-![One Million Checkboxes](/img/logs/2024-06-26/one-million-checkboxes.png)
+![One Million Checkboxes](images/one-million-checkboxes.png)

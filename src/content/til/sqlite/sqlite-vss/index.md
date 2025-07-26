@@ -269,7 +269,7 @@ from
 
 You can navigate to <http://127.0.0.1:8001/database> to try it yourself.
 
-![screenshot of a datasette query to the sqlite database using the vector store](/img/til/sqlite-vss-query.png)
+![screenshot of a datasette query to the sqlite database using the vector store](images/sqlite-vss-query.png)
 
 It works pretty well!
 We find several article titles that relate to "AI" even though the exact string "AI" doesn't appear in all of them.
