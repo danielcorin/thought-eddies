@@ -4,6 +4,7 @@ import Tag from "@components/Tag.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
+import Breadcrumbs from "@components/Breadcrumbs.astro";
 
 const { frontmatter, ogImage, slug } = Astro.props;
 
@@ -31,25 +32,12 @@ const nextLog =
   <Navigation selected="logs" />
   <main>
     <article>
-      <nav class="breadcrumb">
-        <a href="/logs">Logs</a>
-        <span class="separator">/</span>
-        <a href={`/logs/${new Date(frontmatter.date).getFullYear()}`}>
-          {new Date(frontmatter.date).getFullYear()}
-        </a>
-        <span class="separator">/</span>
-        <a
-          href={`/logs/${new Date(frontmatter.date).getFullYear()}/${String(new Date(frontmatter.date).getMonth() + 1).padStart(2, "0")}`}
-        >
-          {
-            new Date(frontmatter.date).toLocaleDateString("en-US", {
-              month: "long",
-            })
-          }
-        </a>
-        <span class="separator">/</span>
-        <span class="current">{new Date(frontmatter.date).getDate()}</span>
-      </nav>
+      <Breadcrumbs items={[
+        { label: "Logs", href: "/logs" },
+        { label: String(new Date(frontmatter.date).getFullYear()), href: `/logs/${new Date(frontmatter.date).getFullYear()}` },
+        { label: new Date(frontmatter.date).toLocaleDateString("en-US", { month: "long" }), href: `/logs/${new Date(frontmatter.date).getFullYear()}/${String(new Date(frontmatter.date).getMonth() + 1).padStart(2, "0")}` },
+        { label: String(new Date(frontmatter.date).getDate()) }
+      ]} />
 
       <nav class="day-navigation">
         <div class="nav-item nav-prev-wrapper">
@@ -121,31 +109,6 @@ const nextLog =
 <style>
   /* Use base.css main and article styles, only add log-specific styles */
   
-  .breadcrumb {
-    font-size: var(--text-sm);
-    margin-bottom: var(--spacing-md);
-    color: var(--color-ink-light);
-    font-family: var(--font-mono);
-  }
-
-  .breadcrumb a {
-    color: var(--color-ink-light);
-  }
-
-  .breadcrumb a:hover {
-    text-decoration: underline;
-    text-decoration-style: dotted;
-  }
-
-  .breadcrumb .separator {
-    margin: 0 0.5rem;
-    color: var(--color-border);
-  }
-
-  .breadcrumb .current {
-    color: var(--color-ink);
-    font-weight: 500;
-  }
 
   .tags {
     display: flex;
