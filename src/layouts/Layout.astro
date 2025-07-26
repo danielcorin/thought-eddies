@@ -102,14 +102,20 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 				},
 			};
 
-			// Global search keyboard shortcut
+			// Global keyboard shortcuts
 			document.addEventListener('keydown', function(e) {
-				// Command+K or Ctrl+K
+				// Command+K or Ctrl+K for search
 				if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
 					e.preventDefault();
 					// Set a flag for the search page to know we came via shortcut
 					sessionStorage.setItem('searchViaShortcut', 'true');
 					window.location.href = '/search';
+				}
+
+				// Command+Shift+M or Ctrl+Shift+M for theme toggle
+				if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
+					e.preventDefault();
+					window.themeUtils.toggleTheme();
 				}
 			});
 		</script>
