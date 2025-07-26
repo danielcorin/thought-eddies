@@ -115,4 +115,4 @@ return {
 
 Finally, [here's a commit](https://github.com/danielcorin/nix-config/commit/4f6596c3c558daa85a2a467308943d2c5267ab4d) adding the above config to my Nix config (placed at `~/.config/wezterm/wezterm.lua`)
 
-![my starting WezTerm terminal setup](/img/til/wezterm/wezterm.png)
+![my starting WezTerm terminal setup](images/wezterm.png)

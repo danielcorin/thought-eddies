@@ -17,7 +17,7 @@ sudo killall coreaudiod
 
 I was writing code with `claude-3.5-sonnet` and prompted it to add input validation for input arguments.
 
-![Claude 3.5 Sonnet Code Completion](/img/logs/2024-06-24/sonnet-ollama.png)
+![Claude 3.5 Sonnet Code Completion](images/code-completion.png)
 
 Most of the code what straight forward and I was expecting the one sentence prompt to get me 5-10 lines of code with path validation, I did not expect these lines.
 

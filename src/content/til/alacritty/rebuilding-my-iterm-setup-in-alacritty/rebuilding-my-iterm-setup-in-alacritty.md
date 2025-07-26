@@ -170,4 +170,4 @@ My tmux modifier is <kbd>ctrl</kbd>+<kbd>b</kbd> which is not that nice to type.
 - `x`: close pane with confirmation
 - arrows: navigate between panes
 
-![my starting Alacritty terminal setup](/img/til/alacritty/alacritty.png)
+![my starting Alacritty terminal setup](images/alacritty.png)
