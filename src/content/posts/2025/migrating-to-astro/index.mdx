@@ -2,7 +2,7 @@
 title: 'Migrating To Astro'
 createdAt: 2025-07-25T20:07:03.636757
 updatedAt: 2025-07-25T20:07:03.636757
-description: 'A rollercoaster'
+description: 'A short, fast rollercoaster'
 location: 'NYC'
 draft: false
 ---
@@ -10,12 +10,13 @@ draft: false
 import Sidenote from '@components/prose/Sidenote.astro'
 
 I've run Thought Eddies as a more dynamic, experimental blog since the beginning of this year.
-I'd heard about Astro and wanted more put a more personal touch on my web presence.
+I'd heard about Astro and wanted to put a more personal touch on my web presence.
 
-I wrote an article here or there and then one day, after I'd run into a bit of a block working on [Tomo](https://wvlen.llc/apps/tomo), I had the itch to build Thought Eddies out.
+I wrote an article here or there and then one day, after I'd run into a bit of a block working on [Tomo](https://wvlen.llc/apps/tomo), I had the itch to build [Thought Eddies](https://github.com/danielcorin/thought-eddies) out.
 
-I have several post types I write frequently, so I needed to build sections for that.
-Then I added support for a bunch of the [shortcodes](https://github.com/danielcorin/blog/tree/main/layouts/shortcodes), I'd built over the years in Hugo.
+I have several post types I write frequently, so I needed to build sections for those.
+Then I added support for a bunch of the [shortcodes](https://github.com/danielcorin/blog/tree/main/layouts/shortcodes) I'd built over the years in Hugo as well as URL aliases.
+I _try_ to keep all my old links alive and redirecting properly.
 
 Combined with the strong ecosystem of Astro and LLMs, I was able to build and migrate nearly all the content within about a week.
 
@@ -43,8 +44,8 @@ One major problem were the number of Open Graph images I was generating.
 <Sidenote content="I was pretty proud of this and thought the preview looked pretty good when sending site links in Slack or Messages">I had a custom one per page</Sidenote>.
 
 That was not a great idea.
-Each too a few 100ms to build each.
-I tried switch to a different library, started taking more than one second each.
+Each took a few 100ms to build.
+I tried switching to a different library, started taking more than one second each.
 
 Ok, no problem.
 One Open Graph image per site section is fine.
@@ -52,7 +53,7 @@ One Open Graph image per site section is fine.
 The build is still more than two minutes.
 
 At several points over the course of a few days, I open devtools and view the website source.
-It doesn't full load.
+It doesn't fully load.
 Waterfox is buggy?
 I didn't really know.
 
@@ -65,13 +66,13 @@ I'd built an [Electron app](https://github.com/danielcorin/delta) of far greater
 
 Eventually, I needed to see for myself.
 These were static HTML pages after all.
-At build time, a webserver starts and a process requests the content, the persists it as a static HTML file to be served in production.
+At build time, a webserver starts and a process requests the content, then persists it as a static HTML file to be served in production.
 
 No API calls.
 
 What was taking so long?
 
-I pulled it down and started to low around
+I pulled it down and started to look around
 
 ```sh
 curl "https://www.thoughteddies.com/posts/2025/find-the-groove" > out.html
