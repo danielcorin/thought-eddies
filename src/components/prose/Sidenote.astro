@@ -165,4 +165,24 @@ const htmlContent = marked.parseInline(content);
     }
   }
 
+  /* Ensure consistent font sizes for all content */
+  .sidenote-content :global(code),
+  .sidenote-content :global(pre) {
+    font-size: inherit;
+  }
+
+  .sidenote-content :global(pre) {
+    margin: 0.5em 0;
+    padding: 0.5em;
+    overflow-x: auto;
+  }
+
+  .sidenote-content :global(p) {
+    margin: 0;
+  }
+
+  .sidenote-content :global(p + p) {
+    margin-top: 0.5em;
+  }
+
 </style>
