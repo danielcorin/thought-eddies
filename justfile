@@ -18,3 +18,6 @@ preview:
 
 post name:
     python3 scripts/new_post.py "{{name}}"
+
+log:
+    python3 scripts/new_log.py
