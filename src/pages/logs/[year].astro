@@ -4,6 +4,7 @@ import Tag from "@components/Tag.astro";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
+import Breadcrumbs from "@components/Breadcrumbs.astro";
 
 export async function getStaticPaths() {
   const logs = await getCollection("logs");
@@ -89,11 +90,10 @@ const ogImage = `/logs/og.png`;
 <Layout title={`Logs from ${year}`} ogImage={ogImage}>
   <Navigation selected="logs" />
   <main>
-    <nav class="breadcrumb">
-      <a href="/logs">Logs</a>
-      <span class="separator">/</span>
-      <span class="current">{year}</span>
-    </nav>
+    <Breadcrumbs items={[
+      { label: "Logs", href: "/logs" },
+      { label: String(year) }
+    ]} />
     
     <header class="page-header">
       <h1 class="page-title">{year}</h1>
@@ -148,31 +148,6 @@ const ogImage = `/logs/og.png`;
 </Layout>
 
 <style>
-  .breadcrumb {
-    font-size: var(--text-sm);
-    margin-bottom: var(--spacing-md);
-    color: var(--color-ink-light);
-    font-family: var(--font-mono);
-  }
-
-  .breadcrumb a {
-    color: var(--color-ink-light);
-  }
-
-  .breadcrumb a:hover {
-    text-decoration: underline;
-    text-decoration-style: dotted;
-  }
-
-  .breadcrumb .separator {
-    margin: 0 0.5rem;
-    color: var(--color-border);
-  }
-
-  .breadcrumb .current {
-    color: var(--color-ink);
-    font-weight: 500;
-  }
 
   .page-header {
     text-align: center;
