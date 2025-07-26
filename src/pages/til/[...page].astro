@@ -2,7 +2,7 @@
 import Navigation from '@components/layout/Navigation.astro';
 import Pagination from '@components/Pagination.astro';
 import PostCard from '@components/PostCard.astro';
-import CategoryGrid from '@components/CategoryGrid.astro';
+import CollapsibleCategoryGrid from '@components/CollapsibleCategoryGrid.tsx';
 import Layout from '@layouts/Layout.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
@@ -44,10 +44,11 @@ const ogImage = `/til/og.png`;
   <main>
     <h1 class="page-title">Today I Learned</h1>
 
-    <CategoryGrid
+    <CollapsibleCategoryGrid
       items={categoriesWithCounts}
       baseUrl="/til"
       title="Browse by Category"
+      client:load
     />
 
     <div class="toc">

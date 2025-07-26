@@ -60,26 +60,24 @@ I didn't really know.
 I almost noticed the site was taking ~500ms to load.
 _Just_ slow enough to be annoying.
 
-Hugo claims to be fast and we talk about how the Javascript web can be slow and bloated, but was it really this bad?
-How had I never run into this before?
+Hugo (the static site generator I used to build my [previous site](https://github.com/danielcorin/blog)) claims to be fast and there is much talk about how the Javascript web (and Astro by proxy) can be slow and bloated, but was it really this bad?
+How had I never run into performance _this bad_ before?
 I'd built an [Electron app](https://github.com/danielcorin/delta) of far greater complexity and even that tooling seems nicer than this.
 
 Eventually, I needed to see for myself.
 These were static HTML pages after all.
-At build time, a webserver starts and a process requests the content, then persists it as a static HTML file to be served in production.
-
+At build time, a webserver starts and a process requests the content for each page, then persists it as a static HTML file to be served in production.
 No API calls.
 
 What was taking so long?
 
-I pulled it down and started to look around
+I pulled down a page of the site and started to look around
 
 ```sh
 curl "https://www.thoughteddies.com/posts/2025/find-the-groove" > out.html
 vi out.html
 ```
-
-I saw the page content, a bunch of css across the different components, some `<path>`s, and then I started to see my post content.
+I saw the page content, a bunch of CSS across the different components, some `<path>`s, and then I started to see my post content.
 
 Not for the page I was on but for all of the pages across the site.
 
@@ -91,5 +89,5 @@ Every HTML page contained the full content of the entire site.
 Classic 🤦
 
 Removing the search functionality from every page brought the site build time down to around 10 seconds total.
-_By no means_ fast or reasonable all you web purist will tell me because the web is HTML, CSS, and vanilla Javascript and everything should be 10kb and load in milliseconds.
+_By no means_ fast or reasonable all you web purists will tell me because the web is HTML, CSS, and vanilla JavaScript and everything should be 10kb and load in milliseconds.
 But totally workable for me to build a blog with and have a fine time.
