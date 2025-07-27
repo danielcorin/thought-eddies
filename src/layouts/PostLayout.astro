@@ -91,6 +91,20 @@ const similarEntries = currentEntry
           )
         }
         {
+          frontmatter.projectUrl && (
+            <span class="icon-text-wrapper project-link">
+              <a
+                href={frontmatter.projectUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Icon name="ph:link" class="inline-icon meta-icon" />
+                <span class="project-text">Project</span>
+              </a>
+            </span>
+          )
+        }
+        {
           frontmatter.category && isTil && (
             <span class="icon-text-wrapper category">
               <Icon name="ph:folder" class="inline-icon meta-icon" />
@@ -200,6 +214,24 @@ const similarEntries = currentEntry
   }
 
   .github-link a:hover {
+    opacity: 0.8;
+    color: var(--color-accent);
+  }
+
+  .project-text {
+    font-family: var(--font-mono);
+  }
+
+  .project-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-ink-light);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .project-link a:hover {
     opacity: 0.8;
     color: var(--color-accent);
   }
