@@ -4,6 +4,7 @@ import argparse
 import re
 from datetime import datetime
 from pathlib import Path
+import subprocess
 
 
 def slugify(text):
@@ -42,7 +43,12 @@ draft: true
     index_file = post_dir / "index.mdx"
     index_file.write_text(frontmatter)
 
-    print(f"Created note: {index_file}")
+    print(f"Created post: {index_file}")
+
+    # Open the file in editor
+    editor = 'cursor'
+    subprocess.run([editor, str(index_file)])
+
     return str(index_file)
 
 

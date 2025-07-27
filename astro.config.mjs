@@ -11,6 +11,8 @@ import sitemap from '@astrojs/sitemap';
 
 import expressiveCode from 'astro-expressive-code';
 import remarkExternalLinks from './plugins/remark-external-links.mjs';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 // https://astro.build/config
 export default defineConfig({
@@ -33,6 +35,18 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [remarkExternalLinks],
+    rehypePlugins: [
+      rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: 'wrap',
+          properties: {
+            className: ['heading-link-wrapper'],
+          },
+        },
+      ],
+    ],
     shikiConfig: {
       theme: 'monokai',
       wrap: true,
