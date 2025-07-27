@@ -133,6 +133,8 @@ const similarEntries = currentEntry
       <a href={
         isTil
           ? `/til/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
+          : isProject
+          ? `/projects/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
           : `/posts/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
       } class="raw-button">
         <Icon name="ph:code" />
