@@ -15,7 +15,7 @@ const { items } = Astro.props;
   {items.map((item, index) => (
     <>
       {item.href ? (
-        <a href={item.href}>{item.label}</a>
+        <a href={item.href + '?ref=breadcrumb'}>{item.label}</a>
       ) : (
         <span class="current">{item.label}</span>
       )}
