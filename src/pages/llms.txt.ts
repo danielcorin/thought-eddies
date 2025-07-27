@@ -24,6 +24,16 @@ export const GET: APIRoute = async () => {
 
 > An experimental digital garden
 
+## Main Pages
+
+- [About](/about.md): About me and this site
+- [Now](/now.md): What I'm focused on at this point in my life
+- [Posts](/posts.md): Long-form articles and essays
+- [Tags](/tags.md): Browse content by topic
+- [Logs](/logs.md): Daily logs and thoughts
+- [TIL](/til.md): Today I Learned entries overview
+- [Feeds](/feeds.md): External RSS/Atom feeds I follow
+
 ## Content
 
 ### Posts
