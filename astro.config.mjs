@@ -13,7 +13,7 @@ import expressiveCode from 'astro-expressive-code';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.thoughteddies.com',
+  site: 'https://www.danielcorin.com',
   server: {
     host: true,
     allowedHosts: ['local.danielcorin.com'],
