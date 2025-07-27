@@ -7,7 +7,7 @@ location: 'NYC'
 draft: false
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro'
+import Sidenote from '@components/prose/Sidenote.astro';
 
 I've run Thought Eddies as a more dynamic, experimental blog since the beginning of this year.
 I'd heard about Astro and wanted to put a more personal touch on my web presence.
@@ -41,7 +41,9 @@ There aren't many images.
 So I ran the build a bunch and started inspecting what was slow.
 One major problem were the number of Open Graph images I was generating.
 
-<Sidenote content="I was pretty proud of this and thought the preview looked pretty good when sending site links in Slack or Messages">I had a custom one per page.</Sidenote>
+<Sidenote content="I was pretty proud of this and thought the preview looked pretty good when sending site links in Slack or Messages">
+  I had a custom one per page.
+</Sidenote>
 
 That was not a great idea.
 Each took a few 100ms to build.
@@ -77,6 +79,7 @@ I pulled down a page of the site and started to look around
 curl "https://www.thoughteddies.com/posts/2025/find-the-groove" > out.html
 vi out.html
 ```
+
 I saw the page content, a bunch of CSS across the different components, some `<path>`s, and then I started to see my post content.
 
 Not for the page I was on but for all of the pages across the site.
