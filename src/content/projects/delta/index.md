@@ -8,9 +8,7 @@ tags:
   - electron
   - vercel
   - forge
-github_url: https://github.com/danielcorin/delta
-aliases:
-  - posts/delta
+githubUrl: https://github.com/danielcorin/delta
 ---
 
 Delta is an [open source Electron app](https://github.com/danielcorin/delta) (initially started as a Next.js app) that enables a straightforward UX for conversation branching with language models.

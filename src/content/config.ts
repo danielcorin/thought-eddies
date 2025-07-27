@@ -18,6 +18,7 @@ const posts = defineCollection({
     draft: z.boolean().optional().default(true),
     aliases: z.array(z.string()).optional(),
     githubUrl: z.string().url().optional(),
+    projectUrl: z.string().url().optional(),
     zoomLevels: z
       .array(
         z.object({
@@ -93,6 +94,7 @@ const til = defineCollection({
     draft: z.boolean().optional().default(false),
     aliases: z.array(z.string()).optional(),
     githubUrl: z.string().url().optional(),
+    projectUrl: z.string().url().optional(),
   }),
 });
 
@@ -116,8 +118,8 @@ const projects = defineCollection({
     image: z.string().optional(),
     draft: z.boolean().optional().default(false),
     aliases: z.array(z.string()).optional(),
-    github_url: z.string().url().optional(),
     githubUrl: z.string().url().optional(),
+    projectUrl: z.string().url().optional(),
     zoomLevels: z
       .array(
         z.object({
