@@ -12,11 +12,11 @@ interface CollapsibleCategoryGridProps {
   defaultCollapsed?: boolean;
 }
 
-export default function CollapsibleCategoryGrid({ 
-  items, 
-  baseUrl, 
+export default function CollapsibleCategoryGrid({
+  items,
+  baseUrl,
   title,
-  defaultCollapsed = true 
+  defaultCollapsed = true,
 }: CollapsibleCategoryGridProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
@@ -103,7 +103,7 @@ export default function CollapsibleCategoryGrid({
       `}</style>
       <div className="categories">
         {title && (
-          <button 
+          <button
             className="category-header"
             onClick={() => setIsCollapsed(!isCollapsed)}
             aria-expanded={!isCollapsed}
@@ -116,9 +116,9 @@ export default function CollapsibleCategoryGrid({
         {!isCollapsed && (
           <div id="category-list" className="category-list">
             {items.map((item) => (
-              <a 
+              <a
                 key={item.name}
-                href={`${baseUrl}/${encodeURIComponent(item.name)}`} 
+                href={`${baseUrl}/${encodeURIComponent(item.name)}`}
                 className="category-link"
               >
                 <span className="category-name">{item.name}</span>
