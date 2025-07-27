@@ -21,7 +21,7 @@ const { posts } = Astro.props;
                     return (
                         <div class="recommended-item">
                             <h3>
-                                <a href={`/posts/${post.id}`}>
+                                <a href={`/posts/${post.id}?ref=recommended`}>
                                     {post.data.title}
                                 </a>
                             </h3>
