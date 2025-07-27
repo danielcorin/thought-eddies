@@ -1,0 +1,45 @@
+---
+title: 'Tomo (2025)'
+date: 2025-05-15
+createdAt: 2025-05-15
+draft: false
+tags:
+  - tomo
+  - swift
+aliases:
+  - posts/tomo
+---
+
+import startImage from './images/start.png';
+import chatImage from './images/chat.png';
+import modelSelectorImage from './images/model_selector.png';
+import lightModeImage from './images/light_mode.png';
+import markdownImage from './images/markdown.png';
+import findImage from './images/find.png';
+import codeImage from './images/code.png';
+import prefsImage from './images/prefs.png';
+import customProviderImage from './images/custom_provider.png';
+
+[Tomo](https://www.wvlen.llc/apps/tomo) is an ambient LLM chat compatible with an [OpenAI-compatible chat completion API](https://platform.openai.com/docs/api-reference/chat).
+It focuses on providing a great LLM chat experience for power users who use several different LLMs (including local models) and are comfortable using hotkeys to manage bringing text and image context into the chat and managing the lifecycle of conversations and switching models.
+
+Tomo aims to be as unobtrusive and out of your way as possible.
+It can be called and hidden with a hotkey (like Spotlight), can be configured to hover above your windows or nest behind them, and can be stripped down to just a text box and your messages.
+It also supports hiding both the app icon and the menu bar icon.
+
+It presently stores no conversation history and does not support multiple conversations at once.
+While this is a limitation, it is also a feature that can keep you focused when you find yourself getting pulled into doing something else.
+
+Tech: Swift
+
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+    <img src={startImage.src} alt="Tomo's start screen" width="100%"/>
+    <img src={chatImage.src} alt="Tomo's chat screen with a single message pair" width="100%"/>
+    <img src={modelSelectorImage.src} alt="Tomo's model selector" width="100%"/>
+    <img src={lightModeImage.src} alt="Tomo's light mode" width="100%"/>
+    <img src={markdownImage.src} alt="Tomo displaying a markdown table" width="100%"/>
+    <img src={findImage.src} alt="Tomo chatting with an Ollama model" width="100%"/>
+    <img src={codeImage.src} alt="Tomo rendering a code block" width="100%"/>
+    <img src={prefsImage.src} alt="Tomo's preferences" width="100%"/>
+    <img src={customProviderImage.src} alt="Tomo's custom provider add screen" width="100%"/>
+</div>

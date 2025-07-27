@@ -96,4 +96,48 @@ const til = defineCollection({
   }),
 });
 
-export const collections = { posts, home, logs, feeds, uses, now, til };
+const projects = defineCollection({
+  loader: glob({
+    pattern: ['**/*.{md,mdx}', '!**/_*'],
+    base: './src/content/projects',
+  }),
+  schema: z.object({
+    title: z.string(),
+    date: z
+      .string()
+      .or(z.date())
+      .transform((val) => new Date(val)),
+    description: z.string().optional(),
+    location: z.string().optional(),
+    createdAt: z.date().optional(),
+    updatedAt: z.date().optional(),
+    publishedAt: z.date().optional(),
+    tags: z.array(z.string()).nullable().optional(),
+    image: z.string().optional(),
+    draft: z.boolean().optional().default(false),
+    aliases: z.array(z.string()).optional(),
+    github_url: z.string().url().optional(),
+    githubUrl: z.string().url().optional(),
+    zoomLevels: z
+      .array(
+        z.object({
+          level: z.number().int(),
+          content: z.string(),
+        })
+      )
+      .optional()
+      .default([]),
+    series: z.string().optional(),
+  }),
+});
+
+export const collections = {
+  posts,
+  home,
+  logs,
+  feeds,
+  uses,
+  now,
+  til,
+  projects,
+};

@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
   const tils = await getCollection("til");
+  const projects = await getCollection("projects");
   const paths: {
     params: { alias: string };
     props: { redirectTo: string; postTitle: string };
@@ -40,6 +41,23 @@ export async function getStaticPaths() {
           props: {
             redirectTo: `/til/${category}/${slug}`,
             postTitle: til.data.title,
+          },
+        });
+      });
+    }
+  });
+
+  // Create redirect paths for each project alias
+  projects.forEach((project) => {
+    if (project.data.aliases && Array.isArray(project.data.aliases)) {
+      project.data.aliases.forEach((alias) => {
+        // Remove leading slash if present
+        const cleanAlias = alias.startsWith("/") ? alias.slice(1) : alias;
+        paths.push({
+          params: { alias: cleanAlias },
+          props: {
+            redirectTo: `/projects/${project.id}`,
+            postTitle: project.data.title,
           },
         });
       });

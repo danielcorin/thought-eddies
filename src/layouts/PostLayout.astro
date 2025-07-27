@@ -12,6 +12,7 @@ const { frontmatter, ogImage, slug } = Astro.props;
 // Determine collection type
 const collectionType = frontmatter.collection || "posts";
 const isTil = collectionType === "til";
+const isProject = collectionType === "projects";
 
 // Get all posts/tils to find prev/next
 const allEntries = await getCollection(collectionType);
@@ -43,7 +44,7 @@ const similarEntries = currentEntry
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage}>
-  <Navigation selected={isTil ? "til" : "posts"} />
+  <Navigation selected={isProject ? "projects" : isTil ? "til" : "posts"} />
   <article>
     <header>
       <h1>{frontmatter.title}</h1>

@@ -7,6 +7,10 @@ import Layout from "./Layout.astro";
 
 const { frontmatter, Content, ogImage } = Astro.props;
 
+// Determine collection type
+const collectionType = frontmatter.collection || "posts";
+const isProject = collectionType === "projects";
+
 // Get all posts to find prev/next
 const allPosts = await getCollection("posts");
 const sortedPosts = allPosts
@@ -23,7 +27,7 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage}>
-  <Navigation selected="posts" />
+  <Navigation selected={isProject ? "projects" : "posts"} />
   <article>
     <header>
       <h1>{frontmatter.title}</h1>

@@ -1,0 +1,26 @@
+---
+import TableOfContents from "@components/layout/TableOfContents.astro";
+import PostLayout from "@layouts/PostLayout.astro";
+import ZoomableNoteLayout from "@layouts/ZoomableNoteLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+export const prerender = true;
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project: CollectionEntry<"projects">) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props as { project: CollectionEntry<"projects"> };
+const { Content, headings } = await render(project);
+const ogImage = `/projects/og.png`;
+---
+
+{
+  <PostLayout frontmatter={{ ...project.data, collection: "projects" }} ogImage={ogImage} slug={project.id}>
+    <TableOfContents title={project.data.title} headings={headings} />
+    <Content />
+  </PostLayout>
+}
