@@ -10,6 +10,7 @@ import markdownIntegration from '@astropub/md';
 import sitemap from '@astrojs/sitemap';
 
 import expressiveCode from 'astro-expressive-code';
+import remarkExternalLinks from './plugins/remark-external-links.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -31,6 +32,7 @@ export default defineConfig({
     markdownIntegration(),
   ],
   markdown: {
+    remarkPlugins: [remarkExternalLinks],
     shikiConfig: {
       theme: 'monokai',
       wrap: true,
