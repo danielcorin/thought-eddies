@@ -5,8 +5,8 @@ import { getContentPreview } from "@utils/text";
 import type { CollectionEntry } from "astro:content";
 
 export interface Props {
-    post: CollectionEntry<"posts"> | CollectionEntry<"logs"> | CollectionEntry<"til">;
-    type?: "post" | "log" | "til";
+    post: CollectionEntry<"posts"> | CollectionEntry<"logs"> | CollectionEntry<"til"> | CollectionEntry<"projects">;
+    type?: "post" | "log" | "til" | "project";
     variant?: "list" | "grid";
     showTypeLabel?: boolean;
     baseUrl?: string;
@@ -14,7 +14,7 @@ export interface Props {
 
 const {
     post,
-    type = post.collection === "til" ? "til" : post.collection === "logs" ? "log" : "post",
+    type = post.collection === "til" ? "til" : post.collection === "logs" ? "log" : post.collection === "projects" ? "project" : "post",
     variant = "list",
     showTypeLabel = false,
     baseUrl,
@@ -40,6 +40,8 @@ if (type === "log") {
     const category = post.id.split('/')[0];
     const slug = post.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '');
     url = `/til/${category}/${slug}`;
+} else if (post.collection === "projects") {
+    url = `/projects/${post.id}`;
 } else if (baseUrl) {
     url = `${baseUrl}/${post.id}`;
 } else {
