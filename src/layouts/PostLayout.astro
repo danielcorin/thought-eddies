@@ -131,7 +131,7 @@ const similarEntries = currentEntry
 
     <div class="raw-link">
       <a href={
-        isTil 
+        isTil
           ? `/til/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
           : `/posts/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
       } class="raw-button">
@@ -146,7 +146,11 @@ const similarEntries = currentEntry
       <div class="nav-item nav-prev-wrapper">
         {
           prevEntry && (
-            <a href={isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` : `/posts/${prevEntry.id}`} class="nav-prev">
+            <a href={
+              isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` :
+              isProject ? `/projects/${prevEntry.id}` :
+              `/posts/${prevEntry.id}`
+            } class="nav-prev">
               <Icon name="ph:arrow-left" />
               <div class="nav-content">
                 <span class="nav-label">Previous</span>
@@ -159,7 +163,11 @@ const similarEntries = currentEntry
       <div class="nav-item nav-next-wrapper">
         {
           nextEntry && (
-            <a href={isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` : `/posts/${nextEntry.id}`} class="nav-next">
+            <a href={
+              isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` :
+              isProject ? `/projects/${nextEntry.id}` :
+              `/posts/${nextEntry.id}`
+            } class="nav-next">
               <div class="nav-content">
                 <span class="nav-label">Next</span>
                 <span class="nav-title">{nextEntry.data.title}</span>
