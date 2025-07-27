@@ -26,16 +26,16 @@ const pageNumbers = Array.from(
 // Helper to generate page URL
 function getPageUrl(pageNum: number): string {
   if (baseUrl === '/') {
-    return pageNum === 1 ? '/' : `/page/${pageNum}`;
+    return pageNum === 1 ? '/?ref=footer' : `/page/${pageNum}?ref=footer`;
   }
-  return pageNum === 1 ? baseUrl : `${baseUrl}/${pageNum}`;
+  return pageNum === 1 ? `${baseUrl}?ref=footer` : `${baseUrl}/${pageNum}?ref=footer`;
 }
 ---
 
 <nav class="pagination">
   <div class="nav-item nav-prev-wrapper">
     {prevUrl && (
-      <a href={prevUrl} class="nav-prev">
+      <a href={prevUrl + '?ref=footer'} class="nav-prev">
         <Icon name="ph:arrow-left" />
         <span>Previous</span>
       </a>
@@ -76,7 +76,7 @@ function getPageUrl(pageNum: number): string {
 
   <div class="nav-item nav-next-wrapper">
     {nextUrl && (
-      <a href={nextUrl} class="nav-next">
+      <a href={nextUrl + '?ref=footer'} class="nav-next">
         <span>Next</span>
         <Icon name="ph:arrow-right" />
       </a>
