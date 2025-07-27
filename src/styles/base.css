@@ -532,3 +532,28 @@ kbd {
     margin-bottom: var(--spacing-md);
   }
 }
+
+/* Heading Anchors */
+.heading-link-wrapper {
+  text-decoration: none !important;
+  color: inherit !important;
+  position: relative;
+}
+
+.heading-link-wrapper:hover {
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+.heading-link-wrapper::after {
+  content: '#';
+  margin-left: var(--spacing-xs);
+  color: var(--color-ink-light);
+  transition: color 0.2s ease;
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+.heading-link-wrapper:hover::after {
+  color: var(--color-accent);
+}
