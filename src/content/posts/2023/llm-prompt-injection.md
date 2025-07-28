@@ -8,6 +8,8 @@ tags:
   - prompt_injection
   - jailbreaking
 draft: false
+aliases:
+  - posts/llm-prompt-injection
 ---
 
 ## Jailbreaking as prompt injection
