@@ -9,6 +9,8 @@ tags:
   - chatgpt
   - reads
 draft: false
+aliases:
+  - posts/playing-with-language-models
 ---
 
 Since the launch of GPT3, and more notably ChatGPT, I’ve had a ton of fun learning about and playing with emerging tools in the language model space.

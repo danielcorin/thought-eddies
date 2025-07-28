@@ -9,6 +9,8 @@ tags:
   - personal_knowledge
   - documentation
 draft: false
+aliases:
+  - posts/future-of-personal-knowledge
 ---
 
 Over the the years, I've developed a system for capturing knowledge that has been useful to me.

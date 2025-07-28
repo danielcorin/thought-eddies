@@ -7,6 +7,8 @@ tags:
   - language_models
   - structured_data
 draft: false
+aliases:
+  - posts/input-data-schemas-and-token-efficiency
 ---
 
 Plenty of data is ambiguous without additional description or schema to clarify its meaning.

@@ -11,6 +11,8 @@ tags:
   - python
   - openai
 draft: false
+aliases:
+  - posts/language-model-schema-and-object-gen
 ---
 
 If you want to try running these examples yourself, check out my writeup on using a [clean Python setup](/posts/2023/clean-python-setup).
