@@ -26,6 +26,9 @@ const currentIndex = sortedLogs.findIndex(
 const prevLog = currentIndex > 0 ? sortedLogs[currentIndex - 1] : null;
 const nextLog =
   currentIndex < sortedLogs.length - 1 ? sortedLogs[currentIndex + 1] : null;
+
+// Find the current log object
+const currentLog = sortedLogs[currentIndex];
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage}>
@@ -100,6 +103,10 @@ const nextLog =
         <a href={`/logs/${slug.replace(/\.(md|mdx)$/, '')}/index.md`} class="raw-button">
           <Icon name="ph:code" />
           <span>raw</span>
+        </a>
+        <a href={`https://github.com/danielcorin/thought-eddies/edit/main/${currentLog?.filePath || `src/content/logs/${slug}`}`} target="_blank" rel="noopener noreferrer" class="edit-button">
+          <Icon name="ph:pencil-simple" />
+          <span>edit</span>
         </a>
       </div>
     </article>
@@ -195,10 +202,12 @@ const nextLog =
   .raw-link {
     display: flex;
     justify-content: flex-start;
+    gap: 0.75rem;
     margin-top: var(--spacing-xl);
   }
 
-  .raw-button {
+  .raw-button,
+  .edit-button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -212,12 +221,14 @@ const nextLog =
     transition: background 0.2s, color 0.2s;
   }
 
-  .raw-button:hover {
+  .raw-button:hover,
+  .edit-button:hover {
     background: var(--color-bg-hover);
     color: var(--color-accent);
   }
 
-  .raw-button svg {
+  .raw-button svg,
+  .edit-button svg {
     width: 1rem;
     height: 1rem;
   }
