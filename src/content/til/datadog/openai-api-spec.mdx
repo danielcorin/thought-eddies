@@ -1,0 +1,216 @@
+---
+title: "Datadog and the OpenAI API Spec"
+createdAt: 2025-07-29T18:19:19.298300
+updatedAt: 2025-07-29T18:19:19.298300
+publishedAt: 2025-07-29T18:19:19.298300
+tags: ["datadog", "openai_compatible_api", "python"]
+draft: false
+---
+
+import Sidenote from '@components/prose/Sidenote.astro';
+
+## Why I like the Chat Completions API
+
+I write often about the OpenAI Chat Completions API, which has become a sort of standard for the time being for calling LLM APIs.
+This API is useful because it allows you to easily test different models and providers for inference with text and image inputs.
+
+I like using this API as a starting point because depending on your use case, you're optimizing different things.
+
+These include:
+- maximum performance or correctness against some labels
+- latency
+- cost
+- time to first token
+
+Eventually, you may settle on a particular model and optimize for that, but when you're getting started, you might not even know what you're optimizing for or the tradeoffs you'll need to make given the performance of the models available to you.
+
+## Using multiple providers with the OpenAI client
+
+Recently, I set up a Python app that used the OpenAI Python client.
+Since many model providers provide OpenAI chat completion APIs in addition to their own, I was experimenting with running inference with other providers just by changing the `base_url` and `api_key` in the client.
+
+Google has [documentation](https://ai.google.dev/gemini-api/docs/openai) on exactly how you can do this with Gemini.
+
+Several providers do a good job of implementing the spec in a way that is compatible with OpenAI's client.
+When it works, you don't notice or need to think about it.
+This solid foundation is excellent as you're figuring out what you're optimizing for as you build your LLM use case.
+
+However, when implemented poorly, it's a very bad time.
+
+## The failing call
+
+I was calling another provider that claimed to expose an OpenAI-compatible chat completion API.
+I won't name names, but the error I got was
+
+```json wrap=true
+{
+  "error_code": "BAD_REQUEST",
+  "message": "{\"external_model_provider\":\"amazon-bedrock\",\"external_model_error\":{\"message\":\"stream_options: Extra inputs are not permitted\"}}"
+}
+
+```
+or something like that.
+
+This wasn't a call to Bedrock by the way, <Sidenote content="Unless you want to [deploy a Lambda function to proxy the requests](https://github.com/aws-samples/bedrock-access-gateway)">which doesn't provide native support for an OpenAI-compatible API.</Sidenote>
+
+It was a call to a proxy layer in between.
+One that claimed to be OpenAI-compatible.
+
+The error "stream_options: Extra inputs are not permitted" seems pretty straightforward.
+The problem was, I wasn't passing it in my code.
+
+```python
+import os
+from openai import OpenAI
+
+
+def main():
+    client = OpenAI(
+        api_key=os.getenv("API_KEY"),
+        base_url=os.getenv("BASE_URL"),
+    )
+
+    stream = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Tell me a short joke about programming."},
+        ],
+        stream=True,
+    )
+
+    for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            print(chunk.choices[0].delta.content, end="", flush=True)
+    print()
+
+
+if __name__ == "__main__":
+    main()
+```
+
+
+## What was going on?
+
+I spent a while digging through layers of my code to see how I was inadvertently passing `stream_options` in my client call.
+I couldn't find anything.
+
+I wish I had thought to check the raw HTTP request the client was making sooner.
+
+I did that by running [`httplog`](https://github.com/jamescun/httplog) and changing the `base_url` to `http://localhost:8080/v1`.
+Triggering the code path in my app outputted logs like this:
+
+```text
+13:51:30.544:
+Method: POST  Path: /v1/chat/completions  Host: localhost:8080  Proto: HTTP/1.1
+Headers:
+  Accept: application/json
+  Accept-Encoding: gzip, deflate
+  Authorization: Bearer test
+  Connection: keep-alive
+  Content-Length: 217
+  Content-Type: application/json
+  Traceparent: 00-68890a2200000000059e62812c877cbe-1d59ad448017a984-01
+  Tracestate: dd=p:1d59ad448017a984;s:1;t.dm:-0;t.tid:68890a2200000000
+  User-Agent: OpenAI/Python 1.97.1
+  X-Datadog-Parent-Id: 2114912009745574276
+  X-Datadog-Sampling-Priority: 1
+  X-Datadog-Tags: _dd.p.dm=-0,_dd.p.tid=68890a2200000000
+  X-Datadog-Trace-Id: 404869323447303358
+  X-Stainless-Arch: arm64
+  X-Stainless-Async: false
+  X-Stainless-Lang: python
+  X-Stainless-Os: MacOS
+  X-Stainless-Package-Version: 1.97.1
+  X-Stainless-Read-Timeout: 600
+  X-Stainless-Retry-Count: 0
+  X-Stainless-Runtime: CPython
+  X-Stainless-Runtime-Version: 3.11.11
+Body:
+  {"messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"Tell me a short joke about programming."}],"model":"gpt-4o-mini","stream":true,"stream_options":{"include_usage":true}}
+```
+
+So there it was. The code was clearly _somehow_ setting `stream_options` in the request, even though I couldn't figure out how.
+
+I created a completely independent reproduction of the same client call outside my codebase and somehow it worked with identical code as shown above.
+The logs looked like this:
+
+```text
+13:55:47.315:
+Method: POST  Path: /v1/chat/completions  Host: localhost:8080  Proto: HTTP/1.1
+Headers:
+  Accept: application/json
+  Accept-Encoding: gzip, deflate
+  Authorization: Bearer test
+  Connection: keep-alive
+  Content-Length: 177
+  Content-Type: application/json
+  User-Agent: OpenAI/Python 1.97.1
+  X-Stainless-Arch: arm64
+  X-Stainless-Async: false
+  X-Stainless-Lang: python
+  X-Stainless-Os: MacOS
+  X-Stainless-Package-Version: 1.97.1
+  X-Stainless-Read-Timeout: 600
+  X-Stainless-Retry-Count: 0
+  X-Stainless-Runtime: CPython
+  X-Stainless-Runtime-Version: 3.11.11
+Body:
+  {"messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"Tell me a short joke about programming."}],"model":"gpt-4o-mini","stream":true}
+```
+
+The difference in these logs was the first useful clue I had come across.
+
+```diff
+1c1
+< 13:55:47.315:
+---
+> 13:51:30.544:
+8c8
+<   Content-Length: 177
+---
+>   Content-Length: 217
+9a10,11
+>   Traceparent: 00-68890a2200000000059e62812c877cbe-1d59ad448017a984-01
+>   Tracestate: dd=p:1d59ad448017a984;s:1;t.dm:-0;t.tid:68890a2200000000
+10a13,16
+>   X-Datadog-Parent-Id: 2114912009745574276
+>   X-Datadog-Sampling-Priority: 1
+>   X-Datadog-Tags: _dd.p.dm=-0,_dd.p.tid=68890a2200000000
+>   X-Datadog-Trace-Id: 404869323447303358
+21c27
+<   {"messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"Tell me a short joke about programming."}],"model":"gpt-4o-mini","stream":true}
+---
+>   {"messages":[{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"Tell me a short joke about programming."}],"model":"gpt-4o-mini","stream":true,"stream_options":{"include_usage":true}}
+```
+
+It seemed that Datadog was somehow adding `stream_options` to the request even though I wasn't setting it in my code.
+
+## Datadog's magic tracing
+
+To add Datadog tracing to a Python app, you install [`ddtrace`](https://github.com/DataDog/dd-trace-py) and run your app with `ddtrace-run`.
+It pretty much just works.
+
+However, with my faulty OpenAI-compatible API, the magic that Datadog uses to slightly modify requests to enable their traceability was breaking my code.
+
+I eventually traced the behavior to the [`dd-trace-py`](https://github.com/DataDog/dd-trace-py/blob/46827b3af8361ee1007303572150ae48b69c74a3/ddtrace/contrib/internal/openai/_endpoint_hooks.py#L202) library, which sets `stream_options["include_usage"] = True`.
+Given how this is implemented and the problem I was running into, setting `stream_options["include_usage"] = False` in my code led to the same problem since the underlying model still did not support it.
+
+This behavior was introduced in [v2.20.0](https://github.com/DataDog/dd-trace-py/releases/tag/v2.20.0) for `dd-trace-py` with the release notes:
+
+> - LLM Observability
+>
+>   - `openai`: Introduces automatic extraction of token usage from streamed chat completions. Unless stream_options: `{"include_usage": False}` is explicitly set on your streamed chat completion request, the OpenAI integration will add stream_options: `{"include_usage": True}` to your request and automatically extract the token usage chunk from the streamed response.
+
+It's a relatively innocuous change that allows Datadog to better trace LLM calls with a client that is documented to support it, but not if your OpenAI API isn't working properly.
+
+## The fix
+
+In this case, I still needed to call the problematic provider, so I used [`httpx`](https://github.com/encode/httpx/) to build a custom SSE client to stream the response back to the caller of my app, smoothing over the differences in what the problematic API supported.
+This approach allowed me to keep Datadog as well without needing to make more invasive changes to my code.
+
+While it's tough to blame Datadog for all this trouble, I was a little salty that I was burned by this magical request modification.
+But it's not their fault.
+
+If you implement an OpenAI-compatible API, please at least test it with the OpenAI client, otherwise you're not going to get the adoption or benefits from users using existing tools to call you.
+And you're also going to burn users who are relying on some amount of predictability while using systems (LLMs) that are already quite unpredictable.

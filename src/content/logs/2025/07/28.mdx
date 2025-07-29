@@ -1,0 +1,14 @@
+---
+date: '2025-07-28T18:19:19Z'
+title: '2025-07-28'
+draft: false
+tags: ['claude-code', 'kimi-k2', 'groq']
+---
+
+I've been trying to find a way to test Claude Code with Kimi K2 running on Groq.
+In my head, this could be a super fast, capable agent that would make trying larger tasks less time consuming to wait for.
+
+Initially, I thought I could use the [LiteLLM Anthropic `/v1/messages` API](https://docs.litellm.ai/docs/anthropic_unified), but I couldn't figure out how to get that to work.
+Looking at the exposed endpoints of the FastAPI server running the `litellm` proxy server, that path didn't appear to be available.
+
+I ended up finding this nice Github project [`fakerybakery/claude-code-kimi-groq`](https://github.com/fakerybakery/claude-code-kimi-groq/) that sets up a web server that does the proxying to Groq and now I am starting to experiment.
