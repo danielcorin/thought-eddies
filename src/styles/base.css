@@ -308,6 +308,7 @@ article header {
 article h1 {
   font-size: var(--text-3xl);
   margin-top: var(--spacing-lg);
+  line-height: 1.5;
 }
 
 article h2 {
@@ -331,6 +332,7 @@ h1.page-title {
   margin-bottom: var(--spacing-lg);
   text-align: center;
   padding-bottom: var(--spacing-sm);
+  line-height: 1.5;
 }
 
 article p,
