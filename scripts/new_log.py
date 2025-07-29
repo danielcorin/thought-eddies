@@ -5,8 +5,8 @@ from pathlib import Path
 import subprocess
 
 def create_or_open_log():
-    # Get current date and time
-    now = datetime.utcnow()
+    # Get current date and time in local time
+    now = datetime.now()
     year = now.strftime("%Y")
     month = now.strftime("%m")
     day = now.strftime("%d")
@@ -15,7 +15,7 @@ def create_or_open_log():
     # Construct file path
     base_dir = Path("src/content/logs")
     log_dir = base_dir / year / month
-    log_file = log_dir / f"{day}.md"
+    log_file = log_dir / f"{day}.mdx"
 
     # Create directory if it doesn't exist
     log_dir.mkdir(parents=True, exist_ok=True)

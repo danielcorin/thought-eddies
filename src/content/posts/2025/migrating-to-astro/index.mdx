@@ -50,26 +50,25 @@ Each took a few 100ms to build.
 I tried switching to a different library, started taking more than one second each.
 
 Ok, no problem.
-One Open Graph image per site section is fine.
+One Open Graph image per site section will be fine.
 
-The build is still more than two minutes.
+_The build was still taking more than two minutes._
 
-At several points over the course of a few days, I open devtools and view the website source.
-It doesn't fully load.
-Waterfox is buggy?
+At several points over the course of a few days, I opened devtools and viewed the site's source.
+It didn't fully load.
+Was Waterfox buggy?
 I didn't really know.
 
 I almost noticed the site was taking ~500ms to load.
 _Just_ slow enough to be annoying.
 
-Hugo (the static site generator I used to build my [previous site](https://github.com/danielcorin/blog)) claims to be fast and there is much talk about how the Javascript web (and Astro by proxy) can be slow and bloated, but was it really this bad?
-How had I never run into performance _this bad_ before?
-I'd built an [Electron app](https://github.com/danielcorin/delta) of far greater complexity and even that tooling seems nicer than this.
+Hugo (the static site generator I used to build my [previous site](https://github.com/danielcorin/blog)) claims to be fast and there is much discussion about how the Javascript web (and Astro by proxy) can be slow and bloated, but was it really this bad?
+I had never run into performance like this before.
+I'd built an [Electron app](https://github.com/danielcorin/delta) of far greater complexity and even that tooling seems nicer than was I was running into here.
 
-Eventually, I needed to see for myself.
+Eventually, I realized I needed to actually see the HTML source for myself.
 These were static HTML pages after all.
-At build time, a webserver starts and a process requests the content for each page, then persists it as a static HTML file to be served in production.
-No API calls.
+To build the site, a webserver starts and a process requests the content for each page, then persists it as a static HTML file to be served in production.
 
 What was taking so long?
 
@@ -85,7 +84,7 @@ I saw the page content, a bunch of CSS across the different components, some `<p
 Not for the page I was on but for all of the pages across the site.
 
 And then it dawned on me.
-My seemingly innocuous, static search required all the content from across my site for the search to work.
+My seemingly innocuous, static search required all the content from across my site for the client-side search to work.
 
 Every HTML page contained the full content of the entire site.
 
