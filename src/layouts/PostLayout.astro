@@ -4,7 +4,7 @@ import RecommendedPosts from "@components/RecommendedPosts.astro";
 import Tag from "@components/Tag.astro";
 import { findSimilarPosts } from "@utils/findSimilarPosts";
 import { Icon } from "astro-icon/components";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import Layout from "./Layout.astro";
 
 const { frontmatter, ogImage, slug } = Astro.props;
@@ -13,6 +13,10 @@ const { frontmatter, ogImage, slug } = Astro.props;
 const collectionType = frontmatter.collection || "posts";
 const isTil = collectionType === "til";
 const isProject = collectionType === "projects";
+
+// Get the current entry using the slug
+const entryId = slug.replace(/\.(md|mdx)$/, '');
+const currentEntry = await getEntry(collectionType, entryId);
 
 // Get all posts/tils to find prev/next
 const allEntries = await getCollection(collectionType);
@@ -24,17 +28,14 @@ const sortedEntries = allEntries
       new Date(a.data.createdAt).getTime(),
   );
 
-// Find current entry index
+// Find current entry index using the ID instead of title
 const currentIndex = sortedEntries.findIndex(
-  (entry) => entry.data.title === frontmatter.title,
+  (entry) => entry.id === currentEntry?.id,
 );
 
 const prevEntry =
   currentIndex < sortedEntries.length - 1 ? sortedEntries[currentIndex + 1] : null;
 const nextEntry = currentIndex > 0 ? sortedEntries[currentIndex - 1] : null;
-
-// Find the current entry object
-const currentEntry = sortedEntries[currentIndex];
 
 // Find similar entries, excluding prev and next
 const excludeEntries = [prevEntry, nextEntry].filter(Boolean) as typeof sortedEntries;
