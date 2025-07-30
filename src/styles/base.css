@@ -443,6 +443,17 @@ kbd {
   margin-block: 1rem;
 }
 
+/* Tablet/Small Desktop - Show only icons with labels for selected */
+@media (max-width: 850px) {
+  .nav-text {
+    display: none;
+  }
+  
+  .nav-link.selected .nav-text {
+    display: block;
+  }
+}
+
 /* Mobile Styles */
 @media (max-width: 640px) {
   .site-nav {

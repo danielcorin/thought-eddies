@@ -150,4 +150,20 @@ const { selected } = Astro.props;
     gap: 1rem;
   }
 
+  /* Mobile: Make all icons the same size */
+  @media (max-width: 640px) {
+    /* Ensure all nav icons have consistent size */
+    .site-nav .inline-icon {
+      width: 1rem;
+      height: 1rem;
+      font-size: 1rem;
+    }
+    
+    /* Override the search/theme icon sizing to match */
+    .nav-icon-link svg {
+      width: 1rem !important;
+      height: 1rem !important;
+    }
+  }
+
 </style>
