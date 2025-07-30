@@ -154,9 +154,9 @@ const similarEntries = currentEntry
         {
           prevEntry && (
             <a href={
-              isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` :
-              isProject ? `/projects/${prevEntry.id}` :
-              `/posts/${prevEntry.id}`
+              isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}?ref=arrow_nav` :
+              isProject ? `/projects/${prevEntry.id}?ref=arrow_nav` :
+              `/posts/${prevEntry.id}?ref=arrow_nav`
             } class="nav-prev">
               <Icon name="ph:arrow-left" />
               <div class="nav-content">
@@ -171,9 +171,9 @@ const similarEntries = currentEntry
         {
           nextEntry && (
             <a href={
-              isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` :
-              isProject ? `/projects/${nextEntry.id}` :
-              `/posts/${nextEntry.id}`
+              isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}?ref=arrow_nav` :
+              isProject ? `/projects/${nextEntry.id}?ref=arrow_nav` :
+              `/posts/${nextEntry.id}?ref=arrow_nav`
             } class="nav-next">
               <div class="nav-content">
                 <span class="nav-label">Next</span>

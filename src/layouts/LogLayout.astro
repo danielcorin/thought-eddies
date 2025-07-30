@@ -46,7 +46,7 @@ const currentLog = sortedLogs[currentIndex];
         <div class="nav-item nav-prev-wrapper">
           {
             prevLog && (
-              <a href={`/logs/${prevLog.id}`} class="nav-prev">
+              <a href={`/logs/${prevLog.id}?ref=arrow_nav`} class="nav-prev">
                 <Icon name="ph:arrow-left" />
                 <span>
                   {new Date(prevLog.data.date).toLocaleDateString("en-US", {
@@ -71,7 +71,7 @@ const currentLog = sortedLogs[currentIndex];
         <div class="nav-item nav-next-wrapper">
           {
             nextLog && (
-              <a href={`/logs/${nextLog.id}`} class="nav-next">
+              <a href={`/logs/${nextLog.id}?ref=arrow_nav`} class="nav-next">
                 <span>
                   {new Date(nextLog.data.date).toLocaleDateString("en-US", {
                     month: "short",
