@@ -32,8 +32,6 @@ export const zoomLevels = [
 
 I can't actually remember if I got inspiration for this idea from [Amelia's presentation](https://www.youtube.com/watch?v=PAy_GHUAICw), but watching that again recently, it seems likely so I am crediting her for it here.
 
-[original text]
-
 ## The Spark
 
 I'm trying something unusual with this post.
@@ -129,8 +127,20 @@ From here, we will need to compute summaries for each different level of zoom.
 When we zoom out, content at the previous level fades away and content at the next level fades into view.
 As we zoom further and further out, the content is condensed into summaries that capture the essence of the lower levels, giving the reader the ability to quickly scan through these summaries, then zoom into areas of interest, like a dynamic map.
 
-Using the following prompt in Cursor, I was able to generate content summary for levels 2-5 where this "raw" content is level 1.
-The content is generated and stored as markdown strings in the following schema, passed to the React component that renders the `ZoomableDocument`
+I store zoom levels as separate markdown files in the same directory as the post. This keeps the main post file clean and makes it easier to manage different zoom levels independently. The files are imported directly into the MDX file using Vite's `?raw` suffix, which imports the markdown content as strings.
+
+The file structure looks like this:
+
+```
+src/content/posts/2025/zoomable-document/
+├── index.mdx          # Main post file
+├── _level_2.md        # Level 2 zoom content
+├── _level_3.md        # Level 3 zoom content
+├── _level_4.md        # Level 4 zoom content
+└── _level_5.md        # Level 5 zoom content
+```
+
+The content is passed to the React component using this schema:
 
 ```tsx
 interface ContentLevel {
@@ -146,7 +156,7 @@ interface ZoomableDocumentProps {
 
 import Chat from '@components/prose/Chat.astro';
 
-To generate the data for those levels, with this (or any) document as context, we prompt
+To generate content for those levels, with this (or any) document as context, I use the following prompt
 
 <Chat
   model="claude-3-5-sonnet-20241022"
@@ -164,31 +174,27 @@ I created the first version of the `ZoomableDocument` React component by using a
 From there, I continued writing more in prompts and here to explain what approaches were working well and refined the prose further.
 The above prompt allows me to easily use an LLM to regenerate the higher level summaries whenever I make edits to this Level 1 version.
 
-There were some technical challenges to overcome.
-Initially, I stored all content (including the raw post) as markdown strings in JSON objects.
-However, this approach wasn't ideal. Through iteration, I developed a better solution: writing the raw content directly in the `.mdx` file, then passing the rendered component from the Astro collection through a layout and into a React component. This preserves all of Astro's markdown features.
-With this foundation in place, I can now generate summaries as a separate field in the post frontmatter using the prompt above.
+To create a zoomable document:
+1. Write your markdown content normally in the `.mdx` file
+2. Generate zoom levels using a language model with the raw post as context
+3. Save each zoom level as a separate markdown file in the same directory
+4. Import the zoom levels into your MDX file:
 
-We now have a foundation for a `ZoomableDocument` component.
-To create another, all we have to do in write our markdown as we'd done normally, then generate arbitrary levels content to zoom to using a language model and the raw post as context.
-Finally, we set the generated zoom levels as a frontmatter field in the `.mdx` post with the following format:
+```tsx
+import Level2Content from './_level_2.md?raw';
+import Level3Content from './_level_3.md?raw';
+import Level4Content from './_level_4.md?raw';
+import Level5Content from './_level_5.md?raw';
 
-```yaml
----
-zoomLevels:
-  - level: 2
-    content: Level 2 content...
-
-  - level: 3
-    content: Level 3 content...
-
-  - level: 4
-    content: Level 4 content...
-
-  - level: 5
-    content: Level 5 content...
----
+export const zoomLevels = [
+  { level: 2, content: Level2Content },
+  { level: 3, content: Level3Content },
+  { level: 4, content: Level4Content },
+  { level: 5, content: Level5Content }
+];
 ```
+
+5. Wrap your content in the `ZoomableDocument` component with the levels prop
 
 ## Future work
 
