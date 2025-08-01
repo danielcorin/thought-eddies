@@ -13,6 +13,21 @@ aliases:
   - notes/2025/zoomable-document
 ---
 
+import { ZoomableDocument } from '@components/layout/ZoomableDocument';
+import Level2Content from './_level_2.md?raw';
+import Level3Content from './_level_3.md?raw';
+import Level4Content from './_level_4.md?raw';
+import Level5Content from './_level_5.md?raw';
+
+export const zoomLevels = [
+  { level: 2, content: Level2Content },
+  { level: 3, content: Level3Content },
+  { level: 4, content: Level4Content },
+  { level: 5, content: Level5Content }
+];
+
+<ZoomableDocument client:load levels={zoomLevels}>
+
 ## Credit
 
 I can't actually remember if I got inspiration for this idea from [Amelia's presentation](https://www.youtube.com/watch?v=PAy_GHUAICw), but watching that again recently, it seems likely so I am crediting her for it here.
@@ -178,3 +193,5 @@ zoomLevels:
 ## Future work
 
 Given the recent release of [Claude Citations](https://docs.anthropic.com/en/docs/build-with-claude/citations), I'll probably revisit this concept introducing explicit linkages between the summarized content and the source text.
+
+</ZoomableDocument>

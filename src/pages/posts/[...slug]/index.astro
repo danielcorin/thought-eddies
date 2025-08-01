@@ -19,16 +19,7 @@ const ogImage = `/posts/og.png`;
 ---
 
 {
-  post.data.zoomLevels.length > 0 ? (
-    <ZoomableNoteLayout
-      frontmatter={post.data}
-      Content={Content}
-      ogImage={ogImage}
-    >
-      <TableOfContents title={post.data.title} headings={headings} />
-      <Content />
-    </ZoomableNoteLayout>
-  ) : (
+  (
     <PostLayout frontmatter={post.data} ogImage={ogImage} slug={post.id}>
       <TableOfContents title={post.data.title} headings={headings} />
       <Content />
