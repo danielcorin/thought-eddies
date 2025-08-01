@@ -34,6 +34,7 @@ export function ZoomableDocument({ children, levels }: ZoomableDocumentProps) {
     const contentLevel = levels.find((l) => l.level === level);
     if (!contentLevel) return null;
 
+    // If content is a string, render with ReactMarkdown
     return (
       <div>
         <ReactMarkdown
