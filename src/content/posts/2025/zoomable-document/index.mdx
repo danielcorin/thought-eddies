@@ -175,10 +175,11 @@ From there, I continued writing more in prompts and here to explain what approac
 The above prompt allows me to easily use an LLM to regenerate the higher level summaries whenever I make edits to this Level 1 version.
 
 To create a zoomable document:
-1. Write your markdown content normally in the `.mdx` file
-2. Generate zoom levels using a language model with the raw post as context
-3. Save each zoom level as a separate markdown file in the same directory
-4. Import the zoom levels into your MDX file:
+
+- Write markdown content normally in the `.mdx` file
+- Generate zoom levels using a language model with the raw post as context using the prompt above
+- Save each zoom level as a separate markdown file in the same directory
+- Import the zoom levels to the MDX file:
 
 ```tsx
 import Level2Content from './_level_2.md?raw';
@@ -194,7 +195,15 @@ export const zoomLevels = [
 ];
 ```
 
-5. Wrap your content in the `ZoomableDocument` component with the levels prop
+- Wrap your content in the `ZoomableDocument` component with the levels prop
+
+```tsx
+<ZoomableDocument client:load levels={zoomLevels}>
+  {children}
+</ZoomableDocument>
+```
+
+In the future, I could find a way to automatically load the levels and wrap the content in the `ZoomableDocument` component.
 
 ## Future work
 
