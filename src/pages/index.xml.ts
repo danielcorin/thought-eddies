@@ -1,2 +1,5 @@
-// Re-export RSS feed for backwards compatibility
-export { GET } from './rss.xml';
+import { generateRSSFeed } from '@utils/rss';
+
+export async function GET(context: { site: string }) {
+  return generateRSSFeed(context);
+}
