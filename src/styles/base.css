@@ -181,6 +181,16 @@ h6 {
   color: var(--color-ink);
 }
 
+/* Ensure code elements in headings inherit the heading font size */
+.content h1 code,
+.content h2 code,
+.content h3 code,
+.content h4 code,
+.content h5 code,
+.content h6 code {
+  font-size: inherit;
+}
+
 h1 {
   font-size: var(--text-4xl);
 }
