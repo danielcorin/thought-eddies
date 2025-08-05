@@ -53,22 +53,12 @@
   --color-highlight: var(--color-highlight-light);
 
   /* Typography */
-  --font-post-primary: 'Futura';
-  --font-post-prose: 'Crimson Pro', Georgia, serif;
-  --font-post-ui: system-ui, -apple-system, sans-serif;
-  --font-post-mono: 'JetBrains Mono', monospace;
-
-  --font-note-primary: 'Futura';
-  --font-note-prose: 'Inter', Georgia, serif;
-  --font-note-ui: system-ui, -apple-system, sans-serif;
-  --font-note-mono: 'JetBrains Mono', monospace;
+  --font-primary: 'Futura';
+  --font-prose: 'Inter', Georgia, serif;
+  --font-ui: system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
   --font-handwriting: 'Inter', Georgia, serif;
-
-  --font-primary: var(--font-note-primary);
-  --font-prose: var(--font-note-prose);
-  --font-ui: var(--font-note-ui);
-  --font-mono: var(--font-note-mono);
 
   /* Font Sizes */
   --text-xs: 0.75rem;

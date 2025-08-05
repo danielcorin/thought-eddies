@@ -29,14 +29,14 @@ My goals for the year were the following
 - Setup [Nix](https://github.com/danielcorin/nix-config/) to manage my MacBook's system configuration and dotfiles
 - Experimented with solving [Connections](/tags/connections) with LLMs, including fine-tuning and multi-turn conversation
 - Created a [search page](/search) for this site
-- Made my site [friendly](./index.md) to LLMs by appending `index.md` to urls to get raw markdown
-- Set up a [digital garden](/garden) for idea iteration
+- Made my site [friendly](/posts/2024/2024-year-in-review/index.md) to LLMs by appending `index.md` to urls to get raw markdown
+- Set up a [digital garden](https://github.com/danielcorin/blog/tree/main/content/garden) for idea iteration
 - Experimented with [VLMs](/tags/vlms/) for structured data extraction
 - Trained a bunch of [machine learning models](/tags/course.fast.ai) while working through the [Fast.ai course](https://course.fast.ai/)
-- Built a [word game]({{< ref "projects/cogno.md" >}}) using embeddings
-- Built an [Electron app]({{< ref "projects/delta.md" >}}) for LLM conversation branching
-- Created a [blogroll]({{< ref "garden/inspiration/people.md" >}})
-- Created a [personal curated content feed](/feeds/curated/)
+- Built a word game using embeddings
+- Built an [Electron app](/projects/delta) for LLM conversation branching
+- Created a [blogroll](https://github.com/danielcorin/blog/blob/main/content/garden/inspiration/people.md)
+- Created a [link blog](/feeds/link-blog/)
 - Created a [process](https://github.com/danielcorin/blog/blob/main/scripts/convert_notebook.py) to convert notebooks to posts on this blog, which might be my preferred code+writing approach right now (for Python at least)
 
 ## Content by the numbers
@@ -48,7 +48,7 @@ My goals for the year were the following
 | [🏗️ Projects](/projects)   | 4       | 791       |
 | [📍 Now](/now)             | 1       | 63        |
 | [📖 Posts](/posts)         | 21      | 25415     |
-| [🌱 Garden](/garden)       | 4       | 4827      |
+| [🌱 Garden](https://github.com/danielcorin/blog/tree/main/content/garden)       | 4       | 4827      |
 | [✏️ Logs](/logs)           | 140     | 22687     |
 | [📝 Today I Learned](/til) | 47      | 35214     |
 | **Total**                  | **217** | **88997** |
