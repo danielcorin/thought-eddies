@@ -1,0 +1,35 @@
+<div class="clickable-images-wrapper">
+  <slot />
+</div>
+
+<script>
+  function setupClickableImages() {
+    const wrapper = document.querySelector('.clickable-images-wrapper');
+    if (!wrapper) return;
+
+    const images = wrapper.querySelectorAll('img');
+    
+    images.forEach((img) => {
+      // Add clickable styling
+      img.style.cursor = 'pointer';
+      img.classList.add('hover:opacity-90', 'transition-opacity', 'duration-200');
+      
+      // Add click handler
+      img.addEventListener('click', () => {
+        if ((window as any).openFullscreenImage) {
+          (window as any).openFullscreenImage(img.src, img.alt || 'Image');
+        }
+      });
+    });
+  }
+
+  // Setup on load
+  document.addEventListener('DOMContentLoaded', setupClickableImages);
+  
+  // Also setup immediately in case DOM is already loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupClickableImages);
+  } else {
+    setupClickableImages();
+  }
+</script>

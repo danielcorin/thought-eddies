@@ -1,0 +1,32 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  width?: number;
+  height?: number;
+}
+
+const { src, alt, class: className = '', width, height } = Astro.props;
+---
+
+<img
+  src={src}
+  alt={alt}
+  width={width}
+  height={height}
+  class={`cursor-pointer hover:opacity-90 transition-opacity duration-200 max-h-[90vh] object-contain ${className}`}
+  data-clickable-image
+/>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.hasAttribute('data-clickable-image')) {
+      const img = target as HTMLImageElement;
+      if ((window as any).openFullscreenImage) {
+        (window as any).openFullscreenImage(img.src, img.alt);
+      }
+    }
+  });
+</script>
