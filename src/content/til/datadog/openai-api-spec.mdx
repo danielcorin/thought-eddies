@@ -1,10 +1,10 @@
 ---
-title: "Datadog and the OpenAI API Spec"
+title: 'Datadog and the OpenAI API Spec'
 description: "When Datadog's magic breaks your API calls"
 createdAt: 2025-07-29T18:19:19.298300
 updatedAt: 2025-07-29T18:19:19.298300
 publishedAt: 2025-07-29T18:19:19.298300
-tags: ["datadog", "openai_compatible_api", "python"]
+tags: ['datadog', 'openai_compatible_api', 'python']
 draft: false
 ---
 
@@ -18,6 +18,7 @@ This API is useful because it allows you to easily test different models and pro
 I like using this API as a starting point because depending on your use case, you're optimizing different things.
 
 These include:
+
 - maximum performance or correctness against some labels
 - latency
 - cost
@@ -48,8 +49,8 @@ I won't name names, but the error I got was
   "error_code": "BAD_REQUEST",
   "message": "{\"external_model_provider\":\"amazon-bedrock\",\"external_model_error\":{\"message\":\"stream_options: Extra inputs are not permitted\"}}"
 }
-
 ```
+
 or something like that.
 
 This wasn't a call to Bedrock by the way, <Sidenote content="Unless you want to [deploy a Lambda function to proxy the requests](https://github.com/aws-samples/bedrock-access-gateway)">which doesn't provide native support for an OpenAI-compatible API.</Sidenote>
@@ -89,7 +90,6 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-
 
 ## What was going on?
 
@@ -200,7 +200,6 @@ Given how this is implemented and the problem I was running into, setting `strea
 This behavior was introduced in [v2.20.0](https://github.com/DataDog/dd-trace-py/releases/tag/v2.20.0) for `dd-trace-py` with the release notes:
 
 > - LLM Observability
->
 >   - `openai`: Introduces automatic extraction of token usage from streamed chat completions. Unless stream_options: `{"include_usage": False}` is explicitly set on your streamed chat completion request, the OpenAI integration will add stream_options: `{"include_usage": True}` to your request and automatically extract the token usage chunk from the streamed response.
 
 It's a relatively innocuous change that allows Datadog to better trace LLM calls with a client that is documented to support it, but not if your OpenAI API isn't working properly.

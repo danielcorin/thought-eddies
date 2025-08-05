@@ -11,6 +11,7 @@ I'm writing this in an Astro project, specifically in an MDX file that will live
 ## Content Hierarchy Deep Dive
 
 Content typically exists in multiple layers:
+
 1. Headings and section markers (`#` in markdown)
 2. Main body content (prose, lists, code, images)
 3. Supporting elements (asides, footnotes, citations)

@@ -458,7 +458,7 @@ kbd {
   .nav-text {
     display: none;
   }
-  
+
   .nav-link.selected .nav-text {
     display: block;
   }
@@ -573,7 +573,9 @@ kbd {
   content: '#';
   margin-left: var(--spacing-xs);
   color: var(--color-ink-light);
-  transition: opacity 0.2s ease, text-decoration 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    text-decoration 0.2s ease;
   font-weight: normal;
   font-size: 0.9em;
   opacity: 0;
