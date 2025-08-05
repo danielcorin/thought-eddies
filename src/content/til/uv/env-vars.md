@@ -1,9 +1,9 @@
 ---
-title: "Running `uv` with Environment Variables"
+title: 'Running `uv` with Environment Variables'
 createdAt: 2025-08-03T15:30:53.592711
 updatedAt: 2025-08-03T15:30:53.592711
 publishedAt: 2025-08-03T15:30:53.592711
-tags: ["python", "uv", "direnv"]
+tags: ['python', 'uv', 'direnv']
 draft: false
 ---
 
@@ -31,7 +31,6 @@ print(os.getenv("HELLO"))
 ```text title=".env"
 HELLO="world"
 ```
-
 
 Starting by running without the `--env-file` flag, we see the environment variable is not loaded.
 
