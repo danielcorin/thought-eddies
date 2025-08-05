@@ -5,6 +5,8 @@ import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
 import Breadcrumbs from "@components/Breadcrumbs.astro";
+import ClickableImages from "@components/ClickableImages.astro";
+import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
 
 const { frontmatter, ogImage, slug } = Astro.props;
 
@@ -96,7 +98,9 @@ const currentLog = sortedLogs[currentIndex];
       }
 
       <div class="content">
-        <slot />
+        <ClickableImages>
+          <slot />
+        </ClickableImages>
       </div>
 
       <div class="raw-link">
@@ -113,9 +117,11 @@ const currentLog = sortedLogs[currentIndex];
   </main>
 </Layout>
 
+<FullscreenImageViewer />
+
 <style>
   /* Use base.css main and article styles, only add log-specific styles */
-  
+
 
   .tags {
     display: flex;

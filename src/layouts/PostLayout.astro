@@ -6,6 +6,8 @@ import { findSimilarPosts } from "@utils/findSimilarPosts";
 import { Icon } from "astro-icon/components";
 import { getCollection, getEntry } from "astro:content";
 import Layout from "./Layout.astro";
+import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
+import ClickableImages from "@components/ClickableImages.astro";
 
 const { frontmatter, ogImage, slug } = Astro.props;
 
@@ -127,7 +129,9 @@ const similarEntries = currentEntry
       }
     </header>
     <div class="content">
-      <slot />
+      <ClickableImages>
+        <slot />
+      </ClickableImages>
     </div>
 
     <div class="raw-link">
@@ -187,6 +191,8 @@ const similarEntries = currentEntry
     </nav>
   </article>
 </Layout>
+
+<FullscreenImageViewer />
 <style>
   .metadata {
     display: flex;
