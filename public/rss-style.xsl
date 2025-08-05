@@ -38,9 +38,9 @@
             --color-border: var(--color-border-light);
 
             /* Typography */
-            --font-note-primary: 'Futura';
-            --font-note-prose: 'Inter', Georgia, serif;
-            --font-note-mono: 'JetBrains Mono', monospace;
+            --font-primary: 'Futura';
+            --font-prose: 'Inter', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
 
             /* Spacing */
             --spacing-xs: 0.5rem;
@@ -88,7 +88,7 @@
             background-position: 0 0;
             background-color: var(--color-bg);
             color: var(--color-ink);
-            font-family: var(--font-note-prose);
+            font-family: var(--font-prose);
             line-height: 1.6;
           }
 
@@ -106,7 +106,7 @@
           }
 
           h1 {
-            font-family: var(--font-note-primary);
+            font-family: var(--font-primary);
             font-size: var(--text-4xl);
             line-height: 1.1;
             font-weight: 600;
@@ -128,7 +128,7 @@
           }
 
           .subscribe-info h2 {
-            font-family: var(--font-note-primary);
+            font-family: var(--font-primary);
             font-size: var(--text-2xl);
             font-weight: 600;
             margin-bottom: var(--spacing-md);
@@ -139,7 +139,7 @@
             background: var(--color-bg);
             padding: var(--spacing-md);
             border-radius: 4px;
-            font-family: var(--font-note-mono);
+            font-family: var(--font-mono);
             font-size: var(--text-base);
             word-break: break-all;
             margin: var(--spacing-md) 0;
@@ -159,7 +159,7 @@
           }
 
           .item-title {
-            font-family: var(--font-note-primary);
+            font-family: var(--font-primary);
             font-size: var(--text-2xl);
             font-weight: 600;
             margin-bottom: var(--spacing-xs);
@@ -177,7 +177,7 @@
           }
 
           .item-meta {
-            font-family: var(--font-note-mono);
+            font-family: var(--font-mono);
             font-size: var(--text-base);
             color: var(--color-ink-light);
           }
