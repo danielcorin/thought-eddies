@@ -5,6 +5,7 @@ export async function getStaticPaths() {
   const posts = await getCollection("posts");
   const tils = await getCollection("til");
   const projects = await getCollection("projects");
+  const feeds = await getCollection("feeds");
   const paths: {
     params: { alias: string };
     props: { redirectTo: string; postTitle: string };
@@ -58,6 +59,23 @@ export async function getStaticPaths() {
           props: {
             redirectTo: `/projects/${project.id}`,
             postTitle: project.data.title,
+          },
+        });
+      });
+    }
+  });
+
+  // Create redirect paths for each feed alias
+  feeds.forEach((feed) => {
+    if (feed.data.aliases && Array.isArray(feed.data.aliases)) {
+      feed.data.aliases.forEach((alias) => {
+        // Remove leading slash if present
+        const cleanAlias = alias.startsWith("/") ? alias.slice(1) : alias;
+        paths.push({
+          params: { alias: cleanAlias },
+          props: {
+            redirectTo: `/feeds/${feed.id}`,
+            postTitle: feed.data.title,
           },
         });
       });

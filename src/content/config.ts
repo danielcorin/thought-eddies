@@ -57,6 +57,7 @@ const feeds = defineCollection({
   schema: z.object({
     title: z.string(),
     feed_url: z.string(),
+    aliases: z.array(z.string()).optional(),
   }),
 });
 
