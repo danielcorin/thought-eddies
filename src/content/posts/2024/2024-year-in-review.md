@@ -43,15 +43,15 @@ My goals for the year were the following
 
 (Calculated with [this](https://github.com/danielcorin/blog/tree/main/scripts/year_review.py) quick and dirty script)
 
-| Category                   | Posts   | Words     |
-| -------------------------- | ------- | --------- |
-| [🏗️ Projects](/projects)   | 4       | 791       |
-| [📍 Now](/now)             | 1       | 63        |
-| [📖 Posts](/posts)         | 21      | 25415     |
-| [🌱 Garden](https://github.com/danielcorin/blog/tree/main/content/garden)       | 4       | 4827      |
-| [✏️ Logs](/logs)           | 140     | 22687     |
-| [📝 Today I Learned](/til) | 47      | 35214     |
-| **Total**                  | **217** | **88997** |
+| Category                                                                  | Posts   | Words     |
+| ------------------------------------------------------------------------- | ------- | --------- |
+| [🏗️ Projects](/projects)                                                  | 4       | 791       |
+| [📍 Now](/now)                                                            | 1       | 63        |
+| [📖 Posts](/posts)                                                        | 21      | 25415     |
+| [🌱 Garden](https://github.com/danielcorin/blog/tree/main/content/garden) | 4       | 4827      |
+| [✏️ Logs](/logs)                                                          | 140     | 22687     |
+| [📝 Today I Learned](/til)                                                | 47      | 35214     |
+| **Total**                                                                 | **217** | **88997** |
 
 The "logs" section of this site has become a helpful scratchpad for ideas and capture of what I am up to for myself to go back and reference.
 I don't actively surface these entries anywhere on the site, but you can find them [here](/logs).
