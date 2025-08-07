@@ -40,7 +40,7 @@ const nextYear = currentYearIndex > 0 ? yearsWithPosts[currentYearIndex - 1] : n
 const ogImage = `/posts/og.png`;
 ---
 
-<Layout title={`Posts from ${year}`} ogImage={ogImage}>
+<Layout title={`Posts from ${year}`} ogImage={ogImage} pageType="postsList">
     <Navigation selected={collection} />
     <main>
         <header class="page-header">

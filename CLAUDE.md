@@ -106,9 +106,8 @@ This is an Astro-based digital garden/blog platform with the following key archi
 ### Development Patterns
 
 1. **Component Usage**:
-   - Use Astro components for static, server-rendered content
-   - Use React components only when client-side interactivity is needed
-   - Leverage Astro's partial hydration for optimal performance
+   - Prefer Astro components
+   - Use React when Astro is not practical
 
 2. **Content Management**:
    - Place content in appropriate collection directories

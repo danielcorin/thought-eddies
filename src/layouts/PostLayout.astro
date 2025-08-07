@@ -50,7 +50,7 @@ const similarContent = currentEntry
   : [];
 ---
 
-<Layout title={frontmatter.title} ogImage={ogImage}>
+<Layout title={frontmatter.title} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : "posts"}>
   <Navigation selected={isProject ? "projects" : isTil ? "til" : "posts"} />
   <article>
     <header>

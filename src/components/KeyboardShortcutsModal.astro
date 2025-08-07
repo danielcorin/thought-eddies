@@ -1,0 +1,345 @@
+---
+import { getHotkeysForPage } from '@utils/hotkeyConfig';
+import type { Hotkey } from '@utils/hotkeyConfig';
+
+interface Props {
+  pageType?: string;
+}
+
+const { pageType } = Astro.props;
+const hotkeys = getHotkeysForPage(pageType);
+
+// Separate global and page-specific hotkeys
+const globalHotkeys = hotkeys.filter(h =>
+  !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(h.key)
+);
+const navigationHotkeys = hotkeys.filter(h =>
+  ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(h.key)
+);
+
+// Server-side hotkey display formatting (always show Mac symbols)
+function formatHotkeyDisplaySSR(hotkey: Hotkey): string {
+  const parts: string[] = [];
+
+  if (hotkey.modifiers) {
+    const uniqueModifiers = new Set<string>();
+
+    hotkey.modifiers.forEach(mod => {
+      switch (mod) {
+        case 'cmd':
+          uniqueModifiers.add('⌘');
+          break;
+        case 'ctrl':
+          uniqueModifiers.add('⌘');
+          break;
+        case 'shift':
+          uniqueModifiers.add('⇧');
+          break;
+        case 'alt':
+          uniqueModifiers.add('⌥');
+          break;
+      }
+    });
+
+    parts.push(...Array.from(uniqueModifiers));
+  }
+
+  parts.push(hotkey.key === 'ArrowLeft' ? '←' :
+              hotkey.key === 'ArrowRight' ? '→' :
+              hotkey.key === 'ArrowUp' ? '↑' :
+              hotkey.key === 'ArrowDown' ? '↓' :
+              hotkey.key.toUpperCase());
+
+  return parts.join(' ');
+}
+---
+
+<div id="keyboard-shortcuts-modal" class="modal-wrapper" style="display: none;">
+  <div class="modal-backdrop"></div>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>Keyboard Shortcuts</h2>
+      <button
+        class="modal-close"
+        aria-label="Close modal"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="modal-content">
+      <div class="hotkey-section">
+        <h3>Global</h3>
+        <div class="hotkey-list">
+          {globalHotkeys.map((hotkey) => (
+            <div class="hotkey-item">
+              <span class="hotkey-keys">
+                {formatHotkeyDisplaySSR(hotkey).split(' ').map((part) => (
+                  <span class={part === '⇧' ? 'shift-symbol' : ''}>
+                    {part}
+                  </span>
+                ))}
+              </span>
+              <span class="hotkey-description">
+                {hotkey.description}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {navigationHotkeys.length > 0 && (
+        <div class="hotkey-section">
+          <h3>Navigation</h3>
+          <div class="hotkey-list">
+            {navigationHotkeys.map((hotkey) => (
+              <div class="hotkey-item">
+                <span class="hotkey-keys">
+                  {formatHotkeyDisplaySSR(hotkey).split(' ').map((part) => (
+                    <span class={part === '⇧' ? 'shift-symbol' : ''}>
+                      {part}
+                    </span>
+                  ))}
+                </span>
+                <span class="hotkey-description">
+                  {hotkey.description}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+
+    <div class="modal-footer">
+      <span class="modal-hint">Press ESC to close</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('keyboard-shortcuts-modal');
+  const backdrop = modal?.querySelector('.modal-backdrop');
+  const closeBtn = modal?.querySelector('.modal-close');
+
+  function showModal() {
+    if (modal) {
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function hideModal() {
+    if (modal) {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Handle keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Check for Shift + ?
+    if (e.shiftKey && e.key === '?') {
+      e.preventDefault();
+      showModal();
+    } else if (e.key === 'Escape' && modal?.style.display === 'block') {
+      e.preventDefault();
+      hideModal();
+    }
+  });
+
+  // Handle click events
+  backdrop?.addEventListener('click', hideModal);
+  closeBtn?.addEventListener('click', hideModal);
+</script>
+
+<style>
+  .modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .modal-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    z-index: 1002;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease-out;
+    backdrop-filter: blur(10px);
+    background: rgba(var(--color-bg-rgb), 0.95);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-ink-light);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover {
+    background: var(--color-bg-code);
+    color: var(--color-ink);
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+    max-height: calc(80vh - 120px);
+  }
+
+  .hotkey-section {
+    margin-bottom: 2rem;
+  }
+
+  .hotkey-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .hotkey-section h3 {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-light);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .hotkey-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .hotkey-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hotkey-keys {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    background: var(--color-bg-code);
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    color: var(--color-ink);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .shift-symbol {
+    display: inline-block;
+    transform: translateY(-1px);
+  }
+
+  .hotkey-description {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+  }
+
+  .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+  }
+
+  .modal-hint {
+    font-size: 0.75rem;
+    color: var(--color-ink-light);
+    font-family: var(--font-mono);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -48%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .modal-container {
+      width: 95%;
+      max-height: 90vh;
+    }
+
+    .modal-content {
+      padding: 1rem;
+    }
+
+    .hotkey-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+
+  :global(.dark) .modal-container {
+    background: rgba(var(--color-bg-rgb), 0.98);
+  }
+</style>
