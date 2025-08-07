@@ -14,7 +14,7 @@ import Layout from "@layouts/Layout.astro";
             </p>
             <p>This page doesn't exist</p>
             <p>
-                Return to the <a href="/">homepage</a> or <a
+                Return to the <a href="/">homepage</a>, try the <a href="/search">search</a>, or <a
                     href="mailto:dcorin6@gmail.com">reach out</a
                 > if you believe there's a broken link.
             </p>
@@ -101,7 +101,7 @@ import Layout from "@layouts/Layout.astro";
         const isDark = document.documentElement.classList.contains("dark");
         const rootStyles = getComputedStyle(document.documentElement);
         const inkColor = rootStyles.getPropertyValue("--color-ink").trim();
-        
+
         return {
             ...baseOptions,
             particles: {
@@ -152,7 +152,7 @@ import Layout from "@layouts/Layout.astro";
             await particlesInstance.destroy();
             particlesInstance = null;
         }
-        
+
         // Recreate with new theme
         await loadFull(tsParticles);
         particlesInstance = await tsParticles.load(

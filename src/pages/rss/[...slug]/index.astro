@@ -1,0 +1,37 @@
+---
+import TableOfContents from "@components/layout/TableOfContents.astro";
+import PostLayout from "@layouts/PostLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+export const prerender = true;
+export async function getStaticPaths() {
+  const rssEntries = await getCollection("rss");
+  return rssEntries.map((entry: CollectionEntry<"rss">) => {
+    const slug = entry.id.replace(/\.(md|mdx)$/, '');
+    
+    return {
+      params: { 
+        slug 
+      },
+      props: { entry },
+    };
+  });
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<"rss"> };
+const { Content, headings } = await render(entry);
+const ogImage = `/og.png`;
+
+// Add collection info to frontmatter for layout
+const frontmatterWithCollection = {
+  ...entry.data,
+  collection: 'rss',
+  createdAt: entry.data.date,
+  publishedAt: entry.data.date,
+};
+---
+
+<PostLayout frontmatter={frontmatterWithCollection} ogImage={ogImage} slug={entry.id}>
+  <TableOfContents title={entry.data.title} headings={headings} />
+  <Content />
+</PostLayout>
