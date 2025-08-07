@@ -104,7 +104,7 @@ const monthTags = [...new Set(monthLogs.flatMap(log => log.data.tags || []))];
 const ogImage = `/logs/og.png`;
 ---
 
-<Layout title={`${monthName} ${year} Logs`} ogImage={ogImage}>
+<Layout title={`${monthName} ${year} Logs`} ogImage={ogImage} pageType="logsMonth">
   <Navigation selected="logs" />
   <main>
     <Breadcrumbs items={[

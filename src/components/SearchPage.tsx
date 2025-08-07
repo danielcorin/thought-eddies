@@ -180,19 +180,19 @@ export default function SearchPage({ posts, logs, tils }: SearchPageProps) {
   const getUrl = (result: SearchResult) => {
     if (result.type === 'post') {
       const post = result.item as CollectionEntry<'posts'>;
-      return `/posts/${post.id}`;
+      return `/posts/${post.id}?ref=search`;
     } else if (result.type === 'log') {
       const log = result.item as CollectionEntry<'logs'>;
       const date = new Date(log.data.date);
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      return `/logs/${year}/${month}/${day}`;
+      return `/logs/${year}/${month}/${day}?ref=search`;
     } else {
       const til = result.item as CollectionEntry<'til'>;
       const [category, ...slugParts] = til.id.split('/');
       const slug = slugParts.join('/').replace(/\.(md|mdx)$/, '');
-      return `/til/${category}/${slug}`;
+      return `/til/${category}/${slug}?ref=search`;
     }
   };
 
@@ -220,16 +220,16 @@ export default function SearchPage({ posts, logs, tils }: SearchPageProps) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search posts, logs, and TILs..."
             aria-label="Search site"
-            className="w-full pl-12 pr-4 py-3 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-12 pr-4 py-3 text-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <div className="absolute right-4 top-1/2 transform -translate-y-1/2 hidden sm:flex items-center gap-2">
-            <kbd className="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400">
+            <kbd className="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400">
               ↑↓
             </kbd>
             <span className="text-xs text-gray-500 dark:text-gray-400">
               Navigate
             </span>
-            <kbd className="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400">
+            <kbd className="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400">
               Enter
             </kbd>
             <span className="text-xs text-gray-500 dark:text-gray-400">Go</span>
@@ -254,8 +254,8 @@ export default function SearchPage({ posts, logs, tils }: SearchPageProps) {
                 href={url}
                 className={`block p-4 rounded-lg border transition-all ${
                   isSelected
-                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
-                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                    ? 'bg-blue-50 dark:bg-gray-700 border-blue-300 dark:border-gray-600'
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
@@ -274,7 +274,7 @@ export default function SearchPage({ posts, logs, tils }: SearchPageProps) {
                         {tags.slice(0, 3).map((tag, i) => (
                           <a
                             key={i}
-                            href={`/tags/${encodeURIComponent(tag)}`}
+                            href={`/tags/${encodeURIComponent(tag)}?ref=search`}
                             className="inline-block px-2.5 py-1 text-xs rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                             onClick={(e) => e.stopPropagation()}
                           >
@@ -293,10 +293,10 @@ export default function SearchPage({ posts, logs, tils }: SearchPageProps) {
                     <a
                       href={
                         result.type === 'post'
-                          ? '/posts'
+                          ? '/posts?ref=search'
                           : result.type === 'log'
-                            ? '/logs'
-                            : '/til'
+                            ? '/logs?ref=search'
+                            : '/til?ref=search'
                       }
                       className="inline-block px-3 py-1 text-xs rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium hover:bg-blue-100 dark:hover:bg-blue-800 hover:border-blue-300 dark:hover:border-blue-800 transition-colors"
                       onClick={(e) => e.stopPropagation()}

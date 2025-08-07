@@ -50,6 +50,14 @@ body {
   transition-behavior: allow-discrete;
 }
 
+:root {
+  --color-bg-rgb: 255, 255, 255;
+}
+
+:root.dark {
+  --color-bg-rgb: 18, 18, 18;
+}
+
 mark {
   background: var(--color-highlight);
   background-color: var(--color-highlight);
