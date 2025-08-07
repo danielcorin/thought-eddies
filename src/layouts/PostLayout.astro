@@ -1,8 +1,8 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
-import RecommendedPosts from "@components/RecommendedPosts.astro";
+import RecommendedContent from "@components/RecommendedContent.astro";
 import Tag from "@components/Tag.astro";
-import { findSimilarPosts } from "@utils/findSimilarPosts";
+import { findSimilarContent } from "@utils/findSimilarContent";
 import { Icon } from "astro-icon/components";
 import { getCollection, getEntry } from "astro:content";
 import Layout from "./Layout.astro";
@@ -39,10 +39,14 @@ const prevEntry =
   currentIndex < sortedEntries.length - 1 ? sortedEntries[currentIndex + 1] : null;
 const nextEntry = currentIndex > 0 ? sortedEntries[currentIndex - 1] : null;
 
+// Get all posts and TILs for recommendations
+const allPosts = await getCollection('posts');
+const allTils = await getCollection('til');
+
 // Find similar entries, excluding prev and next
 const excludeEntries = [prevEntry, nextEntry].filter(Boolean) as typeof sortedEntries;
-const similarEntries = currentEntry
-  ? findSimilarPosts(currentEntry, sortedEntries, 3, excludeEntries)
+const similarContent = currentEntry
+  ? findSimilarContent(currentEntry, allPosts, allTils, 3, excludeEntries)
   : [];
 ---
 
@@ -151,7 +155,7 @@ const similarEntries = currentEntry
       </a>
     </div>
 
-    {!isTil && <RecommendedPosts posts={similarEntries} />}
+    <RecommendedContent content={similarContent} />
 
     <nav class="post-navigation">
       <div class="nav-item nav-prev-wrapper">
@@ -268,8 +272,6 @@ const similarEntries = currentEntry
     justify-content: space-between;
     align-items: stretch;
     margin-top: var(--spacing-xl);
-    padding-top: var(--spacing-xl);
-    border-top: 1px solid var(--color-border);
     gap: var(--spacing-lg);
   }
 
