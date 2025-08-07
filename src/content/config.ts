@@ -134,6 +134,18 @@ const projects = defineCollection({
   }),
 });
 
+const rss = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/rss' }),
+  schema: z.object({
+    title: z.string(),
+    date: z
+      .string()
+      .or(z.date())
+      .transform((val) => new Date(val)),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
 export const collections = {
   posts,
   home,
@@ -143,4 +155,5 @@ export const collections = {
   now,
   til,
   projects,
+  rss,
 };

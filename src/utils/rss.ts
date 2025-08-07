@@ -19,16 +19,20 @@ export async function generateRSSFeed(context: { site: string }) {
     renderer: reactRenderer,
   });
 
-  // Get both posts and TILs that are not drafts
+  // Get posts, TILs, and RSS content that are not drafts
   const posts = await getCollection('posts', ({ data }) => !data.draft);
   const tils = await getCollection('til', ({ data }) => !data.draft);
+  const rssContent = await getCollection('rss', ({ data }) => !data.draft);
 
   // Combine and sort all items by creation date
-  const allItems = [...posts, ...tils];
+  const allItems = [...posts, ...tils, ...rssContent];
   const sortedItems = allItems.sort(
-    (a, b) =>
-      new Date(b.data.createdAt).getTime() -
-      new Date(a.data.createdAt).getTime()
+    (a, b) => {
+      // RSS content uses 'date' field, others use 'createdAt'
+      const dateA = a.collection === 'rss' ? a.data.date : a.data.createdAt;
+      const dateB = b.collection === 'rss' ? b.data.date : b.data.createdAt;
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    }
   );
 
   // Map items to RSS format with full content
@@ -55,12 +59,21 @@ export async function generateRSSFeed(context: { site: string }) {
       }
 
       // Determine the correct link path based on collection
-      const linkPath =
-        item.collection === 'posts' ? `/posts/${item.id}/` : `/til/${item.id}/`;
+      let linkPath: string;
+      if (item.collection === 'posts') {
+        linkPath = `/posts/${item.id}/`;
+      } else if (item.collection === 'til') {
+        linkPath = `/til/${item.id}/`;
+      } else if (item.collection === 'rss') {
+        linkPath = `/rss/${item.id}/`;
+      }
+
+      // Use appropriate date field based on collection
+      const pubDate = item.collection === 'rss' ? item.data.date : item.data.createdAt;
 
       return {
         title: item.data.title,
-        pubDate: item.data.createdAt,
+        pubDate,
         description: item.data.description || item.data.title,
         link: linkPath,
         customData: `<content:encoded><![CDATA[${htmlContent}]]></content:encoded>`,

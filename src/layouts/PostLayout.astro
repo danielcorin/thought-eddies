@@ -15,6 +15,7 @@ const { frontmatter, ogImage, slug } = Astro.props;
 const collectionType = frontmatter.collection || "posts";
 const isTil = collectionType === "til";
 const isProject = collectionType === "projects";
+const isRss = collectionType === "rss";
 
 // Get the current entry using the slug
 const entryId = slug.replace(/\.(md|mdx)$/, '');
@@ -25,9 +26,12 @@ const allEntries = await getCollection(collectionType);
 const sortedEntries = allEntries
   .filter((entry) => !entry.data.draft)
   .sort(
-    (a, b) =>
-      new Date(b.data.createdAt).getTime() -
-      new Date(a.data.createdAt).getTime(),
+    (a, b) => {
+      // RSS content uses 'date' field, others use 'createdAt'
+      const dateA = isRss ? a.data.date : a.data.createdAt;
+      const dateB = isRss ? b.data.date : b.data.createdAt;
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    },
   );
 
 // Find current entry index using the ID instead of title
@@ -50,8 +54,8 @@ const similarContent = currentEntry
   : [];
 ---
 
-<Layout title={frontmatter.title} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : "posts"}>
-  <Navigation selected={isProject ? "projects" : isTil ? "til" : "posts"} />
+<Layout title={frontmatter.title} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : isRss ? "rss" : "posts"}>
+  <Navigation selected={isProject ? "projects" : isTil ? "til" : isRss ? "rss" : "posts"} />
   <article>
     <header>
       <h1>{frontmatter.title}</h1>
@@ -144,6 +148,8 @@ const similarContent = currentEntry
           ? `/til/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
           : isProject
           ? `/projects/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
+          : isRss
+          ? `/rss/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
           : `/posts/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
       } class="raw-button">
         <Icon name="ph:code" />
@@ -164,6 +170,7 @@ const similarContent = currentEntry
             <a href={
               isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}?ref=arrow_nav` :
               isProject ? `/projects/${prevEntry.id}?ref=arrow_nav` :
+              isRss ? `/rss/${prevEntry.id}?ref=arrow_nav` :
               `/posts/${prevEntry.id}?ref=arrow_nav`
             } class="nav-prev">
               <Icon name="ph:arrow-left" />
@@ -181,6 +188,7 @@ const similarContent = currentEntry
             <a href={
               isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}?ref=arrow_nav` :
               isProject ? `/projects/${nextEntry.id}?ref=arrow_nav` :
+              isRss ? `/rss/${nextEntry.id}?ref=arrow_nav` :
               `/posts/${nextEntry.id}?ref=arrow_nav`
             } class="nav-next">
               <div class="nav-content">

@@ -30,7 +30,9 @@ export default defineConfig({
     mdx(),
     tailwind(),
     icon(),
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes('/rss/'),
+    }),
     markdownIntegration(),
   ],
   markdown: {
