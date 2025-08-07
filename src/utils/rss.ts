@@ -26,14 +26,12 @@ export async function generateRSSFeed(context: { site: string }) {
 
   // Combine and sort all items by creation date
   const allItems = [...posts, ...tils, ...rssContent];
-  const sortedItems = allItems.sort(
-    (a, b) => {
-      // RSS content uses 'date' field, others use 'createdAt'
-      const dateA = a.collection === 'rss' ? a.data.date : a.data.createdAt;
-      const dateB = b.collection === 'rss' ? b.data.date : b.data.createdAt;
-      return new Date(dateB).getTime() - new Date(dateA).getTime();
-    }
-  );
+  const sortedItems = allItems.sort((a, b) => {
+    // RSS content uses 'date' field, others use 'createdAt'
+    const dateA = a.collection === 'rss' ? a.data.date : a.data.createdAt;
+    const dateB = b.collection === 'rss' ? b.data.date : b.data.createdAt;
+    return new Date(dateB).getTime() - new Date(dateA).getTime();
+  });
 
   // Map items to RSS format with full content
   const items = await Promise.all(
@@ -69,7 +67,8 @@ export async function generateRSSFeed(context: { site: string }) {
       }
 
       // Use appropriate date field based on collection
-      const pubDate = item.collection === 'rss' ? item.data.date : item.data.createdAt;
+      const pubDate =
+        item.collection === 'rss' ? item.data.date : item.data.createdAt;
 
       return {
         title: item.data.title,

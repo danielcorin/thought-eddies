@@ -1,11 +1,11 @@
 ---
-title: "Note Taking"
+title: 'Note Taking'
 date: 2025-05-18T20:04:55-04:00
 draft: false
 tags:
-- note-taking
-- obsidian
-- zettelkasten
+  - note-taking
+  - obsidian
+  - zettelkasten
 ---
 
 Every now and then, I'm pulled back into the orbit of the second brain/zettelkasten/notetaking community conversation.
