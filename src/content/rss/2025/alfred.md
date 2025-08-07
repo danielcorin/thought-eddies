@@ -1,5 +1,5 @@
 ---
-title: "Alfred as a Text Editor"
+title: 'Alfred as a Text Editor'
 date: 2025-05-02T21:01:07-04:00
 draft: false
 ---

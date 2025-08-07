@@ -61,7 +61,9 @@ export const createMarkdownWithFrontmatter = (
   return `---\n${frontmatter}\n---\n\n${body}`;
 };
 
-export const createContentEndpoint = <T extends 'posts' | 'logs' | 'til' | 'rss'>(
+export const createContentEndpoint = <
+  T extends 'posts' | 'logs' | 'til' | 'rss',
+>(
   collection: T,
   getSlugFromParams?: (
     params: Record<string, string | undefined>

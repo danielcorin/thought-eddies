@@ -1,5 +1,5 @@
 ---
-title: "RSS Club"
+title: 'RSS Club'
 date: 2025-04-11T19:02:31-07:00
 draft: false
 ---
