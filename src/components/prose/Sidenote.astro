@@ -12,58 +12,96 @@ const htmlContent = marked.parseInline(content);
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Handle toggle click to open/close sidenote
-    document.querySelectorAll('.sidenote-toggle').forEach((toggle) => {
-      toggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        const checkbox = toggle.nextElementSibling as HTMLInputElement;
-        checkbox.checked = !checkbox.checked;
-        
+    const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+    const clearInline = (contentEl: HTMLElement) => {
+      contentEl.style.left = '';
+      contentEl.style.right = '';
+      contentEl.style.width = '';
+    };
+
+    const centerOnMobile = (toggleEl: Element, contentEl: HTMLElement) => {
+      if (!isMobile()) return clearInline(contentEl);
+      const wrapper = (toggleEl as HTMLElement).closest('.sidenote-wrapper') as HTMLElement;
+      if (!wrapper) return;
+      const wrapperRect = wrapper.getBoundingClientRect();
+      // Use CSS-defined width, remove any inline width overrides
+      contentEl.style.width = '';
+      const measuredWidth = contentEl.offsetWidth || window.innerWidth;
+      const leftPx = (window.innerWidth - measuredWidth) / 2 - wrapperRect.left;
+      contentEl.style.left = `${leftPx}px`;
+      contentEl.style.right = 'auto';
+    };
+
+    const open = (toggleEl: Element, checkboxEl: HTMLInputElement, contentEl: HTMLElement) => {
+      checkboxEl.checked = true;
+      contentEl.setAttribute('tabindex', '-1');
+      contentEl.focus();
+      centerOnMobile(toggleEl, contentEl);
+    };
+
+    const close = (toggleEl: Element, checkboxEl: HTMLInputElement, contentEl: HTMLElement) => {
+      checkboxEl.checked = false;
+      (toggleEl as HTMLElement).blur();
+      clearInline(contentEl);
+    };
+
+    document.querySelectorAll('.sidenote-wrapper').forEach((wrapper) => {
+      const toggle = wrapper.querySelector('.sidenote-toggle') as HTMLElement;
+      const checkbox = wrapper.querySelector('.sidenote-checkbox') as HTMLInputElement;
+      const content = wrapper.querySelector('.sidenote-content') as HTMLElement;
+
+      checkbox.addEventListener('change', () => {
         if (checkbox.checked) {
-          // Focus the sidenote content when opened
-          const content = checkbox.nextElementSibling as HTMLElement;
-          content.setAttribute('tabindex', '-1');
-          content.focus();
+          open(toggle, checkbox, content);
+        } else {
+          close(toggle, checkbox, content);
         }
       });
     });
-    
-    // Handle blur to close sidenotes
+
     document.addEventListener('focusout', (e) => {
       setTimeout(() => {
-        const activeElement = document.activeElement;
-        const sidenoteContent = (e.target as HTMLElement).closest('.sidenote-content');
-        
-        if (sidenoteContent && !sidenoteContent.contains(activeElement)) {
-          // Lost focus from sidenote content
-          const checkbox = sidenoteContent.previousElementSibling as HTMLInputElement;
+        const active = document.activeElement;
+        const container = (e.target as HTMLElement).closest('.sidenote-content');
+        if (container && !container.contains(active)) {
+          const checkbox = container.previousElementSibling as HTMLInputElement;
           checkbox.checked = false;
         }
       }, 0);
     });
-    
-    // Handle escape key to close sidenotes
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        document.querySelectorAll('.sidenote-checkbox:checked').forEach((checkbox) => {
-          (checkbox as HTMLInputElement).checked = false;
-        });
-      }
+      if (e.key !== 'Escape') return;
+      document.querySelectorAll('.sidenote-checkbox:checked').forEach((cb) => {
+        (cb as HTMLInputElement).checked = false;
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      if (!isMobile()) return;
+      document.querySelectorAll('.sidenote-wrapper').forEach((wrapper) => {
+        const checkbox = wrapper.querySelector('.sidenote-checkbox') as HTMLInputElement;
+        if (!checkbox?.checked) return;
+        const toggle = wrapper.querySelector('.sidenote-toggle') as HTMLElement;
+        const content = wrapper.querySelector('.sidenote-content') as HTMLElement;
+        centerOnMobile(toggle, content);
+      });
     });
   });
 </script>
 
 <span class="sidenote-wrapper">
-  <label 
-    for={`sidenote-toggle-${id}`} 
+  <label
     class="sidenote-toggle"
     tabindex="0"
     role="button"
     aria-label={`Toggle sidenote: ${content.substring(0, 50)}...`}
+    for={`sidenote-toggle-${id}`}
   ><span class="sidenote-anchor"><slot /></span></label>
-  <input 
-    type="checkbox" 
-    id={`sidenote-toggle-${id}`} 
+  <input
+    type="checkbox"
+    id={`sidenote-toggle-${id}`}
     class="sidenote-checkbox"
     aria-hidden="true"
   />
@@ -115,7 +153,7 @@ const htmlContent = marked.parseInline(content);
     opacity: 0;
     visibility: hidden;
     transform: translateX(-50%) translateY(10px);
-    transition: 
+    transition:
       opacity var(--transition-speed) ease,
       visibility var(--transition-speed) ease,
       transform var(--transition-speed) ease;
@@ -123,13 +161,12 @@ const htmlContent = marked.parseInline(content);
     z-index: 100;
     outline: none;
   }
-  
+
   .sidenote-content:focus {
     outline: none;
   }
 
-  .sidenote-checkbox:checked ~ .sidenote-content,
-  .sidenote-toggle:focus ~ .sidenote-content {
+  .sidenote-checkbox:checked ~ .sidenote-content {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
@@ -140,11 +177,13 @@ const htmlContent = marked.parseInline(content);
   @media (max-width: 768px) {
     .sidenote-content {
       position: absolute;
-      left: calc(-1 * var(--spacing-md));
-      right: calc(-1 * var(--spacing-md));
+      /* Left is dynamically set via JS to center within viewport */
+      right: auto;
       top: 100%;
       bottom: auto;
-      width: calc(100vw - 2 * var(--spacing-md));
+      /* Add a small extra gutter so edges don't touch viewport */
+      --sidenote-mobile-gutter: 8px;
+      width: calc(100vw - 2 * (var(--spacing-md) + var(--sidenote-mobile-gutter)));
       transform: translateY(10px);
       margin-top: 0.5rem;
       border-radius: 8px;
@@ -152,8 +191,7 @@ const htmlContent = marked.parseInline(content);
       font-size: var(--text-sm);
     }
 
-    .sidenote-checkbox:checked ~ .sidenote-content,
-    .sidenote-toggle:focus ~ .sidenote-content {
+    .sidenote-checkbox:checked ~ .sidenote-content {
       transform: translateY(0);
     }
   }
