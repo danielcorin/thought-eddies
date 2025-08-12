@@ -1,19 +1,17 @@
-<div
-  id="fullscreen-image-viewer"
-  class="fixed inset-0 z-[1001] flex items-center justify-center bg-black bg-opacity-90 p-4 hidden"
->
-  <div class="relative w-full h-full flex items-center justify-center">
+<div id="fullscreen-image-viewer" class="image-modal-wrapper" style="display: none;">
+  <div class="image-modal-backdrop"></div>
+  <div class="image-modal-container">
     <button
       id="close-fullscreen-btn"
-      class="absolute top-4 right-4 z-10 w-8 h-8 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full flex items-center justify-center text-black font-bold transition-all duration-200"
+      class="image-modal-close"
       aria-label="Close fullscreen image"
     >
-      ✕
+      ×
     </button>
     <img
       id="fullscreen-image"
       alt=""
-      class="max-w-[90vw] max-h-[90vh] object-contain"
+      class="image-modal-content"
     />
   </div>
 </div>
@@ -28,15 +26,15 @@
     
     image.src = src;
     image.alt = alt;
-    viewer.classList.remove('hidden');
+    viewer.style.display = 'block';
     document.body.style.overflow = 'hidden';
   }
 
   function closeFullscreen() {
     if (!viewer) return;
     
-    viewer.classList.add('hidden');
-    document.body.style.overflow = 'unset';
+    viewer.style.display = 'none';
+    document.body.style.overflow = '';
   }
 
   function handleEscape(e: KeyboardEvent) {
@@ -45,9 +43,10 @@
     }
   }
 
-  // Close on background click
-  viewer?.addEventListener('click', (e) => {
-    if (e.target === viewer) {
+  // Close on container click (but not on image)
+  const container = viewer?.querySelector('.image-modal-container');
+  container?.addEventListener('click', (e) => {
+    if (e.target === container) {
       closeFullscreen();
     }
   });
@@ -66,3 +65,123 @@
   // Export function to global scope so other components can use it
   (window as any).openFullscreenImage = openFullscreen;
 </script>
+
+<style>
+  .image-modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+  }
+
+  .image-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .image-modal-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    z-index: 1002;
+  }
+
+  .image-modal-content {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .image-modal-close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 1003;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #333;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    font-weight: normal;
+    line-height: 1;
+    padding: 0;
+    padding-bottom: 2px;
+  }
+
+  .image-modal-close:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .image-modal-container {
+      padding: 1rem;
+    }
+
+    .image-modal-close {
+      top: 1rem;
+      right: 1rem;
+      width: 32px;
+      height: 32px;
+      font-size: 1.25rem;
+    }
+  }
+
+  :global(.dark) .image-modal-backdrop {
+    background: rgba(0, 0, 0, 0.85);
+  }
+
+  :global(.dark) .image-modal-close {
+    background: rgba(40, 40, 40, 0.9);
+    color: #ddd;
+  }
+
+  :global(.dark) .image-modal-close:hover {
+    background: rgba(40, 40, 40, 1);
+  }
+</style>
