@@ -56,7 +56,7 @@ function formatHotkeyDisplaySSR(hotkey: Hotkey): string {
 
 <div id="keyboard-shortcuts-modal" class="modal-wrapper" style="display: none;">
   <div class="modal-backdrop"></div>
-  <div class="modal-container">
+  <div class="modal-container" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
     <div class="modal-header">
       <h2>Keyboard Shortcuts</h2>
       <button
@@ -175,7 +175,7 @@ function formatHotkeyDisplaySSR(hotkey: Hotkey): string {
   }
 
   .modal-container {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -189,9 +189,10 @@ function formatHotkeyDisplaySSR(hotkey: Hotkey): string {
     overflow: hidden;
     z-index: 1002;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: slideIn 0.3s ease-out;
+    animation: fadeInModal 0.2s ease-out;
     backdrop-filter: blur(10px);
     background: rgba(var(--color-bg-rgb), 0.95);
+    will-change: transform, opacity;
   }
 
   .modal-header {
@@ -311,14 +312,12 @@ function formatHotkeyDisplaySSR(hotkey: Hotkey): string {
     }
   }
 
-  @keyframes slideIn {
+  @keyframes fadeInModal {
     from {
       opacity: 0;
-      transform: translate(-50%, -48%);
     }
     to {
       opacity: 1;
-      transform: translate(-50%, -50%);
     }
   }
 
