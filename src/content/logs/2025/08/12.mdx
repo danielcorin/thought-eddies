@@ -1,0 +1,18 @@
+---
+date: '2025-08-12T22:18:04Z'
+title: '2025-08-12'
+draft: false
+tags: ['llm', 'llm-api']
+---
+
+Today, I published a [package](https://github.com/danielcorin/llm-api) that exposes an OpenAI-compatible API on top of Simon's `llm` tool.
+It's been interesting to develop a better feel for the least common denominator of features and what it looks like to try and support them well.
+
+My goal is to use the plugin architecture of the `llm` tool to build a distributed version of something like `litellm`.
+Most users don't need most of what `litellm` offers but have no way to avoid installing everything.
+Additionally, if you want to support a new provider, you can independently implement a plugin and install it within the `llm` tool without needing to adopt a large framework, upstream a change to a large repo, or maintain a fork.
+
+It's been an interesting project.
+I'm currently trying to add support for Anthropic's `/v1/messages` API with the goal of routing Claude Code traffic through different providers and models.
+
+I was also planning to try and support images.

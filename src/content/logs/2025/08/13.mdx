@@ -1,0 +1,120 @@
+---
+date: '2025-08-13T08:29:28Z'
+title: '2025-08-13'
+draft: false
+tags: ['llm', 'llm-api']
+---
+
+import { Tweet } from 'astro-embed';
+
+Coming up for air after a bunch of time spent on [a project](https://github.com/danielcorin/llm-api) trying to use `llm` as a router to different models to create a compatibility layer for the OpenAI `/v1/chat/completions` API and the Anthropic `/v1/messages` API.
+
+In basic cases, this works pretty well.
+For tool calling, it's a bit more complicated.
+Nuances with the different providers and models require intervention to make sure the caller (like Claude Code) which may be expecting to interact with the Anthropic API is able to play nicely with other providers and models.
+
+One example is the Anthropic API requires the `max_tokens` field to be set.
+However, Gemini models don't support it.
+The `llm` tool supports setting `model.Options` per model.
+For many Gemini models, these look something like:
+
+```sh
+llm models --options
+```
+
+```
+...
+
+GeminiPro: gemini/gemini-2.5-pro (aliases: gemini-2.5-pro)
+  Options:
+    code_execution: boolean
+    temperature: float
+    max_output_tokens: int
+    top_p: float
+    top_k: int
+    json_object: boolean
+    timeout: float
+    google_search: boolean
+    thinking_budget: int
+
+...
+```
+
+Without intervention, this leads a Claude Code to make a request proxied through my server that leads to this error:
+
+```json wrap=true
+{
+  "detail": "Error generating response: 1 validation error for OptionsWithThinkingBudget\nmax_tokens\n  Extra inputs are not permitted [type=extra_forbidden, input_value=1024, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden"
+}
+```
+
+This particular issue can be worked around by first checking the model's supported options and then filtering out those that are unsupported.
+
+The challenges don't end there.
+
+Claude Code specifies a tool's input schema like this:
+
+```json
+{
+
+  ...
+
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "description": {
+        "type": "string",
+        "description": "A short (3-5 word) description of the task"
+      },
+      "prompt": {
+        "type": "string",
+        "description": "The task for the agent to perform"
+      },
+      "subagent_type": {
+        "type": "string",
+        "description": "The type of specialized agent to use for this task"
+      }
+    },
+    "required": ["description", "prompt", "subagent_type"],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}
+```
+
+but Gemini doesn't accept the `additionalProperties` or `$schema` fields.
+
+```text wrap=true
+INFO:     127.0.0.1:60097 - "POST /v1/messages?beta=true HTTP/1.1" 200 OK
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+    ...
+    |   File "/Users/danielcorin/dev/llm-api/.venv/lib/python3.11/site-packages/starlette/responses.py", line 254, in stream_response
+    |     async for chunk in self.body_iterator:
+    |   File "/Users/danielcorin/dev/llm-api/llm_api/anthropic_api.py", line 341, in stream_anthropic_response
+    |     for chunk in response:
+    |   File "/Users/danielcorin/dev/llm-api/.venv/lib/python3.11/site-packages/llm/models.py", line 1172, in __iter__
+    |     for chunk in self.model.execute(
+    |   File "/Users/danielcorin/dev/llm-api/.venv/lib/python3.11/site-packages/llm_gemini.py", line 521, in execute
+    |     raise llm.ModelError(event["error"]["message"])
+    | llm.errors.ModelError: Invalid JSON payload received. Unknown name "additionalProperties" at 'tools[0].function_declarations[0].parameters': Cannot find field.
+    | Invalid JSON payload received. Unknown name "$schema" at 'tools[0].function_declarations[0].parameters': Cannot find field.
+```
+
+We can filter these fields out, since they aren't really needed, which lands us with this error:
+
+```text wrap=true
+llm.errors.ModelError: * GenerateContentRequest.tools[0].function_declarations[12].parameters.properties[url].format: only 'enum' and 'date-time' are supported for STRING type
+```
+
+[A problem](https://github.com/block/goose/issues/1029) which seems to go beyond just Claude Code, and would require us to modify which tools we enable, which is something we don't control using Claude Code.
+
+It was clearly hubris to think I could backdoor my way into solving this problem when folks are working on it full time.
+
+<Tweet theme="dark" id="https://x.com/ryancarson/status/1954253913202545132" />
+
+But now at least Ryan can't say people aren't talking about it.
+
+And this is to say nothing of the challenges of rewriting the prompts and tool descriptions to make the agent itself function as intended once the API calls are working.
+
+All this said, I think I will still implement a more narrow implementation of this project for OpenAI and Anthropic APIs and add image support.
