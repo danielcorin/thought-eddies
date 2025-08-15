@@ -1,0 +1,74 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import Navigation from '@components/layout/Navigation.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+
+export async function getStaticPaths() {
+  const gardenEntries = await getCollection('garden');
+
+  return gardenEntries.map((entry) => ({
+    params: { slug: entry.id.replace(/\.(md|mdx)$/, '') },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+// Extract category from the entry id
+const category = entry.id.split('/')[0];
+const categoryDisplay = category.split('-').map(word =>
+  word.charAt(0).toUpperCase() + word.slice(1)
+).join(' ');
+---
+
+<Layout title={entry.data.title}>
+  <Navigation selected="garden" />
+  <main>
+    <article>
+      <Breadcrumbs items={[
+        { label: 'Garden', href: '/garden' },
+        { label: categoryDisplay, href: `/garden#${category}` },
+        { label: entry.data.title }
+      ]} />
+      
+      <header>
+        <h1>{entry.data.title}</h1>
+        <div class="category-label">
+          {categoryDisplay}
+        </div>
+      </header>
+
+      <div class="content">
+        <Content />
+      </div>
+      
+      <div class="garden-note">
+        <p>This is a living document in my digital garden. It may grow, change, or branch into new ideas over time.</p>
+      </div>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  /* Garden-specific styles that supplement base.css */
+  .category-label {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    font-family: var(--font-mono);
+    margin-top: 0.5rem;
+  }
+
+  .garden-note {
+    margin-top: var(--spacing-2xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .garden-note p {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    font-style: italic;
+  }
+</style>

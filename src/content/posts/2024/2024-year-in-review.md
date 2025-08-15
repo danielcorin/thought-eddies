@@ -30,7 +30,7 @@ My goals for the year were the following
 - Experimented with solving [Connections](/tags/connections) with LLMs, including fine-tuning and multi-turn conversation
 - Created a [search page](/search) for this site
 - Made my site [friendly](/posts/2024/2024-year-in-review/index.md) to LLMs by appending `index.md` to urls to get raw markdown
-- Set up a [digital garden](https://github.com/danielcorin/blog/tree/main/content/garden) for idea iteration
+- Set up a [digital garden](/garden) for idea iteration
 - Experimented with [VLMs](/tags/vlms/) for structured data extraction
 - Trained a bunch of [machine learning models](/tags/course.fast.ai) while working through the [Fast.ai course](https://course.fast.ai/)
 - Built a word game using embeddings
@@ -43,15 +43,15 @@ My goals for the year were the following
 
 (Calculated with [this](https://github.com/danielcorin/blog/tree/main/scripts/year_review.py) quick and dirty script)
 
-| Category                                                                  | Posts   | Words     |
-| ------------------------------------------------------------------------- | ------- | --------- |
-| [🏗️ Projects](/projects)                                                  | 4       | 791       |
-| [📍 Now](/now)                                                            | 1       | 63        |
-| [📖 Posts](/posts)                                                        | 21      | 25415     |
-| [🌱 Garden](https://github.com/danielcorin/blog/tree/main/content/garden) | 4       | 4827      |
-| [✏️ Logs](/logs)                                                          | 140     | 22687     |
-| [📝 Today I Learned](/til)                                                | 47      | 35214     |
-| **Total**                                                                 | **217** | **88997** |
+| Category                   | Posts   | Words     |
+| -------------------------- | ------- | --------- |
+| [🏗️ Projects](/projects)   | 4       | 791       |
+| [📍 Now](/now)             | 1       | 63        |
+| [📖 Posts](/posts)         | 21      | 25415     |
+| [🌱 Garden](/garden)       | 4       | 4827      |
+| [✏️ Logs](/logs)           | 140     | 22687     |
+| [📝 Today I Learned](/til) | 47      | 35214     |
+| **Total**                  | **217** | **88997** |
 
 The "logs" section of this site has become a helpful scratchpad for ideas and capture of what I am up to for myself to go back and reference.
 I don't actively surface these entries anywhere on the site, but you can find them [here](/logs).

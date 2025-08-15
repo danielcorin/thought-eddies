@@ -1,0 +1,150 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import Navigation from '@components/layout/Navigation.astro';
+
+const gardenEntries = await getCollection('garden');
+
+// Group entries by category (directory name)
+const categoriesMap = new Map<string, typeof gardenEntries>();
+
+gardenEntries.forEach(entry => {
+  const parts = entry.id.split('/');
+  const category = parts[0];
+
+  if (!categoriesMap.has(category)) {
+    categoriesMap.set(category, []);
+  }
+  categoriesMap.get(category)!.push(entry);
+});
+
+// Sort categories and their entries
+const categories = Array.from(categoriesMap.entries())
+  .map(([name, entries]) => ({
+    name,
+    displayName: name.split('-').map(word =>
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' '),
+    entries: entries.sort((a, b) => a.data.title.localeCompare(b.data.title))
+  }))
+  .sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+// Sort categories alphabetically
+const sortedCategories = categories.sort((a, b) => a.displayName.localeCompare(b.displayName));
+---
+
+<Layout title="Garden">
+  <Navigation selected="garden" />
+  <main>
+    <h1 class="page-title">Garden</h1>
+
+    <p class="page-description">
+      A place for thoughts, ideas and essays I tend to.
+    </p>
+
+    <div class="garden-categories">
+      {categories.map((category, categoryIndex) => (
+        <div class="garden-category">
+          <h2>
+            {category.displayName}
+            <span class="category-count">
+              {category.entries.length}
+            </span>
+          </h2>
+
+          <div class="category-entries">
+            {category.entries.map((entry, index) => {
+              const href = `/garden/${entry.id.replace(/\.(md|mdx)$/, '')}`;
+
+              return (
+                <a
+                  href={href}
+                  class="garden-link"
+                >
+                  <span class="link-indicator">→</span>
+                  {entry.data.title}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .page-description {
+    color: var(--color-ink-light);
+    margin-bottom: var(--spacing-lg);
+    max-width: 65ch;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .garden-categories {
+    margin: var(--spacing-xl) 0;
+    columns: 1;
+    column-gap: var(--spacing-xl);
+  }
+
+  @media (min-width: 640px) {
+    .garden-categories {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .garden-categories {
+      columns: 3;
+    }
+  }
+
+  .garden-category {
+    break-inside: avoid;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .garden-category h2 {
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--color-ink);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .category-count {
+    margin-left: var(--spacing-sm);
+    font-size: var(--text-sm);
+    font-weight: normal;
+    color: var(--color-ink-lighter);
+  }
+
+  .category-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .garden-link {
+    display: block;
+    padding: 0.25rem 0;
+    color: var(--color-ink-light);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .garden-link:hover {
+    color: var(--color-accent);
+  }
+
+  .link-indicator {
+    display: inline-flex;
+    margin-right: 0.5rem;
+    color: var(--color-ink-lighter);
+    font-size: 0.75rem;
+    line-height: 1;
+    position: relative;
+    top: -0.1em;
+  }
+</style>
