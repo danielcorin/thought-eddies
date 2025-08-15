@@ -146,6 +146,17 @@ const rss = defineCollection({
   }),
 });
 
+const garden = defineCollection({
+  loader: glob({
+    pattern: ['**/*.{md,mdx}', '!**/_index.md'],
+    base: './src/content/garden',
+  }),
+  schema: z.object({
+    title: z.string(),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
 export const collections = {
   posts,
   home,
@@ -156,4 +167,5 @@ export const collections = {
   til,
   projects,
   rss,
+  garden,
 };
