@@ -25,7 +25,7 @@ const { page } = Astro.props as { page: any };
 const ogImage = `/projects/og.png`;
 ---
 
-<Layout title="Projects" ogImage={ogImage}>
+<Layout title="Projects" ogImage={ogImage} pageType="projects">
   <Navigation selected="projects" />
   <main>
     <h1 class="page-title">Projects</h1>
