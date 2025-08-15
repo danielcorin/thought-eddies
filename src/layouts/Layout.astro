@@ -49,6 +49,42 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 			title="RSS Feed"
 			href="/rss.xml"
 		/>
+		{pageType === "posts" || pageType === "postsList" ? (
+			<link
+				rel="alternate"
+				type="application/rss+xml"
+				title="Posts RSS Feed"
+				href="/posts/rss.xml"
+			/>
+		) : pageType === "logs" || pageType === "logsYear" || pageType === "logsMonth" ? (
+			<link
+				rel="alternate"
+				type="application/rss+xml"
+				title="Logs RSS Feed"
+				href="/logs/rss.xml"
+			/>
+		) : pageType === "til" || pageType === "tilList" ? (
+			<link
+				rel="alternate"
+				type="application/rss+xml"
+				title="TIL RSS Feed"
+				href="/til/rss.xml"
+			/>
+		) : pageType === "garden" ? (
+			<link
+				rel="alternate"
+				type="application/rss+xml"
+				title="Garden RSS Feed"
+				href="/garden/rss.xml"
+			/>
+		) : pageType === "projects" ? (
+			<link
+				rel="alternate"
+				type="application/rss+xml"
+				title="Projects RSS Feed"
+				href="/projects/rss.xml"
+			/>
+		) : null}
 		<meta name="generator" content={Astro.generator} />
 		<SEO
 			title={pageTitle}
