@@ -7,6 +7,7 @@ import Layout from "@layouts/Layout.astro";
 import { getContentPreview } from "@utils/text";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   const logs = await getCollection("logs");
@@ -71,9 +72,6 @@ const ogImage = `/logs/og.png`;
                       ))
                     }
                   </div>
-                  <a href={`/logs/${log.id}`} class="read-more">
-                    Read more →
-                  </a>
                 </div>
               </div>
             </article>
@@ -177,16 +175,6 @@ const ogImage = `/logs/og.png`;
     gap: var(--spacing-md);
   }
 
-  .read-more {
-    font-size: var(--text-sm);
-    color: var(--color-accent);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .read-more:hover {
-    text-decoration: underline;
-  }
 
   .tags {
     display: flex;
