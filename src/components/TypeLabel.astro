@@ -1,12 +1,12 @@
 ---
 export interface Props {
-  type: 'post' | 'log' | 'til';
+  type: 'post' | 'log' | 'til' | 'project';
   href?: string;
 }
 
 const { type, href } = Astro.props;
-const label = type === 'post' ? 'Posts' : type === 'log' ? 'Logs' : 'TIL';
-const url = href || (type === 'post' ? '/posts' : type === 'log' ? '/logs' : '/til');
+const label = type === 'post' ? 'Posts' : type === 'log' ? 'Logs' : type === 'til' ? 'TIL' : 'Projects';
+const url = href || (type === 'post' ? '/posts' : type === 'log' ? '/logs' : type === 'til' ? '/til' : '/projects');
 ---
 
 <a href={url} class="type-label">
