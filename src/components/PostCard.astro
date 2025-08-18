@@ -3,6 +3,7 @@ import Tag from "@components/Tag.astro";
 import TypeLabel from "@components/TypeLabel.astro";
 import { getContentPreview } from "@utils/text";
 import type { CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
 
 export interface Props {
     post: CollectionEntry<"posts"> | CollectionEntry<"logs"> | CollectionEntry<"til"> | CollectionEntry<"projects">;
@@ -96,7 +97,6 @@ const category = post.collection === "til" && (post.data as any).category ? (pos
             <div class="tags">
                 {tags.map((tag: string) => <Tag tag={tag} />)}
             </div>
-            <a href={url} class="read-more">Read more →</a>
         </div>
     </div>
 </article>
@@ -187,16 +187,6 @@ const category = post.collection === "til" && (post.data as any).category ? (pos
         margin-top: var(--spacing-md);
     }
 
-    .read-more {
-        font-size: var(--text-sm);
-        color: var(--color-accent);
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-    .read-more:hover {
-        text-decoration: underline;
-    }
 
     /* Grid variant styles */
     .post-card {
@@ -240,11 +230,6 @@ const category = post.collection === "til" && (post.data as any).category ? (pos
             align-items: flex-end;
         }
 
-        .read-more {
-            margin-left: auto;
-            flex-shrink: 0;
-            align-self: flex-end;
-        }
     }
 
     @media (max-width: 768px) {
