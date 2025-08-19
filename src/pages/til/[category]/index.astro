@@ -50,12 +50,20 @@ const ogImage = `/til/og.png`;
 </Layout>
 
 <style>
+  main {
+    padding: var(--spacing-xs) 0;
+    max-width: 90ch;
+    margin: 0 auto var(--spacing-lg);
+  }
+
   .page-header {
     text-align: center;
     margin-bottom: var(--spacing-xl);
   }
 
-  .page-header h1 {
+  .page-title {
+    font-size: var(--text-4xl);
+    font-weight: 700;
     margin-bottom: var(--spacing-sm);
   }
 
@@ -80,7 +88,6 @@ const ogImage = `/til/og.png`;
   }
 
   .toc {
-    display: grid;
-    gap: var(--spacing-lg);
+    display: block;
   }
 </style>

@@ -104,4 +104,4 @@ I don't claim to have a solution to the age-old problem of how to identify talen
 ## What am I missing?
 
 If you're interesting in chatting more about any of these areas or think I'm very wrong in my assessments, I'd love to hear from you.
-Feel free to reach out over [email](mailto:dcorin6@gmail.com) or [DM me](https://twitter.com/danielcorin1).
+Feel free to reach out over [email](mailto:dan@wvlen.llc) or [DM me](https://twitter.com/danielcorin1).
