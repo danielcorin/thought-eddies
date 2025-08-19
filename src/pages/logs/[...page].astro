@@ -63,7 +63,12 @@ const ogImage = `/logs/og.png`;
                 </a>
               </time>
               <div class="entry-content">
-                <p>{preview}</p>
+                <div class="content-with-arrow">
+                  <p>{preview}</p>
+                  <a href={`/logs/${log.id}`} class="read-more" aria-label="Read full log">
+                    <Icon name="ph:arrow-right" class="arrow-icon" />
+                  </a>
+                </div>
                 <div class="entry-footer">
                   <div class="tags">
                     {log.data.tags && log.data.tags.length > 0 && 
@@ -180,6 +185,36 @@ const ogImage = `/logs/og.png`;
     display: flex;
     gap: var(--spacing-sm);
     flex-wrap: wrap;
+  }
+
+  .content-with-arrow {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .content-with-arrow p {
+    flex: 1;
+  }
+
+  .read-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-ink-light);
+    text-decoration: none;
+    padding: 0.25rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .read-more:hover {
+    color: var(--color-accent);
+    transform: translateX(2px);
+  }
+
+  .arrow-icon {
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
   .pagination-bottom {
