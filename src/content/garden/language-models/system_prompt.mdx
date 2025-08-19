@@ -1,0 +1,41 @@
+---
+draft: false
+title: 'System Prompts'
+---
+
+import Chat from '@components/prose/Chat.astro';
+
+<Chat
+  model="assistant"
+  messages={[
+    {
+      role: 'system',
+      content: [
+        {
+          type: 'text',
+          text: 'Prose only. No lists. Format the output as follows\n\n- a tl;dr summary of the body (Titled "Summary")\n- a thoughtful and measured response ("Response")',
+        },
+      ],
+    },
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: 'your question!',
+        },
+      ],
+    },
+    {
+      role: 'assistant',
+      content: [
+        {
+          type: 'text',
+          text: 'the response!',
+        },
+      ],
+    },
+  ]}
+/>
+
+with a prefill of "Here is your response:" for Anthropic models
