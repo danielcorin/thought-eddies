@@ -58,6 +58,7 @@ const feeds = defineCollection({
     title: z.string(),
     feed_url: z.string(),
     aliases: z.array(z.string()).optional(),
+    order: z.number().optional(),
   }),
 });
 

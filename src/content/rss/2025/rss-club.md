@@ -10,7 +10,7 @@ However, you're probably seeing it because you're reading my RSS feed.
 It does [exist](/rss/2025/rss-club) on the site as well though.
 
 As I personally move toward self-curated content and away from algorithm feeds, I'm hoping to connect with more folks who have been doing the same.
-If this is something you do or are interested in, feel free to [reach out](mailto:dcorin6@gmail.com)!
+If this is something you do or are interested in, feel free to [reach out](mailto:dan@wvlen.llc)!
 I'd love to learn more about what you're doing and why.
 
 I also maintain a [blog roll](/feeds/curated/) of sorts.

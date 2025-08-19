@@ -6,6 +6,7 @@ import Footer from "@components/layout/Footer.astro";
 import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
 import KeyboardShortcutsModal from "@components/KeyboardShortcutsModal.astro";
+import SearchModal from "@components/SearchModal";
 
 interface Props {
 	title?: string;
@@ -142,14 +143,6 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 
 			// Global keyboard shortcuts
 			document.addEventListener('keydown', function(e) {
-				// Command+K or Ctrl+K for search
-				if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-					e.preventDefault();
-					// Set a flag for the search page to know we came via shortcut
-					sessionStorage.setItem('searchViaShortcut', 'true');
-					window.location.href = '/search';
-				}
-
 				// Command+Shift+M or Ctrl+Shift+M for theme toggle
 				if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
 					e.preventDefault();
@@ -166,6 +159,7 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 		</main>
 		<ScrollToTop />
 		<KeyboardShortcutsModal pageType={pageType} />
+		<SearchModal client:only="react" />
 		<script data-goatcounter="https://danielcorin.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 	</body>
 </html>

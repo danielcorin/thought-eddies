@@ -18,10 +18,25 @@ const feeds = await Promise.all(
       description: entry.body,
       url: `/feeds/${entry.id}`,
       feedUrl: entry.data.feed_url,
+      order: entry.data.order,
       Content,
     };
   })
 );
+
+// Sort feeds by order (if present), then alphabetically by title
+feeds.sort((a, b) => {
+  // If both have order, sort by order
+  if (a.order !== undefined && b.order !== undefined) {
+    return a.order - b.order;
+  }
+  // If only a has order, it comes first
+  if (a.order !== undefined) return -1;
+  // If only b has order, it comes first
+  if (b.order !== undefined) return 1;
+  // Neither has order, sort alphabetically
+  return a.title.localeCompare(b.title);
+});
 ---
 
 <Layout title={title} ogImage={ogImage} pageType="feeds">

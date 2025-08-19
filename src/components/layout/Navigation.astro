@@ -40,8 +40,8 @@ const { selected } = Astro.props;
     ))
   }
   <div class="nav-icons-group" style="margin-left: auto;">
-    <a
-      href="/search"
+    <button
+      id="search-toggle"
       class="nav-link nav-icon-link"
       aria-label="Search (⌘K)"
       aria-keyshortcuts="Cmd+K"
@@ -49,7 +49,7 @@ const { selected } = Astro.props;
       <span class="nav-item">
         <Icon name="ph:magnifying-glass" class="inline-icon nav-icon" />
       </span>
-    </a>
+    </button>
     <button
       id="theme-toggle"
       class="nav-link nav-icon-link"
@@ -112,6 +112,15 @@ const { selected } = Astro.props;
         updateIconsForTheme();
       });
     }
+
+    // Handle search button click
+    const searchToggle = document.getElementById('search-toggle');
+    if (searchToggle) {
+      searchToggle.addEventListener('click', function () {
+        // Dispatch a custom event that the SearchModal listens for
+        window.dispatchEvent(new Event('openSearch'));
+      });
+    }
   })();
 </script>
 
@@ -156,7 +165,7 @@ const { selected } = Astro.props;
       height: 1rem;
       font-size: 1rem;
     }
-    
+
     /* Override the search/theme icon sizing to match */
     .nav-icon-link svg {
       width: 1rem !important;

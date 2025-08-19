@@ -80,7 +80,7 @@ const ogImage = `/tags/og.png`;
       <a href="/tags">← All tags</a>
     </nav>
     
-    <div class="content-list">
+    <div class="toc">
       {allTaggedContent.map(item => (
         <PostCard post={item} type={item.type} showTypeLabel={true} />
       ))}
@@ -113,8 +113,9 @@ const ogImage = `/tags/og.png`;
     margin: 0;
   }
   
-  .content-list {
-    margin-top: var(--spacing-xl);
+  .toc {
+    display: grid;
+    gap: var(--spacing-lg);
   }
   
   

@@ -88,7 +88,8 @@ hr {
   transition: opacity 0.2s;
 }
 
-#theme-toggle {
+#theme-toggle,
+#search-toggle {
   background: none;
   border: none;
   cursor: pointer;
@@ -97,7 +98,8 @@ hr {
   transition: opacity 0.2s;
 }
 
-#theme-toggle:hover {
+#theme-toggle:hover,
+#search-toggle:hover {
   opacity: 0.8;
   color: var(--color-accent);
 }
