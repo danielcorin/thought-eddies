@@ -1,5 +1,6 @@
 ---
 import { Markdown } from '@astropub/md';
+import { Icon } from 'astro-icon/components';
 
 interface ContentItem {
   type: 'text' | 'image_url' | 'thinking';
@@ -81,7 +82,10 @@ function getContent(content: string | ContentItem[]): {
                 <div class="model-label">{model || 'Assistant'}</div>
                 {getContent(message.content).thinking.length > 0 && (
                   <details class="thinking-container">
-                    <summary class="thinking-summary">Thinking process</summary>
+                    <summary class="thinking-summary">
+                      <Icon name="ph:caret-right" class="thinking-chevron" />
+                      Thinking process
+                    </summary>
                     <div class="thinking-content">
                       {getContent(message.content).thinking.map((thought, index) => (
                         <Markdown of={thought} />
@@ -351,13 +355,13 @@ function getContent(content: string | ContentItem[]): {
     display: none;
   }
 
-  .thinking-summary::before {
-    content: '▶';
-    display: inline-block;
+  .thinking-chevron {
+    width: 1em;
+    height: 1em;
     transition: transform 0.2s ease;
   }
 
-  details[open] .thinking-summary::before {
+  details[open] .thinking-chevron {
     transform: rotate(90deg);
   }
 
