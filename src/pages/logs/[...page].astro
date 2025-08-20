@@ -63,12 +63,7 @@ const ogImage = `/logs/og.png`;
                 </a>
               </time>
               <div class="entry-content">
-                <div class="content-with-arrow">
-                  <p>{preview}</p>
-                  <a href={`/logs/${log.id}`} class="read-more" aria-label="Read full log">
-                    <Icon name="ph:arrow-right" class="arrow-icon" />
-                  </a>
-                </div>
+                <p>{preview}</p>
                 <div class="entry-footer">
                   <div class="tags">
                     {log.data.tags && log.data.tags.length > 0 && 
@@ -77,6 +72,9 @@ const ogImage = `/logs/og.png`;
                       ))
                     }
                   </div>
+                  <a href={`/logs/${log.id}`} class="read-more" aria-label="Read full log">
+                    <Icon name="ph:arrow-right" class="arrow-icon" />
+                  </a>
                 </div>
               </div>
             </article>
@@ -127,6 +125,12 @@ const ogImage = `/logs/og.png`;
 
   .entry-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .entry-content p {
+    flex: 1;
   }
 
   .toc time {
@@ -155,7 +159,11 @@ const ogImage = `/logs/og.png`;
   .date-day {
     font-size: var(--text-lg);
     font-weight: 600;
-    color: var(--color-ink) !important;
+    color: var(--color-ink);
+  }
+
+  .date-day:hover {
+    color: var(--color-accent);
   }
 
   .date-month {
@@ -180,21 +188,10 @@ const ogImage = `/logs/og.png`;
     gap: var(--spacing-md);
   }
 
-
   .tags {
     display: flex;
     gap: var(--spacing-sm);
     flex-wrap: wrap;
-  }
-
-  .content-with-arrow {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-md);
-  }
-
-  .content-with-arrow p {
-    flex: 1;
   }
 
   .read-more {
@@ -224,12 +221,37 @@ const ogImage = `/logs/og.png`;
 
   @media (max-width: 640px) {
     .toc article {
-      flex-direction: column;
+      /* Keep flex-direction: row to maintain date on the left */
       gap: var(--spacing-sm);
+      padding: var(--spacing-sm);
+    }
+
+    .entry-date {
+      /* Change to horizontal layout on mobile */
+      flex-direction: row;
+      gap: 0.25rem;
+      min-width: auto;
+      align-items: baseline;
+    }
+
+    .date-day {
+      font-size: var(--text-base);
+    }
+
+    .date-month {
+      font-size: var(--text-sm);
+    }
+
+    .date-year {
+      font-size: var(--text-sm);
     }
 
     .entry-footer {
       flex-wrap: wrap;
+    }
+
+    .entry-content p {
+      font-size: var(--text-sm);
     }
   }
 </style>
