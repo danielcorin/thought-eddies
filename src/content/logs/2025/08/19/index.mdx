@@ -1,0 +1,172 @@
+---
+date: '2025-08-19T17:06:32Z'
+title: '2025-08-19'
+draft: false
+tags: ['connections', 'language_models']
+---
+
+import Chat from '@components/prose/Chat.astro';
+import connectionsImage from './images/connections.png';
+
+It's been a while since I've attempted to use LLMs to solve Connections puzzles.
+
+In the past, I used a [harness](https://github.com/danielcorin/llm_connections) and allowed the LLM to guess one group at a time with logic that would check if the guess was correct or valid.
+This approach was closer to how humans play the game and helped `claude-3-5-sonnet` get ~40% of the puzzles correct over [32 games](https://github.com/danielcorin/bots-doing-things/blob/main/content/posts/connections/_index.md).
+
+Today, I took a screenshot of the puzzle and sent it to `gpt-5` and `claude-4-1-opus` (with not tools enabled) with the prompt
+
+<Chat
+  model="claude-4-1-opus-20250805"
+  messages={[
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'image_url',
+          image_url: {
+            url: connectionsImage.src,
+          },
+        },
+        {
+          type: 'text',
+          text: "solve today's nytimes connections puzzle",
+        },
+      ],
+    },
+    {
+      role: 'assistant',
+      content: [
+        {
+          type: 'thinking',
+          text: `Looking at this Connections puzzle, I need to identify four groups of four words each. Let me analyze the words:
+
+VERMOUTH, PLYMOUTH, CLASSIC, DASHBOARD
+BLABBERMOUTH, DARTMOUTH, LITTLE, PORT
+FLYWHEEL, CHATTERBOX, RUSHMORE, MARSALA
+WINDBAG, THE, SHERRY, PRATTLER
+
+Let me look for patterns:
+
+1. Words ending in "MOUTH":
+
+- VERMOUTH
+- PLYMOUTH
+- BLABBERMOUTH
+- DARTMOUTH
+  These all end in "MOUTH" - that's a group of 4!
+
+2. Words that mean someone who talks a lot:
+
+- BLABBERMOUTH
+- CHATTERBOX
+- WINDBAG
+- PRATTLER
+  Wait, BLABBERMOUTH is already in the "MOUTH" group. Let me reconsider.
+
+Actually, let me look at this differently:
+
+1. Cities/Places ending in "MOUTH":
+
+- PLYMOUTH (city in England and Massachusetts)
+- DARTMOUTH (city/college)
+- Actually, BLABBERMOUTH isn't a place...
+
+Let me think about wines/alcohols:
+
+- VERMOUTH (fortified wine)
+- PORT (wine)
+- MARSALA (wine)
+- SHERRY (wine)
+  That's 4! These are all fortified wines.
+
+So we have:
+Group 1: Fortified wines - VERMOUTH, PORT, MARSALA, SHERRY
+
+Now looking at the remaining words:
+PLYMOUTH, CLASSIC, DASHBOARD
+BLABBERMOUTH, DARTMOUTH, LITTLE
+FLYWHEEL, CHATTERBOX, RUSHMORE
+WINDBAG, THE, PRATTLER
+
+Words for talkative people:
+
+- BLABBERMOUTH
+- CHATTERBOX
+- WINDBAG
+- PRATTLER
+  That's 4! These all mean someone who talks excessively.
+
+I notice a pattern of locations with "MOUTH" in their names. PLYMOUTH and DARTMOUTH stand out as geographical references. I'm seeing potential connections between these place names and how they might form a meaningful group. The remaining words seem scattered, but there might be a hidden link between LITTLE, CLASSIC, DASHBOARD, FLYWHEEL, and THE that isn't immediately obvious. I'll need to dig deeper to uncover their potential relationship. I'm exploring potential connections between words like Plymouth Rock, Little Rock, and other terms. I'm noticing some interesting patterns around "ROCK" and trying to categorize different types of references - geographic locations, music genres, and even people like Dwayne "The Rock" Johnson. Some words like Dashboard and Flywheel seem less connected, so I'm probing for underlying themes. My thinking is moving between different conceptual approaches, looking for meaningful links between these seemingly disparate terms.
+
+I've identified some potential word formation strategies: compound words, parts of phrases, and categorical groupings. For instance, I'm examining "BOARD" and "WHEEL" as potential connective elements, and exploring how words might combine or relate to each other. My strategy involves breaking down the words, looking for structural similarities, and testing different interpretational frameworks to uncover potential relationships.
+
+The current challenge is finding a coherent pattern that connects Plymouth, Classic, Dashboard, Dartmouth, Little, Flywheel, Rushmore, and "The" in a meaningful way. I'm systematically testing different linguistic and conceptual approaches to see what emerges.
+
+I notice several interesting categories: academic institutions (Dartmouth, Plymouth), film references (Rushmore, The), descriptive terms (Classic, Little), and mechanical/structural words (Dashboard, Flywheel). These suggest multiple potential connection pathways, from thematic to structural to categorical.
+
+The Wes Anderson film connection and historical landmark references provide additional contextual layers, hinting at potential narrative or cultural intersections between these seemingly disparate terms.
+
+Phonetic similarities emerge with words ending in "-uth" sounds, creating an unexpected linguistic pattern across different domains. The exploration reveals complex semantic networks where terms can shift meaning or connection depending on context.
+
+I'm tracking potential linking strategies: sound-based connections, categorical relationships, and unexpected word combinations that might reveal surprising associations.
+
+Car-related terminology offers intriguing possibilities - brands, parts, and descriptive language intersect in ways that could unlock the pattern. Compound word structures and articles like "THE" suggest additional pathways for connecting seemingly disparate terms.
+
+The challenge involves finding underlying structural logic that transforms these discrete words into a coherent system, requiring creative lateral thinking and careful pattern recognition.
+
+American geographical references emerge as a compelling thread, with landmarks and place names revealing potential connections across diverse locations. Each term potentially represents a unique slice of American cultural or geographical landscape, hinting at deeper associative relationships.
+
+The "ROCK" pattern surfaces intriguingly, linking PLYMOUTH, LITTLE, CLASSIC, and THE through a consistent linguistic structure. These terms suggest a rhythmic naming convention spanning different states and contexts.
+
+Exploring the remaining words - DARTMOUTH, DASHBOARD, FLYWHEEL, RUSHMORE - reveals less obvious connections. While initially appearing disparate, these terms might conceal a subtle underlying pattern waiting to be uncovered.
+
+The investigation continues, probing for unexpected links between seemingly unrelated concepts across geographical, linguistic, and categorical domains. I'm exploring word connections through different lenses. First, fortified wines like VERMOUTH and PORT share a category. Then, words describing talkative people - BLABBERMOUTH and CHATTERBOX reveal a linguistic pattern.
+
+For the remaining words - DARTMOUTH, DASHBOARD, FLYWHEEL, RUSHMORE - I notice they're compound words with fascinating verb roots. DART, DASH, FLY, RUSH all suggest quick, dynamic movement. Each word breaks down into a verb suggesting rapid action, creating an intriguing linguistic connection.
+
+The MOUTH-ending words (VERMOUTH, PLYMOUTH, BLABBERMOUTH, DARTMOUTH) cross multiple categories, adding complexity to my analysis. Some represent drinks, others describe people or places, showing how language interweaves seemingly unrelated concepts.
+
+I'm strategizing how to categorize these words without creating category overlap, which is crucial in solving the Connections puzzle. The challenge lies in distinguishing unique characteristics while maintaining clear, non-redundant groupings.
+
+My current focus is separating the words precisely: wines must stay distinct from descriptive terms, ensuring each word fits a singular, unambiguous category.
+
+The talkative people group expands to include CHATTERBOX, WINDBAG, and PRATTLER, complementing the earlier BLABBERMOUTH entry. These words share a clear thematic connection of verbose communication.
+
+For the remaining words, I've identified a fascinating pattern: PLYMOUTH, LITTLE, CLASSIC, and THE form a "\_\_\_ ROCK" group, while DARTMOUTH, DASHBOARD, FLYWHEEL, and RUSHMORE connect through compound words with first elements functioning as action verbs suggesting rapid movement.
+
+My strategy involves methodically parsing the word list, seeking intrinsic linguistic or semantic relationships that create coherent, non-overlapping categories.`,
+        },
+        {
+          type: 'text',
+          text: `Looking at this Connections puzzle, I need to find four groups of four related words.
+
+Let me start by identifying some clear patterns:
+
+**Fortified Wines**: I can see VERMOUTH, PORT, MARSALA, and SHERRY - these are all types of fortified wines.
+
+**Talkative People**: BLABBERMOUTH, CHATTERBOX, WINDBAG, and PRATTLER - these all describe someone who talks excessively.
+
+For the remaining 8 words, let me look for connections:
+
+**"\_\_\_ ROCK"**: PLYMOUTH (Rock), LITTLE (Rock), CLASSIC (Rock), and THE (Rock - either the actor or Alcatraz) - these can all precede "ROCK" to form common phrases.
+
+**The last group**: DARTMOUTH, DASHBOARD, FLYWHEEL, and RUSHMORE - these are all compound words that begin with verbs of quick movement: DART, DASH, FLY, and RUSH.
+
+So my four groups are:
+
+1. **Fortified wines**: VERMOUTH, PORT, MARSALA, SHERRY
+2. **Excessive talkers**: BLABBERMOUTH, CHATTERBOX, WINDBAG, PRATTLER
+3. **"\_\_\_ ROCK"**: PLYMOUTH, LITTLE, CLASSIC, THE
+4. **Start with quick movement verbs**: DARTMOUTH, DASHBOARD, FLYWHEEL, RUSHMORE`,
+   },
+   ],
+   },
+   ]}
+   />
+
+According to the playground, Opus used 3,665 tokens and took well over a minute to respond (I didn't time it and the tool doesn't say).
+
+When given the same prompt, `gpt-5` with reasoning effort `high` and verbosity `high` took 2:38 and used 6,957 tokens.
+
+Both models solved the puzzle correctly in one attempt and with no feedback from the game itself as a human would receive while playing - a harder task.
+Impressive progress after a year since I last attempted this.

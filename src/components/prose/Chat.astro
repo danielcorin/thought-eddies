@@ -2,7 +2,7 @@
 import { Markdown } from '@astropub/md';
 
 interface ContentItem {
-  type: 'text' | 'image_url';
+  type: 'text' | 'image_url' | 'thinking';
   text?: string;
   image_url?: {
     url: string;
@@ -29,21 +29,27 @@ const { messages, model } = Astro.props;
 function getContent(content: string | ContentItem[]): {
   text: string;
   images: string[];
+  thinking: string[];
 } {
-  if (typeof content === 'string') return { text: content, images: [] };
+  if (typeof content === 'string') return { text: content, images: [], thinking: [] };
 
   const images: string[] = [];
+  const thinking: string[] = [];
   const text = content
     .map((item) => {
       if (item.type === 'image_url' && item.image_url) {
         images.push(item.image_url.url);
         return '';
       }
+      if (item.type === 'thinking' && item.text) {
+        thinking.push(item.text);
+        return '';
+      }
       return item.text || '';
     })
     .join('');
 
-  return { text, images };
+  return { text, images, thinking };
 }
 ---
 
@@ -73,6 +79,16 @@ function getContent(content: string | ContentItem[]): {
             <div class="message assistant">
               <div class="message-content">
                 <div class="model-label">{model || 'Assistant'}</div>
+                {getContent(message.content).thinking.length > 0 && (
+                  <details class="thinking-container">
+                    <summary class="thinking-summary">Thinking process</summary>
+                    <div class="thinking-content">
+                      {getContent(message.content).thinking.map((thought, index) => (
+                        <Markdown of={thought} />
+                      ))}
+                    </div>
+                  </details>
+                )}
                 <div class="bubble assistant-bubble">
                   <Markdown of={getContent(message.content).text} />
                   {getContent(message.content).images.map((url, index) => (
@@ -166,6 +182,19 @@ function getContent(content: string | ContentItem[]): {
     min-width: 0;
     display: inline-block;
     width: fit-content;
+  }
+
+  /* Ensure proper paragraph spacing in all bubbles */
+  .bubble :global(p) {
+    margin: 0.75rem 0;
+  }
+
+  .bubble :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .bubble :global(p:last-child) {
+    margin-bottom: 0;
   }
 
   .user-bubble {
@@ -295,6 +324,60 @@ function getContent(content: string | ContentItem[]): {
     word-break: normal;
     overflow-wrap: normal;
     min-width: 0;
+  }
+
+  /* Thinking content styles */
+  .thinking-container {
+    margin-bottom: 0.5rem;
+    background: var(--color-bg-code);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: var(--text-sm);
+    opacity: 0.8;
+  }
+
+  .thinking-summary {
+    cursor: pointer;
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .thinking-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .thinking-summary::before {
+    content: '▶';
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+
+  details[open] .thinking-summary::before {
+    transform: rotate(90deg);
+  }
+
+  .thinking-content {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-ink-light);
+  }
+
+  .thinking-content :global(p) {
+    margin: 0.5rem 0;
+  }
+
+  .thinking-content :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .thinking-content :global(p:last-child) {
+    margin-bottom: 0;
   }
 
   /* Mobile styles */
