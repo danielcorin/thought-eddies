@@ -360,18 +360,3 @@ function getBubbleSize(text: string): string {
         }
     }
 </style>
-
-<script>
-    // Add accessibility improvements
-    document.addEventListener("DOMContentLoaded", () => {
-        const bubbles = document.querySelectorAll(".bubble");
-
-        bubbles.forEach((bubble) => {
-            bubble.addEventListener("keydown", function (e) {
-                if (e.key === "Enter" || e.key === " ") {
-                    this.classList.toggle("active");
-                }
-            });
-        });
-    });
-</script>
