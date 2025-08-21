@@ -52,11 +52,10 @@ feeds.sort((a, b) => {
               <h2>
                 <a href={feed.url}>{feed.title}</a>
               </h2>
-              <p class="entry-description">{feed.description}</p>
-              <div class="entry-footer">
-                <div />
-                <a href={feed.url} class="read-more">
-                  View feed →
+              <div class="entry-body">
+                <p class="entry-description">{feed.description}</p>
+                <a href={feed.url} class="read-more" aria-label="View feed">
+                  <Icon name="ph:arrow-right" class="arrow-icon" />
                 </a>
               </div>
             </div>
@@ -97,30 +96,38 @@ feeds.sort((a, b) => {
     color: var(--color-accent);
   }
 
+  .entry-body {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
   .entry-description {
-    margin: 0 0 var(--spacing-md);
+    margin: 0;
     font-size: var(--text-base);
     line-height: 1.7;
     color: var(--color-ink-light);
-  }
-
-  .entry-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-md);
+    flex: 1;
   }
 
   .read-more {
-    font-size: var(--text-sm);
-    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-ink-light);
     text-decoration: none;
-    white-space: nowrap;
+    padding: 0.25rem;
+    transition: color 0.2s ease, transform 0.2s ease;
   }
 
   .read-more:hover {
-    text-decoration: underline;
+    color: var(--color-accent);
+    transform: translateX(2px);
+  }
+
+  .arrow-icon {
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
   @media (max-width: 640px) {
@@ -134,10 +141,6 @@ feeds.sort((a, b) => {
 
     .entry-description {
       font-size: var(--text-sm);
-    }
-
-    .entry-footer {
-      flex-wrap: wrap;
     }
   }
 </style>

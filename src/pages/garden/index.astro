@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import Navigation from '@components/layout/Navigation.astro';
+import { Icon } from 'astro-icon/components';
 
 const gardenEntries = await getCollection('garden');
 
@@ -62,6 +63,9 @@ const sortedCategories = categories.sort((a, b) => a.displayName.localeCompare(b
                   class="garden-link"
                 >
                   <span class="link-indicator">→</span>
+                  {entry.data.noteworthy && (
+                    <Icon name="ph:star-fill" class="noteworthy-icon" />
+                  )}
                   {entry.data.title}
                 </a>
               );
@@ -146,5 +150,16 @@ const sortedCategories = categories.sort((a, b) => a.displayName.localeCompare(b
     line-height: 1;
     position: relative;
     top: -0.1em;
+  }
+
+  .noteworthy-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.25rem;
+    color: var(--color-accent);
+    vertical-align: baseline;
+    position: relative;
+    top: 0.1em;
   }
 </style>
