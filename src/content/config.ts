@@ -48,7 +48,7 @@ const logs = defineCollection({
       .transform((val) => new Date(val)),
     title: z.string(),
     tags: z.array(z.string()).nullable().optional(),
-    draft: z.boolean().optional().default(true),
+    draft: z.boolean().optional().default(false),
   }),
 });
 
@@ -107,10 +107,6 @@ const projects = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
-    date: z
-      .string()
-      .or(z.date())
-      .transform((val) => new Date(val)),
     description: z.string().optional(),
     location: z.string().optional(),
     createdAt: z.date().optional(),
@@ -149,12 +145,13 @@ const rss = defineCollection({
 
 const garden = defineCollection({
   loader: glob({
-    pattern: ['**/*.{md,mdx}', '!**/_index.md'],
+    pattern: ['**/*.{md,mdx}', '!**/_*'],
     base: './src/content/garden',
   }),
   schema: z.object({
     title: z.string(),
     draft: z.boolean().optional().default(false),
+    noteworthy: z.boolean().optional().default(false),
   }),
 });
 

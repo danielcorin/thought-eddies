@@ -3,6 +3,7 @@ title: 'Social Capital'
 date: 2024-05-07T17:41:55-04:00
 draft: false
 toc: true
+noteworthy: true
 ---
 
 At my first engineering job, I was introduced to the idea of social capital in

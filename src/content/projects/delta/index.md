@@ -1,13 +1,8 @@
 ---
 title: 'Delta (2024)'
-date: 2024-12-08
+description: 'Conversation branching with language models'
 createdAt: 2024-12-08
 draft: false
-tags:
-  - typescrpt
-  - electron
-  - vercel
-  - forge
 githubUrl: https://github.com/danielcorin/delta
 ---
 

@@ -6,7 +6,7 @@ publishedAt: 2024-02-06T20:39:24.000Z
 tags:
   - hugo
   - git
-  - submodule
+  - submodules
 draft: false
 ---
 
