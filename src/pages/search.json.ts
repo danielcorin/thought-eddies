@@ -4,16 +4,16 @@ import { getCollection } from 'astro:content';
 export const GET: APIRoute = async () => {
   // Get all content
   const allPosts = await getCollection('posts', ({ data }) => {
-    return import.meta.env.PROD ? data.draft !== true : true;
+    return data.draft !== true;
   });
 
   const allLogs = await getCollection('logs');
   const allTils = await getCollection('til');
   const allProjects = await getCollection('projects', ({ data }) => {
-    return import.meta.env.PROD ? data.draft !== true : true;
+    return data.draft !== true;
   });
   const allGarden = await getCollection('garden', ({ data }) => {
-    return import.meta.env.PROD ? data.draft !== true : true;
+    return data.draft !== true;
   });
 
   // Process posts
