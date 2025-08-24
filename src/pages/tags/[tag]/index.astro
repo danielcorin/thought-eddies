@@ -2,6 +2,7 @@
 import Navigation from "@components/layout/Navigation.astro";
 import PostCard from "@components/PostCard.astro";
 import Layout from "@layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 
@@ -77,7 +78,10 @@ const ogImage = `/tags/og.png`;
     </div>
     
     <nav class="breadcrumb">
-      <a href="/tags">← All tags</a>
+      <a href="/tags">
+        <Icon name="ph:arrow-left" />
+        All tags
+      </a>
     </nav>
     
     <div class="toc">
@@ -124,9 +128,17 @@ const ogImage = `/tags/og.png`;
   }
   
   .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
     color: var(--color-accent);
     text-decoration: none;
     font-size: var(--text-sm);
+  }
+  
+  .breadcrumb a svg {
+    width: 1rem;
+    height: 1rem;
   }
   
   .breadcrumb a:hover {
