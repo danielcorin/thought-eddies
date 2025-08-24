@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import Navigation from '@components/layout/Navigation.astro';
 import Breadcrumbs from '@components/Breadcrumbs.astro';
+import TableOfContents from '@components/layout/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const gardenEntries = await getCollection('garden');
@@ -14,7 +15,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 
 // Extract category from the entry id
 const category = entry.id.split('/')[0];
@@ -39,6 +40,8 @@ const categoryDisplay = category.split('-').map(word =>
           {categoryDisplay}
         </div>
       </header>
+
+      <TableOfContents title={entry.data.title} headings={headings} />
 
       <div class="content">
         <Content />

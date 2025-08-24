@@ -1,7 +1,7 @@
 ---
 title: Ongoing thoughts
 draft: false
-date: 2024-08-19T21:26:08-04:00
+createdAt: 2024-08-19T21:26:08-04:00
 ---
 
 - It is currently kludgy and time consuming to iterate on a prompt for a language model to integrate some kind of inference into an engineering use case in a microservice environment. This is specifically difficult because it's not yet clear where productive separation of concerns should be.

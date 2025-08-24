@@ -1,6 +1,6 @@
 ---
 title: 'Social Capital'
-date: 2024-05-07T17:41:55-04:00
+createdAt: 2024-05-07T17:41:55-04:00
 draft: false
 toc: true
 noteworthy: true
