@@ -150,6 +150,7 @@ const garden = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
+    createdAt: z.date().optional(),
     draft: z.boolean().optional().default(false),
     noteworthy: z.boolean().optional().default(false),
   }),

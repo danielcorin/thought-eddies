@@ -1,5 +1,5 @@
 ---
-date: '2024-04-21T10:25:33Z'
+createdAt: 2024-04-21T10:25:33Z
 title: 'Craft, constraints and software in the real world'
 draft: false
 tags:

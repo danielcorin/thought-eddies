@@ -2,7 +2,7 @@
 title: 'Equity'
 draft: false
 toc: true
-date: '2024-06-01'
+createdAt: 2024-06-01
 ---
 
 _Note: This is not financial advice.
