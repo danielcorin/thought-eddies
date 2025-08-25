@@ -102,7 +102,7 @@ const til = defineCollection({
 
 const projects = defineCollection({
   loader: glob({
-    pattern: ['**/*.{md,mdx}', '!**/_*'],
+    pattern: ['**/index.{md,mdx}'],
     base: './src/content/projects',
   }),
   schema: z.object({

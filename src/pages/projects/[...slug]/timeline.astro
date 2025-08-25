@@ -1,0 +1,105 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import PostLayout from '@layouts/PostLayout.astro';
+import TimelineComponent from '@components/Timeline.astro';
+import TableOfContents from '@components/layout/TableOfContents.astro';
+import { getTimelineEntries } from '@utils/timeline';
+import { Icon } from 'astro-icon/components';
+import path from 'path';
+
+export const prerender = true;
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project: CollectionEntry<'projects'>) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props as { project: CollectionEntry<'projects'> };
+
+const contentPath = path.join(
+  process.cwd(),
+  'src/content',
+  'projects',
+  project.id
+);
+
+let timelineEntries = await getTimelineEntries(contentPath, 'projects', project.id);
+
+if (timelineEntries.length === 0) {
+  return Astro.redirect(`/projects/${project.id}`, 302);
+}
+
+// Dynamically import timeline images
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/content/projects/*/timeline/*/image.*');
+const imageModules: Record<string, any> = {};
+
+for (const [imagePath, importFn] of Object.entries(images)) {
+  const module = await importFn();
+  imageModules[imagePath] = module.default;
+}
+
+// Map the image modules to timeline entries
+timelineEntries = timelineEntries.map((entry: any) => {
+  const imagePath = `/src/content/projects/${project.id}/timeline/${entry.date}/${entry.imageFile}`;
+  return {
+    ...entry,
+    imageModule: imageModules[imagePath] || null
+  };
+});
+
+const ogImage = `/projects/og.png`;
+
+// Create headings for TOC from timeline entries
+const headings = timelineEntries.map((entry: any) => {
+  const [year, month, day] = entry.date.split('-');
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthName = monthNames[parseInt(month) - 1];
+  const formattedDate = `${monthName} ${parseInt(day)}, ${year}`;
+
+  return {
+    depth: 2,
+    slug: `${entry.date}`,
+    text: formattedDate
+  };
+});
+---
+
+<PostLayout frontmatter={{ ...project.data, collection: 'projects' }} ogImage={ogImage} slug={project.id}>
+  <nav class="timeline-nav">
+    <a href={`/projects/${project.id}`}>
+      <Icon name="ph:arrow-left" />
+      Back to {project.data.title}
+    </a>
+  </nav>
+  <TableOfContents title="Timeline" headings={headings} />
+  <h1>Timeline</h1>
+  <TimelineComponent entries={timelineEntries} />
+</PostLayout>
+
+<style>
+  .timeline-nav {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .timeline-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: var(--text-sm);
+  }
+
+  .timeline-nav a svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .timeline-nav a:hover {
+    text-decoration: underline;
+  }
+</style>
