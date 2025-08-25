@@ -97,6 +97,9 @@ const category = post.collection === "til" && (post.data as any).category ? (pos
             <div class="tags">
                 {tags.map((tag: string) => <Tag tag={tag} />)}
             </div>
+            <a href={url} class="read-more" aria-label="Read full post">
+                <Icon name="ph:arrow-right" class="arrow-icon" />
+            </a>
         </div>
     </div>
 </article>
@@ -209,6 +212,26 @@ const category = post.collection === "til" && (post.data as any).category ? (pos
         flex-wrap: wrap;
         flex: 1;
         min-width: 0;
+    }
+
+    .read-more {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-ink-light);
+        text-decoration: none;
+        padding: 0.25rem;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .read-more:hover {
+        color: var(--color-accent);
+        transform: translateX(2px);
+    }
+
+    .arrow-icon {
+        width: 1.25rem;
+        height: 1.25rem;
     }
 
     @media (max-width: 640px) {
