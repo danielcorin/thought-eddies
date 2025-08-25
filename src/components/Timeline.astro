@@ -1,0 +1,320 @@
+---
+import { Image } from 'astro:assets';
+
+export interface TimelineEntry {
+  date: string;
+  imageModule: any;
+  imageAlt: string;
+  description: string;
+}
+
+interface Props {
+  entries: TimelineEntry[];
+}
+
+const { entries } = Astro.props;
+
+// Format dates for display without timezone conversion
+const formattedEntries = entries.map((entry, index) => {
+  const [year, month, day] = entry.date.split('-');
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthName = monthNames[parseInt(month) - 1];
+
+  // Calculate days since previous entry
+  let daysSincePrevious = null;
+  if (index > 0) {
+    const currentDate = new Date(entry.date + 'T00:00:00');
+    const previousDate = new Date(entries[index - 1].date + 'T00:00:00');
+    const diffTime = currentDate.getTime() - previousDate.getTime();
+    daysSincePrevious = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  // Calculate days since project start (first entry)
+  let daysSinceStart = null;
+  if (entries.length > 0) {
+    const currentDate = new Date(entry.date + 'T00:00:00');
+    const startDate = new Date(entries[0].date + 'T00:00:00');
+    const diffTime = currentDate.getTime() - startDate.getTime();
+    daysSinceStart = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  return {
+    ...entry,
+    formattedDate: `${monthName} ${parseInt(day)}, ${year}`,
+    daysSincePrevious,
+    daysSinceStart
+  };
+});
+---
+
+<div class="timeline">
+  {formattedEntries.map((entry, index) => (
+    <article class="timeline-entry" data-date={entry.date} id={`${entry.date}`}>
+      <div class="timeline-header">
+        <div class="timeline-date-info">
+          <time class="timeline-date">{entry.formattedDate}</time>
+          <div class="timeline-elapsed-info">
+            {entry.daysSinceStart > 0 && (
+              <span class="timeline-total-elapsed">
+                Day {entry.daysSinceStart + 1}
+              </span>
+            )}
+            {entry.daysSincePrevious !== null && entry.daysSinceStart > 0 && (
+              <span class="timeline-separator">•</span>
+            )}
+            {entry.daysSincePrevious !== null && (
+              <span class="timeline-elapsed">
+                +{entry.daysSincePrevious} {entry.daysSincePrevious === 1 ? 'day' : 'days'}
+              </span>
+            )}
+          </div>
+        </div>
+        <div class="timeline-marker">
+          <div class="timeline-dot"></div>
+          {index < entries.length - 1 && <div class="timeline-line"></div>}
+        </div>
+      </div>
+      <div class="timeline-content">
+        <div class="timeline-image-container">
+          <Image
+            src={entry.imageModule}
+            alt={entry.imageAlt}
+            loading="lazy"
+            class="timeline-image"
+          />
+        </div>
+        <div class="timeline-description" set:html={entry.description} />
+      </div>
+    </article>
+  ))}
+</div>
+
+<style>
+  .timeline {
+    position: relative;
+    padding: 2rem 0;
+  }
+
+  .timeline-entry {
+    margin-bottom: 6rem;
+    position: relative;
+    scroll-margin-top: 2rem;
+  }
+
+  .timeline-entry:last-child {
+    margin-bottom: 0;
+  }
+
+  .timeline-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .timeline-date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .timeline-date {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+
+  .dark .timeline-date {
+    color: var(--gray-400);
+  }
+
+  .timeline-elapsed-info {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .timeline-separator {
+    color: var(--gray-400);
+    font-size: 0.5rem;
+    opacity: 0.6;
+  }
+
+  .dark .timeline-separator {
+    color: var(--gray-600);
+  }
+
+  .timeline-elapsed {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  .dark .timeline-elapsed {
+    color: var(--gray-500);
+    opacity: 0.7;
+  }
+
+  .timeline-total-elapsed {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .dark .timeline-total-elapsed {
+    color: var(--color-accent);
+  }
+
+  .timeline-marker {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .timeline-dot {
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--gray-200);
+    border: 3px solid var(--gray-600);
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .dark .timeline-dot {
+    background-color: var(--gray-700);
+    border-color: var(--gray-400);
+  }
+
+  .timeline-line {
+    position: absolute;
+    top: 1rem;
+    bottom: -6rem;
+    width: 2px;
+    background-color: var(--gray-300);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .dark .timeline-line {
+    background-color: var(--gray-600);
+  }
+
+  .timeline-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .timeline-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    max-height: calc(100vh - 120px);
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background-color: var(--gray-50);
+    padding: 1rem;
+  }
+
+  .dark .timeline-image-container {
+    background-color: var(--gray-900);
+  }
+
+  .timeline-image {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100vh - 140px);
+    object-fit: contain;
+    border-radius: 0.25rem;
+  }
+
+  .timeline-description {
+    line-height: 1.7;
+    padding-top: 1rem;
+  }
+
+  .timeline-description :global(p) {
+    margin-bottom: 1rem;
+  }
+
+  .timeline-description :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .timeline-description :global(ul),
+  .timeline-description :global(ol) {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .timeline-description :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Alternate layout for even entries */
+  .timeline-entry:nth-child(even) .timeline-content {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .timeline-entry:nth-child(even) .timeline-image-container {
+    order: 2;
+  }
+
+  .timeline-entry:nth-child(even) .timeline-description {
+    order: 1;
+  }
+
+  @media (max-width: 1024px) {
+    .timeline-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .timeline-entry:nth-child(even) .timeline-image-container {
+      order: 1;
+    }
+
+    .timeline-entry:nth-child(even) .timeline-description {
+      order: 2;
+    }
+
+    .timeline-image-container {
+      max-height: 60vh;
+    }
+
+    .timeline-image {
+      max-height: calc(60vh - 2rem);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .timeline-header {
+      gap: 1rem;
+    }
+
+    .timeline-date {
+      font-size: 0.875rem;
+    }
+
+    .timeline-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+
+    .timeline-entry {
+      margin-bottom: 4rem;
+    }
+
+    .timeline-line {
+      bottom: -4rem;
+    }
+  }
+</style>

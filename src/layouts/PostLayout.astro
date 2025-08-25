@@ -8,6 +8,8 @@ import { getCollection, getEntry } from "astro:content";
 import Layout from "./Layout.astro";
 import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
 import ClickableImages from "@components/ClickableImages.astro";
+import { promises as fs } from 'fs';
+import path from 'path';
 
 const { frontmatter, ogImage, slug } = Astro.props;
 
@@ -20,6 +22,23 @@ const isRss = collectionType === "rss";
 // Get the current entry using the slug
 const entryId = slug.replace(/\.(md|mdx)$/, '');
 const currentEntry = await getEntry(collectionType, entryId);
+
+// Check if timeline exists for projects
+let hasTimeline = false;
+if (isProject) {
+  const timelinePath = path.join(
+    process.cwd(),
+    'src/content/projects',
+    entryId,
+    'timeline'
+  );
+  try {
+    await fs.access(timelinePath);
+    hasTimeline = true;
+  } catch {
+    hasTimeline = false;
+  }
+}
 
 // Get all posts/tils to find prev/next
 const allEntries = await getCollection(collectionType);
@@ -111,6 +130,16 @@ const similarContent = currentEntry
               >
                 <Icon name="ph:link" class="inline-icon meta-icon" />
                 <span class="project-text">Project</span>
+              </a>
+            </span>
+          )
+        }
+        {
+          isProject && hasTimeline && (
+            <span class="icon-text-wrapper timeline-link">
+              <a href={`/projects/${entryId}/timeline`}>
+                <Icon name="ph:clock-clockwise" class="inline-icon meta-icon" />
+                <span class="timeline-text">Timeline</span>
               </a>
             </span>
           )
@@ -265,6 +294,24 @@ const similarContent = currentEntry
   }
 
   .project-link a:hover {
+    opacity: 0.8;
+    color: var(--color-accent);
+  }
+
+  .timeline-text {
+    font-family: var(--font-mono);
+  }
+
+  .timeline-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-ink-light);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .timeline-link a:hover {
     opacity: 0.8;
     color: var(--color-accent);
   }
