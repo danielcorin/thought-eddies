@@ -55,12 +55,12 @@ const formattedEntries = entries.map((entry, index) => {
         <div class="timeline-date-info">
           <time class="timeline-date">{entry.formattedDate}</time>
           <div class="timeline-elapsed-info">
-            {entry.daysSinceStart > 0 && (
+            {entry.daysSinceStart !== null && entry.daysSinceStart > 0 && (
               <span class="timeline-total-elapsed">
                 Day {entry.daysSinceStart + 1}
               </span>
             )}
-            {entry.daysSincePrevious !== null && entry.daysSinceStart > 0 && (
+            {entry.daysSincePrevious !== null && entry.daysSinceStart !== null && entry.daysSinceStart > 0 && (
               <span class="timeline-separator">•</span>
             )}
             {entry.daysSincePrevious !== null && (
@@ -205,10 +205,11 @@ const formattedEntries = entries.map((entry, index) => {
     background-color: var(--gray-600);
   }
 
+  /* Mobile first - single column by default */
   .timeline-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
     align-items: start;
   }
 
@@ -216,7 +217,7 @@ const formattedEntries = entries.map((entry, index) => {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    max-height: calc(100vh - 120px);
+    max-height: 60vh;
     overflow: hidden;
     border-radius: 0.5rem;
     background-color: var(--gray-50);
@@ -231,7 +232,7 @@ const formattedEntries = entries.map((entry, index) => {
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: calc(100vh - 140px);
+    max-height: calc(60vh - 2rem);
     object-fit: contain;
     border-radius: 0.25rem;
   }
@@ -259,39 +260,28 @@ const formattedEntries = entries.map((entry, index) => {
     margin-bottom: 0.5rem;
   }
 
-  /* Alternate layout for even entries */
-  .timeline-entry:nth-child(even) .timeline-content {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .timeline-entry:nth-child(even) .timeline-image-container {
-    order: 2;
-  }
-
-  .timeline-entry:nth-child(even) .timeline-description {
-    order: 1;
-  }
-
-  @media (max-width: 1024px) {
+  /* Desktop - two column layout */
+  @media (min-width: 769px) {
     .timeline-content {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    .timeline-entry:nth-child(even) .timeline-image-container {
-      order: 1;
-    }
-
-    .timeline-entry:nth-child(even) .timeline-description {
-      order: 2;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
     }
 
     .timeline-image-container {
-      max-height: 60vh;
+      max-height: calc(100vh - 120px);
     }
 
     .timeline-image {
-      max-height: calc(60vh - 2rem);
+      max-height: calc(100vh - 140px);
+    }
+
+    /* Alternate layout for even entries on desktop */
+    .timeline-entry:nth-child(even) .timeline-image-container {
+      order: 2;
+    }
+
+    .timeline-entry:nth-child(even) .timeline-description {
+      order: 1;
     }
   }
 
