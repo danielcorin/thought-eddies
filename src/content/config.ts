@@ -32,8 +32,8 @@ const posts = defineCollection({
   }),
 });
 
-const home = defineCollection({
-  loader: glob({ pattern: 'index.mdx', base: './src/content/home' }),
+const about = defineCollection({
+  loader: glob({ pattern: 'index.mdx', base: './src/content/about' }),
   schema: z.object({
     title: z.string(),
   }),
@@ -158,7 +158,7 @@ const garden = defineCollection({
 
 export const collections = {
   posts,
-  home,
+  about,
   logs,
   feeds,
   uses,

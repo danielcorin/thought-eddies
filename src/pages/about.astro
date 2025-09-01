@@ -3,17 +3,17 @@ import Navigation from "@components/layout/Navigation.astro";
 import Layout from "@layouts/Layout.astro";
 import { getCollection, render, type CollectionEntry } from "astro:content";
 
-const collection = "home";
-const homeEntries = await getCollection(collection);
-const home = homeEntries[0] as CollectionEntry<"home">;
-const { Content } = await render(home);
+const collection = "about";
+const aboutEntries = await getCollection(collection);
+const about = aboutEntries[0] as CollectionEntry<"about">;
+const { Content } = await render(about);
 const ogImage = `/og.png`;
 ---
 
 <Layout title="About" ogImage={ogImage}>
   <Navigation selected="about" />
   <main>
-    <h1 class="page-title">{home.data.title}</h1>
+    <h1 class="page-title">{about.data.title}</h1>
     <div class="content">
       <Content />
     </div>
