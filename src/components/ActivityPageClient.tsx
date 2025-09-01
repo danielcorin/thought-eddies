@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ActivityGraphClient from './ActivityGraphClient';
+import ContributionGraph from './ContributionGraph';
 
 interface ContentItem {
   id: string;
@@ -10,6 +11,7 @@ interface ContentItem {
   draft?: boolean;
   body?: string;
   contentLength?: number;
+  title?: string;
 }
 
 interface Props {
@@ -282,6 +284,8 @@ export default function ActivityPageClient({ allContent, initialDate }: Props) {
           Today
         </button>
       </div>
+
+      <ContributionGraph allContent={allContent} endDate={currentDate} />
 
       <div className="stats-grid">
         <ActivityGraphClient
