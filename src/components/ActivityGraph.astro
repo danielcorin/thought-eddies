@@ -1,0 +1,373 @@
+---
+interface Props {
+  title: string;
+  currentData: number[];
+  previousData: number[];
+  currentTotal: number;
+  previousTotal: number;
+  percentageChange: number;
+  breakdown: {
+    posts: number;
+    tils: number;
+    logs: number;
+    projects: number;
+    garden: number;
+  };
+  smoothingWindow?: number;
+}
+
+const {
+  title,
+  currentData,
+  previousData,
+  currentTotal,
+  previousTotal,
+  percentageChange,
+  breakdown,
+  smoothingWindow = 7
+} = Astro.props;
+
+// Apply moving average smoothing with adjustable window size
+function smoothData(data: number[], windowSize: number = 5): number[] {
+  if (data.length < windowSize) return data;
+
+  const smoothed = [];
+  for (let i = 0; i < data.length; i++) {
+    let sum = 0;
+    let count = 0;
+    for (let j = Math.max(0, i - Math.floor(windowSize / 2)); j <= Math.min(data.length - 1, i + Math.floor(windowSize / 2)); j++) {
+      sum += data[j];
+      count++;
+    }
+    smoothed.push(sum / count);
+  }
+  return smoothed;
+}
+
+// Generate SVG paths for sparkline with multiple datasets
+function generateSparklines(datasets: number[][], smooth: boolean = true, windowSize: number = 7): { current: string; previous: string; max: number } {
+  if (datasets.length === 0 || datasets[0].length === 0) return { current: '', previous: '', max: 1 };
+
+  const width = 280;
+  const height = 80;
+  const padding = 10;
+
+  // Find global max across all datasets for consistent scaling
+  // Apply smoothing first to get accurate max values
+  const smoothedDatasets = datasets.map(data => smooth ? smoothData(data, windowSize) : data);
+  const allValues = smoothedDatasets.flat();
+  
+  // Filter out zeros for better scaling
+  const nonZeroValues = allValues.filter(v => v > 0);
+  const max = nonZeroValues.length > 0 ? Math.max(...nonZeroValues) : 1;
+  const min = 0;
+
+  // Add some headroom to prevent lines from touching the top
+  const adjustedMax = max * 1.2;
+  const yScale = (height - 2 * padding) / adjustedMax;
+
+  // Generate smooth curve using Catmull-Rom spline
+  function catmullRom(p0: number, p1: number, p2: number, p3: number, t: number): number {
+    const v0 = (p2 - p0) * 0.5;
+    const v1 = (p3 - p1) * 0.5;
+    const t2 = t * t;
+    const t3 = t * t * t;
+    return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
+  }
+
+  function generatePath(data: number[]): string {
+    if (!data || data.length === 0) return '';
+    const values = smooth ? smoothData(data, windowSize) : data;
+    const xScale = (width - 2 * padding) / (values.length - 1);
+
+    // Create points
+    const points = values.map((value, index) => ({
+      x: padding + index * xScale,
+      y: height - padding - (value - min) * yScale
+    }));
+
+    if (points.length < 2) return '';
+
+    let path = `M ${points[0].x},${points[0].y}`;
+
+    // Create smooth curve through all points
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = i > 0 ? points[i - 1] : points[i];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = i < points.length - 2 ? points[i + 2] : points[i + 1];
+
+      // Generate intermediate points for smooth curve
+      const segments = 10;
+      for (let j = 1; j <= segments; j++) {
+        const t = j / segments;
+        const x = p1.x + (p2.x - p1.x) * t;
+        const y = catmullRom(p0.y, p1.y, p2.y, p3.y, t);
+        path += ` L ${x},${y}`;
+      }
+    }
+
+    return path;
+  }
+
+  return {
+    current: generatePath(datasets[0]),
+    previous: datasets.length > 1 ? generatePath(datasets[1]) : '',
+    max: adjustedMax
+  };
+}
+
+// Format number with comma separator
+function formatNumber(num: number): string {
+  return num.toLocaleString();
+}
+
+const paths = generateSparklines([currentData, previousData], true, smoothingWindow);
+---
+
+<div class="stat-card">
+  <h2>{title}</h2>
+  <div class="sparkline-container">
+    <svg class="sparkline" width="280" height="80" viewBox="0 0 280 80">
+      {paths.previous && (
+        <path d={paths.previous} fill="none" stroke="var(--color-ink-light)" stroke-width="2" opacity="0.5" stroke-linejoin="round" stroke-linecap="round" />
+      )}
+      <path d={paths.current} fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+    </svg>
+    <div class="sparkline-legend">
+      <span class="legend-item">
+        <span class="legend-line current"></span>
+        <span class="legend-label">Current</span>
+      </span>
+      <span class="legend-item">
+        <span class="legend-line previous"></span>
+        <span class="legend-label">Previous</span>
+      </span>
+    </div>
+  </div>
+  <div class="stat-header">
+    <div class="stat-values">
+      <div class="stat-value">{formatNumber(currentTotal)}</div>
+      <div class="stat-comparison">
+        <div class="stat-previous">{formatNumber(previousTotal)}</div>
+        {percentageChange !== 0 && (
+          <span class={`stat-delta ${percentageChange > 0 ? 'positive' : 'negative'}`}>
+            ({percentageChange > 0 ? '+' : ''}{percentageChange}%)
+          </span>
+        )}
+      </div>
+    </div>
+  </div>
+  <div class="stat-breakdown">
+    {breakdown.posts > 0 && (
+      <a href="/posts" class="stat-item">
+        <span class="stat-label">Posts</span>
+        <span class="stat-count">{breakdown.posts}</span>
+      </a>
+    )}
+    {breakdown.tils > 0 && (
+      <a href="/til" class="stat-item">
+        <span class="stat-label">TILs</span>
+        <span class="stat-count">{breakdown.tils}</span>
+      </a>
+    )}
+    {breakdown.logs > 0 && (
+      <a href="/logs" class="stat-item">
+        <span class="stat-label">Logs</span>
+        <span class="stat-count">{breakdown.logs}</span>
+      </a>
+    )}
+    {breakdown.projects > 0 && (
+      <a href="/projects" class="stat-item">
+        <span class="stat-label">Projects</span>
+        <span class="stat-count">{breakdown.projects}</span>
+      </a>
+    )}
+    {breakdown.garden > 0 && (
+      <a href="/garden" class="stat-item">
+        <span class="stat-label">Garden</span>
+        <span class="stat-count">{breakdown.garden}</span>
+      </a>
+    )}
+  </div>
+</div>
+
+<style>
+  .stat-card {
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    padding: var(--spacing-lg);
+    text-align: center;
+  }
+
+  .stat-card h2 {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-ink-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .sparkline-container {
+    position: relative;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .sparkline {
+    width: 100%;
+    height: 80px;
+  }
+
+  .sparkline-legend {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xs);
+    font-size: var(--text-xs);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-ink-light);
+  }
+
+  .legend-line {
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    border-radius: 1px;
+  }
+
+  .legend-line.current {
+    background-color: var(--color-accent);
+  }
+
+  .legend-line.previous {
+    background-color: var(--color-ink-light);
+    opacity: 0.5;
+  }
+
+  .legend-label {
+    font-size: var(--text-xs);
+  }
+
+  .stat-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .stat-values {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-md);
+  }
+
+  .stat-comparison {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-xs);
+  }
+
+  .stat-previous {
+    font-size: var(--font-size-lg);
+    color: var(--color-ink-light);
+    opacity: 0.8;
+  }
+  
+  .stat-delta {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+  }
+
+  .stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  .stat-change {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .stat-change.positive {
+    color: var(--color-success, #10b981);
+    background: var(--color-success-bg, #10b98120);
+  }
+
+  .stat-change.negative {
+    color: var(--color-error, #ef4444);
+    background: var(--color-error-bg, #ef444420);
+  }
+  
+  .stat-delta.positive {
+    color: var(--color-ink-light);
+  }
+
+  .stat-delta.negative {
+    color: var(--color-ink-light);
+  }
+
+  .stat-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    justify-content: center;
+  }
+
+  .stat-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    transition: all 0.2s;
+  }
+
+  .stat-item:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .stat-label {
+    color: inherit;
+  }
+
+  .stat-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.375rem;
+    background: var(--color-bg-code);
+    border-radius: 9999px;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--color-ink-light);
+  }
+
+  .stat-item:hover .stat-count {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  @media (max-width: 768px) {
+    .stat-value {
+      font-size: var(--font-size-2xl);
+    }
+  }
+</style>
