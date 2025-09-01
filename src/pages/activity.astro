@@ -66,30 +66,35 @@ const allContentData = [
     collection: 'posts',
     publishedAt: getContentDate(item)?.toISOString(),
     contentLength: getContentLength(item),
+    title: item.data.title || item.id,
   })),
   ...publishedTils.map(item => ({
     id: item.id,
     collection: 'til',
     publishedAt: getContentDate(item)?.toISOString(),
     contentLength: getContentLength(item),
+    title: item.data.title || item.id,
   })),
   ...publishedLogs.map(item => ({
     id: item.id,
     collection: 'logs',
     publishedAt: getContentDate(item)?.toISOString(),
     contentLength: getContentLength(item),
+    title: item.data.title || item.id,
   })),
   ...publishedProjects.map(item => ({
     id: item.id,
     collection: 'projects',
     publishedAt: getContentDate(item)?.toISOString(),
     contentLength: getContentLength(item),
+    title: item.data.title || item.id,
   })),
   ...publishedGarden.map(item => ({
     id: item.id,
     collection: 'garden',
     publishedAt: getContentDate(item)?.toISOString(),
     contentLength: getContentLength(item),
+    title: item.data.title || item.id,
   })),
 ].filter(item => item.publishedAt);
 ---
@@ -121,10 +126,8 @@ const allContentData = [
   }
 
   :global(.date-picker-container label) {
-    color: var(--color-ink-light);
+    color: var(--color-ink);
     font-size: var(--font-size-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
     font-weight: 500;
   }
 
@@ -468,6 +471,165 @@ const allContentData = [
     color: var(--color-bg);
   }
 
+  /* Contribution Graph Styles */
+  :global(.contribution-graph-container) {
+    margin: var(--spacing-xl) 0;
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    padding: var(--spacing-lg);
+  }
+
+  :global(.contribution-header) {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  :global(.contribution-header h2) {
+    font-size: var(--font-size-xl);
+    margin: 0 0 var(--spacing-xs) 0;
+  }
+
+  :global(.contribution-count) {
+    color: var(--color-ink-light);
+    font-size: var(--font-size-sm);
+  }
+
+  :global(.contribution-wrapper) {
+    overflow-x: auto;
+    padding-bottom: var(--spacing-md);
+  }
+
+  :global(.contribution-graph) {
+    display: block;
+  }
+
+  :global(.month-label) {
+    font-size: 10px;
+    fill: var(--color-ink-light);
+  }
+
+  :global(.day-label) {
+    font-size: 10px;
+    fill: var(--color-ink-light);
+  }
+
+  :global(.contribution-cell) {
+    stroke: var(--color-bg);
+    stroke-width: 1px;
+    rx: 2;
+    cursor: default;
+    transition: stroke-width 0.1s ease-in-out;
+  }
+
+  :global(.contribution-cell.has-content) {
+    cursor: pointer;
+  }
+
+  :global(.contribution-cell.has-content:hover) {
+    stroke-width: 2px;
+    stroke: var(--color-ink);
+  }
+
+  :global(.contribution-cell.selected) {
+    stroke-width: 2px;
+    stroke: var(--color-ink);
+  }
+
+  /* Contribution levels - using site theme colors */
+  :global(:root) {
+    --contribution-level-0: var(--color-bg-code);
+    --contribution-level-1: color-mix(in srgb, var(--color-accent) 20%, var(--color-bg-code));
+    --contribution-level-2: color-mix(in srgb, var(--color-accent) 40%, var(--color-bg-code));
+    --contribution-level-3: color-mix(in srgb, var(--color-accent) 60%, var(--color-bg-code));
+    --contribution-level-4: color-mix(in srgb, var(--color-accent) 80%, var(--color-bg-code));
+  }
+
+  :global(.dark) {
+    --contribution-level-0: var(--color-bg-code);
+    --contribution-level-1: color-mix(in srgb, var(--color-accent) 20%, var(--color-bg-code));
+    --contribution-level-2: color-mix(in srgb, var(--color-accent) 40%, var(--color-bg-code));
+    --contribution-level-3: color-mix(in srgb, var(--color-accent) 60%, var(--color-bg-code));
+    --contribution-level-4: color-mix(in srgb, var(--color-accent) 80%, var(--color-bg-code));
+  }
+
+  :global(.contribution-legend) {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-ink-light);
+    margin-top: var(--spacing-sm);
+    justify-content: flex-end;
+  }
+
+  :global(.legend-cells) {
+    display: flex;
+    gap: 2px;
+  }
+
+  :global(.legend-cell) {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+  }
+
+  :global(.legend-text) {
+    font-size: 11px;
+  }
+
+  :global(.selected-day-content) {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  :global(.selected-day-content h3) {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-xs) 0;
+  }
+
+  :global(.selected-day-summary) {
+    color: var(--color-ink-light);
+    font-size: var(--font-size-sm);
+    margin: 0 0 var(--spacing-md) 0;
+  }
+
+  :global(.content-links) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  :global(.content-link) {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--color-ink);
+    transition: all 0.2s;
+  }
+
+  :global(.content-link:hover) {
+    border-color: var(--color-accent);
+    background: var(--color-bg-code);
+  }
+
+  :global(.content-type) {
+    font-size: var(--font-size-xs);
+    color: var(--color-ink-light);
+    font-weight: 500;
+    min-width: 60px;
+    font-family: var(--font-mono);
+  }
+
+  :global(.content-title) {
+    flex: 1;
+    font-size: var(--font-size-sm);
+  }
+
   @media (max-width: 768px) {
     :global(.stats-grid) {
       grid-template-columns: 1fr;
@@ -494,6 +656,10 @@ const allContentData = [
     :global(.date-picker) {
       width: 100%;
       max-width: 200px;
+    }
+
+    :global(.contribution-graph-container) {
+      padding: var(--spacing-md);
     }
   }
 </style>
