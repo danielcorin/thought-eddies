@@ -65,3 +65,9 @@ The software and hardware I use.
 [`/now`](/now)
 
 What I am up to "lately".
+
+## Activity
+
+[`/activity`](/activity)
+
+Recent activity and updates on this site.

@@ -5,19 +5,19 @@ export const prerender = true;
 
 export const GET: APIRoute = async () => {
   try {
-    const homeEntries = await getCollection('home');
-    const home = homeEntries[0];
+    const aboutEntries = await getCollection('about');
+    const about = aboutEntries[0];
 
-    if (!home) {
+    if (!about) {
       return new Response('Not found', { status: 404 });
     }
 
-    const { Content } = await render(home);
+    const { Content } = await render(about);
 
-    // The home content is already in markdown format
-    const content = `# ${home.data.title}
+    // The about content is already in markdown format
+    const content = `# ${about.data.title}
 
-${home.body}`;
+${about.body}`;
 
     return new Response(content, {
       status: 200,
