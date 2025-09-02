@@ -11,8 +11,6 @@ githubUrl: >-
 series: Fast.ai Course
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
-
 I set out to do a project using my learnings from the first chapter of the [fast.ai course](https://course.fast.ai).
 My first idea was to try and train a Ruby/Python classifier.
 ResNets are not designed to do this, but I was curious how well it would perform.
@@ -122,7 +120,7 @@ Out of ideas of things to try with the data for the time being, I decided to try
 I picked `resnet50` from [this list](https://fastai1.fast.ai/vision.models.html#Computer-Vision-models-zoo) because I don't know any better.
 It was taking a while to train, so I walked away for a while.
 
-Here are the <Sidenote content="Extracted by pasting an image of the table from the notebook into a Cursor/Sonnet prompt">results</Sidenote> from training the `resnet50` model:
+Here are the results[^1] from training the `resnet50` model:
 
 | epoch | train_loss | valid_loss | error_rate | time  |
 | ----- | ---------- | ---------- | ---------- | ----- |
@@ -203,7 +201,7 @@ Here is what these images looked like (this is an example from later when I was 
 This didn't seem to work at all -- even less well than the programming language classification.
 I tried a few different approaches at creating visuals from the audio files but none seemed to work.
 I only had 25 examples though, so I decided to create some more data to see if that could help.
-I <Sidenote content="Visual inspection of the labeled images in the `Datablock` didn't reveal any obvious difference between the two voices, so I was relying on some model magic to happen with the finetuning">generated another 75 examples</Sidenote> per voice then trained `resnet34` again.
+I generated another 75 examples[^2] per voice then trained `resnet34` again.
 
 ```python
 learn = vision_learner(dls, resnet34, metrics=error_rate)
@@ -298,3 +296,7 @@ The results were just as good!
 - The speed at which I can work through these experiments and learn ML is aided significantly by help from Sonnet writing code to do dataset generation. Doing this was most of the work, but I was able to pivot away from generating images of source code and to generated spectrograms of audio quite quickly compared to needing to write all the code from scratch myself. I might have stopped completely after the first attempt had it not been for LLM codegen and I wouldn't have completed the most interesting part.
 - It's easy to leave a bunch of Jupyter Kernels running which can take over your system's memory. By the end of this experiment, I had 4 separate python processes running, using between 56 and 68 GB of memory. At this point, my system tapped out and I had to manually clean these up.
 - The numbers in model architecture names (e.g. the 34 in `resnet34` compared to the 19 in `vgg19_bn`) should not be used to compare relative sizes between different model architecture families. However, within the same family, these numbers often indicate relative depth or complexity. For example, `resnet34` has more layers than `resnet18`.
+
+[^1]: Extracted by pasting an image of the table from the notebook into a Cursor/Sonnet prompt
+
+[^2]: Visual inspection of the labeled images in the `Datablock` didn't reveal any obvious difference between the two voices, so I was relying on some model magic to happen with the finetuning

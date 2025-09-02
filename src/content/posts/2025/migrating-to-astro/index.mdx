@@ -7,8 +7,6 @@ location: 'NYC'
 draft: false
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
-
 I've run Thought Eddies as a more dynamic, experimental blog since the beginning of this year.
 I'd heard about Astro and wanted to put a more personal touch on my web presence.
 
@@ -41,9 +39,7 @@ There aren't many images.
 So I ran the build a bunch and started inspecting what was slow.
 One major problem were the number of Open Graph images I was generating.
 
-<Sidenote content="I was pretty proud of this and thought the preview looked pretty good when sending site links in Slack or Messages">
-  I had a custom one per page.
-</Sidenote>
+I had a custom one per page.[^1]
 
 That was not a great idea.
 Each took a few 100ms to build.
@@ -93,3 +89,5 @@ Classic 🤦
 Removing the search functionality from every page brought the site build time down to around 10 seconds total.
 _By no means_ fast or reasonable all you web purists will tell me because the web is HTML, CSS, and vanilla JavaScript and everything should be 10kb and load in milliseconds.
 But totally workable for me to build a blog with and have a fine time.
+
+[^1]: I was pretty proud of this and thought the preview looked pretty good when sending site links in Slack or Messages

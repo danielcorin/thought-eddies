@@ -5,8 +5,6 @@ draft: false
 tags:
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
-
 I spent some more time experimenting with thought partnership with language models.
 I've previously experimented with this idea when building [write-partner](/projects/write-partner).
 Referring back to this work, the prompts still seemed pretty effective for the goal at hand.
@@ -20,7 +18,7 @@ For this, I used a smaller model.
 Initially, I tried `mistral` but ended up settling on `llama3` as it was a bit better at following my instructions.
 Instead of writing to the working file after each conversation turn, I decided to add a `done` command that allowed me to do that on-demand.
 
-The results were pretty reasonable for such a <Sidenote anchor="small model" content="Small models love to ignore directions about output formatting and will frequently add content like 'Here's the updated document:' even when you explicitly prompt them not to." />.
+The results were pretty reasonable for such a small model[^1].
 Something I think that I've been under-appreciating is that the raw conversations are the most important artifact produced from this tool and exercise.
 It's possible the model won't propose useful edits or take the conversation in a productive direction, but the value that comes from the model interactions is how the user responds to the model.
 This is the signal or raw material that can be refined into a more focused structure.
@@ -31,3 +29,5 @@ In the case of write-partner, the document the model constructs is just one poss
 To stay as true to the user's intention, we can't discard any of what they say.
 Their vision is the north star.
 The model is just the conduit to transform the user's vision and ideas into a form that can help communicate the idea to others.
+
+[^1]: Small models love to ignore directions about output formatting and will frequently add content like 'Here's the updated document:' even when you explicitly prompt them not to.

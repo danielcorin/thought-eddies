@@ -7,11 +7,9 @@ tags:
   - shortcodes
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
-
 I was inspired by [Daniel's post](https://danilafe.com/blog/blog_microfeatures) to add sidenotes to this blog.
 I used `claude-3.5-sonnet` to generate the CSS and HTML shortcode to do this.
-I was impressed <Sidenote content="Now I need to read the CSS in more detail to understand what Claude did">how well it turned out</Sidenote>.
+I was impressed how well it turned out[^1].
 It was almost too easy.
 I'm not the most competent CSS writer and I had never written a Hugo shortcode before.
 In several turns with Sonnet in Cursor, I was able to create a basic styled shortcode for a sidenote that appeared as a superscript number to start.
@@ -22,3 +20,5 @@ I liked that, but didn't like how it was shifting the content when it revealed t
 
 With each turn, Claude generated code that I copied into `layouts/shortcodes/sidenote.html` and `assets/css/custom.css`.
 This was also my first attempt at building a new feature in an existing project with Sonnet and it was a pleasure to work with.
+
+[^1]: Now I need to read the CSS in more detail to understand what Claude did
