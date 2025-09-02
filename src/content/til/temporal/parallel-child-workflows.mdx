@@ -11,8 +11,6 @@ githubUrl: >-
   https://github.com/danielcorin/toys/tree/main/temporal_parallel_child_workflows
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
-
 Temporal provides helpful primitives called Workflows and Activities for orchestrating processes.
 A common pattern I've found useful is the ability to run multiple "child workflows" in parallel from a single "parent" workflow.
 
@@ -119,7 +117,7 @@ class MyBatchWorkflow:
 The main parts to focus on are `await workflow.start_child_workflow`, which creates a future that we can `await` on to get the workflow result.
 Instead of calling `await` explicitly, we use `await asyncio.gather(*workflow_futures)`, which gets us all the results together.
 
-In this example, we use `dataclass`es as the inputs and outputs to all activities and workflows to allow us to evolve the inputs and outputs without breaking the data contract between the <Sidenote content="For example, if an activity returned `str`, we would struggle to add an additional return parameter without changing the return type. We can get in front of this issue by always returning classes.">workflow components</Sidenote>.
+In this example, we use `dataclass`es as the inputs and outputs to all activities and workflows to allow us to evolve the inputs and outputs without breaking the data contract between the workflow components[^1].
 
 Finally, we can run `MyBatchWorkflow`.
 
@@ -161,3 +159,5 @@ Keep in mind this could lead to a large workflow history if run on a very large 
 A possible workaround if you encounter an issue with large workflow history using this approach is to write the results from each workflow to blob store and don't return them from the workflows themselves, which avoids putting them into the workflow history.
 
 You can find working code for this toy example [here](https://github.com/danielcorin/toys/tree/main/temporal_parallel_child_workflows).
+
+[^1]: For example, if an activity returned `str`, we would struggle to add an additional return parameter without changing the return type. We can get in front of this issue by always returning classes.

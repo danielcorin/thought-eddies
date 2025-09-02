@@ -10,8 +10,6 @@ tags:
 draft: false
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
-
 [Today](https://www.anthropic.com/news/introducing-citations-api), Anthropic released [Citations](https://docs.anthropic.com/en/docs/build-with-claude/citations) for Claude.
 
 In the release, Anthropic disclosed the following customer case study:
@@ -101,4 +99,6 @@ When we run, we get the answer to our question along with the _exact slice_ of t
 > - "A: The context switching. As an engineer, I could focus deeply on technical problems. As a PM, I'm constantly shifting between user research, data analysis, engineering discussions, and stakeholder management." [420:631] from PM Career Transition Interview
 
 This feature gives anyone who knows how to call an API the ability to create Perplexity-like, inline citations from sources.
-I've thus far not had the need or patience to prompt an LLM to do this work myself, so I can't speak to how difficult it is to do "by hand", but it's a useful and satisfying feature to have native to the <Sidenote content="And is yet another divergence from the OpenAI API spec">model API</Sidenote>.
+I've thus far not had the need or patience to prompt an LLM to do this work myself, so I can't speak to how difficult it is to do "by hand", but it's a useful and satisfying feature to have native to the model API[^1].
+
+[^1]: And is yet another divergence from the OpenAI API spec

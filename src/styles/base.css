@@ -566,6 +566,48 @@ kbd {
   }
 }
 
+/* Footnotes */
+sup a[data-footnote-ref] {
+  text-decoration: none;
+  color: var(--color-link);
+  padding: 0 0.125em;
+  font-size: 0.875em;
+}
+
+sup a[data-footnote-ref]:hover {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+/* Footnote section styling */
+.footnotes {
+  margin-top: var(--spacing-2xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+}
+
+.footnotes ol {
+  padding-left: var(--spacing-lg);
+}
+
+.footnotes li {
+  margin-bottom: var(--spacing-sm);
+}
+
+.footnotes li:target {
+  background-color: var(--color-highlight);
+  padding: var(--spacing-xs);
+  margin-left: calc(-1 * var(--spacing-xs));
+  border-radius: 4px;
+}
+
+/* Back to reference link */
+.data-footnote-backref {
+  text-decoration: none;
+  margin-left: var(--spacing-xs);
+}
+
 /* Heading Anchors */
 .heading-link-wrapper {
   text-decoration: none !important;

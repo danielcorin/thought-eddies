@@ -10,14 +10,13 @@ tags:
 draft: false
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
 
 I spent some time working with Claude [Artifacts](https://support.anthropic.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them) for the first time.
 I started with this prompt
 
 > I want to see what you can do. Can you please create a 2d rendering of fluid moving around obstacles of different shapes?
 
-<Sidenote content="I need to figure out a better way to share conversations from all the different models I interact with, including multi-modal models. Ideally, I could export these in a consistent JSON structure to make rendering them in a standard conversation format easier. Static media (images, video, etc.) would be straightforward but things like Artifacts, which are rendered by the Claude UI fit this structure less cohesively.">In effort to not spend this whole post quoting prompts</Sidenote>, I've [exported the whole conversation](/files/claude-artifacts.json) returned from the Anthropic API, using the response from the following <Sidenote content="This API may change in the future. It isn't an externally-documented API.">endpoint</Sidenote>.
+In effort to not spend this whole post quoting prompts[^1], I've [exported the whole conversation](/files/claude-artifacts.json) returned from the Anthropic API, using the response from the following endpoint[^2].
 
 ```text
 https://claude.ai/api/organizations/<org_id>/chat_conversations/<conversation_id>?tree=True&rendering_mode=raw
@@ -32,7 +31,7 @@ I told Claude and it created a different version with its own simple physics.
 
 This result was a nice, working example.
 It wasn't exactly what I had in mind, which was something like this [WebGL Fluid Simulation](https://paveldogreat.github.io/WebGL-Fluid-Simulation/), but I'll concede that that isn't exactly what I asked for.
-I didn't know the right <Sidenote content="I tried starting a new conversation, prompting Claude to 'Create a fluid simulation with WebGL' but got 'Output blocked by content filtering policy' which was disappointing.">terminology</Sidenote> when I started.
+I didn't know the right terminology[^3] when I started.
 
 ## Iterating on the Artifact
 
@@ -72,3 +71,9 @@ Even with a larger context window that would have let me send many more messages
 Claude 3.5 Sonnet is my favorite model right now.
 I'd would say I prefer `claude-3.5-sonnet` over `gpt-4o` more than I preferred `claude-3-opus` over `gpt-4-turbo`.
 I enjoyed seeing Anthropic dive into the model+tool arena and I'm looking forward to seeing how they continue to iterate from here.
+
+[^1]: I need to figure out a better way to share conversations from all the different models I interact with, including multi-modal models. Ideally, I could export these in a consistent JSON structure to make rendering them in a standard conversation format easier. Static media (images, video, etc.) would be straightforward but things like Artifacts, which are rendered by the Claude UI fit this structure less cohesively.
+
+[^2]: This API may change in the future. It isn't an externally-documented API.
+
+[^3]: I tried starting a new conversation, prompting Claude to 'Create a fluid simulation with WebGL' but got 'Output blocked by content filtering policy' which was disappointing.

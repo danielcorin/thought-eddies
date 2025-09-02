@@ -8,8 +8,6 @@ draft: false
 tags: ['agents', 'checkpoints', 'context_engineering', 'vibe_coding']
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
-
 Working with Cursor was my first experience with the UX pattern of checkpoints when working with a coding agent.
 If you're not familiar, it works like this.
 
@@ -64,7 +62,7 @@ To get great results out of a coding agent, managing the context window of the L
 But this doesn't just mean clearing the session often.
 It means carefully deciding when you choose to continue a conversation and when you throw the agent's response away and revert to a prior snapshot of the codebase.
 
-The goal is to find a <Sidenote content="Like a physical groove in wood or a vinyl record. But also like a musical groove where you _feel_ aligned with the rhythm. It's called 'vibe coding' for a reason. There is as much art to this as there is science.">groove</Sidenote> with the agent.
+The goal is to find a groove[^1] with the agent.
 Agents are relatively good at finding the relevant files in a codebase that need editing to implement instructions described in a prompt but they don't always get this right.
 
 Trained software engineers might take a more active role in managing the code included as context for the agent.
@@ -96,3 +94,5 @@ It's partially vibes based, but once you are going in the right direction you ma
 
 You don't forge forward through the agent's struggles.
 You retrace your steps to stay in the groove.
+
+[^1]: Like a physical groove in wood or a vinyl record. But also like a musical groove where you _feel_ aligned with the rhythm. It's called 'vibe coding' for a reason. There is as much art to this as there is science.

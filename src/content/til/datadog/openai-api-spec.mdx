@@ -8,8 +8,6 @@ tags: ['datadog', 'openai_compatible_api', 'python']
 draft: false
 ---
 
-import Sidenote from '@components/prose/Sidenote.astro';
-
 ## Why I like the Chat Completions API
 
 I write often about the OpenAI Chat Completions API, which has become a sort of standard for the time being for calling LLM APIs.
@@ -53,7 +51,9 @@ I won't name names, but the error I got was
 
 or something like that.
 
-This wasn't a call to Bedrock by the way, <Sidenote content="Unless you want to [deploy a Lambda function to proxy the requests](https://github.com/aws-samples/bedrock-access-gateway)">which doesn't provide native support for an OpenAI-compatible API.</Sidenote>
+This wasn't a call to Bedrock by the way, which doesn't provide native support for an OpenAI-compatible API.[^1]
+
+[^1]: Unless you want to [deploy a Lambda function to proxy the requests](https://github.com/aws-samples/bedrock-access-gateway)
 
 It was a call to a proxy layer in between.
 One that claimed to be OpenAI-compatible.

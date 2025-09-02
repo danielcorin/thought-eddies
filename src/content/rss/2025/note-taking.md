@@ -9,7 +9,7 @@ tags:
 ---
 
 Every now and then, I'm pulled back into the orbit of the second brain/zettelkasten/notetaking community conversation.
-I've written a little bit about my note-taking [process]({{< ref "garden/note_taking/system.md" >}}) before.
+I've written a little bit about my note-taking [process](/garden/note-taking/system) before.
 
 I don't really use it too much these days.
 And even when I do, I'm often irritated by the thought of "where should this go?" and the general dissonance of "mess-making".

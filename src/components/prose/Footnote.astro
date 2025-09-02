@@ -1,0 +1,45 @@
+---
+import { marked } from 'marked';
+
+interface Props {
+  content: string;
+  number?: number;
+}
+
+const { content, number } = Astro.props;
+const id = number || Math.random().toString(36).substring(7);
+const htmlContent = marked.parseInline(content);
+---
+
+<sup class="footnote-ref">
+  <a href={`#fn-${id}`} id={`fnref-${id}`}>
+    <slot />
+  </a>
+</sup>
+
+<style>
+  .footnote-ref {
+    font-size: 0.875em;
+    line-height: 0;
+    vertical-align: super;
+  }
+
+  .footnote-ref a {
+    text-decoration: none;
+    color: var(--color-link);
+    padding: 0 0.125em;
+  }
+
+  .footnote-ref a:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+  }
+
+  .footnote-ref a::before {
+    content: "[";
+  }
+
+  .footnote-ref a::after {
+    content: "]";
+  }
+</style>
