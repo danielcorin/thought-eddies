@@ -40,6 +40,10 @@ Say "hello from project dir"
 ```
 
 ```sh
+claude
+```
+
+```sh
 ╭───────────────────────────────────────────────────────────────────────────────────╮
 │ > /hello                                                                          │
 ╰───────────────────────────────────────────────────────────────────────────────────╯
@@ -55,7 +59,10 @@ Say "hello from subfolder"
 ```
 
 ```sh
+claude
+```
 
+```sh
 ╭───────────────────────────────────────────────────────────────────────────────────╮
 │ > /hello                                                                          │
 ╰───────────────────────────────────────────────────────────────────────────────────╯
@@ -70,6 +77,10 @@ We can do that by symlinking the home commands into the a subdirectory in the pr
 
 ```sh
 mkdir -p .claude/commands/home && ln -sf ~/.claude/commands/* .claude/commands/home/
+```
+
+```sh
+claude
 ```
 
 ```sh
