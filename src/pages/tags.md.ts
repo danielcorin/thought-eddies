@@ -27,22 +27,17 @@ export const GET: APIRoute = async () => {
       return a[0].localeCompare(b[0]);
     });
 
-    // Take top 20 tags for the summary
-    const topTags = sortedTags.slice(0, 20);
-
     let content = `# Tags
 
 Explore content by topic across posts, logs, and TILs.
 
-## Most Popular Tags
+## All Tags (${tagCounts.size} total)
 
 `;
 
-    topTags.forEach(([tag, count]) => {
+    sortedTags.forEach(([tag, count]) => {
       content += `- [${tag}](/tags/${tag}/index.md) (${count})\n`;
     });
-
-    content += `\nView all ${tagCounts.size} tags at [/tags](/tags.md)`;
 
     return new Response(content, {
       status: 200,
