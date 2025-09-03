@@ -17,6 +17,13 @@ export default function remarkExternalLinks() {
           return;
         }
 
+        // Add ref parameter to the URL
+        // Handle protocol-relative URLs by adding https:
+        const urlToProcess = url.startsWith('//') ? 'https:' + url : url;
+        const urlObj = new URL(urlToProcess);
+        urlObj.searchParams.set('ref', 'danielcorin.com');
+        node.url = urlObj.toString();
+
         // Add attributes to open in new tab
         node.data = node.data || {};
         node.data.hProperties = node.data.hProperties || {};

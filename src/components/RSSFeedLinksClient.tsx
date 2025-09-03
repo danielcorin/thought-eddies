@@ -14,12 +14,14 @@ interface RSSFeedLinksClientProps {
   feedUrl: string;
   title?: string;
   limit?: number;
+  feedId?: string;
 }
 
 export default function RSSFeedLinksClient({
   feedUrl,
   title,
   limit = 10,
+  feedId,
 }: RSSFeedLinksClientProps) {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -140,7 +142,15 @@ export default function RSSFeedLinksClient({
             </div>
             <div className="feed-content">
               <h3 className="feed-title">
-                <a href={item.link} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={
+                    feedId === 'link-blog'
+                      ? `${item.link}${item.link.includes('?') ? '&' : '?'}ref=danielcorin.com`
+                      : item.link
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {item.title}
                   <ExternalLink className="external-icon" size={16} />
                 </a>
