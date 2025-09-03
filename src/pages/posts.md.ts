@@ -37,12 +37,12 @@ Long-form articles and essays.
     });
 
     content += `
-## Recent Posts
+## All Posts
 
 `;
 
-    // Show last 20 posts
-    sortedPosts.slice(0, 20).forEach((post) => {
+    // Show all posts
+    sortedPosts.forEach((post) => {
       const date = formatDate(post.data.createdAt);
 
       const slug = post.id.replace(/\.mdx?$/, '');
@@ -54,8 +54,6 @@ Long-form articles and essays.
         content += `${post.data.description}\n\n`;
       }
     });
-
-    content += `\nView all posts at [/posts](/posts.md)`;
 
     return new Response(content, {
       status: 200,

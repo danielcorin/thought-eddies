@@ -46,27 +46,20 @@ Short-form posts about things I've learned.
       content += `- [${category}](/til/${category}/index.md) (${tils.length})\n`;
     });
 
-    content += `\n## Recent TILs\n\n`;
+    content += `\n## All TILs\n\n`;
 
-    // Show 10 most recent TILs across all categories
-    const recentTils = publishedTils
-      .sort(
-        (a, b) =>
-          new Date(b.data.createdAt).getTime() -
-          new Date(a.data.createdAt).getTime()
-      )
-      .slice(0, 10);
+    // Show all TILs grouped by category
+    sortedCategories.forEach(({ category, tils }) => {
+      content += `\n### ${category}\n\n`;
+      tils.forEach((til) => {
+        const date = formatDate(til.data.createdAt);
 
-    recentTils.forEach((til) => {
-      const date = formatDate(til.data.createdAt);
+        const slug = til.id.replace(/\.mdx?$/, '');
+        const category = til.id.split('/')[0];
 
-      const slug = til.id.replace(/\.mdx?$/, '');
-      const category = til.id.split('/')[0];
-
-      content += `- [${til.data.title}](/til/${slug}/index.md) - ${date} (${category})\n`;
+        content += `- [${til.data.title}](/til/${slug}/index.md) - ${date}\n`;
+      });
     });
-
-    content += `\nView all TILs at [/til](/til.md)`;
 
     return new Response(content, {
       status: 200,

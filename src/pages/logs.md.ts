@@ -13,9 +13,7 @@ export const GET: APIRoute = async () => {
       .sort(
         (a, b) =>
           new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-      )
-      .slice(0, 30); // Show last 30 logs
-
+      ); // Show all logs
     // Get all years with logs
     const yearsWithLogs = [
       ...new Set(logs.map((log) => new Date(log.data.date).getFullYear())),
@@ -37,7 +35,7 @@ Daily logs and thoughts.
     });
 
     content += `
-## Recent Logs
+## All Logs
 
 `;
 
@@ -50,8 +48,6 @@ Daily logs and thoughts.
 
       content += `- [${date}](/logs/${slug}/index.md) - ${log.data.title}\n`;
     });
-
-    content += `\nView all logs at [/logs](/logs.md)`;
 
     return new Response(content, {
       status: 200,

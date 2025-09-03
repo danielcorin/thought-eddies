@@ -34,8 +34,6 @@ Personal projects and experiments.
       }
     });
 
-    content += `\nView all projects at [/projects](/projects.md)`;
-
     return new Response(content, {
       status: 200,
       headers: {
