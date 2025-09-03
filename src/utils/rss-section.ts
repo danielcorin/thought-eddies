@@ -40,16 +40,6 @@ export async function generateSectionRSSFeed(
       try {
         const { Content } = await render(item);
         htmlContent = await container.renderToString(Content);
-
-        // Add ?ref=feed to all links in the RSS feed content
-        htmlContent = htmlContent.replace(/href="([^"]+)"/g, (match, url) => {
-          // Skip if it's an anchor link or already has query params
-          if (url.startsWith('#') || url.includes('?')) {
-            return match;
-          }
-          // Add ?ref=feed to the URL
-          return `href="${url}?ref=feed"`;
-        });
       } catch (error) {
         console.warn(`Failed to render MDX for ${item.id}:`, error);
         htmlContent = `<p>${item.data.description || ''}</p>`;
@@ -83,7 +73,7 @@ export async function generateSectionRSSFeed(
         title: item.data.title,
         pubDate,
         description: item.data.description || item.data.title,
-        link: linkPath,
+        link: `${linkPath}?ref=feed`,
         customData: `<content:encoded><![CDATA[${htmlContent}]]></content:encoded>`,
       };
     })
