@@ -9,6 +9,8 @@ tags:
   - language_models
   - claude-code
 draft: false
+aliases:
+  - /til/claude-code/custom-slash-commands-hierarchy
 ---
 
 Today, Anthropic entered the LLM code tools party with [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview).
