@@ -11,7 +11,11 @@ export default function rehypeFormatFootnotes() {
         node.properties.dataFootnoteRef !== undefined
       ) {
         // Wrap the text content in brackets
-        if (node.children && node.children.length > 0 && node.children[0].type === 'text') {
+        if (
+          node.children &&
+          node.children.length > 0 &&
+          node.children[0].type === 'text'
+        ) {
           node.children[0].value = `[${node.children[0].value}]`;
         }
       }

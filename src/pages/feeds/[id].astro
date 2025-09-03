@@ -41,7 +41,7 @@ const { title, feed_url: feedUrl } = feed.data;
         <Content />
       </div>
     </article>
-    <RSSFeedLinksClient client:load feedUrl={feedUrl} title="" limit={30} />
+    <RSSFeedLinksClient client:load feedUrl={feedUrl} title="" limit={30} feedId={feed.id} />
   </main>
 </Layout>
 
