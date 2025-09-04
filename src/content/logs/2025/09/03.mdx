@@ -1,0 +1,31 @@
+---
+date: '2025-09-03T21:07:10Z'
+title: '2025-09-03'
+draft: false
+tags: [codex, gpt-5]
+---
+
+I tried OpenAI's `codex` CLI coding agent again today for the first time in a _while_.
+
+```sh
+Update available! 0.1.2504301751 → 0.29.0.
+```
+
+I recently shipped a release of [Tomo](https://www.wvlen.llc/apps/tomo) but there was a minor bug with the horizontal scrollbar overlapping a codeblock with syntax highlighting.
+
+I prompted `codex` to fix this and it seemed to localize the problem and suggest a working fix in one attempt.
+
+> ensure that the horizontal scrollbar in styled codeblocks does not overlap the code itself. right now I am seeing that behavior
+
+I was motivated to try this out because I've been hearing rumblings about `gpt-5` being good at coding.
+It's currently the number 4 coding model on OpenRouter and climbing, relative to both Sonnet and Qwen3 Coder.
+
+| Rank | Model                 | Company   | Parameters   | Performance |
+| ---- | --------------------- | --------- | ------------ | ----------- |
+| 1    | Grok Code Fast 1      | x-ai      | 844B tokens  | ↑ 3,231%    |
+| 2    | Claude Sonnet 4       | anthropic | 339B tokens  | ↓ 9%        |
+| 3    | Qwen3 Coder 480B A35B | qwen      | 112B tokens  | ↓ 33%       |
+| 4    | GPT-5                 | openai    | 66.2B tokens | ↑ 21%       |
+| 5    | DeepSeek V3.1         | deepseek  | 60.9B tokens | ↓ 56%       |
+
+I believe Grok Code Fast 1 was launched in some kind of free capacity along with its release which may in part explain its high usage but we will see where that lands.
