@@ -1,0 +1,39 @@
+---
+date: '2025-08-31T18:42:38Z'
+title: '2025-08-31'
+draft: false
+tags: []
+---
+
+Our approach to applying the intelligence of language models is inside out.
+
+Providing a model access to a number of tool calls and expecting the model to correctly select a tool given a scenario then invoke the tool properly given the surrounding context goes too far for the pattern to be generically useful.
+There are examples of agents of this type that are effective, but they are effective specifically because they are tested in the scenarios in which they are useful.
+Attaching tools to a model and calling inference in a loop is only a starting point.
+From here, refinement is needed to build something consistently reliable and useful.
+
+The context the agent sees much be managed.
+That includes the tool calls that are made available to the agent.
+
+The result may look something like a harness bespoke to the model, an evaluation set with measurable outcomes, and a process for verification either by a human or another model.
+
+To draw some contrast, constrained, structured, verifiable inference becomes a building block on top of which any type of software system can be built.
+Specifically, given an input does the model reliably produce the known, expected output?
+
+Existing software systems can be engineered to be durable and reliable.
+Model inference is inherently probabilistic.
+The more leeway you give a model to make a decision on behalf of the user or the system, the more likely there is for long tail failures of the system.
+
+For example, let's say your business has a rule where if a customer uploads a document of type A, or two documents, one of type B and another of type C, then the user can proceed to the next step.
+
+The classical implementation of this type of workflow in software would be to create a form that allows the user to upload their documents, then create a task in some kind of system for a human to review.
+From there, if the documents are deemed sufficient given your company's policies by the human reviewer, the user can proceed.
+If the documents are not sufficient, the user needs to be notified with (hopefully) some clarification of what is missing and the process repeats.
+
+The challenges with this approach are multifold.
+It's slow for the user since they need to wait for a human to review their documents before they can proceed.
+It's expensive because it requires the time, training, and expertise of a human to perform review.
+It can be error prone and inconsistent because it's difficult to ensure homogeneous judgement across diverse human evaluators and humans inevitably make mistakes, especially when performing many similar tasks in a row or when they're put under pressure to do a certain quantity under time constraints.
+
+Language models show promise for solving these types of challenges but architecting a solution that can produce a good result to speed up this process and improve on the quality of the document evaluation requires a thoughtful approach to architecting the software system.
+AI does not appear to be a silver bullet that makes the problem disappear without thought or effort.

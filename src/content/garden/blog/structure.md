@@ -15,38 +15,37 @@ Search functionality across all the content on this site.
 
 [`/posts`](/posts)
 
-I view these as complete or polished pieces. They are of varied quality, but
-most have been edited by me several times over and occasionally by a few others.
+I view these as complete or polished pieces.
+They are of varied quality, but most have been edited by me several times over and occasionally by a few others.
 
 ## TILs
 
 [`/til`](/til) (short for "Today I Learned")
 
-I've seen several other folks write these types of posts. I sort of view them as
-notebooks. I write ideas and things I learn in them, but they're only a medium
-level of refinement at most, and some are just simple, straightforward things.
+I've seen several other folks write these types of posts.
+I sort of view them as notebooks.
+I write ideas and things I learn in them, but they're only a medium level of refinement at most, and some are just simple. straightforward things.
 They usually have a medium amount of editing but quality varies.
 
 ## Logs
 
 [`/logs`](/logs)
 
-Logs are short notes, thoughts, links, and occasionally tweets. They mostly
-capture a few moments in a day. These are thoughts that lead to me writing in
-the other sections but are generally unrefined and unedited.
+Logs are short notes, thoughts, links, and occasionally tweets.
+They capture fleeting thoughts from the day.
+Sometimes, they lead to writing in other sections but are generally unrefined, unedited, incomplete, and sometimes wrong.
 
 ## About
 
 [`/about`](/about)
 
-Brief and general, high level things about myself.
+Brief and general, high level things about me.
 
 ## Projects
 
 [`/projects`](/projects)
 
-These are specific attempts to build things over the years. Quality varies a
-great deal but they are the product of ideas I had or things I wanted to try.
+Some of the more complete projects I've worked on.
 
 ## Garden
 
