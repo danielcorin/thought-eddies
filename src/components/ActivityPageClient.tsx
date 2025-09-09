@@ -20,8 +20,6 @@ interface Props {
 }
 
 export default function ActivityPageClient({ allContent, initialDate }: Props) {
-  const [selectedDate, setSelectedDate] = useState(initialDate);
-
   // Format date as YYYY-MM-DD for input
   const formatDateForInput = (date: Date): string => {
     const year = date.getFullYear();
@@ -29,6 +27,20 @@ export default function ActivityPageClient({ allContent, initialDate }: Props) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
+
+  const [selectedDate, setSelectedDate] = useState(initialDate);
+
+  // Ensure we use today's date if no date parameter is in the URL
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const dateParam = url.searchParams.get('date');
+
+    // If there's no date parameter, set to today
+    if (!dateParam) {
+      const today = formatDateForInput(new Date());
+      setSelectedDate(today);
+    }
+  }, []);
 
   // Format date as MM/DD/YYYY for display
   const formatDateForDisplay = (date: Date): string => {
