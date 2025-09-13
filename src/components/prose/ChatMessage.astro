@@ -2,156 +2,128 @@
 import { Markdown } from '@astropub/md';
 import { Icon } from 'astro-icon/components';
 
-interface ContentItem {
-  type: 'text' | 'image_url' | 'thinking';
-  text?: string;
-  image_url?: {
-    url: string;
-  };
-}
-
-interface Message {
-  role: 'system' | 'user' | 'assistant' | 'function';
-  content: string | ContentItem[];
-  name?: string;
-  function_call?: {
-    name: string;
-    arguments: string;
-  };
+interface Props {
+  role: 'system' | 'user' | 'assistant';
+  model?: string;
   timestamp?: string;
 }
 
-interface Props {
-  messages: Message[];
-  model?: string;
-}
+const { role, model, timestamp } = Astro.props;
 
-const { messages, model } = Astro.props;
-
-function getContent(content: string | ContentItem[]): {
+// Helper to extract text and image content from slots
+function extractContent(slotContent: string): {
   text: string;
-  images: string[];
-  thinking: string[];
+  images: { src: string; alt?: string }[];
 } {
-  if (typeof content === 'string') return { text: content, images: [], thinking: [] };
+  const images: { src: string; alt?: string }[] = [];
+  let text = slotContent;
 
-  const images: string[] = [];
-  const thinking: string[] = [];
-  const text = content
-    .map((item) => {
-      if (item.type === 'image_url' && item.image_url) {
-        images.push(item.image_url.url);
-        return '';
-      }
-      if (item.type === 'thinking' && item.text) {
-        thinking.push(item.text);
-        return '';
-      }
-      return item.text || '';
-    })
-    .join('');
+  // Extract images from the slot content
+  // Look for both regular img tags and our special chat-image-component class
+  const imgRegex = /<img[^>]+class=["']chat-image-component["'][^>]*src=["']([^"']+)["'](?:[^>]*alt=["']([^"']+)["'])?[^>]*>/g;
+  const standardImgRegex = /<img[^>]+src=["']([^"']+)["'](?:[^>]*alt=["']([^"']+)["'])?[^>]*>/g;
 
-  return { text, images, thinking };
+  let match;
+
+  // First extract ChatImage components
+  while ((match = imgRegex.exec(slotContent)) !== null) {
+    images.push({ src: match[1], alt: match[2] });
+  }
+
+  // Then extract standard images (that aren't ChatImage components)
+  text = slotContent.replace(imgRegex, ''); // Remove ChatImage components
+  while ((match = standardImgRegex.exec(text)) !== null) {
+    if (!text.includes('chat-image-component')) {
+      images.push({ src: match[1], alt: match[2] });
+    }
+  }
+
+  // Remove all img tags from text
+  text = text.replace(standardImgRegex, '').trim();
+
+  return { text, images };
 }
+
+const defaultContent = await Astro.slots.render('default');
+const thinkingContent = await Astro.slots.render('thinking');
+
+const { text, images } = extractContent(defaultContent);
+const thinking = thinkingContent ? [thinkingContent] : [];
 ---
 
-<section class="chat-section">
-  <div class="chat-container">
-    {
-      messages.map((message) => (
-        <>
-          {message.timestamp && (
-            <div class="timestamp-divider">
-              <span class="timestamp-text">{message.timestamp}</span>
+<>
+  {timestamp && (
+    <div class="timestamp-divider">
+      <span class="timestamp-text">{timestamp}</span>
+    </div>
+  )}
+  <div class="message-container">
+    {role === 'user' && (
+      <div class="message user">
+      <div class="message-content">
+        <div class="user-label">User</div>
+        <div class="bubble user-bubble">
+          <Markdown of={text} />
+          {images.map((img, index) => (
+            <img
+              src={img.src}
+              alt={img.alt || `Image ${index + 1} from user message`}
+              class="message-image"
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+  {role === 'assistant' && (
+    <div class="message assistant">
+      <div class="message-content">
+        <div class="model-label">{model || 'Assistant'}</div>
+        {thinking.length > 0 && (
+          <details class="thinking-container">
+            <summary class="thinking-summary">
+              <Icon name="ph:caret-right" class="thinking-chevron" />
+              Thinking process
+            </summary>
+            <div class="thinking-content">
+              {thinking.map((thought) => (
+                <Markdown of={thought} />
+              ))}
             </div>
-          )}
-          <div class="message-container">
-              {message.role === 'user' && (
-                <div class="message user">
-                  <div class="message-content">
-                    <div class="user-label">User</div>
-                    <div class="bubble user-bubble">
-                      <Markdown of={getContent(message.content).text} />
-                      {getContent(message.content).images.map((url, index) => (
-                        <img
-                          src={url}
-                          alt={`Image ${index + 1} from user message`}
-                          class="message-image"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-          {message.role === 'assistant' && (
-            <div class="message assistant">
-              <div class="message-content">
-                <div class="model-label">{model || 'Assistant'}</div>
-                {getContent(message.content).thinking.length > 0 && (
-                  <details class="thinking-container">
-                    <summary class="thinking-summary">
-                      <Icon name="ph:caret-right" class="thinking-chevron" />
-                      Thinking process
-                    </summary>
-                    <div class="thinking-content">
-                      {getContent(message.content).thinking.map((thought, index) => (
-                        <Markdown of={thought} />
-                      ))}
-                    </div>
-                  </details>
-                )}
-                <div class="bubble assistant-bubble">
-                  <Markdown of={getContent(message.content).text} />
-                  {getContent(message.content).images.map((url, index) => (
-                    <img
-                      src={url}
-                      alt={`Image ${index + 1} from ${model || 'assistant'} response`}
-                      class="message-image"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-          {message.role === 'system' && (
-            <div class="message system">
-              <div class="bubble system-bubble">
-                <Markdown of={getContent(message.content).text} />
-                {getContent(message.content).images.map((url, index) => (
-                  <img
-                    src={url}
-                    alt={`Image ${index + 1} from system message`}
-                    class="message-image"
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-            </div>
-        </>
-      ))
-    }
+          </details>
+        )}
+        <div class="bubble assistant-bubble">
+          <Markdown of={text} />
+          {images.map((img, index) => (
+            <img
+              src={img.src}
+              alt={img.alt || `Image ${index + 1} from ${model || 'assistant'} response`}
+              class="message-image"
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+  {role === 'system' && (
+    <div class="message system">
+      <div class="bubble system-bubble">
+        <Markdown of={text} />
+        {images.map((img, index) => (
+          <img
+            src={img.src}
+            alt={img.alt || `Image ${index + 1} from system message`}
+            class="message-image"
+          />
+        ))}
+      </div>
+    </div>
+  )}
   </div>
-</section>
+</>
 
 <style>
-  .chat-section {
-    --transition-speed: 300ms;
-  }
-
-  .chat-container {
-    --bubble-radius: 1rem;
-    --bubble-padding: 0.75rem 1rem;
-    --bubble-max-width: 80%;
-
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
-    margin: 0 auto;
-    font-family: var(--font-prose);
-  }
-
+  /* Reuse all the styles from Chat.astro */
   .message-container {
     display: flex;
     flex-direction: column;
@@ -176,7 +148,7 @@ function getContent(content: string | ContentItem[]): {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    max-width: var(--bubble-max-width);
+    max-width: 80%;
     min-width: 0;
   }
 
@@ -185,8 +157,8 @@ function getContent(content: string | ContentItem[]): {
   }
 
   .bubble {
-    padding: var(--bubble-padding);
-    border-radius: var(--bubble-radius);
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
     max-width: 100%;
     font-size: var(--text-sm);
     word-wrap: break-word;
@@ -246,7 +218,7 @@ function getContent(content: string | ContentItem[]): {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: var(--spacing-lg) 0;
+    margin: var(--spacing-sm) 0;
     position: relative;
   }
 
@@ -411,8 +383,8 @@ function getContent(content: string | ContentItem[]): {
 
   /* Mobile styles */
   @media (max-width: 640px) {
-    .chat-container {
-      --bubble-max-width: 100%;
+    .message-content {
+      max-width: 100%;
     }
 
     .message.user,
@@ -428,7 +400,6 @@ function getContent(content: string | ContentItem[]): {
     }
 
     .message-content {
-      max-width: 100%;
       width: 100%;
     }
 
@@ -447,12 +418,12 @@ function getContent(content: string | ContentItem[]): {
     }
 
     .user-bubble {
-      border-radius: var(--bubble-radius);
+      border-radius: 1rem;
       border-bottom-right-radius: 0;
     }
 
     .assistant-bubble {
-      border-radius: var(--bubble-radius);
+      border-radius: 1rem;
       border-bottom-left-radius: 0;
     }
   }

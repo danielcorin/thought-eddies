@@ -1,0 +1,69 @@
+---
+interface Props {
+  model?: string;
+  user?: string;
+}
+
+const { model, user } = Astro.props;
+---
+
+<section class="chat-section" data-model={model} data-user={user}>
+  <div class="chat-container">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .chat-section {
+    --transition-speed: 300ms;
+  }
+
+  .chat-container {
+    --bubble-radius: 1rem;
+    --bubble-padding: 0.75rem 1rem;
+    --bubble-max-width: 80%;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    margin: 0 auto;
+    font-family: var(--font-prose);
+  }
+
+  /* Mobile styles */
+  @media (max-width: 640px) {
+    .chat-container {
+      --bubble-max-width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Pass props from container to child messages
+  const containers = document.querySelectorAll('.chat-section');
+  containers.forEach(container => {
+    const model = container.getAttribute('data-model');
+    const user = container.getAttribute('data-user');
+    
+    // Update assistant labels with model name
+    if (model) {
+      const assistantLabels = container.querySelectorAll('.message.assistant .model-label');
+      assistantLabels.forEach(label => {
+        if (label.textContent === 'Assistant') {
+          label.textContent = model;
+        }
+      });
+    }
+    
+    // Update user labels with user name
+    if (user) {
+      const userLabels = container.querySelectorAll('.message.user .user-label');
+      userLabels.forEach(label => {
+        if (label.textContent === 'User') {
+          label.textContent = user;
+        }
+      });
+    }
+  });
+</script>
