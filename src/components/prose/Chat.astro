@@ -18,6 +18,7 @@ interface Message {
     name: string;
     arguments: string;
   };
+  timestamp?: string;
 }
 
 interface Props {
@@ -58,24 +59,30 @@ function getContent(content: string | ContentItem[]): {
   <div class="chat-container">
     {
       messages.map((message) => (
-        <div class="message-container">
-          {message.role === 'user' && (
-            <div class="message user">
-              <div class="message-content">
-                <div class="user-label">User</div>
-                <div class="bubble user-bubble">
-                  <Markdown of={getContent(message.content).text} />
-                  {getContent(message.content).images.map((url, index) => (
-                    <img
-                      src={url}
-                      alt={`Image ${index + 1} from user message`}
-                      class="message-image"
-                    />
-                  ))}
-                </div>
-              </div>
+        <>
+          {message.timestamp && (
+            <div class="timestamp-divider">
+              <span class="timestamp-text">{message.timestamp}</span>
             </div>
           )}
+          <div class="message-container">
+              {message.role === 'user' && (
+                <div class="message user">
+                  <div class="message-content">
+                    <div class="user-label">User</div>
+                    <div class="bubble user-bubble">
+                      <Markdown of={getContent(message.content).text} />
+                      {getContent(message.content).images.map((url, index) => (
+                        <img
+                          src={url}
+                          alt={`Image ${index + 1} from user message`}
+                          class="message-image"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
           {message.role === 'assistant' && (
             <div class="message assistant">
               <div class="message-content">
@@ -120,7 +127,8 @@ function getContent(content: string | ContentItem[]): {
               </div>
             </div>
           )}
-        </div>
+            </div>
+        </>
       ))
     }
   </div>
@@ -232,6 +240,23 @@ function getContent(content: string | ContentItem[]): {
   .user-label {
     text-align: right;
     margin-bottom: 0.25rem;
+  }
+
+  .timestamp-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: var(--spacing-lg) 0;
+    position: relative;
+  }
+
+  .timestamp-text {
+    font-size: var(--text-xs);
+    color: var(--color-ink-lighter);
+    background: var(--color-bg);
+    padding: 0 var(--spacing-sm);
+    position: relative;
+    z-index: 1;
   }
 
   .message-image {

@@ -1,0 +1,17 @@
+---
+interface Props {
+  src: string;
+  alt?: string;
+}
+
+const { src, alt = "Chat image" } = Astro.props;
+---
+
+<img src={src} alt={alt} class="chat-image-component" />
+
+<style>
+  .chat-image-component {
+    /* This component is used as a marker for image content in ChatMessage */
+    display: none;
+  }
+</style>

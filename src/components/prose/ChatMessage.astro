@@ -1,0 +1,430 @@
+---
+import { Markdown } from '@astropub/md';
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  role: 'system' | 'user' | 'assistant';
+  model?: string;
+  timestamp?: string;
+}
+
+const { role, model, timestamp } = Astro.props;
+
+// Helper to extract text and image content from slots
+function extractContent(slotContent: string): {
+  text: string;
+  images: { src: string; alt?: string }[];
+} {
+  const images: { src: string; alt?: string }[] = [];
+  let text = slotContent;
+
+  // Extract images from the slot content
+  // Look for both regular img tags and our special chat-image-component class
+  const imgRegex = /<img[^>]+class=["']chat-image-component["'][^>]*src=["']([^"']+)["'](?:[^>]*alt=["']([^"']+)["'])?[^>]*>/g;
+  const standardImgRegex = /<img[^>]+src=["']([^"']+)["'](?:[^>]*alt=["']([^"']+)["'])?[^>]*>/g;
+
+  let match;
+
+  // First extract ChatImage components
+  while ((match = imgRegex.exec(slotContent)) !== null) {
+    images.push({ src: match[1], alt: match[2] });
+  }
+
+  // Then extract standard images (that aren't ChatImage components)
+  text = slotContent.replace(imgRegex, ''); // Remove ChatImage components
+  while ((match = standardImgRegex.exec(text)) !== null) {
+    if (!text.includes('chat-image-component')) {
+      images.push({ src: match[1], alt: match[2] });
+    }
+  }
+
+  // Remove all img tags from text
+  text = text.replace(standardImgRegex, '').trim();
+
+  return { text, images };
+}
+
+const defaultContent = await Astro.slots.render('default');
+const thinkingContent = await Astro.slots.render('thinking');
+
+const { text, images } = extractContent(defaultContent);
+const thinking = thinkingContent ? [thinkingContent] : [];
+---
+
+<>
+  {timestamp && (
+    <div class="timestamp-divider">
+      <span class="timestamp-text">{timestamp}</span>
+    </div>
+  )}
+  <div class="message-container">
+    {role === 'user' && (
+      <div class="message user">
+      <div class="message-content">
+        <div class="user-label">User</div>
+        <div class="bubble user-bubble">
+          <Markdown of={text} />
+          {images.map((img, index) => (
+            <img
+              src={img.src}
+              alt={img.alt || `Image ${index + 1} from user message`}
+              class="message-image"
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+  {role === 'assistant' && (
+    <div class="message assistant">
+      <div class="message-content">
+        <div class="model-label">{model || 'Assistant'}</div>
+        {thinking.length > 0 && (
+          <details class="thinking-container">
+            <summary class="thinking-summary">
+              <Icon name="ph:caret-right" class="thinking-chevron" />
+              Thinking process
+            </summary>
+            <div class="thinking-content">
+              {thinking.map((thought) => (
+                <Markdown of={thought} />
+              ))}
+            </div>
+          </details>
+        )}
+        <div class="bubble assistant-bubble">
+          <Markdown of={text} />
+          {images.map((img, index) => (
+            <img
+              src={img.src}
+              alt={img.alt || `Image ${index + 1} from ${model || 'assistant'} response`}
+              class="message-image"
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+  {role === 'system' && (
+    <div class="message system">
+      <div class="bubble system-bubble">
+        <Markdown of={text} />
+        {images.map((img, index) => (
+          <img
+            src={img.src}
+            alt={img.alt || `Image ${index + 1} from system message`}
+            class="message-image"
+          />
+        ))}
+      </div>
+    </div>
+  )}
+  </div>
+</>
+
+<style>
+  /* Reuse all the styles from Chat.astro */
+  .message-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .message {
+    display: flex;
+  }
+
+  .message.user {
+    justify-content: flex-end;
+  }
+  .message.assistant {
+    justify-content: flex-start;
+  }
+  .message.system {
+    justify-content: center;
+  }
+
+  .message-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-width: 80%;
+    min-width: 0;
+  }
+
+  .message.user .message-content {
+    align-items: flex-end;
+  }
+
+  .bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    max-width: 100%;
+    font-size: var(--text-sm);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
+    display: inline-block;
+    width: fit-content;
+  }
+
+  /* Ensure proper paragraph spacing in all bubbles */
+  .bubble :global(p) {
+    margin: 0.75rem 0;
+  }
+
+  .bubble :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .bubble :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .user-bubble {
+    background: var(--color-ink-light);
+    color: var(--color-bg);
+    border-bottom-right-radius: 0;
+    text-align: left;
+  }
+
+  .assistant-bubble {
+    background: var(--color-bg-code);
+    color: var(--color-ink);
+    border-bottom-left-radius: 0;
+    text-align: left;
+  }
+
+  .system-bubble {
+    background: var(--color-bg-code);
+    color: var(--color-ink-light);
+    font-style: italic;
+    text-align: left;
+  }
+
+  .model-label,
+  .user-label {
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    margin-left: 0.5rem;
+  }
+
+  .user-label {
+    text-align: right;
+    margin-bottom: 0.25rem;
+  }
+
+  .timestamp-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: var(--spacing-sm) 0;
+    position: relative;
+  }
+
+  .timestamp-text {
+    font-size: var(--text-xs);
+    color: var(--color-ink-lighter);
+    background: var(--color-bg);
+    padding: 0 var(--spacing-sm);
+    position: relative;
+    z-index: 1;
+  }
+
+  .message-image {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+  }
+
+  /* Ensure text colors respect dark mode */
+  .user-bubble :global(p),
+  .user-bubble :global(li),
+  .user-bubble :global(h1),
+  .user-bubble :global(h2),
+  .user-bubble :global(h3),
+  .user-bubble :global(h4),
+  .user-bubble :global(h5),
+  .user-bubble :global(h6) {
+    color: var(--color-bg);
+  }
+
+  .assistant-bubble :global(p),
+  .assistant-bubble :global(li),
+  .assistant-bubble :global(h1),
+  .assistant-bubble :global(h2),
+  .assistant-bubble :global(h3),
+  .assistant-bubble :global(h4),
+  .assistant-bubble :global(h5),
+  .assistant-bubble :global(h6) {
+    color: var(--color-ink);
+  }
+
+  .system-bubble :global(p),
+  .system-bubble :global(li),
+  .system-bubble :global(h1),
+  .system-bubble :global(h2),
+  .system-bubble :global(h3),
+  .system-bubble :global(h4),
+  .system-bubble :global(h5),
+  .system-bubble :global(h6) {
+    color: var(--color-ink-light);
+  }
+
+  /* Ensure links in bubbles have appropriate colors */
+  .user-bubble :global(a) {
+    color: var(--color-bg);
+    text-decoration: underline;
+  }
+
+  .assistant-bubble :global(a) {
+    color: var(--color-link);
+    text-decoration: underline;
+  }
+
+  .system-bubble :global(a) {
+    color: var(--color-ink-light);
+    text-decoration: underline;
+  }
+
+  /* Inline code styling within bubbles */
+  .user-bubble :global(code:not(pre code)) {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-bg);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+
+  .assistant-bubble :global(code:not(pre code)) {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: var(--color-ink);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+
+  /* Dark mode adjustments for inline code */
+  :global(.dark) .assistant-bubble :global(code:not(pre code)) {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Code block styling within bubbles */
+  .bubble :global(pre) {
+    margin: 0.5rem 0;
+    overflow-x: auto;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .bubble :global(pre code) {
+    display: block;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+    min-width: 0;
+  }
+
+  /* Thinking content styles */
+  .thinking-container {
+    margin-bottom: 0.5rem;
+    background: var(--color-bg-code);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: var(--text-sm);
+    opacity: 0.8;
+  }
+
+  .thinking-summary {
+    cursor: pointer;
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .thinking-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .thinking-chevron {
+    width: 1em;
+    height: 1em;
+    transition: transform 0.2s ease;
+  }
+
+  details[open] .thinking-chevron {
+    transform: rotate(90deg);
+  }
+
+  .thinking-content {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-ink-light);
+  }
+
+  .thinking-content :global(p) {
+    margin: 0.5rem 0;
+  }
+
+  .thinking-content :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .thinking-content :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* Mobile styles */
+  @media (max-width: 640px) {
+    .message-content {
+      max-width: 100%;
+    }
+
+    .message.user,
+    .message.assistant,
+    .message.system {
+      justify-content: stretch;
+    }
+
+    .bubble {
+      width: 100%;
+      display: block;
+      max-width: 100%;
+    }
+
+    .message-content {
+      width: 100%;
+    }
+
+    .message.user .message-content {
+      align-items: stretch;
+    }
+
+    .user-label {
+      text-align: right;
+    }
+
+    .user-bubble,
+    .assistant-bubble,
+    .system-bubble {
+      width: 100%;
+    }
+
+    .user-bubble {
+      border-radius: 1rem;
+      border-bottom-right-radius: 0;
+    }
+
+    .assistant-bubble {
+      border-radius: 1rem;
+      border-bottom-left-radius: 0;
+    }
+  }
+</style>
