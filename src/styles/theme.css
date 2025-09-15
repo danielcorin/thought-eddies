@@ -54,11 +54,9 @@
 
   /* Typography */
   --font-primary: 'Futura';
-  --font-prose: 'Inter', Georgia, serif;
+  --font-prose: 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
   --font-ui: system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-
-  --font-handwriting: 'Inter', Georgia, serif;
 
   /* Font Sizes */
   --text-xs: 0.75rem;
