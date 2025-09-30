@@ -7,6 +7,7 @@ import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
 import KeyboardShortcutsModal from "@components/KeyboardShortcutsModal.astro";
 import SearchModal from "@components/SearchModal";
+import VisitorCounter from "@components/VisitorCounter";
 
 interface Props {
 	title?: string;
@@ -16,6 +17,7 @@ interface Props {
 
 const { title = "", ogImage, pageType } = Astro.props;
 const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
+const currentUrl = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -160,6 +162,7 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 		<ScrollToTop />
 		<KeyboardShortcutsModal pageType={pageType} />
 		<SearchModal client:only="react" />
+		<VisitorCounter pageUrl={currentUrl} client:load />
 		<script data-goatcounter="https://danielcorin.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 	</body>
 </html>

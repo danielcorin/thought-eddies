@@ -9,3 +9,6 @@ log:
 
 til category name:
     python3 scripts/new_til.py "{{category}}" "{{name}}"
+
+deploy-visitor-tracker:
+    cd visitor-tracker && pnpm run deploy
