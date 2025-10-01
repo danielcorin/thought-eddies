@@ -41,6 +41,7 @@ export default function SearchPage() {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultRefs = useRef<(HTMLElement | null)[]>([]);
 
@@ -106,15 +107,31 @@ export default function SearchPage() {
     searchInputRef.current?.focus();
   }, []);
 
+  // Listen for modal open/close events
+  useEffect(() => {
+    const handleModalOpened = () => setIsModalOpen(true);
+    const handleModalClosed = () => setIsModalOpen(false);
+
+    window.addEventListener('searchModalOpened', handleModalOpened);
+    window.addEventListener('searchModalClosed', handleModalClosed);
+
+    return () => {
+      window.removeEventListener('searchModalOpened', handleModalOpened);
+      window.removeEventListener('searchModalClosed', handleModalClosed);
+    };
+  }, []);
+
   // Reset selected index when results change
   useEffect(() => {
     setSelectedIndex(-1);
     resultRefs.current = [];
   }, [results]);
 
-  // Keyboard navigation
+  // Keyboard navigation (disabled when modal is open)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle keyboard navigation if modal is open
+      if (isModalOpen) return;
       if (results.length === 0) return;
 
       switch (e.key) {
@@ -156,7 +173,7 @@ export default function SearchPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [results, selectedIndex]);
+  }, [results, selectedIndex, isModalOpen]);
 
   // Update URL when query or filters change
   useEffect(() => {
