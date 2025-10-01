@@ -40,7 +40,9 @@ export default function SearchPage() {
     },
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const resultRefs = useRef<(HTMLElement | null)[]>([]);
 
   // Initialize from URL parameters
   useEffect(() => {
@@ -103,6 +105,58 @@ export default function SearchPage() {
   useEffect(() => {
     searchInputRef.current?.focus();
   }, []);
+
+  // Reset selected index when results change
+  useEffect(() => {
+    setSelectedIndex(-1);
+    resultRefs.current = [];
+  }, [results]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (results.length === 0) return;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setSelectedIndex((prev) => {
+            const next = prev < results.length - 1 ? prev + 1 : prev;
+            resultRefs.current[next]?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+            });
+            return next;
+          });
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setSelectedIndex((prev) => {
+            const next = prev > 0 ? prev - 1 : -1;
+            if (next === -1) {
+              searchInputRef.current?.focus();
+            } else {
+              resultRefs.current[next]?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+              });
+            }
+            return next;
+          });
+          break;
+        case 'Enter':
+          if (selectedIndex >= 0 && selectedIndex < results.length) {
+            e.preventDefault();
+            const url = results[selectedIndex].item.url + '?ref=search';
+            window.location.href = url;
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [results, selectedIndex]);
 
   // Update URL when query or filters change
   useEffect(() => {
@@ -366,9 +420,16 @@ export default function SearchPage() {
               {results.map((result, index) => {
                 const item = result.item;
                 const tags = item.tags || [];
+                const isSelected = selectedIndex === index;
 
                 return (
-                  <article key={index} className="result-item">
+                  <article
+                    key={index}
+                    ref={(el) => {
+                      resultRefs.current[index] = el;
+                    }}
+                    className={`result-item ${isSelected ? 'selected' : ''}`}
+                  >
                     <div className="result-header">
                       <time className="result-date">
                         <a
