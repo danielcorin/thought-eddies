@@ -251,7 +251,12 @@ const ogImage = `/search/og.png`;
     padding: var(--spacing-lg) var(--spacing-xl);
     background: var(--color-bg-code);
     border-radius: 0.5rem;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
+  }
+
+  :global(.result-item.selected) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 
   :global(.result-header) {
