@@ -50,6 +50,15 @@ export default function SearchModal() {
     }
   }, [isOpen, searchData.length]);
 
+  // Dispatch events when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      window.dispatchEvent(new CustomEvent('searchModalOpened'));
+    } else {
+      window.dispatchEvent(new CustomEvent('searchModalClosed'));
+    }
+  }, [isOpen]);
+
   // Keyboard shortcut handler and custom event listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
