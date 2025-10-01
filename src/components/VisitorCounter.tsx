@@ -47,10 +47,15 @@ export default function VisitorCounter({
   const reconnectTimeoutRef = useRef<number | null>(null);
   const userIdRef = useRef<string | null>(null);
   const isVisibleRef = useRef(true);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
     userIdRef.current = getUserId();
   }, []);
+
+  // Use refs to store stable function references and break circular dependencies
+  const connectFnRef = useRef<(() => void) | null>(null);
+  const startHeartbeatFnRef = useRef<(() => void) | null>(null);
 
   const stopHeartbeat = useCallback(() => {
     if (heartbeatIntervalRef.current) {
@@ -94,19 +99,28 @@ export default function VisitorCounter({
     sendHeartbeat();
   }, [stopHeartbeat, sendHeartbeat]);
 
-  const scheduleReconnect = useCallback((connectFn: () => void) => {
-    if (reconnectTimeoutRef.current) return;
+  // Store the latest startHeartbeat in ref
+  useEffect(() => {
+    startHeartbeatFnRef.current = startHeartbeat;
+  }, [startHeartbeat]);
+
+  const scheduleReconnect = useCallback(() => {
+    if (reconnectTimeoutRef.current || !isMountedRef.current) return;
 
     reconnectTimeoutRef.current = window.setTimeout(() => {
       reconnectTimeoutRef.current = null;
-      if (isVisibleRef.current) {
-        connectFn();
+      if (
+        isVisibleRef.current &&
+        isMountedRef.current &&
+        connectFnRef.current
+      ) {
+        connectFnRef.current();
       }
     }, RECONNECT_DELAY_MS);
   }, []);
 
   const connect = useCallback(() => {
-    if (!userIdRef.current) return;
+    if (!userIdRef.current || !isMountedRef.current) return;
 
     try {
       // Convert http(s) URL to ws(s) URL
@@ -117,11 +131,13 @@ export default function VisitorCounter({
       wsRef.current = ws;
 
       ws.onopen = () => {
+        if (!isMountedRef.current) return;
         setIsConnected(true);
-        startHeartbeat();
+        startHeartbeatFnRef.current?.();
       };
 
       ws.onmessage = (event) => {
+        if (!isMountedRef.current) return;
         try {
           const message: ServerMessage = JSON.parse(event.data);
 
@@ -142,17 +158,23 @@ export default function VisitorCounter({
       };
 
       ws.onclose = () => {
+        if (!isMountedRef.current) return;
         setIsConnected(false);
         stopHeartbeat();
-        scheduleReconnect(connect);
+        scheduleReconnect();
       };
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('[VisitorCounter] Error creating WebSocket:', error);
       }
-      scheduleReconnect(connect);
+      scheduleReconnect();
     }
-  }, [pageUrl, workerUrl, startHeartbeat, stopHeartbeat, scheduleReconnect]);
+  }, [pageUrl, workerUrl, stopHeartbeat, scheduleReconnect]);
+
+  // Store the latest connect in ref
+  useEffect(() => {
+    connectFnRef.current = connect;
+  }, [connect]);
 
   const disconnect = useCallback(() => {
     stopHeartbeat();
@@ -232,10 +254,10 @@ export default function VisitorCounter({
         // Tab is visible again, send active message and resume heartbeat
         sendActiveMessage();
         if (isConnected) {
-          startHeartbeat();
+          startHeartbeatFnRef.current?.();
         } else {
           // Reconnect if disconnected
-          connect();
+          connectFnRef.current?.();
         }
       }
     };
@@ -245,23 +267,20 @@ export default function VisitorCounter({
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [
-    isConnected,
-    sendInactiveMessage,
-    stopHeartbeat,
-    sendActiveMessage,
-    startHeartbeat,
-    connect,
-  ]);
+  }, [isConnected, sendInactiveMessage, stopHeartbeat, sendActiveMessage]);
 
   // Connect on mount
   useEffect(() => {
+    isMountedRef.current = true;
     connect();
 
     return () => {
+      isMountedRef.current = false;
       disconnect();
     };
-  }, [connect, disconnect]);
+    // Only run once on mount - we use refs to avoid reconnecting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Memoize styles to avoid recreation on every render
   const styles = useMemo(

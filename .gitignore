@@ -26,3 +26,4 @@ pnpm-debug.log*
 _scripts/
 .venv/
 .vercel
+.wrangler/

@@ -162,7 +162,6 @@ const currentUrl = Astro.url.pathname;
 		<ScrollToTop />
 		<KeyboardShortcutsModal pageType={pageType} />
 		<SearchModal client:only="react" />
-		<VisitorCounter pageUrl={currentUrl} client:load />
 		<script data-goatcounter="https://danielcorin.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 	</body>
 </html>
