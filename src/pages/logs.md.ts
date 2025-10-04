@@ -41,9 +41,6 @@ Daily logs and thoughts.
 
     sortedLogs.forEach((log) => {
       const date = formatDate(log.data.date);
-
-      // Extract year and month from the log ID for URL construction
-      const [year, month] = log.id.split('/');
       const slug = log.id.replace(/\.mdx?$/, '');
 
       content += `- [${date}](/logs/${slug}/index.md) - ${log.data.title}\n`;
