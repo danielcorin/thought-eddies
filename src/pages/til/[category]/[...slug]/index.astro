@@ -22,7 +22,10 @@ export async function getStaticPaths() {
 
 const { til } = Astro.props as { til: CollectionEntry<"til"> };
 const { Content, headings } = await render(til);
-const ogImage = `/til/og.png`;
+
+const [category, ...slugParts] = til.id.split('/');
+const slug = slugParts.join('/').replace(/\.(md|mdx)$/, '');
+const ogImage = `/til/${category}/${slug}/og.png`;
 
 // Add category to frontmatter for layout
 const frontmatterWithCategory = {

@@ -22,9 +22,11 @@ const category = entry.id.split('/')[0];
 const categoryDisplay = category.split('-').map(word =>
   word.charAt(0).toUpperCase() + word.slice(1)
 ).join(' ');
+
+const ogImage = `/garden/${entry.id.replace(/\.(md|mdx)$/, '')}/og.png`;
 ---
 
-<Layout title={entry.data.title}>
+<Layout title={entry.data.title} ogImage={ogImage}>
   <Navigation selected="garden" />
   <main>
     <article>
