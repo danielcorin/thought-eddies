@@ -30,8 +30,8 @@ class ExtractDate(dspy.Signature):
 sentence = "The meeting is scheduled for March 15th, 2024."
 ```
 
-The first question I often finding myself asking is "how many tokens did that inference use?"
-This exposed in a straight forward way with DSPy but the framework also enables `cache` by default.
+The first question I often find myself asking is "how many tokens did that inference use?"
+This is exposed in a straightforward way with DSPy but the framework also enables `cache` by default.
 When experimenting, this is a great help because the framework avoids re-running inference it has already run before, saving you time and money.
 However, when trying to measure token utilization (which you'll usually attempt after already running an inference at least once), this caching prevents you from seeing the actual token usage because in practice, for that call, there wasn't any.
 The result was pulled from cache.
@@ -83,7 +83,7 @@ def print_results_and_usage(result):
 
 Now we can take a look at the different ways to configure the model with DSPy to output its response using reasoning.
 
-Gemini Flash 2.5 use reasoning by default.
+Gemini Flash 2.5 uses reasoning by default.
 
 ```python
 with dspy.settings.context(lm=dspy.LM("gemini/gemini-2.5-flash", track_usage=True, cache=False)):
@@ -200,7 +200,7 @@ with dspy.settings.context(
     }
 
 But it doesn't work in exactly the same way as Gemini.
-Here we see an LiteLLM error (the underlying translation layer DSPy uses to support different LLM providers), where our `reasoning_effort` configuration is invalid for the OpenAI API.
+Here we see a LiteLLM error (the underlying translation layer DSPy uses to support different LLM providers), where our `reasoning_effort` configuration is invalid for the OpenAI API.
 
 ```python
 with dspy.settings.context(
@@ -293,7 +293,7 @@ lm.inspect_history(1)
 
     [[ ## completed ## ]]
 
-Here we see almost everything we'd want to about the prompt DSPy sent and response it received from the model.
+Here we see almost everything we'd want to know about the prompt DSPy sent and the response it received from the model.
 We even see `kwargs` overrides that were passed for the specific call.
 
 The main thing we miss is the configuration of the LM instance itself for that specific message, which we can get like this:
@@ -313,7 +313,7 @@ lm.dump_state()
      'max_completion_tokens': 16000}
 
 This isn't necessarily a foolproof way to get what the LM configuration was at call time because the LM and its `kwargs` are mutable.
-It's possible (through probably not advisable) to change them after the call has been made.
+It's possible (though probably not advisable) to change them after the call has been made.
 However, for my own experimentation purposes, I've found the above functions to be helpful.
 
 Remember to re-enable caching when you're done inspecting token usage to save time and cost!
