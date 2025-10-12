@@ -9,6 +9,12 @@ import { getContainerRenderer as getMDXRenderer } from '@astrojs/mdx';
 import reactRenderer from '@astrojs/react/server.js';
 import { loadRenderers } from 'astro:container';
 
+// Strip ANSI color codes from text
+function stripAnsiCodes(text: string): string {
+  // eslint-disable-next-line no-control-regex
+  return text.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '').replace(/\[(\d+)m/g, '');
+}
+
 export async function generateRSSFeed(context: { site: string }) {
   // Set up MDX renderer
   const renderers = await loadRenderers([getMDXRenderer()]);
@@ -41,6 +47,8 @@ export async function generateRSSFeed(context: { site: string }) {
       try {
         const { Content } = await render(item);
         htmlContent = await container.renderToString(Content);
+        // Strip ANSI color codes that may be present in code blocks
+        htmlContent = stripAnsiCodes(htmlContent);
       } catch (error) {
         console.warn(`Failed to render MDX for ${item.id}:`, error);
         htmlContent = `<p>${item.data.description || ''}</p>`;
