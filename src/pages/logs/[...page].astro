@@ -57,7 +57,7 @@ const ogImage = `/logs/og.png`;
             <article class="entry">
               <time class="entry-date">
                 <a href={`/logs/${log.id}`} class="date-day">
-                  {date.getDate()}
+                  {String(date.getDate()).padStart(2, "0")}
                 </a>
                 <a
                   href={`/logs/${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}`}
