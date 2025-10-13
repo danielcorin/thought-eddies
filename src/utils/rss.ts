@@ -15,6 +15,16 @@ function stripAnsiCodes(text: string): string {
   return text.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '').replace(/\[(\d+)m/g, '');
 }
 
+// Add RSS footer with thank you message
+export function addRSSFooter(htmlContent: string): string {
+  return (
+    htmlContent +
+    `<hr style="margin-top: 2em; margin-bottom: 1em; border: none; border-top: 1px solid #ccc;" />
+<p style="font-style: italic; color: #666;">Thanks for reading via RSS!</p>
+`
+  );
+}
+
 export async function generateRSSFeed(context: { site: string }) {
   // Set up MDX renderer
   const renderers = await loadRenderers([getMDXRenderer()]);
@@ -53,6 +63,9 @@ export async function generateRSSFeed(context: { site: string }) {
         console.warn(`Failed to render MDX for ${item.id}:`, error);
         htmlContent = `<p>${item.data.description || ''}</p>`;
       }
+
+      // Add RSS footer with thank you message
+      htmlContent = addRSSFooter(htmlContent);
 
       // Determine the correct link path based on collection
       let linkPath: string;

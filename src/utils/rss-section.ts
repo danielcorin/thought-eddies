@@ -6,6 +6,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { getContainerRenderer as getMDXRenderer } from '@astrojs/mdx';
 import reactRenderer from '@astrojs/react/server.js';
 import { loadRenderers } from 'astro:container';
+import { addRSSFooter } from './rss';
 
 type ContentSection = 'posts' | 'logs' | 'til' | 'garden' | 'projects';
 
@@ -44,6 +45,9 @@ export async function generateSectionRSSFeed(
         console.warn(`Failed to render MDX for ${item.id}:`, error);
         htmlContent = `<p>${item.data.description || ''}</p>`;
       }
+
+      // Add RSS footer with thank you message
+      htmlContent = addRSSFooter(htmlContent);
 
       // Determine the correct link path based on section
       let linkPath: string;
