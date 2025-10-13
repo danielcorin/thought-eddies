@@ -207,10 +207,12 @@ with dspy.settings.context(
     lm=dspy.LM("openai/gpt-5", temperature=1, max_tokens=16000, cache=False, reasoning_effort="disable"),
     track_usage=True,
 ):
-    # result = extract_date(sentence=sentence)
-    # running the above line will raise an error
-    # BadRequestError: litellm.BadRequestError: OpenAIException - Invalid value: 'disable'. Supported values are: 'low', 'medium', and 'high'.
-    pass
+    result = extract_date(sentence=sentence)
+```
+
+```text wrap=true
+...
+BadRequestError: litellm.BadRequestError: OpenAIException - Invalid value: 'disable'. Supported values are: 'low', 'medium', and 'high'.
 ```
 
 ## Inspecting raw prompts and responses with history
