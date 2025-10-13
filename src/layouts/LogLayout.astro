@@ -7,6 +7,7 @@ import Layout from "./Layout.astro";
 import Breadcrumbs from "@components/Breadcrumbs.astro";
 import ClickableImages from "@components/ClickableImages.astro";
 import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
+import { getCommitUrl } from '@utils/git';
 
 const { frontmatter, ogImage, slug } = Astro.props;
 
@@ -31,6 +32,10 @@ const nextLog =
 
 // Find the current log object
 const currentLog = sortedLogs[currentIndex];
+
+// Get commit URL for the current file
+const repoUrl = 'https://github.com/danielcorin/thought-eddies';
+const commitUrl = currentLog ? getCommitUrl(currentLog.filePath, repoUrl) : null;
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage} pageType="logs">
@@ -112,6 +117,12 @@ const currentLog = sortedLogs[currentIndex];
           <Icon name="ph:pencil-simple" />
           <span>edit</span>
         </a>
+        {commitUrl && (
+          <a href={commitUrl} target="_blank" rel="noopener noreferrer" class="commit-button">
+            <Icon name="ph:git-commit" />
+            <span>commit</span>
+          </a>
+        )}
       </div>
     </article>
   </main>
@@ -213,7 +224,8 @@ const currentLog = sortedLogs[currentIndex];
   }
 
   .raw-button,
-  .edit-button {
+  .edit-button,
+  .commit-button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -228,13 +240,15 @@ const currentLog = sortedLogs[currentIndex];
   }
 
   .raw-button:hover,
-  .edit-button:hover {
+  .edit-button:hover,
+  .commit-button:hover {
     background: var(--color-bg-hover);
     color: var(--color-accent);
   }
 
   .raw-button svg,
-  .edit-button svg {
+  .edit-button svg,
+  .commit-button svg {
     width: 1rem;
     height: 1rem;
   }
