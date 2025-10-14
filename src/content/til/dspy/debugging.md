@@ -133,7 +133,10 @@ with dspy.settings.context(
 It can also be disabled by setting `reasoning_effort` to `disable` on the `Predict` instance.
 
 ```python
-with dspy.settings.context(lm=dspy.LM("gemini/gemini-2.5-flash", track_usage=True, cache=False)):
+with dspy.settings.context(
+    lm=dspy.LM("gemini/gemini-2.5-flash", cache=False),
+    track_usage=True,
+):
     result = extract_date(
         sentence=sentence,
         config={"reasoning_effort": "disable"},
@@ -144,7 +147,16 @@ with dspy.settings.context(lm=dspy.LM("gemini/gemini-2.5-flash", track_usage=Tru
     Prediction(
         date='2024-03-15'
     )
-    null
+    {
+      "gemini/gemini-2.5-flash": {
+        "completion_tokens": 22,
+        "prompt_tokens": 179,
+        "total_tokens": 201,
+        "prompt_tokens_details": {
+          "text_tokens": 179
+        }
+      }
+    }
 
 Following the first approach, we can set `reasoning_effort` to `high` to attempt to elicit more reasoning tokens from the model.
 
