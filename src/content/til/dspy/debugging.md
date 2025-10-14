@@ -42,7 +42,7 @@ To consistently see the token usage, the most straightforward approach I have fo
 extract_date = dspy.Predict(ExtractDate)
 
 
-with dspy.settings.context(lm=dspy.LM("openai/gpt-4.1-mini"), track_usage=True, cache=False):
+with dspy.settings.context(lm=dspy.LM("openai/gpt-4.1-mini", cache=False), track_usage=True):
     result = extract_date(sentence=sentence)
     print(result)
 
@@ -54,11 +54,7 @@ with dspy.settings.context(lm=dspy.LM("openai/gpt-4.1-mini"), track_usage=True, 
     Prediction(
         date='2024-03-15'
     )
-    {}
-
-```python
-
-```
+    {'openai/gpt-4.1-mini': {'completion_tokens': 17, 'prompt_tokens': 167, 'total_tokens': 184, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0, 'text_tokens': None}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0, 'text_tokens': None, 'image_tokens': None}}}
 
 Let's make a function to report the results and usage, since we're going to do this a lot.
 
@@ -86,7 +82,7 @@ Now we can take a look at the different ways to configure the model with DSPy to
 Gemini Flash 2.5 uses reasoning by default.
 
 ```python
-with dspy.settings.context(lm=dspy.LM("gemini/gemini-2.5-flash", track_usage=True, cache=False)):
+with dspy.settings.context(lm=dspy.LM("gemini/gemini-2.5-flash", cache=False), track_usage=True):
     result = extract_date(sentence=sentence)
     print_results_and_usage(result)
 ```
@@ -94,7 +90,20 @@ with dspy.settings.context(lm=dspy.LM("gemini/gemini-2.5-flash", track_usage=Tru
     Prediction(
         date='2024-03-15'
     )
-    null
+    {
+      "gemini/gemini-2.5-flash": {
+        "completion_tokens": 133,
+        "prompt_tokens": 179,
+        "total_tokens": 312,
+        "completion_tokens_details": {
+          "reasoning_tokens": 111,
+          "text_tokens": 22
+        },
+        "prompt_tokens_details": {
+          "text_tokens": 179
+        }
+      }
+    }
 
 This can be disabled by setting `reasoning_effort` to `disable` on `dspy.LM`.
 
