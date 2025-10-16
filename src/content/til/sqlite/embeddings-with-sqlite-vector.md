@@ -336,4 +336,4 @@ for i, (article_id, headline, category, description, distance) in enumerate(desc
     2. [POLITICS] The House Intelligence Committee hearing follows a 2021 report of a possible national security "challenge" from UFOs. (distance: 0.4950)
     3. [U.S. NEWS] The American Academy of Pediatrics says it is putting all its guidance under the microscope to eliminate “race-based” medicine and resulting health disparities. (distance: 0.4967)
 
-Embeddings and cosine similarity allow us to do search over the `headline` and `short_description` fields of the dataset, finding semantically similar results even if the results themselves don't contain or match the query text or parts of the query text exactly.
+Embeddings and cosine distance allow us to do search over the `headline` and `short_description` fields of the dataset, finding semantically similar results even if the results themselves don't contain or match the query text or parts of the query text exactly.
