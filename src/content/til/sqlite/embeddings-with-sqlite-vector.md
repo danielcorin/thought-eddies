@@ -1,5 +1,5 @@
 ---
-title: Embedding with sqlite-vector
+title: Embeddings with sqlite-vector
 createdAt: 2025-10-15T20:45:52-04:00
 updatedAt: 2025-10-15T20:45:52-04:00
 publishedAt: 2025-10-15T20:45:52-04:00
