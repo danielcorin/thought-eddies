@@ -10,7 +10,7 @@ tags:
   - embeddings
 ---
 
-A little over a year ago I [wrote about using `sqlite-vss`](/til/sqlite/sqlite-vss) to store and query embedding vectors in a SQLite database.
+Ago a year and a half ago I [wrote about using `sqlite-vss`](/til/sqlite/sqlite-vss) to store and query embedding vectors in a SQLite database.
 Much has changed since then and I'm working on a project that motivated another pass at querying embeddings on a local system for smallish datasets.
 The [`sqlite-vector`](https://github.com/sqliteai/sqlite-vector) project seemed like an interesting one to try for this purpose.
 
