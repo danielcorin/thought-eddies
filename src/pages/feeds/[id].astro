@@ -22,7 +22,7 @@ const { Content } = await render(feed);
 const { title, feed_url: feedUrl } = feed.data;
 ---
 
-<Layout title={title} ogImage="/og.png">
+<Layout title={title} ogImage={`/feeds/${feed.id}/og.png`}>
   <Navigation selected="feeds" />
   <main>
     <article>
