@@ -1,0 +1,52 @@
+---
+date: '2025-10-20T19:41:10Z'
+title: '2025-10-20'
+draft: false
+tags: ['claude-code', 'planning']
+---
+
+I tried out Claude Code's new planning mode recently and ran a demo with it at work today.
+I stumbled upon it last week.
+
+You get to planning mode by running `claude` and pressing <kbd>shift</kbd>+<kbd>tab</kbd> twice.
+You'll see
+
+```text
+  ⏸ plan mode on (shift+tab to cycle)
+```
+
+Now, when I am in plan mode, Claude Code takes a sort of Socratic approach, asking me questions to clarify my initial vague prompt
+
+```text
+> let's write a journal cli app
+
+⏺ I'll help you design a journal CLI app! Let me first understand your requirements and then create a comprehensive plan.
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+←  ☐ Language  ☐ Features  ☐ Storage  ☐ UI Style  ✔ Submit  →
+
+What programming language would you prefer for the journal CLI app?
+❯ 1. Python
+     Great for CLI apps with libraries like Click or argparse. Easy to distribute and cross-platform.
+  2. Node.js/TypeScript
+     Modern JavaScript/TypeScript with libraries like Commander.js. Good npm ecosystem.
+  3. Go
+     Compiled binary, fast startup, excellent for CLI tools. Built-in flag parsing.
+  4. Rust
+     Fast, memory-safe, excellent CLI libraries like clap. Single binary distribution.
+  5. Type something.
+
+Enter to select · Tab/Arrow keys to navigate · Esc to cancel
+```
+
+An understandable, but sort of weird thing that got me twice today, is if you cursor down to the `Type something.` option and press the arrow keys or tab, the TUI does _not_ cycle to the next plan option like it would if you had one of the other options selected.
+This kind of makes sense because it's listening for your custom input but I've already gotten stuck on that twice.
+
+Sometimes the agent won't ask you any clarifying questions.
+Sometimes it will ask multiple rounds of clarifying questions.
+
+I generally like this approach because it's a nice on ramp to the idea of planning and an introduction to the concept that you get better results by giving the agent more of an idea of what you want to build.
+It reminds me a bit of the work I did on [write-partner](https://github.com/danielcorin/write-partner) 2 years (!) ago, using the model to coax information out of me by asking follow up questions.
+
+If you expect the agent to read your mind and fill in the gaps, you'll usually be disappointed.
