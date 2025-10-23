@@ -63,7 +63,7 @@ function formatHotkeyDisplaySSR(hotkey: Hotkey): string {
         class="modal-close"
         aria-label="Close modal"
       >
-        ×
+        ✕
       </button>
     </div>
 
@@ -218,11 +218,12 @@ function formatHotkeyDisplaySSR(hotkey: Hotkey): string {
     color: var(--color-ink-light);
     width: 32px;
     height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
     border-radius: 6px;
     transition: all 0.2s;
+    line-height: 1;
+    font-family: system-ui, -apple-system, sans-serif;
   }
 
   .modal-close:hover {
