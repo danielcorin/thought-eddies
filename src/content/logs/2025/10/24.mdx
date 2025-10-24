@@ -1,0 +1,21 @@
+---
+date: '2025-10-24T12:29:38Z'
+title: '2025-10-24'
+draft: false
+tags: ['amazon_bedrock', 'claude', 'anthropic']
+---
+
+I've now run into the following issue multiple times using Bedrock.
+It's my own mistake but I end up confused each time.
+
+```text
+An error occurred (ValidationException) when calling the InvokeModelWithResponseStream operation:
+The maximum tokens you requested exceeds the model limit of 65536
+```
+
+I had this prompt when attempting to run inference on Bedrock with `us.anthropic.claude-sonnet-4-20250514-v1:0`.
+
+The problem was I was trying to set the _output_ tokens larger than the model limit.
+Claude Sonnet 4 has versions that support 200k and 1M tokens context windows but this is for the input tokens to the model.
+
+I hope this note helps if you run into the same issue.
