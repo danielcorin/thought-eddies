@@ -1,0 +1,17 @@
+---
+date: '2025-10-25T21:04:34Z'
+title: '2025-10-25'
+draft: false
+tags: []
+---
+
+I played around with the idea of using a language model as a sort of generic response engine for any request using any protocol.
+That plan was to write a system prompt that the language model would use as the primary context and role.
+I could then prompt "you are an HTTP server, you define the following endpoints" and then send actual HTTP requests to the model and have the model respond as if it were an HTTP server.
+This idea taken further could allow you to just point a Postgres client or a gRPC client at a port for a process running that wraps a language model and then have it respond based on any kind of definition you did in the system prompt and by its own inference to come up with reasonable responses given the request.
+
+I still feel like there's something to this idea, though early attempts were a little bit rough.
+One of the bigger challenges is that most language models are pretty slow relative to these deterministic processes.
+Also, expecting a model to output certain details of a response, like `Content-Length` in an HTTP response, is not reliable.
+To make parts like that work, you need to add deterministic logic around the model's output.
+If you do that, it almost makes more sense to just use an agent to scaffold a test service from your specs or IDLs rather than attempt to generate the response with the model via runtime inference.
