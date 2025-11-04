@@ -30,6 +30,6 @@ export async function GET({ props }: { props: Props }) {
     title: post.data.title,
     description: post.data.description,
     category: 'Post',
-    date: post.data.publishedAt ? formatDate(post.data.publishedAt) : undefined,
+    date: formatDate(post.data.createdAt),
   });
 }
