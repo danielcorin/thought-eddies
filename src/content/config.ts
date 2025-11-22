@@ -47,6 +47,7 @@ const logs = defineCollection({
       .or(z.date())
       .transform((val) => new Date(val)),
     title: z.string(),
+    location: z.string().optional(),
     tags: z.array(z.string()).nullable().optional(),
     draft: z.boolean().optional().default(false),
   }),
