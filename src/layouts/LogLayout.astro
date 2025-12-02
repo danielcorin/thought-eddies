@@ -36,6 +36,22 @@ const currentLog = sortedLogs[currentIndex];
 // Get commit URL for the current file
 const repoUrl = 'https://github.com/danielcorin/thought-eddies';
 const commitUrl = currentLog ? getCommitUrl(currentLog.filePath, repoUrl) : null;
+
+// Helper function to format date with two-digit day
+const formatDateWithPaddedDay = (date: Date): string => {
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${month} ${day}`;
+};
+
+// Helper function to format full date with two-digit day
+const formatFullDateWithPaddedDay = (date: Date): string => {
+  const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${weekday}, ${month} ${day}, ${year}`;
+};
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage} pageType="logs">
@@ -46,7 +62,7 @@ const commitUrl = currentLog ? getCommitUrl(currentLog.filePath, repoUrl) : null
         { label: "Logs", href: "/logs" },
         { label: String(new Date(frontmatter.date).getFullYear()), href: `/logs/${new Date(frontmatter.date).getFullYear()}` },
         { label: new Date(frontmatter.date).toLocaleDateString("en-US", { month: "long" }), href: `/logs/${new Date(frontmatter.date).getFullYear()}/${String(new Date(frontmatter.date).getMonth() + 1).padStart(2, "0")}` },
-        { label: String(new Date(frontmatter.date).getDate()) }
+        { label: String(new Date(frontmatter.date).getDate()).padStart(2, "0") }
       ]} />
 
       <nav class="day-navigation">
@@ -56,34 +72,21 @@ const commitUrl = currentLog ? getCommitUrl(currentLog.filePath, repoUrl) : null
               <a href={`/logs/${prevLog.id}?ref=arrow_nav`} class="nav-prev">
                 <Icon name="ph:arrow-left" />
                 <span>
-                  {new Date(prevLog.data.date).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}
+                  {formatDateWithPaddedDay(new Date(prevLog.data.date))}
                 </span>
               </a>
             )
           }
         </div>
         <time class="current-day">
-          {
-            new Date(frontmatter.date).toLocaleDateString("en-US", {
-              weekday: "short",
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })
-          }
+          {formatFullDateWithPaddedDay(new Date(frontmatter.date))}
         </time>
         <div class="nav-item nav-next-wrapper">
           {
             nextLog && (
               <a href={`/logs/${nextLog.id}?ref=arrow_nav`} class="nav-next">
                 <span>
-                  {new Date(nextLog.data.date).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}
+                  {formatDateWithPaddedDay(new Date(nextLog.data.date))}
                 </span>
                 <Icon name="ph:arrow-right" />
               </a>
