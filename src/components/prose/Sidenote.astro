@@ -1,0 +1,286 @@
+---
+import { marked } from 'marked';
+
+interface Props {
+  id?: string;
+  note: string;
+}
+
+const { id, note } = Astro.props;
+const noteId = id || `sidenote-${Math.random().toString(36).substring(7)}`;
+
+// Process markdown in the note content
+const processedNote = await marked.parseInline(note);
+---
+
+<span class="sidenote-container">
+  <input type="checkbox" id={noteId} class="sidenote-toggle" />
+  <label for={noteId} class="sidenote-trigger"><slot /></label>
+  <span class="sidenote-content">
+    <label for={noteId} class="sidenote-close" aria-label="Close sidenote">−</label>
+    <span class="sidenote-text" set:html={processedNote} />
+  </span>
+</span>
+
+<style>
+  .sidenote-container {
+    position: relative;
+  }
+
+  .sidenote-toggle {
+    display: none;
+  }
+
+  .sidenote-trigger {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--color-ink);
+    text-underline-offset: 2px;
+    color: var(--color-ink);
+  }
+
+  .sidenote-content {
+    font-family: var(--font-prose);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-ink-light);
+  }
+
+  .sidenote-close {
+    display: none;
+  }
+
+  .sidenote-text {
+    display: contents;
+  }
+
+  /* Default: inline toggle behavior for narrow screens */
+  .sidenote-content {
+    display: block;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0 var(--spacing-md);
+    background: var(--color-bg-code);
+    border-radius: 4px;
+    position: static;
+    float: none;
+    clear: none;
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
+    transition: max-height 0.3s ease-out, opacity 0.2s ease-in-out, margin 0.3s ease-out, padding 0.3s ease-out;
+  }
+
+  .sidenote-toggle:checked ~ .sidenote-content {
+    display: block;
+    max-height: 50rem;
+    opacity: 1;
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+    padding: var(--spacing-md);
+  }
+
+  /* Wide screens with sufficient margin space: show in right margin */
+  @media (min-width: 1400px) {
+    .sidenote-trigger {
+      cursor: pointer;
+      position: relative;
+      /* Keep inline to allow proper text wrapping */
+      display: inline;
+      /* Keep dotted underline for margin note mode */
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      /* Start with transparent background for smooth fade-in */
+      background: transparent;
+      padding: 0.125rem 0;
+      border-radius: 2px;
+      /* Ensure background properly wraps with text */
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      /* Smooth transition for the background */
+      transition: background 0.2s ease;
+    }
+
+    /* Hover state for trigger when applied via JS */
+    .sidenote-trigger.hover-active {
+      background: var(--color-highlight);
+      color: var(--color-ink);
+    }
+
+    .sidenote-content {
+      float: right;
+      clear: right;
+      width: 16rem;
+      margin-right: -18rem;
+      background: var(--color-bg-code);
+      color: var(--color-ink);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      /* Default to visible on wide screens */
+      max-height: 50rem;
+      opacity: 1;
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+      padding: var(--spacing-md);
+      transition: max-height 0.3s ease-out, opacity 0.2s ease-in-out, background 0.2s, color 0.2s, margin 0.3s ease-out, padding 0.3s ease-out;
+    }
+
+    .sidenote-content:hover,
+    .sidenote-content.hover-active {
+      background: var(--color-bg-hover);
+      color: var(--color-ink);
+      cursor: pointer;
+    }
+
+    .sidenote-close {
+      display: block;
+      position: absolute;
+      top: 0.125rem;
+      right: 0.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+      font-size: 1.125rem;
+      line-height: 1;
+      color: var(--color-ink-light);
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      text-align: center;
+      transition: background 0.2s, color 0.2s;
+      user-select: none;
+    }
+
+    .sidenote-close:hover {
+      background: var(--color-bg-hover);
+      color: var(--color-ink);
+    }
+
+    .sidenote-text {
+      display: block;
+    }
+
+    /* Toggle controls visibility in margin mode */
+    .sidenote-toggle:not(:checked) ~ .sidenote-content {
+      max-height: 0;
+      opacity: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .sidenote-toggle:checked ~ .sidenote-content {
+      max-height: 50rem;
+      opacity: 1;
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+      padding: var(--spacing-md);
+    }
+  }
+</style>
+
+<script>
+  // Add bidirectional hover effect between sidenote content and trigger text
+  // and prevent overlapping sidenotes in the margin
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidenoteContainers = document.querySelectorAll('.sidenote-container');
+
+    // Initialize sidenotes as visible on wide screens
+    sidenoteContainers.forEach(container => {
+      const toggle = container.querySelector('.sidenote-toggle');
+      if (toggle && window.innerWidth >= 1400) {
+        toggle.checked = true;
+      }
+    });
+
+    sidenoteContainers.forEach(container => {
+      const trigger = container.querySelector('.sidenote-trigger');
+      const content = container.querySelector('.sidenote-content');
+      const toggle = container.querySelector('.sidenote-toggle');
+
+      if (trigger && content) {
+        // Hovering over sidenote highlights trigger
+        content.addEventListener('mouseenter', () => {
+          trigger.classList.add('hover-active');
+        });
+
+        content.addEventListener('mouseleave', () => {
+          trigger.classList.remove('hover-active');
+        });
+
+        // Hovering over trigger highlights sidenote (only on wide screens)
+        trigger.addEventListener('mouseenter', () => {
+          if (window.innerWidth >= 1400) {
+            content.classList.add('hover-active');
+          }
+        });
+
+        trigger.addEventListener('mouseleave', () => {
+          if (window.innerWidth >= 1400) {
+            content.classList.remove('hover-active');
+          }
+        });
+      }
+
+      // Adjust positions when sidenote is toggled
+      if (toggle) {
+        toggle.addEventListener('change', () => {
+          // Delay to allow max-height and opacity transition to complete (300ms)
+          setTimeout(adjustSidenotePositions, 350);
+        });
+      }
+    });
+
+    // Prevent overlapping sidenotes on wide screens
+    function adjustSidenotePositions() {
+      if (window.innerWidth < 1400) return; // Only apply on wide screens
+
+      const containers = Array.from(document.querySelectorAll('.sidenote-container'));
+
+      // Reset all previous adjustments
+      containers.forEach(container => {
+        const content = container.querySelector('.sidenote-content');
+        if (content) {
+          content.style.marginTop = '';
+        }
+      });
+
+      // Filter to only visible sidenotes (where toggle is checked)
+      const visibleContainers = containers.filter(container => {
+        const toggle = container.querySelector('.sidenote-toggle');
+        return toggle && toggle.checked;
+      });
+
+      // Get visible content elements
+      const visibleContents = visibleContainers
+        .map(container => container.querySelector('.sidenote-content'))
+        .filter(Boolean);
+
+      // Check and adjust overlaps only among visible sidenotes
+      for (let i = 1; i < visibleContents.length; i++) {
+        const current = visibleContents[i];
+        const previous = visibleContents[i - 1];
+
+        const currentRect = current.getBoundingClientRect();
+        const previousRect = previous.getBoundingClientRect();
+
+        // If current overlaps with previous, push it down
+        const overlap = previousRect.bottom - currentRect.top;
+        if (overlap > 0) {
+          const currentMarginTop = parseFloat(getComputedStyle(current).marginTop) || 0;
+          current.style.marginTop = `${currentMarginTop + overlap + 16}px`; // 16px for spacing
+        }
+      }
+    }
+
+    // Run on load and resize
+    adjustSidenotePositions();
+    window.addEventListener('resize', adjustSidenotePositions);
+  });
+</script>

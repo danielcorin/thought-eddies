@@ -1,0 +1,17 @@
+---
+date: '2025-12-03T11:43:47Z'
+title: '2025-12-03'
+draft: false
+tags: []
+---
+
+import Sidenote from '@components/prose/Sidenote.astro';
+
+I made a `Sidenote` Astro component, inspired by [Tufte CSS](https://edwardtufte.github.io/tufte-css/).
+
+On wide screens, sidenotes appear in the right margin and start visible by default. The dotted underline indicates text with an associated sidenote. You can click the dotted text to toggle the sidenote's visibility with a smooth fade animation. When sidenotes are hidden, other visible sidenotes reposition to stay close to their reference text. Hovering over either the dotted text or the sidenote box highlights both and shows their connection. On narrow screens, clicking the dotted underlined text reveals the note inline with the same smooth fade animation. <Sidenote note="Like this!">It works like this!</Sidenote>
+
+Markdown provides native support for numbered footnotes[^1], but this approach never quite sat well with me.
+I like having the additional context available in visual proximity to the text that references it. I want to be able to see both at the same time. Jumping between the two takes me out of the flow of reading. Putting the note in the margin allows me to see and read it if I want, but doesn't interrupt the flow of the text and <Sidenote note="And if the note isn't relevant to me right now, I can just keep reading.">it's still easy to move past if I so choose.</Sidenote>
+
+[^1]: Like this!
