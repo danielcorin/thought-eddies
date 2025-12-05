@@ -314,7 +314,7 @@ select:focus-visible,
 /* Layout */
 main {
   padding: var(--spacing-xs) 0;
-  max-width: 90ch;
+  max-width: 75ch;
   margin: 0 auto var(--spacing-lg);
 }
 
@@ -569,13 +569,13 @@ kbd {
 /* Footnotes */
 sup a[data-footnote-ref] {
   text-decoration: none;
-  color: var(--color-link);
+  color: var(--color-ink);
   padding: 0 0.125em;
   font-size: 0.875em;
 }
 
 sup a[data-footnote-ref]:hover {
-  color: var(--color-ink);
+  color: var(--color-link);
   text-decoration: none;
 }
 
