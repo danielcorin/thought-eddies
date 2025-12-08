@@ -5,12 +5,14 @@ from pathlib import Path
 import subprocess
 
 def create_or_open_log():
-    # Get current date and time in local time
-    now = datetime.now()
+    # Get current date and time with system timezone
+    now = datetime.now().astimezone()
     year = now.strftime("%Y")
     month = now.strftime("%m")
     day = now.strftime("%d")
-    timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    timestamp = now.strftime("%Y-%m-%dT%H:%M:%S%z")
+    # Insert colon in timezone offset (e.g., -0500 -> -05:00)
+    timestamp = timestamp[:-2] + ":" + timestamp[-2:]
 
     # Construct file path
     base_dir = Path("src/content/logs")
