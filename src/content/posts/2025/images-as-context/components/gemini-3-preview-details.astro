@@ -1,0 +1,348 @@
+<div class="gemini-3-preview-details">
+  <div class="mac-window">
+    <!-- Title Bar -->
+    <div class="title-bar">
+      <!-- Close Box (Far Left) -->
+      <div class="btn btn-close"></div>
+
+      <!-- Title -->
+      <div class="title-text">untitled</div>
+
+      <!-- Right Controls -->
+      <div class="window-controls">
+        <!-- Zoom Button (Left of the two) -->
+        <!-- Upper left quadrant outlined -->
+        <div class="btn-zoom"></div>
+
+        <!-- Collapse Button (Right of the two) -->
+        <!-- Two black lines center with gap -->
+        <div class="btn-collapse"></div>
+      </div>
+    </div>
+
+    <!-- Main Body -->
+    <div class="window-body">
+      <!-- Text Input Area -->
+      <div class="text-editor">
+        <span class="cursor"></span>
+        <!-- Visual Mouse Cursor (I-beam) placed absolutely to match image -->
+        <div class="mouse-cursor">I</div>
+      </div>
+
+      <!-- Right Scrollbar -->
+      <div class="scrollbar-col">
+        <div class="scroll-track"></div>
+        <div class="scroll-controls">
+          <div class="scroll-btn"><div class="arrow-up"></div></div>
+          <div class="scroll-btn"><div class="arrow-down"></div></div>
+          <div class="resize-box">
+            <div class="resize-lines">
+              <div class="line l1"></div>
+              <div class="line l2"></div>
+              <div class="line l3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .gemini-3-preview-details {
+    --os-gray: #dddddd;
+    --os-border-light: #ffffff;
+    --os-border-shadow: #888888;
+    --os-border-dark: #000000;
+    --os-select-blue: #000080;
+    --title-bar-stripe-1: #dddddd;
+    --title-bar-stripe-2: #eeeeee;
+    background-color: #404040;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    font-family: "Geneva", "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", sans-serif;
+    -webkit-font-smoothing: none;
+  }
+
+  /* --- Main Window Structure --- */
+  .gemini-3-preview-details .mac-window {
+    width: 600px;
+    height: 450px;
+    background-color: var(--os-gray);
+    border: 1px solid var(--os-border-dark);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  /* Inner Bevel Effect */
+  .gemini-3-preview-details .mac-window::after {
+    content: '';
+    position: absolute;
+    top: 1px; left: 1px; right: 1px; bottom: 1px;
+    border-top: 1px solid var(--os-border-light);
+    border-left: 1px solid var(--os-border-light);
+    border-right: 1px solid var(--os-border-shadow);
+    border-bottom: 1px solid var(--os-border-shadow);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* --- Title Bar --- */
+  .gemini-3-preview-details .title-bar {
+    height: 18px;
+    margin: 2px;
+    margin-bottom: 4px;
+    background: repeating-linear-gradient(
+      to bottom,
+      #cccccc 0px,
+      #cccccc 1px,
+      #ffffff 1px,
+      #ffffff 2px
+    );
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #999;
+    z-index: 2;
+  }
+
+  .gemini-3-preview-details .title-text {
+    background-color: var(--os-gray);
+    padding: 0 8px;
+    font-size: 11px;
+    font-weight: bold;
+    color: black;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 2;
+    cursor: default;
+  }
+
+  /* --- Buttons --- */
+  /* Common Button Styles */
+  .gemini-3-preview-details .btn {
+    width: 11px;
+    height: 11px;
+    background-color: var(--os-gray);
+    border: 1px solid var(--os-border-dark);
+    position: absolute;
+    top: 2px;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #999;
+  }
+
+  .gemini-3-preview-details .btn:active {
+    background-color: #999;
+    box-shadow: inset 1px 1px 0 #555;
+  }
+
+  /* Close Button (Left) */
+  .gemini-3-preview-details .btn-close {
+    left: 4px;
+  }
+
+  /* --- Top Right Buttons (The Specific Request) --- */
+  .gemini-3-preview-details .window-controls {
+    position: absolute;
+    right: 4px;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* Zoom Button (Left of pair) */
+  .gemini-3-preview-details .btn-zoom {
+    position: relative;
+    width: 11px;
+    height: 11px;
+    border: 1px solid black;
+    background: #ccc;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #777;
+  }
+
+  .gemini-3-preview-details .btn-zoom::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 5px;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    background-color: #ccc;
+  }
+
+  /* Collapse/Shade Button (Rightmost) */
+  .gemini-3-preview-details .btn-collapse {
+    position: relative;
+    width: 11px;
+    height: 11px;
+    border: 1px solid black;
+    background: #ccc;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #777;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gemini-3-preview-details .btn-collapse::after {
+    content: '';
+    width: 5px;
+    height: 1px;
+    background-color: black;
+    box-shadow: 0 2px 0 black;
+    transform: translateY(-1px);
+  }
+
+  /* --- Content Area --- */
+  .gemini-3-preview-details .window-body {
+    flex-grow: 1;
+    display: flex;
+    border: 1px solid var(--os-border-dark);
+    background-color: white;
+    margin: 0 2px 2px 2px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .gemini-3-preview-details .text-editor {
+    flex-grow: 1;
+    background-color: white;
+    padding: 4px;
+    position: relative;
+    font-family: monospace;
+    font-size: 12px;
+    cursor: text;
+    overflow: hidden;
+  }
+
+  /* The Blinking Cursor */
+  .gemini-3-preview-details .cursor {
+    display: inline-block;
+    width: 1px;
+    height: 14px;
+    background-color: black;
+    animation: gemini-details-blink 1s step-end infinite;
+    vertical-align: text-top;
+  }
+
+  @keyframes gemini-details-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* The "I-beam" mouse cursor simulation */
+  .gemini-3-preview-details .mouse-cursor {
+    position: absolute;
+    top: 100px;
+    right: 80px;
+    font-family: serif;
+    font-size: 16px;
+    color: black;
+    pointer-events: none;
+    user-select: none;
+    transform: scaleY(1.2);
+  }
+
+  /* --- Scrollbar Section --- */
+  .gemini-3-preview-details .scrollbar-col {
+    width: 15px;
+    background-color: #fff;
+    border-left: 1px solid var(--os-border-dark);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Scroll Track (Dither pattern) */
+  .gemini-3-preview-details .scroll-track {
+    flex-grow: 1;
+    background-image:
+      linear-gradient(45deg, #ddd 25%, transparent 25%),
+      linear-gradient(-45deg, #ddd 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ddd 75%),
+      linear-gradient(-45deg, transparent 75%, #ddd 75%);
+    background-size: 2px 2px;
+    background-color: #fff;
+    position: relative;
+  }
+
+  /* Scroll Controls Container (Bottom) */
+  .gemini-3-preview-details .scroll-controls {
+    height: 45px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gemini-3-preview-details .scroll-btn {
+    width: 15px;
+    height: 15px;
+    background-color: var(--os-gray);
+    border-top: 1px solid var(--os-border-dark);
+    border-bottom: 1px solid var(--os-border-dark);
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #777;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Fix borders for stack */
+  .gemini-3-preview-details .scroll-btn:nth-child(1) { border-bottom: none; }
+  .gemini-3-preview-details .scroll-btn:nth-child(2) { border-bottom: 1px solid black; }
+
+  /* Arrows */
+  .gemini-3-preview-details .arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 4px solid black;
+  }
+
+  .gemini-3-preview-details .arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid black;
+  }
+
+  /* Resize Handle Box */
+  .gemini-3-preview-details .resize-box {
+    width: 15px;
+    height: 15px;
+    background-color: var(--os-gray);
+    border-top: 1px solid black;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* The 3 Diagonal Lines */
+  .gemini-3-preview-details .resize-lines {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+  }
+
+  .gemini-3-preview-details .line {
+    position: absolute;
+    background-color: black;
+    height: 1px;
+    transform: rotate(-45deg);
+    transform-origin: bottom right;
+  }
+
+  .gemini-3-preview-details .l1 { width: 12px; bottom: 0; right: 0; }
+  .gemini-3-preview-details .l2 { width: 8px; bottom: 0; right: 0; }
+  .gemini-3-preview-details .l3 { width: 4px; bottom: 0; right: 0; }
+</style>

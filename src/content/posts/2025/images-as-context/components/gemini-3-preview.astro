@@ -1,0 +1,409 @@
+<div class="gemini-preview">
+  <div class="mac-window">
+    <div class="mac-window-inner">
+      <!-- Title Bar -->
+      <div class="title-bar">
+        <div class="title-btn btn-close"></div>
+        <div class="title-text">untitled</div>
+        <div class="btn-group-right">
+          <div class="title-btn btn-collapse"></div>
+          <div class="title-btn btn-zoom"></div>
+        </div>
+      </div>
+
+      <!-- Content Area (Text + V-Scroll) -->
+      <div class="content-area">
+        <div class="text-editor">
+          <div class="cursor-pipe"></div>
+
+          <!-- Simulating the mouse pointer in the image -->
+          <div class="ibeam-halo">
+            <div class="ibeam"></div>
+          </div>
+        </div>
+
+        <div class="scrollbar-vertical">
+          <div class="scroll-track"></div>
+          <div class="scroll-buttons-container">
+            <div class="scroll-btn"><div class="arrow-up"></div></div>
+            <div class="scroll-btn"><div class="arrow-down"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Area (H-Scroll + Resize) -->
+      <div class="bottom-bar">
+        <div class="h-scroll-track"></div>
+        <div class="grow-box"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .gemini-preview {
+    --bg-gray: #dddddd;
+    --border-light: #ffffff;
+    --border-shadow: #888888;
+    --border-dark: #000000;
+    --title-stripe-1: #ccccff; /* Slight blue tint often seen in emulators, strictly grayscale below */
+    --stripe-dark: #999999;
+    --stripe-light: #dddddd;
+    background-color: #444;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    font-family: 'Geneva', 'Tahoma', sans-serif;
+    -webkit-font-smoothing: none;
+  }
+
+  /* --- The Window Container --- */
+  .mac-window {
+    width: 600px;
+    height: 450px;
+    background-color: var(--bg-gray);
+    border: 1px solid var(--border-dark);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    padding: 2px;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  /* Inner bevel wrapper */
+  .mac-window-inner {
+    border-top: 1px solid var(--border-light);
+    border-left: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-shadow);
+    border-bottom: 1px solid var(--border-shadow);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 2px;
+    box-sizing: border-box;
+  }
+
+  /* --- Title Bar --- */
+  .title-bar {
+    height: 18px;
+    min-height: 18px;
+    border: 1px solid var(--border-dark);
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    position: relative;
+    /* The classic pinstripe pattern */
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--stripe-light) 0px,
+      var(--stripe-light) 1px,
+      var(--stripe-dark) 1px,
+      var(--stripe-dark) 2px
+    );
+  }
+
+  .title-text {
+    background-color: var(--bg-gray);
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: bold;
+    color: black;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    letter-spacing: 0.5px;
+  }
+
+  /* Title Bar Widgets (Close / Collapse / Zoom) */
+  .title-btn {
+    width: 11px;
+    height: 11px;
+    background-color: var(--bg-gray);
+    border-top: 1px solid var(--border-light);
+    border-left: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-shadow);
+    border-bottom: 1px solid var(--border-shadow);
+    box-shadow: 0 0 0 1px var(--border-dark);
+    position: relative;
+  }
+
+  .title-btn:active {
+    border-top: 1px solid var(--border-shadow);
+    border-left: 1px solid var(--border-shadow);
+    border-right: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .btn-group-right {
+    display: flex;
+    gap: 5px;
+  }
+
+  /* Icons inside buttons */
+  .btn-collapse::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 1px solid black;
+  }
+
+  .btn-zoom::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 5px;
+    height: 5px;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+  .btn-zoom::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    z-index: 1;
+  }
+
+  /* --- Main Content Area --- */
+  .content-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid var(--border-dark);
+    position: relative;
+  }
+
+  /* The White Text Editor Canvas */
+  .text-editor {
+    background-color: white;
+    flex-grow: 1;
+    position: relative;
+    overflow: hidden;
+    /* Inset look usually handled by outer border, but sometimes inner shadow */
+  }
+
+  /* The blinking pipe cursor */
+  .cursor-pipe {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1px;
+    height: 13px;
+    background-color: black;
+    animation: blink 1s steps(2, start) infinite;
+  }
+
+  @keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* The floating I-beam mouse cursor reproduction */
+  .ibeam {
+    position: absolute;
+    top: 120px;
+    right: 60px;
+    height: 16px;
+    width: 8px;
+  }
+  /* Vertical line */
+  .ibeam::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: black;
+  }
+  /* Top and bottom serifs */
+  .ibeam::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 7px;
+    height: 100%;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    /* Masking the middle to create the I shape */
+    background: transparent;
+  }
+  /* White halo for visibility (simulating OS cursor overlay) */
+  .ibeam-halo {
+    position: absolute;
+    top: 120px;
+    right: 60px;
+    height: 16px;
+    width: 8px;
+    filter: drop-shadow(0px 0px 1px white) drop-shadow(0px 0px 1px white);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  /* --- Right Vertical Scrollbar --- */
+  .scrollbar-vertical {
+    width: 16px;
+    background-color: var(--bg-gray);
+    border-left: 1px solid var(--border-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .scroll-track {
+    flex-grow: 1;
+    background-color: white; /* In OS9 inactive windows or empty docs, often white or patterned */
+    /* Optional: The distinct classic dither pattern */
+    background-image:
+      linear-gradient(
+        45deg,
+        #ddd 25%,
+        transparent 25%,
+        transparent 75%,
+        #ddd 75%,
+        #ddd
+      ),
+      linear-gradient(
+        45deg,
+        #ddd 25%,
+        transparent 25%,
+        transparent 75%,
+        #ddd 75%,
+        #ddd
+      );
+    background-size: 2px 2px;
+    background-position:
+      0 0,
+      1px 1px;
+    opacity: 0.3;
+  }
+
+  .scroll-buttons-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scroll-btn {
+    width: 15px;
+    height: 15px;
+    background-color: var(--bg-gray);
+    border-top: 1px solid var(--border-light);
+    border-left: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-shadow);
+    border-bottom: 1px solid var(--border-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  /* Separator line above scroll buttons */
+  .scroll-buttons-container {
+    border-top: 1px solid var(--border-dark);
+  }
+  .scroll-btn:first-child {
+    border-bottom: 1px solid var(--border-dark);
+  }
+
+  .arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 4px solid black;
+  }
+
+  .arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid black;
+  }
+
+  /* --- Bottom Horizontal Area --- */
+  .bottom-bar {
+    height: 16px;
+    display: flex;
+    border-left: 1px solid var(--border-dark);
+    border-right: 1px solid var(--border-dark);
+    border-bottom: 1px solid var(--border-dark);
+    background-color: var(--bg-gray);
+  }
+
+  .h-scroll-track {
+    flex-grow: 1;
+    background-color: white; /* Empty track style */
+    border-top: 1px solid var(--border-dark);
+    border-right: 1px solid var(--border-dark);
+    /* Dither pattern */
+    background-image:
+      linear-gradient(
+        45deg,
+        #ddd 25%,
+        transparent 25%,
+        transparent 75%,
+        #ddd 75%,
+        #ddd
+      ),
+      linear-gradient(
+        45deg,
+        #ddd 25%,
+        transparent 25%,
+        transparent 75%,
+        #ddd 75%,
+        #ddd
+      );
+    background-size: 2px 2px;
+    background-position:
+      0 0,
+      1px 1px;
+    opacity: 0.3;
+  }
+
+  /* The Resize / Grow Box */
+  .grow-box {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    background-color: var(--bg-gray);
+    border-top: 1px solid var(--border-dark);
+    position: relative;
+    /* Diagonal resize lines */
+    background: linear-gradient(
+      135deg,
+      transparent 2px,
+      var(--border-dark) 2px,
+      var(--border-dark) 3px,
+      transparent 3px,
+      transparent 5px,
+      var(--border-dark) 5px,
+      var(--border-dark) 6px,
+      transparent 6px,
+      transparent 8px,
+      var(--border-dark) 8px,
+      var(--border-dark) 9px,
+      transparent 9px
+    );
+    background-position: 4px 4px;
+    background-repeat: no-repeat;
+  }
+</style>

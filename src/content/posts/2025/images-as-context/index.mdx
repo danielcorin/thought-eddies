@@ -1,0 +1,157 @@
+---
+title: 'Images as Context'
+createdAt: 2025-12-06T10:00:12-05:00
+updatedAt: 2025-12-09T10:00:12-05:00
+draft: false
+location: 'Brooklyn'
+tags: [context, multi-modal]
+---
+
+import ChatContainer from '@components/prose/ChatContainer.astro';
+import ChatMessage from '@components/prose/ChatMessage.astro';
+import windowImage from './images/window.png';
+import modernOsImage from './images/modern-os.png';
+
+import Opus45 from './components/opus-4.5.astro';
+import Gemini3Preview from './components/gemini-3-preview.astro';
+import Gemini3PreviewDetails from './components/gemini-3-preview-details.astro';
+
+Working with coding agents has been a dance of context management.
+These days, if an agent loop isn't producing the result I want, it's more often than not a problem of context rather than a shortcoming of the language model or agent scaffold/harness.
+
+Because of this, I've started thinking about context as the object of value in building software and doing things with a computer.
+Of all the ideas that exist in the universe, the context you are working with provides the directional leanings for the problem you are dealing with and the implicit shape a solution could take.
+
+Context also comes with a variety of information densities.
+This week, I tried to provide the [Macintosh Human Interface Guidelines](https://dn721903.ca.archive.org/0/items/apple-hig/Macintosh_HIG_1992.pdf) from 1992 as context to Claude Code to coax out a CSS library that would allow me to style a website with the design patterns from Mac OS 9.
+After chopping up the 400+ page PDF into single-page PDFs, Claude Code navigated these pages via the table of contents it found on one of those pages, then created a markdown file with its findings from the design.
+
+The results were far from pixel perfect, but the concept, that context can be grouped, refined, transformed, and carried around between agents crystallized for me from the experiment.
+
+My working thesis is the agent struggled to implement pixel perfect design, not because it can't, but because I hadn't provided it a well defined design specification.
+And what I had provided had relatively low information signal to solve that problem.
+
+However, if I were to refine a design specification out of this more diluted context, that could become a high information density piece of context that would be portable to communicate the idea with clarity to any agent in the context of any problem I was trying to solve using this design system.
+
+## The image problem
+
+The context problem is not quite that simple though.
+
+When it comes to reproducing something in code, an image is rarely enough to get a pixel perfect design.
+Whereas language descriptions, especially those with specific measurements, seem to get better results.
+
+I'm not the only one who has [noticed this behavior](https://j0nah.com/i-failed-to-recreate-the-1996-space-jam-website-with-claude).
+
+Here's a straightforward example I tried for this screenshot of a text document in Mac OS 9, prompting `claude-opus-4-5-20251101`.
+
+<ChatContainer model="claude-opus-4-5-20251101" user="Me">
+  <ChatMessage role="user">
+    given the provided image of the text editor in mac os 9, output a pixel perfect reproduction in html and css
+
+    <img src={windowImage.src} alt="A screenshot of the text editor in Mac OS 9" class="chat-image-component" />
+
+  </ChatMessage>
+</ChatContainer>
+
+Here's `claude-opus-4-5-20251101`'s output.
+
+<Opus45 />
+
+Here is `gemini-3-pro-preview`'s output.
+
+<Gemini3Preview />
+
+I chose these specific models because they are the top performing models on [DesignArena](https://www.designarena.ai/).
+
+Both results are obviously inspired by the source image, but also not close to pixel perfect.
+And I suspect we're not exactly starting from zero-knowledge in this case.
+These models know roughly what Mac OS 9 looks like and can describe it in language:
+
+> ...
+> Key Visual Elements
+>
+> Window Design
+>
+> - **Light gray** textured backgrounds with subtle horizontal pinstripes
+> - Rounded rectangular title bars with a **striped/ridged texture**
+>   ...
+
+At least in broad strokes.
+
+While I give Gemini credit for doing the best job I've seen on this particular task by a language model, it's still not close to a pixel perfect reproduction.
+
+## Words work better
+
+So how do we do better?
+We could modify the image to annotate focus points for the model, but the image is _what we want_.
+The model just isn't quite giving it to us.
+
+So what can we do?
+We can use words.
+
+<ChatContainer model="gemini-3-pro-preview" user="Me">
+  <ChatMessage role="user">
+    given the provided image of the text editor in mac os 9, output a pixel perfect reproduction in html and css. take particular care in crafting the buttons in the top right corner. these are not modern operating system buttons. the right most has two black horizontal lines going through the center with a small gap between them. the button to the left of that has the upper left hand quadrant outlined in black. be sure to get these buttons pixel perfect to the description.
+
+    <img src={windowImage.src} alt="A screenshot of the text editor in Mac OS 9" class="chat-image-component" />
+
+  </ChatMessage>
+</ChatContainer>
+
+With Gemini 3 Pro Preview, we get this:
+
+<Gemini3PreviewDetails />
+
+Not exactly right, but meaningfully closer (as far as the buttons are concerned).
+The words help get the model closer to the desired result.
+This is the pattern we've become familiar with when working with coding agents.
+
+The image alone is not quite sufficient to get the desired output.
+We need to follow up with words to improve clarity if we want pixel perfect.
+
+This recognition is informative because it suggests that text-based representations of concepts are more effective for getting models to produce the desired output in code.
+Text provides an easier means to steer incorrect output and seems to capture a specification more losslessly and portably than an image.
+
+Since we're looking for language-like output, language input seems to be the most effective way to steer.
+In the case of an image model, like [Nano Banana Pro](https://deepmind.google/models/gemini-image/pro/), if you want a near pixel perfect reproduction of an image in a modified environment, you just give the model the image.
+
+<ChatContainer model="gemini-3-pro-image-preview" user="Me">
+  <ChatMessage role="user">
+    place the provided image of the text editor in mac os 9 in a hyper modern operating system of the future in 2095. keep the provided window design and buttons pixel perfect.
+
+    <img src={windowImage.src} alt="A screenshot of the text editor in Mac OS 9" />
+
+  </ChatMessage>
+  <ChatMessage role="assistant">
+    <img src={modernOsImage.src} alt="A screenshot of the text editor in Mac OS 9 placed in a modern operating system" />
+  </ChatMessage>
+</ChatContainer>
+
+If you want an image, give an image.
+If you want text, give text.
+
+The state of the art in both areas is quite good.
+
+## Images are helpful but not (yet) sufficient context to produce code
+
+Images are pixels on a screen.
+If you want to introduce a new visual element to an image, you work in these pixels and these pixels alone.
+At least, until models start creating images with layers.
+
+To reproduce an image as a website, a translation of the image into code that a browser renders is necessary.
+That feels a lot more complicated to me.
+
+It's possible this is, in a way, a data problem.
+Based on my research, there aren't that many attempts to reimplement the Mac OS 9 design system on the web.
+If there were, the model could probably execute this task without issue, roughly reproducing from example projects.
+
+The models' failures seem like failures to generalize for some edge cases.
+Mac OS 9 button icons are unusual looking.
+Nothing uses these today.
+The UI pattern did not endure.
+
+A model can be prompted with words to reproduce button designs like this.
+But they balk when asked to describe or reproduce it themselves given the image alone or even just the concept, e.g. "describe the two buttons in the top right corner of the windows in the Mac OS 9 Platinum UI".
+They just don't seem to really know what they are the way they seem to know about other things in depth.
+
+This challenge continues to be an interesting one that shows up as I attempt to transform ideas from context into different code projects.
