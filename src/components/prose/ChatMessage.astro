@@ -10,44 +10,77 @@ interface Props {
 
 const { role, model, timestamp } = Astro.props;
 
-// Helper to extract text and image content from slots
-function extractContent(slotContent: string): {
-  text: string;
-  images: { src: string; alt?: string }[];
-} {
-  const images: { src: string; alt?: string }[] = [];
-  let text = slotContent;
+type ContentBlock =
+  | { type: 'text'; content: string }
+  | { type: 'image'; src: string; alt?: string }
+  | { type: 'iframe'; src: string; title?: string; width?: string; height?: string };
 
-  // Extract images from the slot content
-  // Look for both regular img tags and our special chat-image-component class
-  const imgRegex = /<img[^>]+class=["']chat-image-component["'][^>]*src=["']([^"']+)["'](?:[^>]*alt=["']([^"']+)["'])?[^>]*>/g;
-  const standardImgRegex = /<img[^>]+src=["']([^"']+)["'](?:[^>]*alt=["']([^"']+)["'])?[^>]*>/g;
+// Helper to parse content into ordered blocks of text, images, and iframes
+function parseContentBlocks(slotContent: string): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
 
+  // Match img tags and iframe tags
+  const mediaRegex = /<(img|iframe)\s+[^>]*?(?:\/>|><\/iframe>|>)/gi;
+
+  let lastIndex = 0;
   let match;
 
-  // First extract ChatImage components
-  while ((match = imgRegex.exec(slotContent)) !== null) {
-    images.push({ src: match[1], alt: match[2] });
-  }
-
-  // Then extract standard images (that aren't ChatImage components)
-  text = slotContent.replace(imgRegex, ''); // Remove ChatImage components
-  while ((match = standardImgRegex.exec(text)) !== null) {
-    if (!text.includes('chat-image-component')) {
-      images.push({ src: match[1], alt: match[2] });
+  while ((match = mediaRegex.exec(slotContent)) !== null) {
+    // Add text before this media element if any
+    const textBefore = slotContent.slice(lastIndex, match.index).trim();
+    if (textBefore) {
+      blocks.push({ type: 'text', content: textBefore });
     }
+
+    const tagName = match[1].toLowerCase();
+    const tag = match[0];
+
+    if (tagName === 'img') {
+      // Extract src and alt from the img tag
+      const srcMatch = tag.match(/src=["']([^"']+)["']/);
+      const altMatch = tag.match(/alt=["']([^"']+)["']/);
+
+      if (srcMatch) {
+        blocks.push({
+          type: 'image',
+          src: srcMatch[1],
+          alt: altMatch?.[1]
+        });
+      }
+    } else if (tagName === 'iframe') {
+      // Extract src, title, width, height from iframe tag
+      const srcMatch = tag.match(/src=["']([^"']+)["']/);
+      const titleMatch = tag.match(/title=["']([^"']+)["']/);
+      const widthMatch = tag.match(/width=["']([^"']+)["']/);
+      const heightMatch = tag.match(/height=["']([^"']+)["']/);
+
+      if (srcMatch) {
+        blocks.push({
+          type: 'iframe',
+          src: srcMatch[1],
+          title: titleMatch?.[1],
+          width: widthMatch?.[1],
+          height: heightMatch?.[1]
+        });
+      }
+    }
+
+    lastIndex = match.index + match[0].length;
   }
 
-  // Remove all img tags from text
-  text = text.replace(standardImgRegex, '').trim();
+  // Add any remaining text after the last media element
+  const remainingText = slotContent.slice(lastIndex).trim();
+  if (remainingText) {
+    blocks.push({ type: 'text', content: remainingText });
+  }
 
-  return { text, images };
+  return blocks;
 }
 
 const defaultContent = await Astro.slots.render('default');
 const thinkingContent = await Astro.slots.render('thinking');
 
-const { text, images } = extractContent(defaultContent);
+const contentBlocks = parseContentBlocks(defaultContent);
 const thinking = thinkingContent ? [thinkingContent] : [];
 ---
 
@@ -60,65 +93,98 @@ const thinking = thinkingContent ? [thinkingContent] : [];
   <div class="message-container">
     {role === 'user' && (
       <div class="message user">
-      <div class="message-content">
-        <div class="user-label">User</div>
-        <div class="bubble user-bubble">
-          <Markdown of={text} />
-          {images.map((img, index) => (
-            <img
-              src={img.src}
-              alt={img.alt || `Image ${index + 1} from user message`}
-              class="message-image"
-            />
+        <div class="message-content">
+          <div class="user-label">User</div>
+          <div class="bubble user-bubble">
+            {contentBlocks.map((block, index) => (
+              block.type === 'text' ? (
+                <Markdown of={block.content} />
+              ) : block.type === 'image' ? (
+                <img
+                  src={block.src}
+                  alt={block.alt || `Image ${index + 1} from user message`}
+                  class="message-image"
+                />
+              ) : (
+                <iframe
+                  src={block.src}
+                  title={block.title || `Embedded content ${index + 1}`}
+                  width={block.width || '100%'}
+                  height={block.height || '450'}
+                  class="message-iframe"
+                />
+              )
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+    {role === 'assistant' && (
+      <div class="message assistant">
+        <div class="message-content">
+          <div class="model-label">{model || 'Assistant'}</div>
+          {thinking.length > 0 && (
+            <details class="thinking-container">
+              <summary class="thinking-summary">
+                <Icon name="ph:caret-right" class="thinking-chevron" />
+                Thinking process
+              </summary>
+              <div class="thinking-content">
+                {thinking.map((thought) => (
+                  <Markdown of={thought} />
+                ))}
+              </div>
+            </details>
+          )}
+          <div class="bubble assistant-bubble">
+            {contentBlocks.map((block, index) => (
+              block.type === 'text' ? (
+                <Markdown of={block.content} />
+              ) : block.type === 'image' ? (
+                <img
+                  src={block.src}
+                  alt={block.alt || `Image ${index + 1} from ${model || 'assistant'} response`}
+                  class="message-image"
+                />
+              ) : (
+                <iframe
+                  src={block.src}
+                  title={block.title || `Embedded content ${index + 1}`}
+                  width={block.width || '100%'}
+                  height={block.height || '450'}
+                  class="message-iframe"
+                />
+              )
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+    {role === 'system' && (
+      <div class="message system">
+        <div class="bubble system-bubble">
+          {contentBlocks.map((block, index) => (
+            block.type === 'text' ? (
+              <Markdown of={block.content} />
+            ) : block.type === 'image' ? (
+              <img
+                src={block.src}
+                alt={block.alt || `Image ${index + 1} from system message`}
+                class="message-image"
+              />
+            ) : (
+              <iframe
+                src={block.src}
+                title={block.title || `Embedded content ${index + 1}`}
+                width={block.width || '100%'}
+                height={block.height || '450'}
+                class="message-iframe"
+              />
+            )
           ))}
         </div>
       </div>
-    </div>
-  )}
-  {role === 'assistant' && (
-    <div class="message assistant">
-      <div class="message-content">
-        <div class="model-label">{model || 'Assistant'}</div>
-        {thinking.length > 0 && (
-          <details class="thinking-container">
-            <summary class="thinking-summary">
-              <Icon name="ph:caret-right" class="thinking-chevron" />
-              Thinking process
-            </summary>
-            <div class="thinking-content">
-              {thinking.map((thought) => (
-                <Markdown of={thought} />
-              ))}
-            </div>
-          </details>
-        )}
-        <div class="bubble assistant-bubble">
-          <Markdown of={text} />
-          {images.map((img, index) => (
-            <img
-              src={img.src}
-              alt={img.alt || `Image ${index + 1} from ${model || 'assistant'} response`}
-              class="message-image"
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  )}
-  {role === 'system' && (
-    <div class="message system">
-      <div class="bubble system-bubble">
-        <Markdown of={text} />
-        {images.map((img, index) => (
-          <img
-            src={img.src}
-            alt={img.alt || `Image ${index + 1} from system message`}
-            class="message-image"
-          />
-        ))}
-      </div>
-    </div>
-  )}
+    )}
   </div>
 </>
 
@@ -237,6 +303,15 @@ const thinking = thinkingContent ? [thinkingContent] : [];
     max-width: 100%;
     max-height: 500px;
     object-fit: contain;
+  }
+
+  .message-iframe {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    max-width: 100%;
+    background: #fff;
+    display: block;
   }
 
   /* Ensure text colors respect dark mode */
@@ -428,3 +503,48 @@ const thinking = thinkingContent ? [thinkingContent] : [];
     }
   }
 </style>
+
+<script>
+  // Resize iframes based on their content dimensions
+  function resizeIframes() {
+    const iframes = document.querySelectorAll('.message-iframe');
+    iframes.forEach((iframe) => {
+      iframe.addEventListener('load', () => {
+        try {
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+          if (iframeDoc) {
+            const body = iframeDoc.body;
+            const html = iframeDoc.documentElement;
+
+            // Get the actual content dimensions
+            const contentWidth = Math.max(
+              body.scrollWidth,
+              body.offsetWidth,
+              html.scrollWidth,
+              html.offsetWidth
+            );
+            const contentHeight = Math.max(
+              body.scrollHeight,
+              body.offsetHeight,
+              html.scrollHeight,
+              html.offsetHeight
+            );
+
+            // Set iframe dimensions, respecting max-width from CSS
+            iframe.style.width = contentWidth + 'px';
+            iframe.style.height = contentHeight + 'px';
+          }
+        } catch (e) {
+          // Cross-origin iframes will throw - fall back to default dimensions
+          console.debug('Could not resize iframe (likely cross-origin):', e);
+        }
+      });
+    });
+  }
+
+  // Run on initial load
+  resizeIframes();
+
+  // Also run when navigating (for Astro view transitions)
+  document.addEventListener('astro:page-load', resizeIframes);
+</script>
