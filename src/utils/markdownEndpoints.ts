@@ -134,3 +134,73 @@ export const buildLogUrl = (id: string): string => {
   if (!parsed) return `/logs/${id.replace(/\.mdx?$/, '')}`;
   return `/logs/${parsed.year}/${String(parsed.month).padStart(2, '0')}/${String(parsed.day).padStart(2, '0')}`;
 };
+
+// Date constants for consistent formatting across the site
+export const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+] as const;
+
+export const SHORT_MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+] as const;
+
+export const WEEKDAY_NAMES = [
+  'Sun',
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+] as const;
+
+/**
+ * Get date components from a log entry, using the log ID for timezone-safe parsing
+ * Falls back to UTC methods if log ID can't be parsed
+ */
+export const getLogDateComponents = (
+  logId: string,
+  fallbackDate: Date
+): { year: number; month: number; day: number } => {
+  const parsed = parseLogId(logId);
+  if (parsed) return parsed;
+  return {
+    year: fallbackDate.getUTCFullYear(),
+    month: fallbackDate.getUTCMonth() + 1,
+    day: fallbackDate.getUTCDate(),
+  };
+};
+
+/**
+ * Format a log date as "Wed, Dec 10, 2025" using parsed components
+ */
+export const formatLogFullDate = (
+  year: number,
+  month: number,
+  day: number
+): string => {
+  const dateUTC = new Date(Date.UTC(year, month - 1, day));
+  return `${WEEKDAY_NAMES[dateUTC.getUTCDay()]}, ${SHORT_MONTH_NAMES[month - 1]} ${String(day).padStart(2, '0')}, ${year}`;
+};
