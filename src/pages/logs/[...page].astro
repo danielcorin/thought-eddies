@@ -5,6 +5,7 @@ import Tag from "@components/Tag.astro";
 import YearNavigation from "@components/layout/YearNavigation.astro";
 import Layout from "@layouts/Layout.astro";
 import { getContentPreview } from "@utils/text";
+import { getLogDateComponents, SHORT_MONTH_NAMES } from "@utils/markdownEndpoints";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
@@ -28,7 +29,7 @@ const { page } = Astro.props as { page: any };
 const allLogs = await getCollection("logs");
 const publishedLogs = allLogs.filter((log) => !log.data.draft);
 const yearsWithLogs = [
-  ...new Set(publishedLogs.map((log) => new Date(log.data.date).getFullYear())),
+  ...new Set(publishedLogs.map((log) => getLogDateComponents(log.id, new Date(log.data.date)).year)),
 ].sort((a, b) => b - a);
 
 const ogImage = `/logs/og.png`;
@@ -49,7 +50,7 @@ const ogImage = `/logs/og.png`;
     <div class="toc">
       {
         page.data.map(async (log: any) => {
-          const date = new Date(log.data.date);
+          const { year: logYear, month: logMonth, day: logDay } = getLogDateComponents(log.id, new Date(log.data.date));
           const rawContent = log.body || "";
           const preview = getContentPreview(rawContent, 200);
 
@@ -57,16 +58,16 @@ const ogImage = `/logs/og.png`;
             <article class="entry">
               <time class="entry-date">
                 <a href={`/logs/${log.id}`} class="date-day">
-                  {String(date.getDate()).padStart(2, "0")}
+                  {String(logDay).padStart(2, "0")}
                 </a>
                 <a
-                  href={`/logs/${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}`}
+                  href={`/logs/${logYear}/${String(logMonth).padStart(2, "0")}`}
                   class="date-month"
                 >
-                  {date.toLocaleDateString("en-US", { month: "short" })}
+                  {SHORT_MONTH_NAMES[logMonth - 1]}
                 </a>
-                <a href={`/logs/${date.getFullYear()}`} class="date-year">
-                  {date.getFullYear()}
+                <a href={`/logs/${logYear}`} class="date-year">
+                  {logYear}
                 </a>
               </time>
               <div class="entry-content">

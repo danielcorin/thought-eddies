@@ -8,15 +8,20 @@ import Breadcrumbs from "@components/Breadcrumbs.astro";
 import ClickableImages from "@components/ClickableImages.astro";
 import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
 import { getCommitUrl } from '@utils/git';
-import { parseLogId } from '@utils/markdownEndpoints';
+import {
+  getLogDateComponents,
+  formatLogFullDate,
+  MONTH_NAMES,
+  SHORT_MONTH_NAMES,
+} from '@utils/markdownEndpoints';
 
 const { frontmatter, ogImage, slug } = Astro.props;
 
 // Parse date from slug to avoid timezone issues (slug is like "2025/12/10" or "2025/12/10.mdx")
-const parsedDate = parseLogId(slug);
-const logYear = parsedDate?.year ?? new Date(frontmatter.date).getUTCFullYear();
-const logMonth = parsedDate?.month ?? (new Date(frontmatter.date).getUTCMonth() + 1);
-const logDay = parsedDate?.day ?? new Date(frontmatter.date).getUTCDate();
+const { year: logYear, month: logMonth, day: logDay } = getLogDateComponents(
+  slug,
+  new Date(frontmatter.date)
+);
 
 // Get all logs to find prev/next
 const allLogs = await getCollection("logs");
@@ -46,27 +51,13 @@ const commitUrl = currentLog ? getCommitUrl(currentLog.filePath, repoUrl) : null
 
 // Helper function to format date with two-digit day using UTC
 const formatDateWithPaddedDay = (date: Date): string => {
-  const month = date.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
+  const month = SHORT_MONTH_NAMES[date.getUTCMonth()];
   const day = String(date.getUTCDate()).padStart(2, "0");
   return `${month} ${day}`;
 };
 
-// Helper function to format full date with two-digit day using UTC
-const formatFullDateWithPaddedDay = (date: Date): string => {
-  const weekday = date.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" });
-  const month = date.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
-  const day = String(date.getUTCDate()).padStart(2, "0");
-  const year = date.getUTCFullYear();
-  return `${weekday}, ${month} ${day}, ${year}`;
-};
-
 // Format current log date using parsed values (timezone-safe)
-const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const shortMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-// Create a UTC date from parsed components for weekday calculation
-const logDateUTC = new Date(Date.UTC(logYear, logMonth - 1, logDay));
-const currentLogFullDate = `${weekdayNames[logDateUTC.getUTCDay()]}, ${shortMonthNames[logMonth - 1]} ${String(logDay).padStart(2, "0")}, ${logYear}`;
+const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage} pageType="logs">
@@ -76,7 +67,7 @@ const currentLogFullDate = `${weekdayNames[logDateUTC.getUTCDay()]}, ${shortMont
       <Breadcrumbs items={[
         { label: "Logs", href: "/logs" },
         { label: String(logYear), href: `/logs/${logYear}` },
-        { label: monthNames[logMonth - 1], href: `/logs/${logYear}/${String(logMonth).padStart(2, "0")}` },
+        { label: MONTH_NAMES[logMonth - 1], href: `/logs/${logYear}/${String(logMonth).padStart(2, "0")}` },
         { label: String(logDay).padStart(2, "0") }
       ]} />
 
