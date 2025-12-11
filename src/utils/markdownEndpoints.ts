@@ -98,3 +98,39 @@ export const formatDate = (date: Date): string => {
     timeZone: 'UTC',
   });
 };
+
+/**
+ * Parse a log ID (file path) to extract year, month, day
+ * e.g., "2025/12/10.mdx" or "2025/12/10" -> { year: 2025, month: 12, day: 10 }
+ */
+export const parseLogId = (
+  id: string
+): { year: number; month: number; day: number } | null => {
+  const match = id.match(/^(\d{4})\/(\d{2})\/(\d{2})(\.mdx?)?$/);
+  if (!match) return null;
+  return {
+    year: parseInt(match[1], 10),
+    month: parseInt(match[2], 10),
+    day: parseInt(match[3], 10),
+  };
+};
+
+/**
+ * Format a log ID as YYYY-MM-DD date string
+ * e.g., "2025/12/10.mdx" -> "2025-12-10"
+ */
+export const formatLogIdAsDate = (id: string): string => {
+  const parsed = parseLogId(id);
+  if (!parsed) return '';
+  return `${parsed.year}-${String(parsed.month).padStart(2, '0')}-${String(parsed.day).padStart(2, '0')}`;
+};
+
+/**
+ * Build log URL from log ID
+ * e.g., "2025/12/10.mdx" -> "/logs/2025/12/10"
+ */
+export const buildLogUrl = (id: string): string => {
+  const parsed = parseLogId(id);
+  if (!parsed) return `/logs/${id.replace(/\.mdx?$/, '')}`;
+  return `/logs/${parsed.year}/${String(parsed.month).padStart(2, '0')}/${String(parsed.day).padStart(2, '0')}`;
+};

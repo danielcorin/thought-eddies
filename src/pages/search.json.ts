@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { formatLogIdAsDate, buildLogUrl } from '@utils/markdownEndpoints';
 
 export const GET: APIRoute = async () => {
   // Get all content
@@ -28,15 +29,15 @@ export const GET: APIRoute = async () => {
     content: post.body,
   }));
 
-  // Process logs
+  // Process logs - use log ID to derive date to avoid timezone issues
   const logs = allLogs.map((log) => ({
     type: 'log',
     id: log.id,
     title: log.data.title,
     description: '',
     tags: log.data.tags || [],
-    date: log.data.date,
-    url: `/logs/${new Date(log.data.date).getFullYear()}/${String(new Date(log.data.date).getMonth() + 1).padStart(2, '0')}/${String(new Date(log.data.date).getDate()).padStart(2, '0')}`,
+    date: formatLogIdAsDate(log.id) || log.data.date,
+    url: buildLogUrl(log.id),
     content: log.body,
   }));
 
