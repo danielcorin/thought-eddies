@@ -5,7 +5,7 @@ import { getCollection, render } from 'astro:content';
 
 // Get all now entries and sort by date to get the most recent
 const nowEntries = await getCollection('now');
-const sortedEntries = nowEntries.sort((a, b) => 
+const sortedEntries = nowEntries.sort((a, b) =>
   new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
 );
 
@@ -25,7 +25,7 @@ const lastUpdated = latestEntry.data.date.toLocaleDateString('en-US', {
 });
 ---
 
-<Layout title="Now" description="What I'm focused on at this point in my life" pageType="now">
+<Layout title="Now" pageType="now">
   <Navigation selected="now" />
   <main>
     <div class="page-header">
@@ -33,6 +33,7 @@ const lastUpdated = latestEntry.data.date.toLocaleDateString('en-US', {
       <p class="last-updated">Last updated: {lastUpdated}</p>
     </div>
     <article class="prose">
+      <p><em>What is a <a href="https://nownownow.com/about">now page</a>?</em></p>
       <Content />
     </article>
   </main>
