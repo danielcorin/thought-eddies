@@ -9,5 +9,8 @@ I've seen coding agents refuse or avoid writing comprehensive tests because they
 Unlike when prompted to code something, it seems when prompted to test things, agents are kind of lazy.
 I wonder if this specifically correlates with how easy it is to reward hack passing tests.
 Getting 100% unit coverage is notoriously irritating.
-There is substantial diminishing returns and the final few percent usually come down to covering lines that bear almost no impact on ensuring the system continues working as designed.
+There are substantial diminishing returns and the final few percent usually come down to covering lines that bear almost no impact on ensuring the system continues working as designed.
 Thus, I'm speculating agents struggle to do this because most people can't be bothered to either.
+
+Or possibly it's because tests test code, thus models can write code, have it validated, and be reinformed to do better.
+But I can't ever remember seeing anyone write code to test tests.
