@@ -244,8 +244,8 @@ export default function SearchPage() {
     filteredData.forEach((item) => {
       let score = 0;
       const title = item.title.toLowerCase();
-      const content = item.content.toLowerCase();
-      const description = item.description.toLowerCase();
+      const content = (item.content || '').toLowerCase();
+      const description = (item.description || '').toLowerCase();
       const tags = item.tags.join(' ').toLowerCase();
       const category = item.category?.toLowerCase() || '';
 
@@ -499,7 +499,7 @@ export default function SearchPage() {
                         <p className="result-description">{item.description}</p>
                       )}
                       <p className="result-preview">
-                        {getContentPreview(item.content)}
+                        {getContentPreview(item.content || '')}
                       </p>
                       <div className="result-footer">
                         <div className="result-tags">
