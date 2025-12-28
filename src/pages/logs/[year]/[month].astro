@@ -7,8 +7,8 @@ import { Icon } from "astro-icon/components";
 import Breadcrumbs from "@components/Breadcrumbs.astro";
 
 export async function getStaticPaths() {
-  const logs = await getCollection("logs");
-  
+  const logs = await getCollection("logs", ({ data }) => !data.draft);
+
   // Get all unique year-month combinations
   const yearMonths = new Set<string>();
   logs.forEach((log) => {
@@ -28,7 +28,7 @@ export async function getStaticPaths() {
 }
 
 const { year, month } = Astro.props;
-const logs = await getCollection("logs");
+const logs = await getCollection("logs", ({ data }) => !data.draft);
 
 const monthLogs = logs
   .filter((log) => {
