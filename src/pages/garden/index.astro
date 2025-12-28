@@ -4,7 +4,7 @@ import Layout from '@layouts/Layout.astro';
 import Navigation from '@components/layout/Navigation.astro';
 import { Icon } from 'astro-icon/components';
 
-const gardenEntries = await getCollection('garden');
+const gardenEntries = await getCollection('garden', ({ data }) => !data.draft);
 
 // Group entries by category (directory name)
 const categoriesMap = new Map<string, typeof gardenEntries>();
