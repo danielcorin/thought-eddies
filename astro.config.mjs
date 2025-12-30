@@ -12,6 +12,7 @@ import sitemap from '@astrojs/sitemap';
 import expressiveCode from 'astro-expressive-code';
 import remarkExternalLinks from './plugins/remark-external-links.mjs';
 import rehypeFormatFootnotes from './plugins/rehype-format-footnotes.mjs';
+import rehypeUltrathink from './plugins/rehype-ultrathink.mjs';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
@@ -50,6 +51,7 @@ export default defineConfig({
         },
       ],
       rehypeFormatFootnotes,
+      rehypeUltrathink,
     ],
     shikiConfig: {
       theme: 'monokai',
