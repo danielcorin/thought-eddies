@@ -19,6 +19,7 @@ const posts = defineCollection({
     aliases: z.array(z.string()).optional(),
     githubUrl: z.string().url().optional(),
     projectUrl: z.string().url().optional(),
+    editor: z.string().optional(),
     zoomLevels: z
       .array(
         z.object({
@@ -50,6 +51,7 @@ const logs = defineCollection({
     location: z.string().optional(),
     tags: z.array(z.string()).nullable().optional(),
     draft: z.boolean().optional().default(false),
+    editor: z.string().optional(),
   }),
 });
 
@@ -98,6 +100,7 @@ const til = defineCollection({
     aliases: z.array(z.string()).optional(),
     githubUrl: z.string().url().optional(),
     projectUrl: z.string().url().optional(),
+    editor: z.string().optional(),
   }),
 });
 
