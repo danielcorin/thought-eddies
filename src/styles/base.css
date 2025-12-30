@@ -639,3 +639,8 @@ sup a[data-footnote-ref]:hover {
   opacity: 1;
   color: var(--color-accent);
 }
+
+/* Ultrathink rainbow text */
+.ultrathink {
+  font-weight: 600;
+}
