@@ -1,14 +1,12 @@
 ---
 import { Icon } from "astro-icon/components";
-
-const currentYear = new Date().getFullYear();
 ---
 
 <footer aria-label="Site footer">
   <div class="footer-content">
     <div class="footer-info">
       <p class="copyright">
-        &copy; {currentYear} Dan Corin · Built with <a
+        &copy; <span id="copyright-year"></span> Dan Corin · Built with <a
           href="https://astro.build"
           aria-label="Astro website"
           >Astro <Icon
@@ -236,3 +234,8 @@ const currentYear = new Date().getFullYear();
     }
   }
 </style>
+
+<script>
+  document.getElementById("copyright-year")!.textContent =
+    new Date().getFullYear().toString();
+</script>
