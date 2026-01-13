@@ -52,6 +52,7 @@ const currentUrl = Astro.url.pathname;
 			title="RSS Feed"
 			href="/rss.xml"
 		/>
+		<link rel="webmention" href="https://webmention.io/www.danielcorin.com/webmention" />
 		{pageType === "posts" || pageType === "postsList" ? (
 			<link
 				rel="alternate"
