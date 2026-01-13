@@ -12,7 +12,7 @@ draft: false
 - https://paulgraham.com/
 - https://sindresorhus.com/
 - https://stephango.com/
-- https://twitter.com/justjake
+- https://justjake.me/
 - https://m15y.com/
 - https://www.desmondrduggan.com/
 - https://blog.mollywhite.net/
@@ -39,3 +39,5 @@ draft: false
 - https://fs.blog/
 - https://lucumr.pocoo.org/
 - https://vig.xyz
+- https://bradwoods.io/
+- https://timkellogg.me/
