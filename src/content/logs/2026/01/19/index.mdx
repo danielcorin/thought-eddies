@@ -1,0 +1,27 @@
+---
+title: '2026-01-19'
+updatedAt: 2026-01-19T17:20:56.637Z
+date: 2026-01-19T17:11:17.000Z
+draft: false
+tags: ['glm', 'cerebras']
+---
+
+I just incinerated $10 running GLM 4.7 on Cerebras to try and Ralph a clone of this game I used to play.
+Took about 15 minutes for the balance to go to $0.
+Result, not awesome. Maybe okay.
+
+![Aquarium](images/aquarium.png)
+
+I Claude Coded the game into a playable state with a few more prompts (it was still broken once my balance reached zero).
+
+Cerebras was fast but costly given the token throughput.
+
+## Takeaways
+
+This approach "works" in that it builds in the direction of the spec for extended periods of time.
+A browser game might not have been GLM's strength -- the model measures well on coding benchmarks, so some kind of backend task might have been more reasonable to try.
+It did write a lot of compiling TypeScript though and I didn't give it much to work with in terms of design or aesthetics, so I'll take the blame there as well.
+
+It seems like building an intuition for managing long running loops and getting good results requires building and experimenting with a lot of long running loops.
+No big surprise there.
+And it's not a cheap thing to learn.
