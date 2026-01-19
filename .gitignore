@@ -27,3 +27,4 @@ _scripts/
 .venv/
 .vercel
 .wrangler/
+scraps
