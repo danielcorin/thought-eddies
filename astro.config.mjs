@@ -2,6 +2,7 @@
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
+import cloudflare from '@astrojs/cloudflare';
 import vercel from '@astrojs/vercel';
 import icon from 'astro-icon';
 import { defineConfig } from 'astro/config';
@@ -58,5 +59,5 @@ export default defineConfig({
       wrap: true,
     },
   },
-  adapter: vercel(),
+  adapter: process.env.CF_PAGES ? cloudflare() : vercel(),
 });
