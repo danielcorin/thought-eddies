@@ -11,6 +11,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.12",
     "@astrojs/mdx": "^4.3.8",
     "@astrojs/react": "^4.4.0",
     "@astrojs/rss": "^4.0.13",
