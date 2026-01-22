@@ -3,7 +3,6 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import cloudflare from '@astrojs/cloudflare';
-import vercel from '@astrojs/vercel';
 import icon from 'astro-icon';
 import { defineConfig } from 'astro/config';
 import markdownIntegration from '@astropub/md';
@@ -59,5 +58,5 @@ export default defineConfig({
       wrap: true,
     },
   },
-  adapter: process.env.CF_PAGES ? cloudflare() : vercel(),
+  adapter: cloudflare(),
 });
