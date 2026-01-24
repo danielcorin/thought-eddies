@@ -2,6 +2,7 @@
 import Navigation from "@components/layout/Navigation.astro";
 import RecommendedContent from "@components/RecommendedContent.astro";
 import Tag from "@components/Tag.astro";
+import ArticleMetadata from "@components/ArticleMetadata.astro";
 import { findSimilarContent } from "@utils/findSimilarContent";
 import { Icon } from "astro-icon/components";
 import { getCollection, getEntry } from "astro:content";
@@ -83,83 +84,16 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
   <article>
     <header>
       <h1>{frontmatter.title}</h1>
-      <div class="metadata">
-        <time datetime={frontmatter.createdAt}>
-          <span class="icon-text-wrapper">
-            <Icon name="ph:pencil-simple-line" class="inline-icon meta-icon" />
-            {new Date(frontmatter.createdAt).toISOString().split("T")[0]}
-          </span>
-          {
-            frontmatter.updatedAt &&
-              new Date(frontmatter.updatedAt).toISOString() !==
-                new Date(frontmatter.createdAt).toISOString() && (
-                <span class="icon-text-wrapper">
-                  <Icon
-                    name="ph:clock-clockwise"
-                    class="inline-icon meta-icon"
-                  />
-                  {new Date(frontmatter.updatedAt).toISOString().split("T")[0]}
-                </span>
-              )
-          }
-        </time>
-        {
-          frontmatter.location && (
-            <span class="icon-text-wrapper location">
-              <Icon name="ph:map-pin" class="inline-icon meta-icon" />
-              <span class="location-text">{frontmatter.location}</span>
-            </span>
-          )
-        }
-        {
-          frontmatter.githubUrl && (
-            <span class="icon-text-wrapper github-link">
-              <a
-                href={frontmatter.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icon name="ph:github-logo" class="inline-icon meta-icon" />
-                <span class="github-text">On GitHub</span>
-              </a>
-            </span>
-          )
-        }
-        {
-          frontmatter.projectUrl && (
-            <span class="icon-text-wrapper project-link">
-              <a
-                href={frontmatter.projectUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icon name="ph:link" class="inline-icon meta-icon" />
-                <span class="project-text">Project</span>
-              </a>
-            </span>
-          )
-        }
-        {
-          isProject && hasTimeline && (
-            <span class="icon-text-wrapper timeline-link">
-              <a href={`/projects/${entryId}/timeline`}>
-                <Icon name="ph:clock-clockwise" class="inline-icon meta-icon" />
-                <span class="timeline-text">Timeline</span>
-              </a>
-            </span>
-          )
-        }
-        {
-          frontmatter.category && isTil && (
-            <span class="icon-text-wrapper category">
-              <Icon name="ph:folder" class="inline-icon meta-icon" />
-              <a href={`/til/${frontmatter.category}`} class="category-link">
-                {frontmatter.category}
-              </a>
-            </span>
-          )
-        }
-      </div>
+      <ArticleMetadata
+        createdAt={frontmatter.createdAt}
+        updatedAt={frontmatter.updatedAt}
+        location={frontmatter.location}
+        category={isTil ? frontmatter.category : undefined}
+        categoryHref={isTil && frontmatter.category ? `/til/${frontmatter.category}` : undefined}
+        githubUrl={frontmatter.githubUrl}
+        projectUrl={frontmatter.projectUrl}
+        timelineHref={isProject && hasTimeline ? `/projects/${entryId}/timeline` : undefined}
+      />
       {
         frontmatter.tags && frontmatter.tags.length > 0 && (
           <div class="tags">
@@ -246,93 +180,6 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
 
 <FullscreenImageViewer />
 <style>
-  .metadata {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .metadata time {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .icon-text-wrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    margin-right: 1rem;
-  }
-
-  .meta-icon {
-    opacity: 0.7;
-  }
-
-  .location-text {
-    font-family: var(--font-mono);
-  }
-
-  .github-text {
-    font-family: var(--font-mono);
-  }
-
-  .github-link a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    color: var(--color-ink-light);
-    text-decoration: none;
-    transition: opacity 0.2s;
-  }
-
-  .github-link a:hover {
-    opacity: 0.8;
-    color: var(--color-accent);
-  }
-
-  .project-text {
-    font-family: var(--font-mono);
-  }
-
-  .project-link a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    color: var(--color-ink-light);
-    text-decoration: none;
-    transition: opacity 0.2s;
-  }
-
-  .project-link a:hover {
-    opacity: 0.8;
-    color: var(--color-accent);
-  }
-
-  .timeline-text {
-    font-family: var(--font-mono);
-  }
-
-  .timeline-link a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    color: var(--color-ink-light);
-    text-decoration: none;
-    transition: opacity 0.2s;
-  }
-
-  .timeline-link a:hover {
-    opacity: 0.8;
-    color: var(--color-accent);
-  }
-
-  @media (max-width: 640px) {
-    .icon-text-wrapper {
-      margin-right: 0.75rem;
-    }
-  }
-
   .post-navigation {
     display: flex;
     justify-content: space-between;
@@ -434,20 +281,9 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
   .tags {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
-  .category-link {
-    color: var(--color-accent);
-    text-decoration: none;
-    font-family: var(--font-mono);
-    transition: opacity 0.2s;
-  }
-
-  .category-link:hover {
-    opacity: 0.8;
-    text-decoration: underline;
+    margin-top: 0.75rem;
   }
 
   .raw-link {
