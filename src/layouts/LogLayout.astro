@@ -1,6 +1,7 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
 import Tag from "@components/Tag.astro";
+import ArticleMetadata from "@components/ArticleMetadata.astro";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
 import Layout from "./Layout.astro";
@@ -103,10 +104,7 @@ const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
 
       {
         frontmatter.location && (
-          <div class="location-wrapper">
-            <Icon name="ph:map-pin" class="location-icon" />
-            <span class="location-text">{frontmatter.location}</span>
-          </div>
+          <ArticleMetadata location={frontmatter.location} />
         )
       }
 
@@ -150,26 +148,6 @@ const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
 
 <style>
   /* Use base.css main and article styles, only add log-specific styles */
-
-  .location-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    margin: var(--spacing-md) 0;
-    font-size: var(--text-sm);
-  }
-
-  .location-icon {
-    width: 1rem;
-    height: 1rem;
-    opacity: 0.7;
-  }
-
-  .location-text {
-    font-family: var(--font-mono);
-    color: var(--color-ink-light);
-  }
 
   .tags {
     display: flex;

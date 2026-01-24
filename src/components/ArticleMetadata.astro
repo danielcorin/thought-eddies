@@ -1,0 +1,180 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface MetaItem {
+  icon: string;
+  text: string;
+  href?: string;
+}
+
+interface Props {
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  location?: string;
+  category?: string;
+  categoryHref?: string;
+  githubUrl?: string;
+  projectUrl?: string;
+  timelineHref?: string;
+  extraItems?: MetaItem[];
+}
+
+const {
+  createdAt,
+  updatedAt,
+  location,
+  category,
+  categoryHref,
+  githubUrl,
+  projectUrl,
+  timelineHref,
+  extraItems = [],
+} = Astro.props;
+
+const formatDate = (date: string | Date) =>
+  new Date(date).toISOString().split("T")[0];
+
+const hasUpdated =
+  updatedAt &&
+  createdAt &&
+  new Date(updatedAt).toISOString() !== new Date(createdAt).toISOString();
+---
+
+<div class="article-metadata">
+  {
+    createdAt && (
+      <time datetime={formatDate(createdAt)} class="meta-item">
+        <Icon name="ph:pencil-simple-line" class="meta-icon" />
+        <span class="meta-text">{formatDate(createdAt)}</span>
+      </time>
+    )
+  }
+  {
+    hasUpdated && (
+      <span class="meta-item">
+        <Icon name="ph:clock-clockwise" class="meta-icon" />
+        <span class="meta-text">{formatDate(updatedAt!)}</span>
+      </span>
+    )
+  }
+  {
+    location && (
+      <span class="meta-item">
+        <Icon name="ph:map-pin" class="meta-icon" />
+        <span class="meta-text">{location}</span>
+      </span>
+    )
+  }
+  {
+    category && (
+      <span class="meta-item">
+        <Icon name="ph:folder" class="meta-icon" />
+        {categoryHref ? (
+          <a href={categoryHref} class="meta-link">
+            {category}
+          </a>
+        ) : (
+          <span class="meta-text">{category}</span>
+        )}
+      </span>
+    )
+  }
+  {
+    githubUrl && (
+      <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="meta-item meta-item-link">
+        <Icon name="ph:github-logo" class="meta-icon" />
+        <span class="meta-text">GitHub</span>
+      </a>
+    )
+  }
+  {
+    projectUrl && (
+      <a href={projectUrl} target="_blank" rel="noopener noreferrer" class="meta-item meta-item-link">
+        <Icon name="ph:link" class="meta-icon" />
+        <span class="meta-text">Project</span>
+      </a>
+    )
+  }
+  {
+    timelineHref && (
+      <a href={timelineHref} class="meta-item meta-item-link">
+        <Icon name="ph:clock-clockwise" class="meta-icon" />
+        <span class="meta-text">Timeline</span>
+      </a>
+    )
+  }
+  {
+    extraItems.map((item) =>
+      item.href ? (
+        <a href={item.href} class="meta-item meta-item-link">
+          <Icon name={item.icon} class="meta-icon" />
+          <span class="meta-text">{item.text}</span>
+        </a>
+      ) : (
+        <span class="meta-item">
+          <Icon name={item.icon} class="meta-icon" />
+          <span class="meta-text">{item.text}</span>
+        </span>
+      )
+    )
+  }
+</div>
+
+<style>
+  .article-metadata {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 0.75rem;
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .meta-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .meta-text {
+    font-family: var(--font-mono);
+    letter-spacing: -0.01em;
+  }
+
+  .meta-link {
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .meta-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+
+  .meta-item-link {
+    color: var(--color-ink-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .meta-item-link:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 640px) {
+    .article-metadata {
+      gap: 0.4rem 1rem;
+    }
+  }
+</style>
