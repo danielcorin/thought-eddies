@@ -1,0 +1,117 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  open?: boolean;
+}
+
+const { open = false } = Astro.props;
+const id = `collapsible-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class="collapsible-wrapper" data-collapsible-id={id}>
+  <span class="collapsible-chevron" data-chevron-for={id}>
+    <Icon name="ph:caret-right" class="chevron-icon" />
+  </span>
+  <slot />
+</div>
+
+<script>
+  function initCollapsibles() {
+    document.querySelectorAll('.collapsible-wrapper').forEach((wrapper) => {
+      const id = wrapper.getAttribute('data-collapsible-id');
+      if (!id || wrapper.hasAttribute('data-initialized')) return;
+      wrapper.setAttribute('data-initialized', 'true');
+
+      const chevron = wrapper.querySelector(`[data-chevron-for="${id}"]`);
+      const children = Array.from(wrapper.children).filter(
+        (el) => !el.hasAttribute('data-chevron-for')
+      );
+
+      if (children.length < 2) return;
+
+      const heading = children[0];
+      const content = children.slice(1);
+
+      // Wrap heading and chevron in a header div
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'collapsible-header';
+      if (chevron) {
+        headerDiv.appendChild(chevron);
+      }
+      heading.parentNode?.insertBefore(headerDiv, heading);
+      headerDiv.appendChild(heading);
+
+      // Wrap content in a collapsible div
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'collapsible-content';
+      contentDiv.style.display = 'none';
+      content.forEach((el) => contentDiv.appendChild(el));
+      wrapper.appendChild(contentDiv);
+
+      // Make heading clickable
+      heading.style.cursor = 'pointer';
+      heading.style.userSelect = 'none';
+
+      const toggle = () => {
+        const isOpen = contentDiv.style.display !== 'none';
+        contentDiv.style.display = isOpen ? 'none' : 'block';
+        chevron?.classList.toggle('open', !isOpen);
+      };
+
+      heading.addEventListener('click', toggle);
+      chevron?.addEventListener('click', toggle);
+
+      // Check for open attribute
+      if (wrapper.closest('[data-open="true"]') || wrapper.hasAttribute('data-open')) {
+        contentDiv.style.display = 'block';
+        chevron?.classList.add('open');
+      }
+    });
+  }
+
+  // Run on initial load
+  initCollapsibles();
+
+  // Re-run after view transitions
+  document.addEventListener('astro:page-load', initCollapsibles);
+</script>
+
+<style>
+  .collapsible-wrapper :global(.collapsible-header) {
+    position: relative;
+  }
+
+  .collapsible-wrapper :global(.collapsible-chevron) {
+    position: absolute;
+    left: -1.5rem;
+    top: 0;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .collapsible-wrapper :global(.chevron-icon) {
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .collapsible-wrapper :global(.collapsible-chevron.open .chevron-icon) {
+    transform: rotate(90deg);
+  }
+
+  .collapsible-wrapper :global(h1:hover),
+  .collapsible-wrapper :global(h2:hover),
+  .collapsible-wrapper :global(h3:hover),
+  .collapsible-wrapper :global(h4:hover),
+  .collapsible-wrapper :global(h5:hover),
+  .collapsible-wrapper :global(h6:hover) {
+    color: var(--color-accent);
+  }
+
+  .collapsible-wrapper :global(.collapsible-content) {
+  }
+</style>

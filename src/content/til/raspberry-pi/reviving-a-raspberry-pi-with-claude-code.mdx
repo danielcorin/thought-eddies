@@ -1,0 +1,214 @@
+---
+title: 'Reviving a Raspberry Pi with Claude Code'
+createdAt: 2026-01-24T22:21:58.851167
+updatedAt: 2026-01-24T22:21:58.851167
+publishedAt: 2026-01-24T22:21:58.851167
+tags: null
+draft: false
+---
+
+import Collapsible from '@components/prose/Collapsible.astro';
+
+Sometime in 2021 (I think), I got a Raspberry Pi 4 and played with it a little and then it started collecting dust on my desk.
+Every time I looked at it, I saw lots of fun possibilities and lots of unfun software updates that I would need to work through before those fun things would be possible.
+
+I've been reading and experimenting a bit with stateful agents. Since I run these on VMs at the moment, I figured it could be interesting to try it on the Raspberry Pi as well.
+
+So I booted it up.
+It actually started quite quickly.
+I was greeted with a stretched and distorted desktop on my widescreen monitor, laggy and slow mouse movements, and a keyboard with the control and command buttons flipped from what I was used to.
+"I can fix this," I thought to myself.
+Linux is super configurable.
+I bet I can get Claude Code to solve all of these problems.
+
+Installing Claude Code actually turned out to be the hardest part.
+I started with the [standard docs](https://code.claude.com/docs/en/setup#installation).
+The install script ran and then downloaded a file into `~/.claude` that the script appeared to try and unpack or run or something and the machine was acting like the file wasn't there.
+Weird stuff.
+Didn't feel right.
+
+I did some web searching like it was early 2022 until I remembered we still have good LLM tools that _aren't_ coding agents, so after copying and pasting commands between the browser and the terminal like it was 2024, I eventually figured out that I was running a 64-bit kernel with a 32-bit userspace and I needed to re-image the Raspberry Pi so I could install Claude Code.
+
+Incredibly, I actually knew exactly where my SSD USB reader was.
+I'm not sure I ever used it after buying the Raspberry Pi, but after some fiddling, I managed to get the SSD into the reader which I plugged into a USB-A to USB-C adapter and then into my MacBook Pro.
+Not bad.
+
+Downloading [Raspberry Pi Imager](https://www.raspberrypi.com/software/) was actually pretty straightforward as well.
+With the MacBook recognizing the SSD, I went through the steps for my model of Raspberry Pi and in about 20 minutes, the SSD was re-imaged.
+
+With that done, I popped the SSD back into the Raspberry Pi and booted it up.
+Easy.
+But all the same problems as before.
+The resolution, the mouse, the keyboard.
+I tried the Claude Code installer again and this time it worked!
+With superpowers restored, I got to work.
+
+With me at the wheel and Claude on the keys, we managed to resolve the resolution and mouse issues, and install some software to make my keyboard behave like I'm used to.
+
+Here are the LLM summaries from the sessions of what worked and what the agent did.
+These are things that empirically worked for what I was trying to accomplish but I didn't validate the approaches so your mileage may vary.
+
+<Collapsible>
+
+## Fixing the stretched display
+
+Raspberry Pi OS uses Wayland, so use `wlr-randr` instead of `xrandr` to set resolution.
+
+```bash
+wlr-randr --output HDMI-A-2 --mode 3440x1440
+```
+
+To persist across reboots, create `~/.config/autostart/display-resolution.desktop`:
+
+```ini
+[Desktop Entry]
+Type=Application
+Name=Set Display Resolution
+Exec=wlr-randr --output HDMI-A-2 --mode 3440x1440
+X-GNOME-Autostart-enabled=true
+```
+
+The `config.txt` HDMI settings have limited effect with the KMS driver (`dtoverlay=vc4-kms-v3d`).
+
+</Collapsible>
+
+<Collapsible>
+
+## Fixing mouse lag
+
+Raspberry Pi OS uses labwc as its Wayland compositor.
+Add libinput settings to `~/.config/labwc/rc.xml`:
+
+```xml
+<libinput>
+  <device category="default">
+    <pointerSpeed>1</pointerSpeed>
+    <accelProfile>flat</accelProfile>
+    <scrollFactor>0.5</scrollFactor>
+  </device>
+</libinput>
+```
+
+- `pointerSpeed`: -1 to 1
+- `accelProfile`: `flat` (consistent) or `adaptive` (accelerating)
+
+Run `labwc --reconfigure` to apply.
+
+For reduced input latency, add `usbhid.mousepoll=1` to `/boot/firmware/cmdline.txt` to set USB polling to 1000Hz.
+On Raspberry Pi, the usbhid module is built into the kernel, so modprobe.d configs don't work.
+
+Enable software cursor in `~/.config/labwc/environment`:
+
+```
+WLR_NO_HARDWARE_CURSORS=1
+```
+
+Optionally, set the CPU governor to performance with a systemd service at `/etc/systemd/system/cpu-performance.service`:
+
+```ini
+[Unit]
+Description=Set CPU governor to performance
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c "echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable with `sudo systemctl enable cpu-performance.service`.
+
+</Collapsible>
+
+<Collapsible>
+
+## macOS-style keyboard shortcuts
+
+Use `keyd` to remap the Command key to work like macOS.
+It operates at the kernel level and works with both X11 and Wayland.
+
+```bash
+sudo apt install keyd
+```
+
+Create `/etc/keyd/default.conf`:
+
+```ini
+[ids]
+*
+
+[main]
+
+[meta]
+c = C-S-c
+v = C-S-v
+x = C-x
+a = C-a
+z = C-z
+s = C-s
+f = C-f
+w = C-w
+t = C-t
+n = C-n
+q = C-q
+r = C-r
+p = C-p
+l = C-l
+k = C-k
+b = C-b
+i = C-i
+u = C-u
+o = C-o
+tab = C-tab
+shift = layer(meta_shift)
+
+[meta_shift]
+z = C-S-z
+t = C-S-t
+n = C-S-n
+```
+
+Apply with `sudo systemctl restart keyd`.
+Command+C/V now works everywhere including terminals.
+Ctrl+C still interrupts processes.
+The service starts automatically on boot.
+
+</Collapsible>
+
+<Collapsible>
+
+## Basic security setup
+
+Install and enable `ufw` to allow only SSH inbound:
+
+```bash
+sudo apt install ufw
+sudo ufw allow 22/tcp
+sudo ufw enable
+```
+
+Common commands:
+
+```bash
+sudo ufw status          # Check status
+sudo ufw allow 8080/tcp  # Open a port
+sudo ufw delete allow 8080/tcp  # Close a port
+```
+
+Install `unattended-upgrades` for automatic security patches:
+
+```bash
+sudo apt install unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades
+```
+
+Configuration lives in `/etc/apt/apt.conf.d/20auto-upgrades` and `/etc/apt/apt.conf.d/50unattended-upgrades`.
+Check logs at `/var/log/unattended-upgrades/unattended-upgrades.log`.
+
+Raspberry Pi OS comes with 2GB zram (compressed RAM swap) pre-configured.
+Check with `swapon --show`.
+
+</Collapsible>
