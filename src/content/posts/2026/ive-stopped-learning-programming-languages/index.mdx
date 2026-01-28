@@ -1,0 +1,58 @@
+---
+title: "I've Stopped Learning Programming Languages"
+createdAt: 2026-01-27T13:30:09.742759
+updatedAt: 2026-01-27T13:30:09.742759
+description: ''
+location: 'Brooklyn'
+draft: false
+---
+
+In 2022, I had recently started a new job as a software engineer.
+As usual, there were a lot of new things to learn and one of those was getting comfortable working in a programming language that I hadn't used professionally before.
+
+My process with getting familiar with a new language at that time was pretty consistent.
+Find a good text on it, find a koans repo to work, and start reading and experimenting with existing codebases.
+The combination of all of these helped me build a mental model and muscle memory for the language's patterns, the codebase structure, and thinking pathways for reasoning about the system to debug or change it.
+This process typically took place over a few months, at least.
+
+## New parts of my process
+
+I don't follow this process anymore.
+When I encounter a new repository or language, I start exploring the code with a coding agent.
+I prompt the agent with questions and have it generate artifacts walking me through the parts of the system that demonstrate how the system works.
+Then I trace through the code myself following these artifacts as a map.
+They're not always right, but they're a useful jump off point.
+They're also incredibly malleable and composable.
+
+Say I need to add a new Kafka consumer to a system.
+I can use the coding agent to research how Kafka integration currently works.
+I can then verify that the explanation is grounded in the actual codebase.
+Then using that same research, I can draft a plan to make modifications, grounded in the research, which I've validated.
+Finally, I can use the agent to implement the plan, which I will review.
+
+This is a distinctly different way of building software systems.
+It may not be the way you like to build software, but it's a vast improvement for me.
+I am still personally responsible for the code changes I propose.
+I'm responsible for following the codebase's conventions and patterns.
+I'm responsible for respecting the time of the person who is reviewing my changes.
+
+The responsibility hasn't changed.
+What has changed is how I get to the understanding.
+
+## How my thinking has changed
+
+When I'm exploring a codebase with an agent, I'm asking questions about the codebase and the agent is leading me to places where the answers are.
+It's creating a sort of map and then I'm following the directions, to see if they actually lead me where they claim.
+
+When I was learning languages via koans, I was practicing the muscle memory necessary to reconstruct the syntax of the language by typing.
+I had to translate ideas into code, and translating them into code requires knowledge of the syntax of code.
+With a coding agent, I only need to translate my ideas into words.
+Maybe the idea's implementation is grounded in specific parts of the system that I have to reference by name, but I don't have to reference them by syntax ever if I don't want to.
+
+Three years ago I would have said "understanding code" would mean that I've traced it from top to bottom.
+I know how data flows through the layers of the codebase, from RPC to landing in the database.
+These days I think I would define understanding similarly, but what's changed is my confidence in my ability to rapidly identify the paths.
+
+Even in unfamiliar syntaxes, I've generally found that the maps that a coding agent can build allow me to ground myself rapidly in an unfamiliar system and even in an unfamiliar language.
+Now I worry less about whether I understand code before I have to start working in it because I anticipate I can rapidly begin to understand it faster than I ever could before.
+The maps and understanding can be just in time, and highly relevant to the problem I'm trying to solve.
