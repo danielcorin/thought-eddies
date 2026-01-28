@@ -1,144 +1,49 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## What
 
-## Development Commands
+Astro-based digital garden/blog. File-based content, no database.
 
-```bash
-# Development
-pnpm dev         # Start development server on localhost:4321
+## Project Structure
 
-# Build
-pnpm build       # Build for production (verbose output)
-pnpm preview     # Preview production build locally
-
-# Code Quality
-pnpm format      # Format all files with Prettier
-pnpm format:check # Check if files are formatted correctly
+```
+src/content/     # Content collections (posts, logs, til, projects, garden, etc.)
+src/pages/       # File-based routing with dynamic routes
+src/components/  # Astro components (.astro) + React for interactivity (.tsx)
+src/layouts/     # Page layouts
+src/styles/      # Global CSS
+scripts/         # Utility scripts (new_post.py, new_til.py, new_log.py)
 ```
 
-## High-Level Architecture
+## Commands
 
-This is an Astro-based digital garden/blog platform with the following key architectural elements:
+```bash
+pnpm dev          # Dev server at localhost:4321
+pnpm build        # Production build
+pnpm format       # Format with Prettier
+```
 
-### Content Organization
+## Content Creation
 
-- **Content Collections** in `src/content/` (using Astro's glob loader):
-  - `posts/`: Long-form blog posts organized by year
-  - `logs/`: Daily logs organized by year/month
-  - `til/`: "Today I Learned" entries organized by category
-  - `feeds/`: External feed configuration for link blog
-  - `projects/`: Project showcases with dedicated pages
-  - `uses/`: "What I Use" pages with date-based entries
-  - `now/`: "Now" pages tracking current activities
-  - `home/`: Homepage content
-- All content types have strict Zod schemas defined in `src/content/config.ts`
-- Content supports both `.md` and `.mdx` files
-- Posts can have multiple zoom levels for progressive disclosure
+Use `just` commands for new content:
 
-### Component Architecture
+- `just post "Title"` - new blog post
+- `just til category "Title"` - new TIL entry
+- `just log` - new daily log
 
-- **Astro components** (`.astro`): Used for static content and layouts
-  - Layout components: `Navigation`, `Footer`, `TableOfContents`, `ReadingProgress`
-  - Content components: `PostCard`, `CategoryGrid`, `Pagination`, `Breadcrumbs`
-  - UI components: `Tag`, `TypeLabel`, `YearPill`, `SearchResult`
-- **React components** (`.tsx`): Used for interactive features
-  - `SearchPage`: Full-text search functionality
-  - `ZoomableDocument`: Progressive content disclosure
-  - `RSSFeedLinksClient`: Dynamic RSS feed links
-- **Custom Prose Components**: Enhanced markdown rendering
-  - `Sidenote`: Margin notes for additional context
-  - `Chat`: Conversation-style content display
-  - `CodeBlock`: Enhanced code highlighting
-  - `DocumentCitations`: Academic-style citations
-  - `Aside`: Callout boxes
-  - `Spoiler`: Collapsible content sections
+Content schemas are defined in `src/content/config.ts`. Key fields:
 
-### Routing and Pages
+- Posts: `draft: true` by default, set `draft: false` to publish
+- All content uses frontmatter validated by Zod schemas
 
-- **File-based routing** in `src/pages/`:
-  - Dynamic routes using brackets: `[...slug]`, `[year]`, `[category]`, etc.
-  - Catch-all alias route for redirects: `[...alias].astro`
-  - Markdown endpoints (`.md.ts` files) for enhanced content pages
-  - OG image generation endpoints (`og.png.ts`)
-  - API endpoints in `/api/` directory
-- **Special pages**:
-  - `/search`: Client-side search interface
-  - `/feeds`: External feed aggregation
-  - `/llms.txt`: LLM-friendly site summary
-  - RSS feeds: `/rss.xml`, `/index.xml`
+## Key Files
 
-### Key Configuration
+- `src/content/config.ts` - Content collection schemas
+- `astro.config.mjs` - Build config, integrations, plugins
+- `tsconfig.json` - Path aliases: `@components`, `@layouts`, `@styles`, `@utils`
 
-- **astro.config.mjs**:
-  - Site URL: `https://www.danielcorin.com`
-  - Local dev host: `local.danielcorin.com`
-  - Build concurrency: 5 (for OG image generation)
-  - Integrations: React, MDX, Tailwind, Expressive Code, Sitemap
-  - Markdown: Custom remark/rehype plugins, Monokai syntax theme
-- **tsconfig.json**:
-  - Path aliases: `@components`, `@layouts`, `@styles`, `@utils`
-  - React JSX configuration
-  - Strict TypeScript mode
-- **tailwind.config.mjs**: Dark mode via class strategy
-- **vercel.json**: Sitemap redirect configuration
+## Notes
 
-### Content Features
-
-- **Draft system**: Posts default to `draft: true`
-- **Publishing workflow**: `draft: false` sets `publishedAt` date
-- **Aliases**: URL redirects for legacy paths
-- **Tags**: Unified tagging system across content types
-- **Series**: Group related posts together
-- **Image support**: Local images in content directories
-- **External links**: Auto-marked with remark plugin
-- **RSS/Atom feeds**: Auto-generated from content
-- **Sitemap**: Auto-generated with @astrojs/sitemap
-- **Analytics**: External tracking (GoatCounter)
-
-### Utility Scripts
-
-- `new_post.py`: Create new blog post with frontmatter
-- `new_til.py`: Create new TIL entry
-- `new_log.py`: Create new daily log
-- Post frontmatter converter for legacy content migration
-
-### Development Patterns
-
-1. **Component Usage**:
-   - Prefer Astro components
-   - Use React when Astro is not practical
-
-2. **Content Management**:
-   - Place content in appropriate collection directories
-   - Follow existing frontmatter schemas strictly
-   - Use MDX for interactive content, MD for simple posts
-   - Organize by date/category as per existing patterns
-
-3. **Styling**:
-   - Use Tailwind utility classes
-   - Dark mode support via `dark:` prefix
-   - Custom CSS in `src/styles/` for global styles
-
-4. **Code Quality**:
-   - Format with Prettier before commits
-   - Use TypeScript path aliases for imports
-   - Follow existing file naming conventions
-
-### Build and Deployment
-
-- **Package Manager**: pnpm (NOT npm or yarn)
-- **Deployment**: Vercel with SSR adapter
-- **Build Process**:
-  - Concurrent OG image generation (limit: 5)
-  - Markdown processing with custom plugins
-  - Static asset optimization
-- **Environment**: No test suite configured
-
-### Important Notes
-
-- Directory paths with special characters must be quoted in bash
-- The site uses a custom particles background (astro-particles)
-- Multiple content visualization options (standard, zoomable)
-- Extensive use of dynamic imports for performance
-- No database - all content is file-based
+- Package manager: pnpm (not npm/yarn)
+- Quote paths with special characters in bash
+- Prefer Astro components; use React only when interactivity requires it
