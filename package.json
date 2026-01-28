@@ -51,7 +51,6 @@
     "tw-to-css": "^0.0.12"
   },
   "devDependencies": {
-    "0x": "^6.0.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "gray-matter": "^4.0.3",
     "prettier": "^3.8.1",
