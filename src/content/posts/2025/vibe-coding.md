@@ -3,6 +3,7 @@ title: 'Vibe Coding in early 2025'
 createdAt: 2025-04-06T09:50:16-04:00
 updatedAt: 2025-07-18T09:50:16-04:00
 draft: false
+series: Coding with Agents
 tags:
   - vibe_coding
   - agents

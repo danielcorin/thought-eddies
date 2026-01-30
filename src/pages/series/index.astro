@@ -1,0 +1,96 @@
+---
+import Navigation from "@components/layout/Navigation.astro";
+import Layout from "@layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import { slugify } from "@utils/slugify";
+
+const posts = await getCollection("posts");
+
+const seriesCounts = new Map<string, number>();
+
+posts.forEach(post => {
+  if (!post.data.draft && post.data.series) {
+    seriesCounts.set(post.data.series, (seriesCounts.get(post.data.series) || 0) + 1);
+  }
+});
+
+const sortedSeries = Array.from(seriesCounts.entries())
+  .sort((a, b) => {
+    if (b[1] !== a[1]) return b[1] - a[1];
+    return a[0].localeCompare(b[0]);
+  })
+  .map(([name, count]) => ({ name, count }));
+---
+
+<Layout title="Series">
+  <Navigation />
+  <main>
+    <h1 class="page-title">Series</h1>
+
+    <div class="series-list">
+      {sortedSeries.map(({ name, count }) => (
+        <a href={`/series/${slugify(name)}`} class="series-card">
+          <div class="series-info">
+            <Icon name="ph:books" class="series-icon" />
+            <span class="series-name">{name}</span>
+          </div>
+          <span class="series-count">{count} {count === 1 ? 'post' : 'posts'}</span>
+        </a>
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .series-list {
+    display: grid;
+    gap: var(--spacing-lg);
+  }
+
+  .series-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    transition: background 0.2s;
+  }
+
+  .series-card:hover {
+    background: var(--color-bg-hover);
+  }
+
+  .series-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  .series-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .series-name {
+    font-size: var(--text-lg);
+    font-weight: 500;
+  }
+
+  .series-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+  }
+
+  @media (max-width: 640px) {
+    .series-card {
+      padding: var(--spacing-md);
+    }
+  }
+</style>
