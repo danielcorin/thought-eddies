@@ -28,9 +28,11 @@ const { seriesName } = Astro.props;
 
 const posts = await getCollection("posts");
 
-const seriesPosts = posts
+const seriesPostsAsc = posts
   .filter(post => !post.data.draft && post.data.series === seriesName)
   .sort((a, b) => new Date(a.data.createdAt).getTime() - new Date(b.data.createdAt).getTime());
+
+const seriesPostsDesc = [...seriesPostsAsc].reverse();
 ---
 
 <Layout title={`Series: ${seriesName}`}>
@@ -38,19 +40,33 @@ const seriesPosts = posts
   <main>
     <div class="page-header">
       <h1 class="page-title">{seriesName}</h1>
-      <p class="entry-count">{seriesPosts.length} {seriesPosts.length === 1 ? 'post' : 'posts'}</p>
+      <p class="entry-count">{seriesPostsAsc.length} {seriesPostsAsc.length === 1 ? 'post' : 'posts'}</p>
     </div>
 
-    <nav class="breadcrumb">
-      <a href="/series">
-        <Icon name="ph:arrow-left" />
-        All series
-      </a>
-    </nav>
+    <div class="controls">
+      <nav class="breadcrumb">
+        <a href="/series">
+          <Icon name="ph:arrow-left" />
+          All series
+        </a>
+      </nav>
+      <button class="sort-toggle" data-order="desc" aria-label="Toggle sort order">
+        <Icon name="ph:sort-descending" class="sort-icon" id="sort-icon-desc" />
+        <Icon name="ph:sort-ascending" class="sort-icon" id="sort-icon-asc" style="display:none" />
+        <span id="sort-label">Newest first</span>
+      </button>
+    </div>
 
-    {seriesPosts.map((post) => (
-      <PostCard post={post} type="post" />
-    ))}
+    <div id="posts-desc">
+      {seriesPostsDesc.map((post) => (
+        <PostCard post={post} type="post" />
+      ))}
+    </div>
+    <div id="posts-asc" style="display:none">
+      {seriesPostsAsc.map((post) => (
+        <PostCard post={post} type="post" />
+      ))}
+    </div>
   </main>
 </Layout>
 
@@ -74,7 +90,10 @@ const seriesPosts = posts
     margin: 0;
   }
 
-  .breadcrumb {
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: var(--spacing-xl);
   }
 
@@ -95,4 +114,57 @@ const seriesPosts = posts
   .breadcrumb a:hover {
     text-decoration: underline;
   }
+
+  .sort-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-bg-code);
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    color: var(--color-ink-light);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .sort-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .sort-icon {
+    width: 1rem;
+    height: 1rem;
+  }
 </style>
+
+<script>
+  const toggle = document.querySelector('.sort-toggle') as HTMLButtonElement;
+  const descList = document.getElementById('posts-desc')!;
+  const ascList = document.getElementById('posts-asc')!;
+  const iconDesc = document.getElementById('sort-icon-desc')!;
+  const iconAsc = document.getElementById('sort-icon-asc')!;
+  const label = document.getElementById('sort-label')!;
+
+  toggle.addEventListener('click', () => {
+    const current = toggle.dataset.order;
+    if (current === 'desc') {
+      toggle.dataset.order = 'asc';
+      descList.style.display = 'none';
+      ascList.style.display = '';
+      iconDesc.style.display = 'none';
+      iconAsc.style.display = '';
+      label.textContent = 'Oldest first';
+    } else {
+      toggle.dataset.order = 'desc';
+      descList.style.display = '';
+      ascList.style.display = 'none';
+      iconDesc.style.display = '';
+      iconAsc.style.display = 'none';
+      label.textContent = 'Newest first';
+    }
+  });
+</script>
