@@ -13,6 +13,8 @@ interface Props {
   location?: string;
   category?: string;
   categoryHref?: string;
+  series?: string;
+  seriesHref?: string;
   githubUrl?: string;
   projectUrl?: string;
   timelineHref?: string;
@@ -25,6 +27,8 @@ const {
   location,
   category,
   categoryHref,
+  series,
+  seriesHref,
   githubUrl,
   projectUrl,
   timelineHref,
@@ -75,6 +79,20 @@ const hasUpdated =
           </a>
         ) : (
           <span class="meta-text">{category}</span>
+        )}
+      </span>
+    )
+  }
+  {
+    series && (
+      <span class="meta-item">
+        <Icon name="ph:books" class="meta-icon" />
+        {seriesHref ? (
+          <a href={seriesHref} class="meta-link">
+            {series}
+          </a>
+        ) : (
+          <span class="meta-text">{series}</span>
         )}
       </span>
     )

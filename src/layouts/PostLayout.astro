@@ -12,6 +12,7 @@ import ClickableImages from "@components/ClickableImages.astro";
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getCommitUrl } from '@utils/git';
+import { slugify } from '@utils/slugify';
 
 const { frontmatter, ogImage, slug } = Astro.props;
 
@@ -90,6 +91,8 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
         location={frontmatter.location}
         category={isTil ? frontmatter.category : undefined}
         categoryHref={isTil && frontmatter.category ? `/til/${frontmatter.category}` : undefined}
+        series={frontmatter.series}
+        seriesHref={frontmatter.series ? `/series/${slugify(frontmatter.series)}` : undefined}
         githubUrl={frontmatter.githubUrl}
         projectUrl={frontmatter.projectUrl}
         timelineHref={isProject && hasTimeline ? `/projects/${entryId}/timeline` : undefined}
