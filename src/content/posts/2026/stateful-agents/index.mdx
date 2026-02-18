@@ -1,0 +1,222 @@
+---
+title: 'Stateful Agents and Basic Memory'
+createdAt: 2026-02-17T18:03:15.585Z
+updatedAt: 2026-02-18T20:26:48.804Z
+draft: false
+editor: tarn
+---
+
+import ChatContainer from '@components/prose/ChatContainer.astro';
+import ChatMessage from '@components/prose/ChatMessage.astro';
+
+One of the most limiting factors of LLM agents is they have limited cross-session memory.
+When working on software projects, this limitation isn't much of an issue because the agent can search the project and read files to understand the current state and what it needs to do to make the changes you've requested.
+In a good software project, the code is a lot of the state you need to be successful with an agent.
+However, agents become a lot more interesting when you give them access to a persistent file system with instructions or scaffolding to load from that file system when a session begins.
+
+While most implementations of memory in consumer products today are relatively opaque, it's quite straightforward to add memory to your agent by giving it access to a file system.
+From the perspective of an agent, memory is just a log of what happened.
+You can write that record manually after each agent turn with something like a [stop hook](https://code.claude.com/docs/en/hooks#stop) or you can add instructions to `CLAUDE.md`/`AGENTS.md` to tell the agent to write a record to a file after each conversation turn.
+Once you know where you are writing these "memories", prompt the agent that it can and should read from these memories as well.
+
+There are many right ways to do this.
+Here is an extremely simple one.
+
+````md wrap=true title=CLAUDE.md
+# min-mem
+
+After every conversation exchange, append a summary to `memories.jsonl` using a Bash tool call. Each line must be a JSON object matching this schema:
+
+```json
+{
+  "timestamp": "ISO 8601 UTC",
+  "summary": "1-3 sentence summary of what the user asked and what was done"
+}
+```
+
+Use `jq -n -c` to build the JSON and `>>` to append. Example:
+
+```bash
+jq -n -c --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg s "Summary here" '{timestamp: $ts, summary: $s}' >> memories.jsonl
+```
+
+Before each conversation turn, search `memories.jsonl` for context relevant to the user's request. Use this to inform your responses with prior decisions, patterns, and context. Example:
+
+```bash
+grep -i "keyword" memories.jsonl | jq -r '.summary'
+```
+````
+
+Here's what interacting with this agent looks like. In this example, the agent uses tool calls to search for prior memories and save new ones:
+
+<ChatContainer model="Claude Code: Opus 4.6">
+  <ChatMessage role="user">
+    hi there, my name is Jack nice to meet you!
+  </ChatMessage>
+
+  <ChatMessage role="assistant">
+    Hi Jack, nice to meet you too!
+
+    <tool-call name="Bash" input={`jq -n -c --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg s "User introduced themselves as Jack." '{timestamp: $ts, summary: $s}' >> /Users/danielcorin/dev/lab/min-mem/memories.jsonl`}>(No content)</tool-call>
+
+    Let me know if there's anything I can help you with!
+
+  </ChatMessage>
+</ChatContainer>
+
+This conversation turn results in the following memories.
+
+```json wrap=true title=memories.jsonl
+{
+  "timestamp": "2026-02-18T21:23:20Z",
+  "summary": "User introduced themselves as Jack."
+}
+```
+
+From here, I closed Claude Code and opened a fresh session, then prompted the following.
+
+<ChatContainer model="Claude Code: Opus 4.6">
+  <ChatMessage role="user">
+    who am I?
+  </ChatMessage>
+
+  <ChatMessage role="assistant">
+    I don't have any prior context about you. Let me check if there are any memories that might help.
+
+    <tool-call name="Read" input="memories.jsonl">(1 file)</tool-call>
+
+    Based on our prior conversations, you're Jack. Beyond that, I only know what's been discussed in previous sessions. Is there anything specific you'd like help with?
+
+    <tool-call name="Bash" input={`jq -n -c --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg s "User asked 'who am I?' — responded based on memories.jsonl that they are Jack." '{timestamp: $ts, summary: $s}' >> memories.jsonl`}>(No content)</tool-call>
+
+  </ChatMessage>
+</ChatContainer>
+
+And the memories are updated once more.
+
+```json wrap=true title=memories.jsonl
+{"timestamp":"2026-02-18T21:23:20Z","summary":"User introduced themselves as Jack."}
+{"timestamp":"2026-02-18T21:23:56Z","summary":"User asked 'who am I?' — responded based on memories.jsonl that they are Jack."}
+```
+
+## Make it a Skill (optional)
+
+If you like this approach, you can do a refactor of sorts to modularize your approach to memory for the agent using a [Skill](https://code.claude.com/docs/en/skills).
+Skills use a context management technique called progressive disclosure.
+This is a fancy way of saying the agent only sees the description of the skill by default and when to use it, but not the entire contents of the skill.
+Given the conversation, the agent decides whether to read the full contents of the skill (markdown and any other additional content).
+Otherwise, this is kept out of the context window to keep the agent focused on the task at hand.
+
+It's up to you whether or not you want to do this with memory.
+If you always want the agent to read and write from memory after every conversation turn, there's an argument to be made to leave the implementation in `CLAUDE.md`, but since most agents have project-specific content in there, let's refactor to a skill.
+I had to make some tweaks to the copy to get the Skill invocation working consistently and writing `memories.jsonl` to the root of the project.
+
+```md title=CLAUDE.md wrap=true
+ALWAYS start by using Skill("memory") before and after every conversation exchange.
+```
+
+````md title=.claude/skills/memory/SKILL.md wrap=true
+---
+name: memory
+description: Log and recall conversation context. Use after every conversation exchange to save a summary, and before responding to search for relevant prior context.
+allowed-tools: Bash(jq *), Bash(grep *), Bash(rg *), Bash(touch *), Read(memories.jsonl)
+---
+
+# Memory Management
+
+The memories file MUST be stored at the project root directory: `memories.jsonl`.
+
+## After every conversation exchange
+
+First, ensure the file exists, then append a summary:
+
+```bash
+touch memories.jsonl && jq -n -c --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg s "Summary here" '{timestamp: $ts, summary: $s}' >> memories.jsonl
+```
+
+Each line must be a JSON object matching this schema:
+
+```json
+{
+  "timestamp": "ISO 8601 UTC",
+  "summary": "1-3 sentence summary of what the user asked and what was done"
+}
+```
+
+## Before each conversation turn
+
+Search `memories.jsonl` in the project root directory for context relevant to the user's request. Use this to inform responses with prior decisions, patterns, and context:
+
+```bash
+grep -i "keyword" memories.jsonl | jq -r '.summary'
+```
+
+Search for multiple relevant keywords to find related context.
+````
+
+Here's what happens for the same interaction with the agent that has access to the memory Skill.
+
+<ChatContainer model="Claude Code: Opus 4.6">
+  <ChatMessage role="user">
+    hi there, my name is Jack nice to meet you!
+  </ChatMessage>
+
+  <ChatMessage role="assistant">
+    Hi Jack, nice to meet you!
+
+    <tool-call name="Skill" input="memory">Successfully loaded skill · 5 tools allowed</tool-call>
+
+    <tool-call name="Bash" input='touch /Users/danielcorin/dev/lab/min-mem/memories.jsonl && jq -n -c --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg s "User introduced themselves as Jack. Greeted them back." "{timestamp: $ts, summary: $s}" >> memories.jsonl'>(No content)</tool-call>
+
+    Memory saved.
+
+  </ChatMessage>
+</ChatContainer>
+
+We get our memory written to the file.
+
+```json wrap=true title=memories.jsonl
+{
+  "timestamp": "2026-02-18T19:49:33Z",
+  "summary": "User introduced themselves as Jack. Greeted them back."
+}
+```
+
+And now a fresh session.
+
+<ChatContainer model="Claude Code: Opus 4.6">
+  <ChatMessage role="user">
+    who am I?
+  </ChatMessage>
+
+  <ChatMessage role="assistant">
+    Let me search for relevant context first.
+
+    <tool-call name="Skill" input="memory">Successfully loaded skill · 5 tools allowed</tool-call>
+
+    Let me search for relevant context first.
+
+    <tool-call name="Bash" input='touch /Users/danielcorin/dev/lab/min-mem/memories.jsonl && grep -i "user\|name\|who" /Users/danielcorin/dev/lab/min-mem/memories.jsonl 2>/dev/null | jq -r ".summary"'>User introduced themselves as Jack. Greeted them back.</tool-call>
+
+    Based on my memory, you're Jack. You introduced yourself in a previous conversation.
+
+    <tool-call name="Bash" input={`jq -n -c --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg s "User asked 'who am I?' - recalled from memory that user is Jack." '{timestamp: $ts, summary: $s}' >> memories.jsonl`}>(No content)</tool-call>
+
+  </ChatMessage>
+</ChatContainer>
+
+And again we have two memory entries.
+
+```json wrap=true title=memories.jsonl
+{"timestamp":"2026-02-18T19:49:33Z","summary":"User introduced themselves as Jack. Greeted them back."}
+{"timestamp":"2026-02-18T19:54:58Z","summary":"User asked 'who am I?' - recalled from memory that user is Jack."}
+```
+
+## Wrapping up
+
+This is a pretty basic implementation, but it implements the most important part to give an LLM agent something that resembles memory - it reads and writes to a file system that persists beyond the agent's sessions.
+This approach allows the agent to catch up on what has already happened.
+In our example, we allow the agent to decide what to read and write to and from memory.
+You can be more opinionated about this if you want, using a framework like [`claude-agent-sdk`](https://github.com/anthropics/claude-agent-sdk-typescript) where you have more control over the agent's prompt and can do things like programmatically include the last `N` entries in the prompt.
+
+For more on stateful agents, I recommend [this post by Tim](https://timkellogg.me/blog/2025/12/15/strix).

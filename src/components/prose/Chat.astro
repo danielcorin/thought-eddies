@@ -3,11 +3,18 @@ import { Markdown } from '@astropub/md';
 import { Icon } from 'astro-icon/components';
 
 interface ContentItem {
-  type: 'text' | 'image_url' | 'thinking';
+  type: 'text' | 'image_url' | 'thinking' | 'tool_use' | 'tool_result';
   text?: string;
   image_url?: {
     url: string;
   };
+  // tool_use fields
+  id?: string;
+  name?: string;
+  input?: Record<string, unknown>;
+  // tool_result fields
+  tool_use_id?: string;
+  content?: string;
 }
 
 interface Message {
@@ -28,15 +35,24 @@ interface Props {
 
 const { messages, model } = Astro.props;
 
+interface ToolCall {
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+  result?: string;
+}
+
 function getContent(content: string | ContentItem[]): {
   text: string;
   images: string[];
   thinking: string[];
+  toolCalls: ToolCall[];
 } {
-  if (typeof content === 'string') return { text: content, images: [], thinking: [] };
+  if (typeof content === 'string') return { text: content, images: [], thinking: [], toolCalls: [] };
 
   const images: string[] = [];
   const thinking: string[] = [];
+  const toolCalls: ToolCall[] = [];
   const text = content
     .map((item) => {
       if (item.type === 'image_url' && item.image_url) {
@@ -47,11 +63,52 @@ function getContent(content: string | ContentItem[]): {
         thinking.push(item.text);
         return '';
       }
+      if (item.type === 'tool_use' && item.id && item.name) {
+        toolCalls.push({
+          id: item.id,
+          name: item.name,
+          input: item.input || {},
+        });
+        return '';
+      }
       return item.text || '';
     })
     .join('');
 
-  return { text, images, thinking };
+  return { text, images, thinking, toolCalls };
+}
+
+// Build a map of tool_use_id → result content from tool_result messages
+function buildToolResultMap(messages: Message[]): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const msg of messages) {
+    if (Array.isArray(msg.content)) {
+      for (const item of msg.content) {
+        if (item.type === 'tool_result' && item.tool_use_id) {
+          map.set(item.tool_use_id, item.content || '(No content)');
+        }
+      }
+    }
+  }
+  return map;
+}
+
+// Check if a message only contains tool_result blocks (should not render as user bubble)
+function isToolResultMessage(message: Message): boolean {
+  if (!Array.isArray(message.content)) return false;
+  return message.content.every((item) => item.type === 'tool_result');
+}
+
+const toolResultMap = buildToolResultMap(messages);
+
+function formatToolInput(input: Record<string, unknown>): string {
+  const entries = Object.entries(input);
+  if (entries.length === 0) return '';
+  if (entries.length === 1) {
+    const val = String(entries[0][1]);
+    return val.length > 80 ? val.slice(0, 80) + '...' : val;
+  }
+  return JSON.stringify(input, null, 2);
 }
 ---
 
@@ -65,6 +122,8 @@ function getContent(content: string | ContentItem[]): {
               <span class="timestamp-text">{message.timestamp}</span>
             </div>
           )}
+          {/* Skip user messages that only contain tool_result blocks */}
+          {!(message.role === 'user' && isToolResultMessage(message)) && (
           <div class="message-container">
               {message.role === 'user' && (
                 <div class="message user">
@@ -100,6 +159,29 @@ function getContent(content: string | ContentItem[]): {
                     </div>
                   </details>
                 )}
+                {getContent(message.content).toolCalls.length > 0 &&
+                  getContent(message.content).toolCalls.map((tc) => (
+                    <details class="tool-call-container">
+                      <summary class="tool-call-summary">
+                        <Icon name="ph:caret-right" class="tool-call-chevron" />
+                        <span class="tool-call-name">{tc.name}</span>
+                        <span class="tool-call-input-preview">{formatToolInput(tc.input)}</span>
+                      </summary>
+                      <div class="tool-call-detail">
+                        {Object.keys(tc.input).length > 0 && (
+                          <div class="tool-call-input">
+                            <div class="tool-call-label">Input</div>
+                            <pre><code>{JSON.stringify(tc.input, null, 2)}</code></pre>
+                          </div>
+                        )}
+                        <div class="tool-call-output">
+                          <div class="tool-call-label">Output</div>
+                          <pre><code>{toolResultMap.get(tc.id) || '(No content)'}</code></pre>
+                        </div>
+                      </div>
+                    </details>
+                  ))
+                }
                 <div class="bubble assistant-bubble">
                   <Markdown of={getContent(message.content).text} />
                   {getContent(message.content).images.map((url, index) => (
@@ -128,6 +210,7 @@ function getContent(content: string | ContentItem[]): {
             </div>
           )}
             </div>
+          )}
         </>
       ))
     }
@@ -407,6 +490,95 @@ function getContent(content: string | ContentItem[]): {
 
   .thinking-content :global(p:last-child) {
     margin-bottom: 0;
+  }
+
+  /* Tool call styles */
+  .tool-call-container {
+    margin-bottom: 0.5rem;
+    background: var(--color-bg-code);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: var(--text-sm);
+    opacity: 0.8;
+  }
+
+  .tool-call-summary {
+    cursor: pointer;
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    overflow: hidden;
+  }
+
+  .tool-call-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .tool-call-chevron {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  details[open] .tool-call-chevron {
+    transform: rotate(90deg);
+  }
+
+  .tool-call-name {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--color-ink);
+    flex-shrink: 0;
+  }
+
+  .tool-call-input-preview {
+    color: var(--color-ink-lighter);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .tool-call-detail {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .tool-call-label {
+    font-size: var(--text-xs);
+    color: var(--color-ink-lighter);
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+  }
+
+  .tool-call-input,
+  .tool-call-output {
+    margin-bottom: 0.5rem;
+  }
+
+  .tool-call-output:last-child {
+    margin-bottom: 0;
+  }
+
+  .tool-call-detail pre {
+    margin: 0;
+    padding: 0.5rem;
+    background: var(--color-bg);
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    font-size: var(--text-xs);
+  }
+
+  .tool-call-detail pre code {
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 
   /* Mobile styles */

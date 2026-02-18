@@ -13,62 +13,88 @@ const { role, model, timestamp } = Astro.props;
 type ContentBlock =
   | { type: 'text'; content: string }
   | { type: 'image'; src: string; alt?: string }
-  | { type: 'iframe'; src: string; title?: string; width?: string; height?: string };
+  | { type: 'iframe'; src: string; title?: string; width?: string; height?: string }
+  | { type: 'tool_call'; name: string; input: string; output: string };
 
-// Helper to parse content into ordered blocks of text, images, and iframes
+function decodeHtmlEntities(str: string): string {
+  return str
+    .replace(/&#34;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"');
+}
+
+// Helper to parse content into ordered blocks of text, images, iframes, and tool calls
 function parseContentBlocks(slotContent: string): ContentBlock[] {
   const blocks: ContentBlock[] = [];
 
-  // Match img tags and iframe tags
-  const mediaRegex = /<(img|iframe)\s+[^>]*?(?:\/>|><\/iframe>|>)/gi;
+  // Match img tags, iframe tags, and tool-call tags (with content)
+  // For tool-call, use attribute-aware matching that handles > inside quoted values
+  const mediaRegex = /<(img|iframe)\s+[^>]*?(?:\/>|><\/\1>|>)|<tool-call\s+(?:[^>"']|"[^"]*"|'[^']*')*?>[\s\S]*?<\/tool-call>/gi;
 
   let lastIndex = 0;
   let match;
 
   while ((match = mediaRegex.exec(slotContent)) !== null) {
-    // Add text before this media element if any
+    // Add text before this element if any
     const textBefore = slotContent.slice(lastIndex, match.index).trim();
     if (textBefore) {
       blocks.push({ type: 'text', content: textBefore });
     }
 
-    const tagName = match[1].toLowerCase();
-    const tag = match[0];
+    const fullMatch = match[0];
 
-    if (tagName === 'img') {
-      // Extract src and alt from the img tag
-      const srcMatch = tag.match(/src=["']([^"']+)["']/);
-      const altMatch = tag.match(/alt=["']([^"']+)["']/);
+    if (fullMatch.startsWith('<tool-call')) {
+      const nameMatch = fullMatch.match(/name="([^"]*)"|name='([^']*)'/);
+      const inputMatch = fullMatch.match(/input="([^"]*)"|input='([^']*)'/);
+      // Content between the closing > of opening tag and </tool-call> is the output
+      const contentMatch = fullMatch.match(/<tool-call\s+(?:[^>"']|"[^"]*"|'[^']*')*?>([\s\S]*?)<\/tool-call>/);
 
-      if (srcMatch) {
-        blocks.push({
-          type: 'image',
-          src: srcMatch[1],
-          alt: altMatch?.[1]
-        });
-      }
-    } else if (tagName === 'iframe') {
-      // Extract src, title, width, height from iframe tag
-      const srcMatch = tag.match(/src=["']([^"']+)["']/);
-      const titleMatch = tag.match(/title=["']([^"']+)["']/);
-      const widthMatch = tag.match(/width=["']([^"']+)["']/);
-      const heightMatch = tag.match(/height=["']([^"']+)["']/);
+      blocks.push({
+        type: 'tool_call',
+        name: decodeHtmlEntities((nameMatch?.[1] ?? nameMatch?.[2]) || 'Tool'),
+        input: decodeHtmlEntities((inputMatch?.[1] ?? inputMatch?.[2]) || ''),
+        output: decodeHtmlEntities(contentMatch?.[1]?.trim() || '(No content)'),
+      });
+    } else {
+      const tagName = match[1]?.toLowerCase();
+      const tag = fullMatch;
 
-      if (srcMatch) {
-        blocks.push({
-          type: 'iframe',
-          src: srcMatch[1],
-          title: titleMatch?.[1],
-          width: widthMatch?.[1],
-          height: heightMatch?.[1]
-        });
+      if (tagName === 'img') {
+        const srcMatch = tag.match(/src=["']([^"']+)["']/);
+        const altMatch = tag.match(/alt=["']([^"']+)["']/);
+
+        if (srcMatch) {
+          blocks.push({
+            type: 'image',
+            src: srcMatch[1],
+            alt: altMatch?.[1]
+          });
+        }
+      } else if (tagName === 'iframe') {
+        const srcMatch = tag.match(/src=["']([^"']+)["']/);
+        const titleMatch = tag.match(/title=["']([^"']+)["']/);
+        const widthMatch = tag.match(/width=["']([^"']+)["']/);
+        const heightMatch = tag.match(/height=["']([^"']+)["']/);
+
+        if (srcMatch) {
+          blocks.push({
+            type: 'iframe',
+            src: srcMatch[1],
+            title: titleMatch?.[1],
+            width: widthMatch?.[1],
+            height: heightMatch?.[1]
+          });
+        }
       }
     }
 
-    lastIndex = match.index + match[0].length;
+    lastIndex = match.index + fullMatch.length;
   }
 
-  // Add any remaining text after the last media element
+  // Add any remaining text after the last element
   const remainingText = slotContent.slice(lastIndex).trim();
   if (remainingText) {
     blocks.push({ type: 'text', content: remainingText });
@@ -82,6 +108,10 @@ const thinkingContent = await Astro.slots.render('thinking');
 
 const contentBlocks = parseContentBlocks(defaultContent);
 const thinking = thinkingContent ? [thinkingContent] : [];
+
+function formatToolInputPreview(input: string): string {
+  return input.length > 80 ? input.slice(0, 80) + '...' : input;
+}
 ---
 
 <>
@@ -136,17 +166,41 @@ const thinking = thinkingContent ? [thinkingContent] : [];
               </div>
             </details>
           )}
-          <div class="bubble assistant-bubble">
-            {contentBlocks.map((block, index) => (
-              block.type === 'text' ? (
+          {contentBlocks.map((block, index) => (
+            block.type === 'tool_call' ? (
+              <details class="tool-call-container">
+                <summary class="tool-call-summary">
+                  <Icon name="ph:caret-right" class="tool-call-chevron" />
+                  <span class="tool-call-name">{block.name}</span>
+                  <span class="tool-call-input-preview">{formatToolInputPreview(block.input)}</span>
+                </summary>
+                <div class="tool-call-detail">
+                  {block.input && (
+                    <div class="tool-call-input">
+                      <div class="tool-call-label">Input</div>
+                      <pre><code>{block.input}</code></pre>
+                    </div>
+                  )}
+                  <div class="tool-call-output">
+                    <div class="tool-call-label">Output</div>
+                    <pre><code>{block.output}</code></pre>
+                  </div>
+                </div>
+              </details>
+            ) : block.type === 'text' ? (
+              <div class="bubble assistant-bubble">
                 <Markdown of={block.content} />
-              ) : block.type === 'image' ? (
+              </div>
+            ) : block.type === 'image' ? (
+              <div class="bubble assistant-bubble">
                 <img
                   src={block.src}
                   alt={block.alt || `Image ${index + 1} from ${model || 'assistant'} response`}
                   class="message-image"
                 />
-              ) : (
+              </div>
+            ) : (
+              <div class="bubble assistant-bubble">
                 <iframe
                   src={block.src}
                   title={block.title || `Embedded content ${index + 1}`}
@@ -154,9 +208,9 @@ const thinking = thinkingContent ? [thinkingContent] : [];
                   height={block.height || '450'}
                   class="message-iframe"
                 />
-              )
-            ))}
-          </div>
+              </div>
+            )
+          ))}
         </div>
       </div>
     )}
@@ -213,7 +267,7 @@ const thinking = thinkingContent ? [thinkingContent] : [];
   .message-content {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.5rem;
     max-width: 80%;
     min-width: 0;
   }
@@ -454,6 +508,94 @@ const thinking = thinkingContent ? [thinkingContent] : [];
 
   .thinking-content :global(p:last-child) {
     margin-bottom: 0;
+  }
+
+  /* Tool call styles */
+  .tool-call-container {
+    background: var(--color-bg-code);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: var(--text-sm);
+    opacity: 0.8;
+  }
+
+  .tool-call-summary {
+    cursor: pointer;
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    overflow: hidden;
+  }
+
+  .tool-call-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .tool-call-chevron {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  details[open] .tool-call-chevron {
+    transform: rotate(90deg);
+  }
+
+  .tool-call-name {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--color-ink);
+    flex-shrink: 0;
+  }
+
+  .tool-call-input-preview {
+    color: var(--color-ink-lighter);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .tool-call-detail {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .tool-call-label {
+    font-size: var(--text-xs);
+    color: var(--color-ink-lighter);
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+  }
+
+  .tool-call-input,
+  .tool-call-output {
+    margin-bottom: 0.5rem;
+  }
+
+  .tool-call-output:last-child {
+    margin-bottom: 0;
+  }
+
+  .tool-call-detail pre {
+    margin: 0;
+    padding: 0.5rem;
+    background: var(--color-bg);
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    font-size: var(--text-xs);
+  }
+
+  .tool-call-detail pre code {
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 
   /* Mobile styles */
