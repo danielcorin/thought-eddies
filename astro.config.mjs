@@ -3,6 +3,7 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import cloudflare from '@astrojs/cloudflare';
+import astroD2 from 'astro-d2';
 import icon from 'astro-icon';
 import { defineConfig } from 'astro/config';
 import markdownIntegration from '@astropub/md';
@@ -28,6 +29,11 @@ export default defineConfig({
   },
   integrations: [
     react(),
+    astroD2({
+      experimental: { useD2js: true },
+      sketch: true,
+      theme: { default: '300', dark: false },
+    }),
     expressiveCode(),
     mdx(),
     tailwind(),
@@ -56,6 +62,7 @@ export default defineConfig({
     shikiConfig: {
       theme: 'monokai',
       wrap: true,
+      excludeLangs: ['d2'],
     },
   },
   adapter: cloudflare(),

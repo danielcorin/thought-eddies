@@ -81,6 +81,11 @@
   --color-highlight: var(--color-highlight-light);
 }
 
+/* Invert D2 diagrams in dark mode */
+:root.dark img[src*='/d2/'] {
+  filter: invert(1) hue-rotate(180deg);
+}
+
 /* Dark theme class override */
 :root.dark {
   --color-bg: var(--color-bg-note-dark);

@@ -62,6 +62,9 @@ importers:
       astro:
         specifier: ^5.16.15
         version: 5.16.15(@types/node@25.0.10)(@vercel/functions@2.2.13)(jiti@1.21.7)(rollup@4.56.0)(typescript@5.8.3)(yaml@2.8.2)
+      astro-d2:
+        specifier: ^0.9.0
+        version: 0.9.0(astro@5.16.15(@types/node@25.0.10)(@vercel/functions@2.2.13)(jiti@1.21.7)(rollup@4.56.0)(typescript@5.8.3)(yaml@2.8.2))
       astro-embed:
         specifier: ^0.9.2
         version: 0.9.2(astro@5.16.15(@types/node@25.0.10)(@vercel/functions@2.2.13)(jiti@1.21.7)(rollup@4.56.0)(typescript@5.8.3)(yaml@2.8.2))
@@ -1176,6 +1179,9 @@ packages:
   '@speed-highlight/core@1.2.14':
     resolution: {integrity: sha512-G4ewlBNhUtlLvrJTb88d2mdy2KRijzs4UhnlrOSRT4bmjh/IqNElZa3zkrZ+TC47TwtlDWzVLFADljF1Ijp5hA==}
 
+  '@terrastruct/d2@0.1.33':
+    resolution: {integrity: sha512-eK5hyfGIJFolC7sUsiKvWdY9xGFctTe3d+PSijo09IYDso8psztC+A4SammizXtlwYZpnnW0AtDjfBYauceSeA==}
+
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
@@ -1464,6 +1470,12 @@ packages:
     engines: {node: '>=16.0.0'}
     peerDependencies:
       astro: ^2.0.0 || ^3.0.0-beta || ^4.0.0-beta || ^5.0.0-beta
+
+  astro-d2@0.9.0:
+    resolution: {integrity: sha512-an5vkji/rPL5rgULj1u85cgWvW9Za5htrvYcx3My1jAQLFgBxgUmsw7p9Il9yFnpjj/KemZDlV6WdSzhJAlvbQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      astro: '>=5.0.0'
 
   astro-embed@0.9.2:
     resolution: {integrity: sha512-MUeNrfnNgcrV9E8WqEW9IYK8+Y3etDLyyi8Uf35rM5WJ53wkh511ye9oi15taJuqOaYRk2hQ9P5G2+/JS1Mjxg==}
@@ -4823,6 +4835,8 @@ snapshots:
 
   '@speed-highlight/core@1.2.14': {}
 
+  '@terrastruct/d2@0.1.33': {}
+
   '@trysound/sax@0.2.0': {}
 
   '@types/babel__core@7.20.5':
@@ -5156,6 +5170,14 @@ snapshots:
     dependencies:
       acorn: 8.15.0
       astro: 5.16.15(@types/node@25.0.10)(@vercel/functions@2.2.13)(jiti@1.21.7)(rollup@4.56.0)(typescript@5.8.3)(yaml@2.8.2)
+
+  astro-d2@0.9.0(astro@5.16.15(@types/node@25.0.10)(@vercel/functions@2.2.13)(jiti@1.21.7)(rollup@4.56.0)(typescript@5.8.3)(yaml@2.8.2)):
+    dependencies:
+      '@terrastruct/d2': 0.1.33
+      astro: 5.16.15(@types/node@25.0.10)(@vercel/functions@2.2.13)(jiti@1.21.7)(rollup@4.56.0)(typescript@5.8.3)(yaml@2.8.2)
+      hast-util-from-html: 2.0.3
+      hast-util-to-html: 9.0.5
+      unist-util-visit: 5.1.0
 
   astro-embed@0.9.2(astro@5.16.15(@types/node@25.0.10)(@vercel/functions@2.2.13)(jiti@1.21.7)(rollup@4.56.0)(typescript@5.8.3)(yaml@2.8.2)):
     dependencies:
