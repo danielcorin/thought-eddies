@@ -30,6 +30,7 @@ const posts = defineCollection({
       .optional()
       .default([]),
     series: z.string().optional(),
+    bsky: z.string().optional(),
   }),
 });
 
