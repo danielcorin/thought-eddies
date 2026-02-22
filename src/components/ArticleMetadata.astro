@@ -17,6 +17,7 @@ interface Props {
   seriesHref?: string;
   githubUrl?: string;
   projectUrl?: string;
+  bskyUrl?: string;
   timelineHref?: string;
   extraItems?: MetaItem[];
 }
@@ -31,6 +32,7 @@ const {
   seriesHref,
   githubUrl,
   projectUrl,
+  bskyUrl,
   timelineHref,
   extraItems = [],
 } = Astro.props;
@@ -102,6 +104,14 @@ const hasUpdated =
       <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="meta-item meta-item-link">
         <Icon name="ph:github-logo" class="meta-icon" />
         <span class="meta-text">GitHub</span>
+      </a>
+    )
+  }
+  {
+    bskyUrl && (
+      <a href={bskyUrl} target="_blank" rel="noopener noreferrer" class="meta-item meta-item-link meta-link-bluesky">
+        <Icon name="ph:butterfly" class="meta-icon" />
+        <span class="meta-text">Bluesky</span>
       </a>
     )
   }
@@ -188,6 +198,10 @@ const hasUpdated =
 
   .meta-item-link:hover {
     color: var(--color-accent);
+  }
+
+  .meta-link-bluesky:hover {
+    color: #00a8e8;
   }
 
   @media (max-width: 640px) {

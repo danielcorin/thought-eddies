@@ -265,7 +265,7 @@ export default function BlueskyComments({ uri: rawUri }: BlueskyCommentsProps) {
           >
             Reply on Bluesky
           </a>{' '}
-          to join the conversation.
+          to comment.
         </p>
       </section>
     );
@@ -311,7 +311,7 @@ export default function BlueskyComments({ uri: rawUri }: BlueskyCommentsProps) {
           >
             Reply on Bluesky
           </a>{' '}
-          to join the conversation.
+          to comment.
         </p>
       </section>
     );
@@ -350,7 +350,7 @@ export default function BlueskyComments({ uri: rawUri }: BlueskyCommentsProps) {
         >
           Reply on Bluesky
         </a>{' '}
-        to join the conversation.
+        to comment.
       </p>
       <div>
         {replies.map((reply) => (

@@ -17,6 +17,16 @@ import { slugify } from '@utils/slugify';
 
 const { frontmatter, ogImage, slug } = Astro.props;
 
+// Build Bluesky post URL from bsky frontmatter
+const DEFAULT_DID = 'did:plc:mracrip6qu3vw46nbewg44sm';
+function getBskyUrl(bsky?: string): string | undefined {
+  if (!bsky) return undefined;
+  const uri = bsky.startsWith('at://') ? bsky : `at://${DEFAULT_DID}/app.bsky.feed.post/${bsky}`;
+  const parts = uri.replace('at://', '').split('/');
+  return `https://bsky.app/profile/${parts[0]}/post/${parts[2]}`;
+}
+const bskyUrl = getBskyUrl(frontmatter.bsky);
+
 // Determine collection type
 const collectionType = frontmatter.collection || "posts";
 const isTil = collectionType === "til";
@@ -96,6 +106,7 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
         seriesHref={frontmatter.series ? `/series/${slugify(frontmatter.series)}` : undefined}
         githubUrl={frontmatter.githubUrl}
         projectUrl={frontmatter.projectUrl}
+        bskyUrl={bskyUrl}
         timelineHref={isProject && hasTimeline ? `/projects/${entryId}/timeline` : undefined}
       />
       {
