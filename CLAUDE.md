@@ -36,6 +36,16 @@ Content schemas are defined in `src/content/config.ts`. Key fields:
 - Posts: `draft: true` by default, set `draft: false` to publish
 - All content uses frontmatter validated by Zod schemas
 
+### Bluesky Comments
+
+To show comments on a post, add the `bsky` frontmatter field with the post ID from the Bluesky URL. For `https://bsky.app/profile/danielcorin.com/post/3lnbcug67ys2d`:
+
+```yaml
+bsky: '3lnbcug67ys2d'
+```
+
+Full AT URIs (`at://did:plc:.../app.bsky.feed.post/...`) are also supported.
+
 ## Key Files
 
 - `src/content/config.ts` - Content collection schemas

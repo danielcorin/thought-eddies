@@ -9,6 +9,7 @@ import { getCollection, getEntry } from "astro:content";
 import Layout from "./Layout.astro";
 import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
 import ClickableImages from "@components/ClickableImages.astro";
+import BlueskyComments from "@components/BlueskyComments.tsx";
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getCommitUrl } from '@utils/git';
@@ -139,6 +140,10 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
     </div>
 
     <RecommendedContent content={similarContent} />
+
+    {frontmatter.bsky && (
+      <BlueskyComments uri={frontmatter.bsky} client:visible />
+    )}
 
     <nav class="post-navigation">
       <div class="nav-item nav-prev-wrapper">
