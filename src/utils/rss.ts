@@ -91,7 +91,7 @@ export async function generateRSSFeed(context: { site: string }) {
     })
   );
 
-  return rss({
+  const response = await rss({
     title: 'Thought Eddies',
     description: 'An experimental digital garden',
     site: context.site,
@@ -101,4 +101,7 @@ export async function generateRSSFeed(context: { site: string }) {
     },
     stylesheet: '/rss-style.xsl',
   });
+
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  return response;
 }
