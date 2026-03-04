@@ -21,17 +21,25 @@ const {
     baseUrl,
 } = Astro.props;
 
-// Get date based on type
-const date = new Date(
-    type === "log"
-        ? (post.data as any).date
-        : (post.data as any).publishedAt || (post.data as any).createdAt,
-);
-
 // Format date components
-const year = date.getFullYear();
-const month = String(date.getMonth() + 1).padStart(2, "0");
-const day = String(date.getDate()).padStart(2, "0");
+let year: string | number;
+let month: string;
+let day: string;
+
+if (type === "log") {
+    // Derive date from file path (e.g. post.id "2025/12/04") to avoid timezone issues
+    const parts = post.id.split("/");
+    year = parts[0];
+    month = parts[1];
+    day = parts[2];
+} else {
+    const date = new Date(
+        (post.data as any).publishedAt || (post.data as any).createdAt,
+    );
+    year = date.getUTCFullYear();
+    month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    day = String(date.getUTCDate()).padStart(2, "0");
+}
 
 // Build URL and formatted date
 let url: string;
