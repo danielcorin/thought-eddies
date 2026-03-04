@@ -100,7 +100,7 @@ export async function generateSectionRSSFeed(
     projects: 'Project showcases',
   };
 
-  return rss({
+  const response = await rss({
     title: sectionTitles[section],
     description: sectionDescriptions[section],
     site: context.site,
@@ -110,4 +110,7 @@ export async function generateSectionRSSFeed(
     },
     stylesheet: '/rss-section-style.xsl',
   });
+
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  return response;
 }
