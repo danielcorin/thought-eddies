@@ -16,7 +16,7 @@ export const GET: APIRoute = async () => {
       ); // Show all logs
     // Get all years with logs
     const yearsWithLogs = [
-      ...new Set(logs.map((log) => new Date(log.data.date).getFullYear())),
+      ...new Set(logs.map((log) => new Date(log.data.date).getUTCFullYear())),
     ].sort((a, b) => b - a);
 
     let content = `# Logs
@@ -29,7 +29,7 @@ Daily logs and thoughts.
 
     yearsWithLogs.forEach((year) => {
       const yearLogs = logs.filter(
-        (log) => new Date(log.data.date).getFullYear() === year
+        (log) => new Date(log.data.date).getUTCFullYear() === year
       );
       content += `- [${year}](/logs/${year}/index.md) (${yearLogs.length} entries)\n`;
     });

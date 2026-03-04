@@ -10,8 +10,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const yearMonths = new Set<string>();
   logs.forEach((log) => {
     const date = new Date(log.data.date);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     yearMonths.add(`${year}-${month}`);
   });
 
@@ -39,8 +39,8 @@ export const GET: APIRoute = async ({ params }) => {
       .filter((log) => {
         const date = new Date(log.data.date);
         return (
-          date.getFullYear() === yearNumber &&
-          date.getMonth() + 1 === monthNumber
+          date.getUTCFullYear() === yearNumber &&
+          date.getUTCMonth() + 1 === monthNumber
         );
       })
       .sort(
@@ -78,7 +78,7 @@ ${monthLogs.length} ${monthLogs.length === 1 ? 'entry' : 'entries'}
     // Group by day
     const logsByDay = monthLogs.reduce(
       (acc, log) => {
-        const day = new Date(log.data.date).getDate();
+        const day = new Date(log.data.date).getUTCDate();
         if (!acc[day]) {
           acc[day] = [];
         }

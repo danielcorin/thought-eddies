@@ -9,7 +9,7 @@ import Breadcrumbs from "@components/Breadcrumbs.astro";
 export async function getStaticPaths() {
   const logs = await getCollection("logs", ({ data }) => !data.draft);
   const years = [
-    ...new Set(logs.map((log) => new Date(log.data.date).getFullYear())),
+    ...new Set(logs.map((log) => new Date(log.data.date).getUTCFullYear())),
   ];
 
   return years.map((year) => ({
@@ -22,13 +22,13 @@ const { year } = Astro.params;
 const logs = await getCollection("logs", ({ data }) => !data.draft);
 
 const yearLogs = logs
-  .filter((log) => new Date(log.data.date).getFullYear().toString() === year)
+  .filter((log) => new Date(log.data.date).getUTCFullYear().toString() === year)
   .sort(
     (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
   );
 
 // Get all years with logs for navigation
-const yearsWithLogs = [...new Set(logs.map((log) => new Date(log.data.date).getFullYear()))].sort((a, b) => b - a);
+const yearsWithLogs = [...new Set(logs.map((log) => new Date(log.data.date).getUTCFullYear()))].sort((a, b) => b - a);
 const currentYearIndex = yearsWithLogs.indexOf(parseInt(year));
 const prevYear = currentYearIndex < yearsWithLogs.length - 1 ? yearsWithLogs[currentYearIndex + 1] : null;
 const nextYear = currentYearIndex > 0 ? yearsWithLogs[currentYearIndex - 1] : null;
@@ -36,7 +36,7 @@ const nextYear = currentYearIndex > 0 ? yearsWithLogs[currentYearIndex - 1] : nu
 // Group logs by month
 const logsByMonth = yearLogs.reduce(
   (acc, log) => {
-    const month = new Date(log.data.date).getMonth();
+    const month = new Date(log.data.date).getUTCMonth();
     if (!acc[month]) {
       acc[month] = [];
     }

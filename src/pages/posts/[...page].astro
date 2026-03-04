@@ -27,7 +27,7 @@ const publishedPosts = allPosts.filter(
 );
 const yearsWithPosts = [
   ...new Set(
-    publishedPosts.map((post) => new Date(post.data.createdAt).getFullYear()),
+    publishedPosts.map((post) => new Date(post.data.createdAt).getUTCFullYear()),
   ),
 ].sort((a, b) => b - a);
 

@@ -7,7 +7,7 @@ export const prerender = true;
 export const getStaticPaths: GetStaticPaths = async () => {
   const logs = await getCollection('logs');
   const years = [
-    ...new Set(logs.map((log) => new Date(log.data.date).getFullYear())),
+    ...new Set(logs.map((log) => new Date(log.data.date).getUTCFullYear())),
   ];
 
   return years.map((year) => ({
@@ -26,7 +26,7 @@ export const GET: APIRoute = async ({ params }) => {
 
     const yearLogs = logs
       .filter(
-        (log) => new Date(log.data.date).getFullYear().toString() === year
+        (log) => new Date(log.data.date).getUTCFullYear().toString() === year
       )
       .sort(
         (a, b) =>
@@ -36,7 +36,7 @@ export const GET: APIRoute = async ({ params }) => {
     // Group logs by month
     const logsByMonth = yearLogs.reduce(
       (acc, log) => {
-        const month = new Date(log.data.date).getMonth();
+        const month = new Date(log.data.date).getUTCMonth();
         if (!acc[month]) {
           acc[month] = [];
         }

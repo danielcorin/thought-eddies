@@ -2,6 +2,7 @@
 import Tag from "@components/Tag.astro";
 import TypeLabel from "@components/TypeLabel.astro";
 import { getContentPreview } from "@utils/text";
+import { buildLogUrl } from "@utils/markdownEndpoints";
 import type { CollectionEntry } from "astro:content";
 import { Icon } from "astro-icon/components";
 
@@ -28,15 +29,15 @@ const date = new Date(
         : (post.data as any).publishedAt || (post.data as any).createdAt,
 );
 
-// Format date components
-const year = date.getFullYear();
-const month = String(date.getMonth() + 1).padStart(2, "0");
-const day = String(date.getDate()).padStart(2, "0");
+// Format date components using UTC to avoid timezone offset issues
+const year = date.getUTCFullYear();
+const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+const day = String(date.getUTCDate()).padStart(2, "0");
 
 // Build URL and formatted date
 let url: string;
 if (type === "log") {
-    url = `/logs/${year}/${month}/${day}`;
+    url = buildLogUrl(post.id);
 } else if (post.collection === "til") {
     const category = post.id.split('/')[0];
     const slug = post.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '');

@@ -13,8 +13,8 @@ export async function getStaticPaths() {
   const yearMonths = new Set<string>();
   logs.forEach((log) => {
     const date = new Date(log.data.date);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     yearMonths.add(`${year}-${month}`);
   });
 
@@ -33,7 +33,7 @@ const logs = await getCollection("logs", ({ data }) => !data.draft);
 const monthLogs = logs
   .filter((log) => {
     const date = new Date(log.data.date);
-    return date.getFullYear() === year && date.getMonth() + 1 === month;
+    return date.getUTCFullYear() === year && date.getUTCMonth() + 1 === month;
   })
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
@@ -47,7 +47,7 @@ const monthName = monthNames[month - 1];
 // Create a map of days with logs
 const daysWithLogs = new Map<number, typeof logs[0]>();
 monthLogs.forEach(log => {
-  const day = new Date(log.data.date).getDate();
+  const day = new Date(log.data.date).getUTCDate();
   daysWithLogs.set(day, log);
 });
 
@@ -86,8 +86,8 @@ if (currentWeek.length > 0) {
 const monthsWithLogs = new Set<string>();
 logs.forEach((log) => {
   const date = new Date(log.data.date);
-  const logYear = date.getFullYear();
-  const logMonth = date.getMonth() + 1;
+  const logYear = date.getUTCFullYear();
+  const logMonth = date.getUTCMonth() + 1;
   monthsWithLogs.add(`${logYear}-${String(logMonth).padStart(2, '0')}`);
 });
 

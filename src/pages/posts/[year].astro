@@ -10,7 +10,7 @@ export async function getStaticPaths() {
     const posts = await getCollection("posts", ({ data }) => !data.draft);
     const years = [
         ...new Set(
-            posts.map((post) => new Date(post.data.createdAt).getFullYear()),
+            posts.map((post) => new Date(post.data.createdAt).getUTCFullYear()),
         ),
     ];
 
@@ -27,12 +27,12 @@ const posts = await getCollection(collection, ({ data }) => !data.draft);
 const yearPosts = posts
     .filter(
         (post) =>
-            new Date(post.data.createdAt).getFullYear().toString() === year,
+            new Date(post.data.createdAt).getUTCFullYear().toString() === year,
     )
     .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
 
 // Get all years with posts for navigation
-const yearsWithPosts = [...new Set(posts.map((post) => new Date(post.data.createdAt).getFullYear()))].sort((a, b) => b - a);
+const yearsWithPosts = [...new Set(posts.map((post) => new Date(post.data.createdAt).getUTCFullYear()))].sort((a, b) => b - a);
 const currentYearIndex = yearsWithPosts.indexOf(parseInt(year));
 const prevYear = currentYearIndex < yearsWithPosts.length - 1 ? yearsWithPosts[currentYearIndex + 1] : null;
 const nextYear = currentYearIndex > 0 ? yearsWithPosts[currentYearIndex - 1] : null;

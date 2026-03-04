@@ -8,7 +8,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
   const years = [
     ...new Set(
-      posts.map((post) => new Date(post.data.createdAt).getFullYear())
+      posts.map((post) => new Date(post.data.createdAt).getUTCFullYear())
     ),
   ];
 
@@ -29,7 +29,7 @@ export const GET: APIRoute = async ({ params }) => {
     const yearPosts = posts
       .filter(
         (post) =>
-          new Date(post.data.createdAt).getFullYear().toString() === year
+          new Date(post.data.createdAt).getUTCFullYear().toString() === year
       )
       .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
 
@@ -44,7 +44,7 @@ ${yearPosts.length} ${yearPosts.length === 1 ? 'post' : 'posts'}
     // Group posts by month
     const postsByMonth = yearPosts.reduce(
       (acc, post) => {
-        const month = new Date(post.data.createdAt).getMonth();
+        const month = new Date(post.data.createdAt).getUTCMonth();
         if (!acc[month]) {
           acc[month] = [];
         }

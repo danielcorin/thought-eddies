@@ -17,7 +17,7 @@ export const GET: APIRoute = async () => {
     // Get all years with posts
     const yearsWithPosts = [
       ...new Set(
-        posts.map((post) => new Date(post.data.createdAt).getFullYear())
+        posts.map((post) => new Date(post.data.createdAt).getUTCFullYear())
       ),
     ].sort((a, b) => b - a);
 
@@ -31,7 +31,7 @@ Long-form articles and essays.
 
     yearsWithPosts.forEach((year) => {
       const yearPosts = posts.filter(
-        (post) => new Date(post.data.createdAt).getFullYear() === year
+        (post) => new Date(post.data.createdAt).getUTCFullYear() === year
       );
       content += `- [${year}](/posts/${year}/index.md) (${yearPosts.length} ${yearPosts.length === 1 ? 'post' : 'posts'})\n`;
     });
