@@ -272,7 +272,7 @@ def main():
     for name, help_text in [("setup", "Create publication record"), ("sync", "Sync posts as documents")]:
         sub = subparsers.add_parser(name, help=help_text)
         sub.add_argument("--handle", required=True, help="AT Protocol handle (e.g., danielcorin.com)")
-        sub.add_argument("--password", help="App password (or set ATP_PASSWORD env var)")
+        sub.add_argument("--password", help="App password (or set BSKY_APP_PASSWORD env var)")
 
     args = parser.parse_args()
     {"setup": cmd_setup, "sync": cmd_sync}[args.command](args)
