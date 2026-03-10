@@ -16,6 +16,10 @@ til category name:
     python3 scripts/new_til.py "{{category}}" "{{name}}"
 
 
+# Set up or sync standard.site publication
+standard-site *args:
+    python3 scripts/standard_site.py {{args}}
+
 # Sync drafts from Drafts.app
 drafts-sync:
     python3 scripts/sync_drafts.py
