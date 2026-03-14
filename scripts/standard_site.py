@@ -107,12 +107,12 @@ def slugify(text):
     return text[:512]
 
 
-def parse_frontmatter(filepath):
-    """Parse YAML frontmatter from a markdown file."""
+def parse_post(filepath):
+    """Parse YAML frontmatter and body from a markdown file."""
     text = filepath.read_text()
-    match = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
+    match = re.match(r"^---\s*\n(.*?)\n---\s*\n?(.*)", text, re.DOTALL)
     if not match:
-        return None
+        return None, ""
 
     fm = {}
     for line in match.group(1).split("\n"):
@@ -127,7 +127,7 @@ def parse_frontmatter(filepath):
         elif value.lower() == "false":
             value = False
         fm[key] = value
-    return fm
+    return fm, match.group(2).strip()
 
 
 def get_published_posts():
@@ -136,7 +136,7 @@ def get_published_posts():
     for filepath in sorted(CONTENT_DIR.rglob("*.md")) + sorted(CONTENT_DIR.rglob("*.mdx")):
         if filepath.name.startswith("_"):
             continue
-        fm = parse_frontmatter(filepath)
+        fm, body = parse_post(filepath)
         if not fm or fm.get("draft", True) is True:
             continue
 
@@ -157,6 +157,7 @@ def get_published_posts():
             "updatedAt": fm.get("updatedAt", ""),
             "tags": [t.strip() for t in fm.get("tags", "").split(",") if t.strip()] if isinstance(fm.get("tags"), str) else [],
             "bsky": fm.get("bsky", ""),
+            "textContent": body,
         })
     return posts
 
@@ -243,6 +244,16 @@ def cmd_sync(args):
             record["updatedAt"] = post["updatedAt"]
         if post["tags"]:
             record["tags"] = post["tags"]
+        if post["textContent"]:
+            record["textContent"] = post["textContent"]
+            record["content"] = {
+                "$type": "at.markpub.markdown",
+                "flavor": "commonmark",
+                "text": {
+                    "$type": "at.markpub.text",
+                    "markdown": post["textContent"],
+                },
+            }
 
         # Check if record exists and matches
         existing_rec = existing_by_path.get(post["path"])
@@ -252,6 +263,8 @@ def cmd_sync(args):
                 existing_val.get("title") == record["title"]
                 and existing_val.get("description") == record.get("description")
                 and existing_val.get("publishedAt") == record["publishedAt"]
+                and existing_val.get("textContent") == record.get("textContent")
+                and existing_val.get("content") == record.get("content")
             ):
                 skipped += 1
                 continue
