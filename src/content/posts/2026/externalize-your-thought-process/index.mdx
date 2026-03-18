@@ -1,0 +1,179 @@
+---
+title: 'Externalize Your Thought Process'
+createdAt: 2026-03-04T16:13:31.526Z
+updatedAt: 2026-03-17T21:09:13.397Z
+draft: false
+editor: tarn
+---
+
+import ChatContainer from '@components/prose/ChatContainer.astro';
+import ChatMessage from '@components/prose/ChatMessage.astro';
+
+We're at least a solid year (more for some of us) into building software with LLM agents and as an industry, there is limited coherence of what it looks like to effectively build software with agents, or even learn how to do this well.
+There are tons of great resources, but it's close to a full-time job to remain up to date with the latest.
+This is not to say all the latest ideas are good or worth trying but if you are coding with Copilot using Claude Sonnet 3.5 today, you probably would be better served trying out a different model.
+
+An approach I keep returning to when it comes to teaching use of these LLM-based tools is real-time collaboration, with another person.
+I've had this belief corroborated by enough people in the industry at this point that I'll share it.
+The best way to teach agents is to learn by watching someone more experienced, or by having someone more experienced shadow you while you use them.
+It isn't all that important how you achieve this mode of pair, just that you do it.
+Leaving someone alone to "try the tools" is a paltry attempt to get them to adopt them.
+
+Highly skilled individuals may struggle to effectively use AI tools for any number of reasons.
+This does not mean they can't learn them - just that they have not learned them yet.
+Teaching AI tools has become a bit of a hobby of mine.
+I've successfully leveled up people from all ages and backgrounds.
+It takes patience and mentorship but if the individual is motivated to learn, they will get results.
+
+## A first principles approach
+
+Given the abundance of resources, it can be difficult to know where to start learning and where to start teaching even if you are familiar with the tools.
+I take what I call a "first principles" approach to learning LLM-based tools.
+It's possible for someone to learn to apply a tool like ChatGPT or Claude Code without having a strong mental model for what they are doing, but without this background, they'll develop tool-specific knowledge rather than domain-specific knowledge.
+It will be hard to understand the difference between what is happening with a tool like `amp` which runs in "YOLO mode" by default compared to Claude Code which requires command approval by default.
+It's also possible you or they haven't even heard of any of these things at this point and that is also fine.
+
+If you understand the systems closer to what LLM inference is and does, that knowledge is durable across tools and contexts.
+The first thing I teach is what LLM inference is, through the lens of ChatGPT, a tool most people are familiar with.
+
+> When you send a prompt to ChatGPT, the model receives a wall of text, kind of like a Google Doc.
+> Within that text are different sections.
+> First there are instructions that OpenAI wrote, that you never see, then there can be other instructions you've given to describe how you want ChatGPT to behave, and finally, there is the prompt you wrote and things like pictures or documents you attached.
+> The model receives all of this and then it starts adding more words.
+> Those additional words are what appear as the response when you send a prompt.
+>
+> If you send another prompt, 100% of this text is sent to the model again.
+> There is no memory or storage happening.
+> It all is sent all over again, and the same thing happens.
+> More words are added to the end of that wall of text.
+> The previous messages are just more content that happens to come after your most recent prompt.
+
+This (currently) is a fundamental tenet of how a language model works.
+It (sometimes) has instructions you can't see.
+It sees your message.
+It generates a response.
+That entire block of prose is the unit that produces the response from the model.
+It's a minor simplification because of the hidden prompt, but conceptually it's "big block of text in, new text comes out" over and over again.
+
+## Tool calls
+
+With this first tenet in place, I move to tool calls.
+If we take the basic ChatGPT example, typically text goes in and text comes out.
+But then there are these other tools we call agents to perform actions on your behalf.
+How does that happen?
+
+Imagine a scenario like this.
+
+<ChatContainer>
+  <ChatMessage role="user">
+    I have a folder of csv files: monday.csv, tuesday.csv, wednesday.csv, ... I
+    want to change the file names to dates. Monday was January 5th, 2026. How
+    can I do it?
+  </ChatMessage>
+</ChatContainer>
+
+If you send a language model that prompt, it will respond with something like this:
+
+<ChatContainer>
+  <ChatMessage role="assistant">
+Renaming Day-of-Week CSVs to Dates
+
+Since Monday is January 5th, 2026, the mapping is:
+
+| Old Name      | New Name       |
+| ------------- | -------------- |
+| monday.csv    | 2026-01-05.csv |
+| tuesday.csv   | 2026-01-06.csv |
+| wednesday.csv | 2026-01-07.csv |
+| thursday.csv  | 2026-01-08.csv |
+| friday.csv    | 2026-01-09.csv |
+| saturday.csv  | 2026-01-10.csv |
+| sunday.csv    | 2026-01-11.csv |
+
+Bash (Linux/macOS)
+
+```bash
+mv monday.csv    2026-01-05.csv
+mv tuesday.csv   2026-01-06.csv
+mv wednesday.csv 2026-01-07.csv
+mv thursday.csv  2026-01-08.csv
+mv friday.csv    2026-01-09.csv
+mv saturday.csv  2026-01-10.csv
+mv sunday.csv    2026-01-11.csv
+```
+
+...
+
+  </ChatMessage>
+</ChatContainer>
+
+This is nice and useful but with this approach you become the implementor of the agent's plan, copying, pasting, running, and reporting back on the results of the commands.
+The agent clearly knows what it would try, so what if it could run those commands itself?
+That's what tool calls do: they give the model the ability to act, not just suggest.
+
+To make this work, a few changes are needed.
+Instead of returning prose, we prompt the model to return commands it wants to run using a special structure, then we wrap the language model's response in software that understands how to run those instructions on a computer.
+
+Rather than responding with text, we prompt the model to return something like this:
+
+```json
+{
+  "tool_call": {
+    "name": "bash",
+    "input": {
+      "command": "mv monday.csv 2026-01-05.csv"
+    }
+  }
+}
+```
+
+This isn't prose for a human to read: it's an instruction for software to execute.
+The wrapping software reads this structure, runs the command on the machine, and feeds the result back to the model.
+The model can then issue the next tool call, and so on, until the task is complete.
+This includes recovering from and making corrections if it runs into any errors along the way.
+
+With the first approach, you might not have known exactly what the commands you were copying and pasting did, but with this approach you might not even see the commands that are running at all.
+Depending on who you are, this may be scary, liberating, or a combination of both.
+This is the step function change that comes with agents.
+The software that wraps the language model (the "harness") pushes the users a level above the specific commands and allows them to instruct the machine in natural language, provided the idea has grounding in something real and possible.
+
+With these two concepts (inference as text-in/text-out, and tool calls as structured actions) the mental model is in place.
+The less you treat a language model like a magic box and the more you work with it with a specific intent, the better results you will get.
+The question becomes how to put this understanding to use.
+
+## Harvesting context
+
+An approach I've had success with is interviewing whoever I am working with about what they are working on and what they want to accomplish.
+I record the conversation, and this raw transcript becomes the primary text for the model to understand how things work and what the goal is.
+These conversation transcripts don't need to be well organized or refined.
+They should capture as much context as possible about what is going on.
+It's fine for there to be diverging threads of conversation or mistakes that are corrected.
+It doesn't need to be perfect or even close to.
+The information just needs to be available to the model.
+
+A common challenge I see for inexperienced users of LLMs is they expect the tool to read their minds.
+Not in a literal sense, but in a way that they expect the tool to understand everything that is implied from their perspective without having to explain it.
+This explanation of more of the parts that seem obvious is what grounds the model in what you actually want and steers it towards a good result.
+Some people are happy to type all this out, but many flow more freely when having a conversation that you can harvest as context for the model.
+I record the conversation using free, open source software like [Handy](https://github.com/cjpais/handy), which records and transcribes audio on-device.
+You can activate the tool in an empty editor and it will transcribe the audio into there.
+You should of course ask if you can record, but don't make a big deal out of it.
+Put them at ease then try and learn in earnest about what they are working on, their vision, and their goals.
+The resulting artifact becomes the jump off point for code specs or requirements, research in state of the art, or a brainstorm of options and tradeoffs for how to proceed.
+
+## Externalizing your thought process
+
+With an introductory taste to this process from the interview, the next step is to introduce whoever you're teaching to effective prompting. This can go a couple different ways, but is easiest when they lead and you shadow, since they're almost certainly going to understand the details of their domain better than you, and this is ok!
+You are not teaching them about their area of expertise; you are teaching them to amplify that expertise through a language model.
+Starting from the artifact as the jump off point from the interview, you'll eventually need to make some changes or refinements to what the model understood from this initial conversation.
+These changes will come in the form of prompts.
+I've found that the most useful instruction and help that I've been able to provide is helping the student learn to become confident in their prompts to steer the model.
+
+More often than not, this process again takes the form of a conversation, unrecorded at first.
+It becomes my responsibility to repeatedly, gently turn the student to providing the questions or context that they're giving to me, instead, to the model.
+I take a back seat while the student works through their problem through prompting the model, either via typing or voice to text.
+I only jump in when I see something that seems under-specified or ambiguous, or if it seems like the student provided me context about what they were doing, but then didn't provide that context to the model.
+
+The name I give to anchor this practice is "Externalize Your Thought Process".
+It's the shift from treating the model as a magic box to a collaborator who needs the relevant information to make good suggestions or decisions.
+You know it's working when the student stops turning to you for validation and starts prompting the model directly, iterating on the results with confidence that they can steer it where they need to go.
