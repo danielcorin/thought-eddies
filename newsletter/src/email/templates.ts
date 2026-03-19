@@ -156,6 +156,37 @@ export function subscribePendingPage(): string {
   `);
 }
 
+export function subscribePage(): string {
+  return pageWrapper(`
+    <h1>Subscribe to danielcorin.com</h1>
+    <p>You'll only receive emails when new posts are published to <a href="https://www.danielcorin.com">danielcorin.com</a>, nothing else.</p>
+    <p>Enter your email below and we'll send you a confirmation link.</p>
+    <form method="POST" action="/api/subscribe" style="margin: 30px 0;">
+      <input type="email" name="email" placeholder="you@example.com" required style="
+        padding: 10px 14px;
+        font-size: 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        width: 100%;
+        max-width: 300px;
+        box-sizing: border-box;
+      ">
+      <button type="submit" style="
+        display: block;
+        padding: 12px 24px;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 12px;
+      ">Subscribe</button>
+    </form>
+    <p style="font-size: 14px; color: #6b7280;">If you have any questions, feel free to email me at <a href="mailto:hey@danielcorin.com">hey@danielcorin.com</a>.</p>
+  `);
+}
+
 export function unsubscribePage(token: string): string {
   return pageWrapper(`
     <h1>Unsubscribe</h1>

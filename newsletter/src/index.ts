@@ -7,6 +7,7 @@ import {
 } from './routes/unsubscribe';
 import { handleSend } from './routes/send';
 import { handleAdminSubscribers } from './routes/admin';
+import { subscribePage } from './email/templates';
 
 function corsHeaders(origin: string, allowedOrigin: string): HeadersInit {
   // Allow both www and non-www variants, plus localhost for dev
@@ -45,6 +46,11 @@ export default {
     let response: Response;
 
     try {
+      if (pathname === '/' && method === 'GET') {
+        return new Response(subscribePage(), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
       if (pathname === '/api/subscribe' && method === 'POST') {
         response = await handleSubscribe(request, env);
         // Add CORS headers to subscribe responses
@@ -99,7 +105,7 @@ export default {
         });
       }
 
-      return Response.json({ error: 'Not found' }, { status: 404 });
+      return Response.redirect(new URL('/', request.url).toString(), 302);
     } catch (error) {
       console.error('Unhandled error:', error);
       return Response.json({ error: 'Internal server error' }, { status: 500 });
