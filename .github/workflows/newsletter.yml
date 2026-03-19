@@ -1,0 +1,41 @@
+name: Send Newsletter
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/content/posts/**'
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Find and send new published posts
+        env:
+          NEWSLETTER_API_SECRET: ${{ secrets.NEWSLETTER_API_SECRET }}
+        run: |
+          CHANGED_FILES=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'src/content/posts/**/*.md' 'src/content/posts/**/*.mdx')
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No new posts found"
+            exit 0
+          fi
+
+          echo "$CHANGED_FILES" | while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            echo "Processing: $file"
+            node scripts/send_newsletter.mjs "$file" || echo "Failed to send for: $file"
+          done

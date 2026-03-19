@@ -1,0 +1,174 @@
+---
+---
+
+<section class="subscribe-section">
+  <h2>Subscribe</h2>
+  <p class="subscribe-description">Get notified when I publish new posts. No spam, unsubscribe anytime.</p>
+  <form
+    class="subscribe-form"
+    action="https://newsletter.danielcorin.com/api/subscribe"
+    method="POST"
+  >
+    <input
+      type="email"
+      name="email"
+      placeholder="you@example.com"
+      required
+      class="subscribe-input"
+    />
+    <button type="submit" class="subscribe-button">Subscribe</button>
+  </form>
+  <p class="subscribe-message" aria-live="polite"></p>
+</section>
+
+<style>
+  .subscribe-section {
+    margin-top: calc(var(--spacing-xl) * 1.5);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .subscribe-section h2 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .subscribe-description {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .subscribe-form {
+    display: flex;
+    gap: var(--spacing-xs);
+    max-width: 400px;
+  }
+
+  .subscribe-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+    background: var(--color-bg-code);
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .subscribe-input::placeholder {
+    color: var(--color-ink-light);
+    opacity: 0.6;
+  }
+
+  .subscribe-input:focus {
+    border-color: var(--color-accent);
+  }
+
+  .subscribe-button {
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink);
+    background: var(--color-bg-code);
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+
+  .subscribe-button:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-accent);
+  }
+
+  .subscribe-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .subscribe-message {
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    margin-top: var(--spacing-xs);
+    min-height: 1.5em;
+  }
+
+  .subscribe-message:empty {
+    display: none;
+  }
+
+  .subscribe-message.success {
+    color: #2ecc71;
+  }
+
+  .subscribe-message.error {
+    color: #e74c3c;
+  }
+
+  @media (max-width: 640px) {
+    .subscribe-form {
+      flex-direction: column;
+      max-width: 100%;
+    }
+
+    .subscribe-button {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector('.subscribe-section') as HTMLElement;
+  const form = document.querySelector('.subscribe-form') as HTMLFormElement;
+  const message = document.querySelector('.subscribe-message') as HTMLParagraphElement;
+  const button = form?.querySelector('.subscribe-button') as HTMLButtonElement;
+
+  const STORAGE_KEY = 'newsletter-subscribed';
+
+  if (section && localStorage.getItem(STORAGE_KEY)) {
+    section.remove();
+  } else if (form && message && button) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = (form.querySelector('.subscribe-input') as HTMLInputElement).value;
+
+      button.disabled = true;
+      button.textContent = 'Subscribing...';
+      message.textContent = '';
+      message.className = 'subscribe-message';
+
+      try {
+        const response = await fetch('https://newsletter.danielcorin.com/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+
+        if (response.ok) {
+          message.textContent = 'Check your email to confirm.';
+          message.classList.add('success');
+          (form.querySelector('.subscribe-input') as HTMLInputElement).value = '';
+          localStorage.setItem(STORAGE_KEY, '1');
+        } else {
+          const data = await response.json().catch(() => null);
+          message.textContent = data?.error || 'Something went wrong. Please try again.';
+          message.classList.add('error');
+        }
+      } catch {
+        message.textContent = 'Something went wrong. Please try again.';
+        message.classList.add('error');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Subscribe';
+      }
+    });
+  }
+</script>

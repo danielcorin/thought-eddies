@@ -31,3 +31,11 @@ drafts-watch:
 # List drafts that would be synced
 drafts-list:
     python3 scripts/sync_drafts.py --list
+
+# Send newsletter for a post (use --dry-run to preview)
+nl-send file *args:
+    node scripts/send_newsletter.mjs {{file}} {{args}}
+
+# Open newsletter subscriber admin UI
+nl-admin:
+    node newsletter/admin.js

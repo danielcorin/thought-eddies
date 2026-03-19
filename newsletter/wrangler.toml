@@ -1,0 +1,14 @@
+name = "newsletter"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+workers_dev = false
+
+[vars]
+ALLOWED_ORIGIN = "https://www.danielcorin.com"
+BASE_URL = "https://newsletter.danielcorin.com"
+FROM_EMAIL = "newsletter@danielcorin.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "newsletter-db"
+database_id = "69469c43-89f3-47f9-9ec3-07de30fc7ed9"
