@@ -31,6 +31,15 @@ const posts = defineCollection({
       .default([]),
     series: z.string().optional(),
     bsky: z.string().optional(),
+    coauthors: z
+      .array(
+        z.object({
+          name: z.string(),
+          link: z.string().url(),
+          icon: z.string().optional(),
+        })
+      )
+      .optional(),
   }),
 });
 

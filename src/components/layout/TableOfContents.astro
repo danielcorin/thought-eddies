@@ -31,7 +31,7 @@ const allHeadings = title
         {
           allHeadings.map((heading) => (
             <li class={`depth-${heading.depth}`}>
-              <a href={`#${heading.slug}`}>{heading.text}</a>
+              <a href={heading.slug ? `#${heading.slug}` : "#top"}>{heading.text}</a>
             </li>
           ))
         }
