@@ -119,6 +119,22 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
           </div>
         )
       }
+      {
+        frontmatter.coauthors && frontmatter.coauthors.length > 0 && (
+          <div class="coauthors">
+            <span class="coauthors-label">Co-authored with</span>
+            {frontmatter.coauthors.map((coauthor: { name: string; link: string; icon?: string }, i: number) => (
+              <>
+                <a href={coauthor.link} target="_blank" rel="noopener noreferrer" class="coauthor-link">
+                  <Icon name={coauthor.icon || "ph:user"} class="coauthor-icon" />
+                  {coauthor.name}
+                </a>
+                {i < frontmatter.coauthors.length - 1 && <span class="coauthors-sep">,</span>}
+              </>
+            ))}
+          </div>
+        )
+      }
     </header>
     <div class="content">
       <ClickableImages>
@@ -306,6 +322,45 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
     justify-content: center;
     gap: 0.5rem;
     margin-top: 0.75rem;
+  }
+
+  .coauthors {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    margin-top: 0.75rem;
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    font-family: var(--font-mono);
+  }
+
+  .coauthors-label {
+    letter-spacing: -0.01em;
+  }
+
+  .coauthor-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .coauthor-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+
+  .coauthor-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    opacity: 0.6;
+  }
+
+  .coauthors-sep {
+    color: var(--color-ink-light);
   }
 
   .raw-link {

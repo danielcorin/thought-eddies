@@ -124,7 +124,7 @@ const ogImage = `/logs/og.png`;
       {monthsData.map((month) => (
         <div class={`month-card ${!month.hasLogs ? 'empty' : ''}`}>
           {month.hasLogs ? (
-            <a href={`/logs/${year}/${String(month.index + 1).padStart(2, "0")}`} class="month-link">
+            <a href={`/logs/${year}/${String(month.index + 1).padStart(2, "0")}`} class="month-link" aria-label={`${month.name} ${year} - ${month.count} ${month.count === 1 ? 'entry' : 'entries'}`}>
               <h2>{month.name}</h2>
               <p class="entry-count">{month.count} {month.count === 1 ? 'entry' : 'entries'}</p>
               {month.tags.length > 0 && (
