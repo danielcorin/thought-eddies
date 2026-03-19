@@ -28,3 +28,13 @@ _scripts/
 .vercel
 .wrangler/
 scraps
+
+# Newsletter worker
+newsletter/.wrangler/
+newsletter/node_modules/
+newsletter/admin.html
+newsletter/admin.js
+
+.dev.vars*
+!.dev.vars.example
+!.env.example
