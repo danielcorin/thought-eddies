@@ -7,6 +7,7 @@ series: Coding with Agents
 tags:
   - vibe_coding
   - agents
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy4c53w2x'
 ---
 
 This post is an edit and repost of my [rant from Bluesky](https://bsky.app/profile/danielcorin.com/post/3llhwuxml2k25)

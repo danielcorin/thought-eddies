@@ -11,6 +11,7 @@ tags:
   - docker
 draft: false
 githubUrl: 'https://github.com/danielcorin/toys/tree/main/sandboxed_python'
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5qokw25'
 ---
 
 Disclaimer: I am not a security expert or a security professional.

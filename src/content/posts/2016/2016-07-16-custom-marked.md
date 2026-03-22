@@ -10,6 +10,7 @@ draft: false
 aliases:
   - /code/2016/07/16/custom-marked.html
   - /posts/2016-07-16-custom-marked
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7ilb52l'
 ---
 
 Markdown is useful tool -- these blog posts are written in it. I like Markdown because once you learn it, it feels invisible. It is minimal and intuitive. However, sometimes you need it to do things a little differently.

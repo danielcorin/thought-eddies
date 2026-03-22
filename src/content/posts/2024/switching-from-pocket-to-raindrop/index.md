@@ -8,6 +8,7 @@ tags:
   - raindrop
   - bookmarks
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5m5b72e'
 ---
 
 I've been using [Pocket](https://getpocket.com) for a long time to keep track of things on the web that I want to read later.

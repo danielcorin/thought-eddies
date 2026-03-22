@@ -8,6 +8,7 @@ tags:
   - language_models
 draft: false
 githubUrl: 'https://github.com/danielcorin/toys/tree/main/marvin-llm-evals'
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5nkqr2k'
 ---
 
 Generative AI and language models are fun to play with but you don't really have

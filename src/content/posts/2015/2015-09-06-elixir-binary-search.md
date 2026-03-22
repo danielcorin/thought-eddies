@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2015/09/06/elixir-binary-search.html
   - /posts/2015-09-06-elixir-binary-search
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7yavf2u'
 ---
 
 A few days ago, I saw a Guess my word game on the front page of Hacker News. Before spoiling the fun for myself by checking out the comments, I decided to try my hand at writing a solution in Elixir. Afterwards, I generalized the code to choose its own word from the UNIX dictionary and then "guess" it, applying a binary search based on the feedback of whether each guess was alphabetically greater or less than the word itself.

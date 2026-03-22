@@ -7,6 +7,7 @@ tags:
   - language_models
   - protobuf
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy66rrq2q'
 ---
 
 I've [written](/posts/2023/figuring-out-how-to-use-llms-in-production) [several](/posts/2023/shaping-llm-responses) [posts](/posts/2023/language-model-schema-and-object-gen) on using JSON and [Pydantic](https://docs.pydantic.dev/latest/) schemas to structure LLM responses.

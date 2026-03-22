@@ -10,6 +10,7 @@ tags:
 draft: false
 aliases:
   - /posts/beating-prompt-injection-with-focus/
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6r5sv2c'
 ---
 
 I've been experimenting with ways to prevent applications for deviating from their intended purpose.

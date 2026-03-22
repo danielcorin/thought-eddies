@@ -9,6 +9,7 @@ tags:
 draft: false
 aliases:
   - /posts/shaping-llm-responses/
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6iam72k'
 ---
 
 It's necessary to pay attention to the shape of a language model's response when incorporating it as a component in a software application.

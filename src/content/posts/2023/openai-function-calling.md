@@ -9,6 +9,7 @@ tags:
   - structured_data
   - function_calling
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy63nwb2k'
 ---
 
 This past week, OpenAI added [function calling](https://platform.openai.com/docs/guides/gpt/function-calling) to their SDK.

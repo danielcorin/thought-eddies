@@ -13,6 +13,7 @@ tags:
 draft: false
 aliases:
   - posts/language-model-schema-and-object-gen
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6v5ox2k'
 ---
 
 If you want to try running these examples yourself, check out my writeup on using a [clean Python setup](/posts/2023/clean-python-setup).

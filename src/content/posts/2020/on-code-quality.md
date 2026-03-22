@@ -7,6 +7,7 @@ tags:
   - quality
   - teams
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy722vi2y'
 ---
 
 I believe it is important for engineers to care about code quality.

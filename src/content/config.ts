@@ -31,6 +31,7 @@ const posts = defineCollection({
       .default([]),
     series: z.string().optional(),
     bsky: z.string().optional(),
+    readingTime: z.boolean().optional().default(false),
     coauthors: z
       .array(
         z.object({

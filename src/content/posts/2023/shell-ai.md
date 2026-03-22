@@ -10,6 +10,7 @@ tags:
 draft: false
 aliases:
   - /posts/shell-ai/
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6kvjs2x'
 ---
 
 I believe that language models are most useful when available at your fingertips in the context of what you're doing.

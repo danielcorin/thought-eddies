@@ -11,6 +11,7 @@ tags:
 draft: false
 aliases:
   - posts/playing-with-language-models
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6yd4o25'
 ---
 
 Since the launch of GPT3, and more notably ChatGPT, I’ve had a ton of fun learning about and playing with emerging tools in the language model space.

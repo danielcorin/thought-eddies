@@ -19,6 +19,7 @@ interface Props {
   projectUrl?: string;
   bskyUrl?: string;
   timelineHref?: string;
+  readingTime?: number;
   extraItems?: MetaItem[];
 }
 
@@ -34,6 +35,7 @@ const {
   projectUrl,
   bskyUrl,
   timelineHref,
+  readingTime,
   extraItems = [],
 } = Astro.props;
 
@@ -68,6 +70,14 @@ const hasUpdated =
       <span class="meta-item">
         <Icon name="ph:map-pin" class="meta-icon" />
         <span class="meta-text">{location}</span>
+      </span>
+    )
+  }
+  {
+    readingTime && (
+      <span class="meta-item">
+        <Icon name="ph:clock" class="meta-icon" />
+        <span class="meta-text">{readingTime} min read</span>
       </span>
     )
   }

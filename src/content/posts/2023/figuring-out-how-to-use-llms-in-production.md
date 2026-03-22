@@ -10,6 +10,7 @@ tags:
 draft: false
 aliases:
   - /posts/figuring-out-how-to-use-llms-in-production/
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6es772h'
 ---
 
 The most popular language model use cases I've seen around have been

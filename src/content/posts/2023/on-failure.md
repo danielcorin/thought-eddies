@@ -10,6 +10,7 @@ tags:
   - software
   - failure
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5vzla2y'
 ---
 
 To write software is to experience constant failure until you get a success.

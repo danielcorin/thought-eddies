@@ -8,6 +8,7 @@ tags:
   - productivity
   - coursera
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5jrxy2y'
 ---
 
 I completed Barbara Oakley's ["Learning How to Learn"](https://www.coursera.org/learn/learning-how-to-learn/) course on Coursera.

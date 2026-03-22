@@ -6,6 +6,7 @@ tags:
   - language_models
   - cursor
   - voice_notes
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy4eika2q'
 ---
 
 I had an interesting realization today while doing a demo building a web app with Cursor.

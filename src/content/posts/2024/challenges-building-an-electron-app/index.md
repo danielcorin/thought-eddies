@@ -8,6 +8,7 @@ tags:
   - sqlite3
   - delta
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy4qbdc2x'
 ---
 
 I've been building an Electron app called "[Delta](/projects/delta).

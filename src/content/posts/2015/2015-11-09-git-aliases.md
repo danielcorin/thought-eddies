@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2015/11/09/git-aliases.html
   - /posts/2015-11-09-git-aliases
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7pykv2l'
 ---
 
 Here's a quick post for managing your `git` shortcuts. If you use `git` regularly, you should have a `.gitconfig` file in your home directory that looks something like this:

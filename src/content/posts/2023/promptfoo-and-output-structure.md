@@ -7,6 +7,7 @@ tags:
   - language_models
   - promptfoo
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5ylp72e'
 ---
 
 `promptfoo` is a Javascript library and CLI for testing and evaluating LLM output quality.

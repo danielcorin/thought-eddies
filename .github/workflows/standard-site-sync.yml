@@ -12,11 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - uses: pnpm/action-setup@v4
 
-      - name: Sync posts to standard.site
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Publish posts to standard.site
         env:
-          BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
-        run: python scripts/standard_site.py sync --handle danielcorin.com
+          ATP_IDENTIFIER: danielcorin.com
+          ATP_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
+        run: npx sequoia publish

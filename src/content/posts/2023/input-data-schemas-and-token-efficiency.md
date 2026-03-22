@@ -9,6 +9,7 @@ tags:
 draft: false
 aliases:
   - posts/input-data-schemas-and-token-efficiency
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6aavn2u'
 ---
 
 Plenty of data is ambiguous without additional description or schema to clarify its meaning.

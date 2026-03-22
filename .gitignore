@@ -38,3 +38,6 @@ newsletter/admin.js
 .dev.vars*
 !.dev.vars.example
 !.env.example
+
+# Sequoia state
+.sequoia-state.json
