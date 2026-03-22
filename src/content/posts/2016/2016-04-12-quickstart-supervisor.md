@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2016/04/14/quickstart-supervisor.html
   - /posts/2016-04-12-quickstart-supervisor
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7l2jg2x'
 ---
 
 `supervisor` is a UNIX utility to managing and respawning long running Python processes to ensure they are always running. Or according to its website:

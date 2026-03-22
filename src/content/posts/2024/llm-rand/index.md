@@ -7,6 +7,7 @@ tags:
   - language_models
 image: images/llm_rand_18_0.png
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy4u3jo25'
 ---
 
 I had the idea to try and use a language model as a random number generator.

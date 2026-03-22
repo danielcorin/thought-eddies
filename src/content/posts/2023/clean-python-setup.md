@@ -8,6 +8,7 @@ tags:
   - python
   - asdf
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6ts7v2l'
 ---
 
 ## Why bother?

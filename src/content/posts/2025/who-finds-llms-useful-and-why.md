@@ -5,6 +5,7 @@ updatedAt: 2025-07-18T19:53:15-04:00
 draft: false
 tags:
   - language_models
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy3zeo52l'
 ---
 
 Who is finding LLMs useful and who is not?

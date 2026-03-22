@@ -9,6 +9,7 @@ tags:
   - connections
 draft: false
 series: LLM Connections
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5rygk2x'
 ---
 
 I started playing the NYTimes word game "[Connections](https://www.nytimes.com/games/connections)" recently, by the recommendation of a few friends.

@@ -10,6 +10,7 @@ tags:
 draft: false
 aliases:
   - posts/llm-prompt-injection
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6slcw2x'
 ---
 
 ## Jailbreaking as prompt injection

@@ -5,6 +5,7 @@ draft: false
 tags:
   - rss
   - link_blog
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy42pov2g'
 ---
 
 RSS feeds for blogs and things you write or create are great.

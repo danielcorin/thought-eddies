@@ -9,6 +9,7 @@ tags:
   - language_models
   - thoughts
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5bor52g'
 ---
 
 I'm trying something a bit new, writing some of my thoughts about how the future might look based on patterns I've been observing lately.

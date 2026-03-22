@@ -11,6 +11,7 @@ tags:
 draft: false
 aliases:
   - posts/future-of-personal-knowledge
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6n5v52c'
 ---
 
 Over the the years, I've developed a system for capturing knowledge that has been useful to me.

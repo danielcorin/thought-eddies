@@ -8,6 +8,7 @@ tags:
   - year_review
   - goals
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5tghg25'
 ---
 
 At the beginning of 2023, I set some goals for myself.

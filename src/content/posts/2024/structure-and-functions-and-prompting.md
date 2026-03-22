@@ -9,6 +9,7 @@ tags:
   - function_calling
   - structured_data
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy52hph2h'
 ---
 
 I've been prompting models to output JSON for about as long as I've been using models.

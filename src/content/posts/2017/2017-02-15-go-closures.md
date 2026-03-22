@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2017/02/15/go-closures.html
   - /posts/2017-02-15-go-closures
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7eor72k'
 ---
 
 Say we need a map to store various versions of a configuration in Go. Here is a simple example of the structure:

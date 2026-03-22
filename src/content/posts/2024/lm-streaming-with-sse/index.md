@@ -11,6 +11,7 @@ tags:
   - fastapi
 draft: false
 githubUrl: 'https://github.com/danielcorin/toys/tree/main/lm_streaming_with_sse'
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy5oocx2e'
 ---
 
 OpenAI popularized a pattern of streaming results from a backend API in realtime with ChatGPT.

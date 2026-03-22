@@ -10,6 +10,7 @@ draft: false
 aliases:
   - /code/2019/01/06/unix-files-with-spaces.html
   - /posts/2019-01-06-unix-files-with-spaces
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy75nnn2l'
 ---
 
 I ran into an odd UNIX filename issue while writing Go code the other day.

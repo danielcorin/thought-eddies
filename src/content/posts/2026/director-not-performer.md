@@ -6,6 +6,7 @@ editor: tarn
 location: 'Brooklyn'
 draft: false
 series: Coding with Agents
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy37nvq2y'
 ---
 
 What is it to build software with coding agents?

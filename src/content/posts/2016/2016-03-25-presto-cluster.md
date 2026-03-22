@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2016/03/25/presto-cluster.html
   - /posts/2016-03-25-presto-cluster
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7nkwx2k'
 ---
 
 # Creating a Presto Cluster

@@ -90,6 +90,11 @@ const similarContent = currentEntry
 // Get commit URL for the current file
 const repoUrl = 'https://github.com/danielcorin/thought-eddies';
 const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : null;
+
+// Calculate reading time if enabled
+const readingTime = frontmatter.readingTime && currentEntry?.body
+  ? Math.max(1, Math.round(currentEntry.body.split(/\s+/).length / 225))
+  : undefined;
 ---
 
 <Layout title={frontmatter.title} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : isRss ? "rss" : "posts"}>
@@ -108,6 +113,7 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
         githubUrl={frontmatter.githubUrl}
         projectUrl={frontmatter.projectUrl}
         bskyUrl={bskyUrl}
+        readingTime={readingTime}
         timelineHref={isProject && hasTimeline ? `/projects/${entryId}/timeline` : undefined}
       />
       {

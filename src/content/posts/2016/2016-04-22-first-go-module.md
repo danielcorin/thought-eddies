@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2016/04/22/first-go-module.html
   - /posts/2016-04-22-first-go-module
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7jugo2x'
 ---
 
 # Creating a Go module

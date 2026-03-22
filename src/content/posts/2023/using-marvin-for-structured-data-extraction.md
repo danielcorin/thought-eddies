@@ -5,6 +5,7 @@ updatedAt: 2023-07-12T12:28:51.000Z
 publishedAt: 2023-07-12T12:28:51.000Z
 tags: null
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy62eto2f'
 ---
 
 I've been following the "AI engineering framework" [marvin](https://github.com/PrefectHQ/marvin) for several months now.

@@ -16,9 +16,17 @@ til category name:
     python3 scripts/new_til.py "{{category}}" "{{name}}"
 
 
-# Set up or sync standard.site publication
-standard-site *args:
-    python3 scripts/standard_site.py {{args}}
+# Publish posts to standard.site via Sequoia
+sequoia-publish *args:
+    npx sequoia publish {{args}}
+
+# Dry-run publish to preview changes
+sequoia-dry-run:
+    npx sequoia publish --dry-run
+
+# Inject AT URI link tags into built HTML
+sequoia-inject:
+    npx sequoia inject
 
 # Sync drafts from Drafts.app
 drafts-sync:

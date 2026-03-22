@@ -6,6 +6,7 @@ draft: false
 tags:
   - goose
   - language_models
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy4d6f22x'
 ---
 
 [Goose](https://github.com/block/goose) is a CLI language model-based agent.

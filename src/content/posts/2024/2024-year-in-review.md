@@ -6,6 +6,7 @@ publishedAt: 2024-12-31T15:50:04.000Z
 tags:
   - year_review
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy4o5f52u'
 ---
 
 This year included a lot of writing and learning new things.

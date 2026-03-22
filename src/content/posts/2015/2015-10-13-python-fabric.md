@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2015/10/13/python-fabric.html
   - /posts/2015-10-13-python-fabric
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7sav52g'
 ---
 
 To help facilitate my blogging workflow, I wanted to go from written to published post quickly. My general workflow for writing a post for [this blog][MyBlog] looks like this:

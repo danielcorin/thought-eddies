@@ -11,6 +11,7 @@ tags:
 draft: false
 aliases:
   - /posts/nix-and-direnv/
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6oftk2x'
 ---
 
 I know a little about `nix`.

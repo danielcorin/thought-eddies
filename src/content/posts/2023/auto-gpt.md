@@ -8,6 +8,7 @@ tags:
   - language_models
   - python
 draft: false
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy6jpjv2c'
 ---
 
 [Auto-GPT](https://github.com/Significant-Gravitas/Auto-GPT) is a popular project on Github that attempts to build an autonomous agent on top of an LLM.

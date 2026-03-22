@@ -10,6 +10,7 @@ draft: false
 aliases:
   - /code/2016/04/11/querying-s3-with-presto.html
   - /posts/2016-04-11-querying-s3-with-presto
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7m7w72h'
 ---
 
 # Querying S3 with Presto

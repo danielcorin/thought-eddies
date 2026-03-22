@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2016/01/28/first-elixir-module.html
   - /posts/2016-01-28-first-elixir-module
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7omyg25'
 ---
 
 # Creating an Elixir module

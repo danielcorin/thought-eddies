@@ -1,0 +1,13 @@
+{
+  "siteUrl": "https://www.danielcorin.com",
+  "contentDir": "src/content/posts",
+  "publicDir": "public",
+  "outputDir": "dist",
+  "pathPrefix": "/posts",
+  "publicationUri": "at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.publication/self",
+  "frontmatter": {
+    "publishDate": "createdAt",
+    "draft": "draft"
+  },
+  "ignore": ["**/_*"]
+}

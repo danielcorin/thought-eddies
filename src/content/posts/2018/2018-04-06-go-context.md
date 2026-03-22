@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2018/04/06/go-context.html
   - /posts/2018-04-06-go-context
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7bwho2f'
 ---
 
 The use of `context` in Go can help you pass metadata through your program with helpful, related information about a call.

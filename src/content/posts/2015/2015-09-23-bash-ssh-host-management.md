@@ -10,6 +10,7 @@ draft: false
 aliases:
   - /code/2015/09/23/bash-ssh-host-management.html
   - /posts/2015-09-23-bash-ssh-host-management
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7tgz62f'
 ---
 
 If you have a lot of servers to which you frequently connect, keeping track of IP addresses, pem files, and credentials can be tedious. SSH `config` files are great for this problem, but they don't play well with bash. I wanted to store all of my hosts' info in a `config` file but still have access to the `HostName`s since sometimes I just need the IP address of a server to use elsewhere.

@@ -9,6 +9,7 @@ draft: false
 aliases:
   - /code/2017/04/18/go-channels.html
   - /posts/2017-04-18-go-channels
+atUri: 'at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mhnqy7d6kz2k'
 ---
 
 Go uses goroutines to execute multiple bits of code at the same time. Channels allow for the aggregation of the results of these concurrent calls after they have finished.
