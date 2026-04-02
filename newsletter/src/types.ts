@@ -5,6 +5,8 @@ export interface Env {
   ALLOWED_ORIGIN: string;
   BASE_URL: string;
   FROM_EMAIL: string;
+  TURNSTILE_SECRET: string;
+  TURNSTILE_SITE_KEY: string;
 }
 
 export interface Subscriber {
