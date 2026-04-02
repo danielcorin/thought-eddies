@@ -47,7 +47,7 @@ export default {
 
     try {
       if (pathname === '/' && method === 'GET') {
-        return new Response(subscribePage(), {
+        return new Response(subscribePage(env.TURNSTILE_SITE_KEY), {
           headers: { 'Content-Type': 'text/html; charset=utf-8' },
         });
       }

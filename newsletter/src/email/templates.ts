@@ -156,7 +156,7 @@ export function subscribePendingPage(): string {
   `);
 }
 
-export function subscribePage(): string {
+export function subscribePage(turnstileSiteKey: string): string {
   return pageWrapper(`
     <h1>Subscribe to danielcorin.com</h1>
     <p>You'll only receive emails when new posts are published to <a href="https://www.danielcorin.com">danielcorin.com</a>, nothing else.</p>
@@ -171,6 +171,11 @@ export function subscribePage(): string {
         max-width: 300px;
         box-sizing: border-box;
       ">
+      <!-- Honeypot field -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;">
+        <input type="text" name="website" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="cf-turnstile" data-sitekey="${turnstileSiteKey}"></div>
       <button type="submit" style="
         display: block;
         padding: 12px 24px;
@@ -183,6 +188,7 @@ export function subscribePage(): string {
         margin-top: 12px;
       ">Subscribe</button>
     </form>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
     <p style="font-size: 14px; color: #6b7280;">If you have any questions, feel free to email me at <a href="mailto:hey@danielcorin.com">hey@danielcorin.com</a>.</p>
   `);
 }

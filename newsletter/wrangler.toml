@@ -7,6 +7,7 @@ workers_dev = false
 ALLOWED_ORIGIN = "https://www.danielcorin.com"
 BASE_URL = "https://newsletter.danielcorin.com"
 FROM_EMAIL = "newsletter@danielcorin.com"
+TURNSTILE_SITE_KEY = "0x4AAAAAACzpqbdCfZX7vL3s"
 
 [[d1_databases]]
 binding = "DB"
