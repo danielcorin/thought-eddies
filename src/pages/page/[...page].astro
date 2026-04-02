@@ -5,6 +5,7 @@ import PostCard from '@components/PostCard.astro';
 import Layout from '@layouts/Layout.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
+import { shouldShowPost } from '@utils/posts';
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   // Get both posts and TILs
@@ -13,7 +14,7 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
 
   // Filter and prepare posts
   const publishedPosts = posts
-    .filter((post) => !post.data.draft && !post.id.includes('level'))
+    .filter((post) => shouldShowPost(post) && !post.id.includes('level'))
     .map((post) => ({
       ...post,
       collection: 'posts' as const,

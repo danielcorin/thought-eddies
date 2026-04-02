@@ -3,6 +3,7 @@ import Navigation from '@components/layout/Navigation.astro';
 import Layout from '@layouts/Layout.astro';
 import ActivityPageClient from '@components/ActivityPageClient';
 import { getCollection } from 'astro:content';
+import { shouldShowPost } from '@utils/posts';
 
 // The client component will handle date initialization
 
@@ -36,7 +37,7 @@ function getContentLength(item: any): number {
 }
 
 // Filter out drafts and get all published content
-const publishedPosts = posts.filter((post) => !post.data.draft && !post.id.includes('level'));
+const publishedPosts = posts.filter((post) => shouldShowPost(post) && !post.id.includes('level'));
 const publishedTils = tils.filter((til) => !til.data.draft);
 const publishedLogs = logs.filter((log) => !log.data.draft);
 const publishedProjects = projects.filter((project) => !project.data.draft);

@@ -70,6 +70,7 @@ const category = post.collection === "til" && (post.data as any).category ? (pos
         <time class={variant === "list" ? "entry-date-mono" : "post-date"}>
             <a href={url}>{formattedDate}</a>
         </time>
+        {post.data.draft && <span class="draft-badge">Draft</span>}
         {showTypeLabel && <TypeLabel type={type} />}
         {!showTypeLabel && category && post.collection === "til" && (
             <span class="category-label">
@@ -275,6 +276,22 @@ const category = post.collection === "til" && (post.data as any).category ? (pos
         .post-description {
             font-size: var(--text-base);
         }
+    }
+
+    .draft-badge {
+        font-size: var(--text-sm);
+        color: rgb(133, 100, 4);
+        padding: 0.125rem 0.5rem;
+        background: rgb(254, 243, 199);
+        border: 1px solid rgb(202, 138, 4);
+        border-radius: 0.25rem;
+        font-weight: 600;
+    }
+
+    :global(.dark) .draft-badge {
+        color: rgb(234, 179, 8);
+        background: rgba(234, 179, 8, 0.15);
+        border-color: rgba(234, 179, 8, 0.4);
     }
 
     .category-label {

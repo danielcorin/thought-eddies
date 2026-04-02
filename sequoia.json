@@ -9,5 +9,6 @@
     "publishDate": "createdAt",
     "draft": "draft"
   },
-  "ignore": ["**/_*"]
+  "ignore": ["**/_*"],
+  "publishContent": true
 }

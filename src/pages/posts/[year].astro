@@ -5,9 +5,10 @@ import YearPill from "@components/YearPill.astro";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
+import { shouldShowPost } from "@utils/posts";
 
 export async function getStaticPaths() {
-    const posts = await getCollection("posts", ({ data }) => !data.draft);
+    const posts = (await getCollection("posts")).filter(shouldShowPost);
     const years = [
         ...new Set(
             posts.map((post) => new Date(post.data.createdAt).getFullYear()),
@@ -22,7 +23,7 @@ export async function getStaticPaths() {
 
 const { year } = Astro.params;
 const collection = "posts";
-const posts = await getCollection(collection, ({ data }) => !data.draft);
+const posts = (await getCollection(collection)).filter(shouldShowPost);
 
 const yearPosts = posts
     .filter(

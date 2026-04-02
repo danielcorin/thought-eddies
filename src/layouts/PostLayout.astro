@@ -7,6 +7,7 @@ import { findSimilarContent } from "@utils/findSimilarContent";
 import { Icon } from "astro-icon/components";
 import { getCollection, getEntry } from "astro:content";
 import Layout from "./Layout.astro";
+import { shouldShowPost } from "@utils/posts";
 import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
 import ClickableImages from "@components/ClickableImages.astro";
 import BlueskyComments from "@components/BlueskyComments.tsx";
@@ -58,7 +59,7 @@ if (isProject) {
 // Get all posts/tils to find prev/next
 const allEntries = await getCollection(collectionType);
 const sortedEntries = allEntries
-  .filter((entry) => !entry.data.draft)
+  .filter((entry) => shouldShowPost(entry))
   .sort(
     (a, b) => {
       // RSS content uses 'date' field, others use 'createdAt'
@@ -91,6 +92,10 @@ const similarContent = currentEntry
 const repoUrl = 'https://github.com/danielcorin/thought-eddies';
 const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : null;
 
+const atprotoUrl = frontmatter.atUri
+  ? `https://pdsls.dev/at/${frontmatter.atUri.replace('at://', '')}`
+  : undefined;
+
 // Calculate reading time if enabled
 const readingTime = frontmatter.readingTime && currentEntry?.body
   ? Math.max(1, Math.round(currentEntry.body.split(/\s+/).length / 225))
@@ -100,6 +105,11 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
 <Layout title={frontmatter.title} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : isRss ? "rss" : "posts"}>
   <Navigation selected={isProject ? "projects" : isTil ? "til" : isRss ? "rss" : "posts"} />
   <article>
+    {frontmatter.draft && (
+      <div class="draft-banner">
+        Draft — not published
+      </div>
+    )}
     <header>
       <h1>{frontmatter.title}</h1>
       <ArticleMetadata
@@ -171,6 +181,12 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
           <span>commit</span>
         </a>
       )}
+      {atprotoUrl && (
+        <a href={atprotoUrl} target="_blank" rel="noopener noreferrer" class="bluesky-button">
+          <Icon name="ph:butterfly" />
+          <span>bluesky</span>
+        </a>
+      )}
     </div>
 
     <RecommendedContent content={similarContent} />
@@ -224,6 +240,23 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
 
 <FullscreenImageViewer />
 <style>
+  .draft-banner {
+    background: rgb(254, 243, 199);
+    border: 1px solid rgb(202, 138, 4);
+    color: rgb(133, 100, 4);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  :global(.dark) .draft-banner {
+    color: rgb(234, 179, 8);
+    background: rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.4);
+  }
+
   .post-navigation {
     display: flex;
     justify-content: space-between;
@@ -378,7 +411,8 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
 
   .raw-button,
   .edit-button,
-  .commit-button {
+  .commit-button,
+  .bluesky-button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -394,14 +428,16 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
 
   .raw-button:hover,
   .edit-button:hover,
-  .commit-button:hover {
+  .commit-button:hover,
+  .bluesky-button:hover {
     background: var(--color-bg-hover);
     color: var(--color-accent);
   }
 
   .raw-button svg,
   .edit-button svg,
-  .commit-button svg {
+  .commit-button svg,
+  .bluesky-button svg {
     width: 1rem;
     height: 1rem;
   }
