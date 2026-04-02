@@ -6,6 +6,7 @@ import { Icon } from "astro-icon/components";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import { slugify } from "@utils/slugify";
+import { shouldShowPost } from "@utils/posts";
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getCollection("posts");
@@ -13,7 +14,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const seriesMap = new Map<string, string>();
 
   posts.forEach(post => {
-    if (!post.data.draft && post.data.series) {
+    if (shouldShowPost(post) && post.data.series) {
       seriesMap.set(slugify(post.data.series), post.data.series);
     }
   });
@@ -29,7 +30,7 @@ const { seriesName } = Astro.props;
 const posts = await getCollection("posts");
 
 const seriesPostsAsc = posts
-  .filter(post => !post.data.draft && post.data.series === seriesName)
+  .filter(post => shouldShowPost(post) && post.data.series === seriesName)
   .sort((a, b) => new Date(a.data.createdAt).getTime() - new Date(b.data.createdAt).getTime());
 
 const seriesPostsDesc = [...seriesPostsAsc].reverse();

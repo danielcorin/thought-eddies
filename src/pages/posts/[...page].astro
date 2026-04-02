@@ -6,11 +6,12 @@ import YearNavigation from "@components/layout/YearNavigation.astro";
 import Layout from "@layouts/Layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { shouldShowPost } from "@utils/posts";
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   const posts = await getCollection("posts");
   const sortedPosts = posts
-    .filter((post) => !post.data.draft && !post.id.includes("level"))
+    .filter((post) => shouldShowPost(post) && !post.id.includes("level"))
     .sort((a, b) => b.data.createdAt.valueOf() - a.data.createdAt.valueOf());
 
   // Use Astro's paginate function
@@ -23,7 +24,7 @@ const { page } = Astro.props as { page: any };
 // Get all years with posts for navigation
 const allPosts = await getCollection("posts");
 const publishedPosts = allPosts.filter(
-  (post) => !post.data.draft && !post.id.includes("level"),
+  (post) => shouldShowPost(post) && !post.id.includes("level"),
 );
 const yearsWithPosts = [
   ...new Set(

@@ -4,6 +4,7 @@ import Pagination from '@components/Pagination.astro';
 import PostCard from '@components/PostCard.astro';
 import Layout from '@layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import { shouldShowPost } from '@utils/posts';
 
 // Get both posts and TILs
 const posts = await getCollection('posts');
@@ -11,7 +12,7 @@ const tils = await getCollection('til');
 
 // Filter and prepare posts
 const publishedPosts = posts
-  .filter((post) => !post.data.draft && !post.id.includes('level'))
+  .filter((post) => shouldShowPost(post) && !post.id.includes('level'))
   .map((post) => ({
     ...post,
     collection: 'posts' as const,

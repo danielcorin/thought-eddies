@@ -1,13 +1,14 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { formatDate } from '@utils/markdownEndpoints';
+import { shouldShowPost } from '@utils/posts';
 
 export const prerender = true;
 
 export const GET: APIRoute = async () => {
   try {
     // Get all posts and sort by date
-    const posts = await getCollection('posts', ({ data }) => !data.draft);
+    const posts = (await getCollection('posts')).filter(shouldShowPost);
     const sortedPosts = posts.sort(
       (a, b) =>
         new Date(b.data.createdAt).getTime() -

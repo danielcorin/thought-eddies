@@ -2,14 +2,17 @@
 import TableOfContents from "@components/layout/TableOfContents.astro";
 import PostLayout from "@layouts/PostLayout.astro";
 import { getCollection, render, type CollectionEntry } from "astro:content";
+import { shouldShowPost } from "@utils/posts";
 
 export const prerender = true;
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
-  return posts.map((post: CollectionEntry<"posts">) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+  return posts
+    .filter(shouldShowPost)
+    .map((post: CollectionEntry<"posts">) => ({
+      params: { slug: post.id },
+      props: { post },
+    }));
 }
 
 const { post } = Astro.props as { post: CollectionEntry<"posts"> };

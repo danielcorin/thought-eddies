@@ -5,6 +5,7 @@ import Layout from "@layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { shouldShowPost } from "@utils/posts";
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // Get all posts, logs, and tils
@@ -38,7 +39,7 @@ const tils = await getCollection("til");
 
 // Filter and combine content
 const taggedPosts = posts
-  .filter(post => !post.data.draft && post.data.tags?.includes(tag))
+  .filter(post => shouldShowPost(post) && post.data.tags?.includes(tag))
   .map(post => ({
     ...post,
     type: 'post' as const,
