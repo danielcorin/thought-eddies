@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 
 export const prerender = true;
 
@@ -11,8 +11,6 @@ export const GET: APIRoute = async () => {
     if (!about) {
       return new Response('Not found', { status: 404 });
     }
-
-    const { Content } = await render(about);
 
     // The about content is already in markdown format
     const content = `# ${about.data.title}

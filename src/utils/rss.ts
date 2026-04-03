@@ -61,30 +61,30 @@ export async function generateRSSFeed(context: { site: string }) {
         htmlContent = stripAnsiCodes(htmlContent);
       } catch (error) {
         console.warn(`Failed to render MDX for ${item.id}:`, error);
-        htmlContent = `<p>${item.data.description || ''}</p>`;
+        htmlContent = `<p>${(item.data as Record<string, any>).description || ''}</p>`;
       }
 
       // Add RSS footer with thank you message
       htmlContent = addRSSFooter(htmlContent);
 
       // Determine the correct link path based on collection
-      let linkPath: string;
-      if (item.collection === 'posts') {
-        linkPath = `/posts/${item.id}/`;
-      } else if (item.collection === 'til') {
-        linkPath = `/til/${item.id}/`;
-      } else if (item.collection === 'rss') {
-        linkPath = `/rss/${item.id}/`;
-      }
+      const linkPath =
+        item.collection === 'posts'
+          ? `/posts/${item.id}/`
+          : item.collection === 'til'
+            ? `/til/${item.id}/`
+            : `/rss/${item.id}/`;
 
       // Use appropriate date field based on collection
       const pubDate =
         item.collection === 'rss' ? item.data.date : item.data.createdAt;
 
+      const itemData = item.data as Record<string, any>;
       return {
         title: item.data.title,
         pubDate,
-        description: item.data.description || item.data.title,
+        description:
+          (itemData.description as string | undefined) || item.data.title,
         link: `${linkPath}?ref=feed`,
         customData: `<content:encoded><![CDATA[${htmlContent}]]></content:encoded>`,
       };

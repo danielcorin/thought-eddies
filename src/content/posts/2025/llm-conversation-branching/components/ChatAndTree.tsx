@@ -12,7 +12,7 @@ interface Message {
 
 export default function ChatAndTree({ messages }: { messages: Message[] }) {
   const [selectedNodeId, setSelectedNodeId] = useState<string>('1');
-  const [activeView, setActiveView] = useState<'tree' | 'chat'>('tree');
+  const [_activeView, _setActiveView] = useState<'tree' | 'chat'>('tree');
 
   const getPathToRoot = (nodeId: string): Message[] => {
     const path: Message[] = [];

@@ -29,7 +29,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }));
 };
 
-const { tag } = Astro.props;
+const { tag } = Astro.props as { tag: string };
+const tagStr: string = tag;
 
 
 // Get all content with this tag
@@ -39,7 +40,7 @@ const tils = await getCollection("til");
 
 // Filter and combine content
 const taggedPosts = posts
-  .filter(post => shouldShowPost(post) && post.data.tags?.includes(tag))
+  .filter(post => shouldShowPost(post) && post.data.tags?.includes(tagStr))
   .map(post => ({
     ...post,
     type: 'post' as const,
@@ -47,7 +48,7 @@ const taggedPosts = posts
   }));
 
 const taggedLogs = logs
-  .filter(log => !log.data.draft && log.data.tags?.includes(tag))
+  .filter(log => !log.data.draft && log.data.tags?.includes(tagStr))
   .map(log => ({
     ...log,
     type: 'log' as const,
@@ -55,12 +56,12 @@ const taggedLogs = logs
   }));
 
 const taggedTils = tils
-  .filter(til => !til.data.draft && til.data.tags?.includes(tag))
+  .filter(til => !til.data.draft && til.data.tags?.includes(tagStr))
   .map(til => ({
     ...til,
     type: 'til' as const,
     date: til.data.createdAt,
-    collection: 'til'
+    collection: 'til' as const
   }));
 
 // Combine and sort by date
@@ -87,7 +88,7 @@ const ogImage = `/tags/og.png`;
     
     <div class="toc">
       {allTaggedContent.map(item => (
-        <PostCard post={item} type={item.type} showTypeLabel={true} />
+        <PostCard post={item as any} type={item.type} showTypeLabel={true} />
       ))}
     </div>
   </main>

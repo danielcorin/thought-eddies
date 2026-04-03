@@ -65,11 +65,7 @@ export const GET: APIRoute = async () => {
     title: project.data.title,
     description: project.data.description || '',
     tags: project.data.tags || [],
-    date:
-      project.data.date ||
-      project.data.publishedAt ||
-      project.data.createdAt ||
-      new Date(),
+    date: project.data.publishedAt || project.data.createdAt || new Date(),
     url: `/projects/${project.id}`,
     content: project.body,
   }));
@@ -81,7 +77,7 @@ export const GET: APIRoute = async () => {
     title: post.data.title,
     description: '',
     tags: [],
-    date: post.data.date || new Date(),
+    date: post.data.createdAt || new Date(),
     url: `/garden/${post.id}`,
     content: post.body,
   }));

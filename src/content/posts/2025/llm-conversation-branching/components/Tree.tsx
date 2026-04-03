@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface Message {
   id: string;
@@ -82,8 +82,8 @@ export default function Tree({
           'd',
           d3
             .linkVertical()
-            .x((d) => d.x)
-            .y((d) => d.y)
+            .x((d: any) => d.x)
+            .y((d: any) => d.y) as any
         );
 
       // Add nodes
@@ -118,7 +118,7 @@ export default function Tree({
                 <div class="text-xs text-[var(--color-ink-light)] line-clamp-3">${d.data.response}</div>
             `
         )
-        .on('click', (event, d) => {
+        .on('click', (_event, d) => {
           if (d.id) {
             setSelectedId(d.id);
             onNodeClick(d.id);

@@ -5,8 +5,6 @@ import { Icon } from 'astro-icon/components';
 import { getCollection, render } from 'astro:content';
 
 const title = 'Feeds';
-const description =
-  'A collection of feeds and curated content from around the web';
 const ogImage = `/feeds/og.png`;
 
 const feedEntries = await getCollection('feeds');

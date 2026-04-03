@@ -59,10 +59,13 @@ export default defineConfig({
       rehypeFormatFootnotes,
       rehypeUltrathink,
     ],
+    syntaxHighlight: {
+      type: 'shiki',
+      excludeLangs: ['d2'],
+    },
     shikiConfig: {
       theme: 'monokai',
       wrap: true,
-      excludeLangs: ['d2'],
     },
   },
   adapter: cloudflare(),

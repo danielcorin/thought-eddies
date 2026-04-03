@@ -74,7 +74,7 @@ function getContent(content: string | ContentItem[]): {
                 </div>
                 <div class="code-line"></div>
                 {
-                    messages.map((message, index) => (
+                    messages.map((message, _index) => (
                         <>
                             <div class={`code-block ${message.role}-block`}>
                                 <div class="block-header">

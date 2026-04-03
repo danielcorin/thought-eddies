@@ -86,8 +86,8 @@ export default function ZoomableTree({
         'd',
         d3
           .linkVertical()
-          .x((d) => d.x)
-          .y((d) => d.y)
+          .x((d: any) => d.x)
+          .y((d: any) => d.y) as any
       );
 
     const depthColors = [
@@ -126,17 +126,18 @@ export default function ZoomableTree({
       );
 
     nodes
-      .on('mouseover', function (event, d) {
+      .on('mouseover', function (_event, d) {
         const nodeGroup = d3.select(this);
         nodeGroup.raise();
-        nodeGroup
-          .select('foreignObject div')
-          .style(
-            'background-color',
-            d3.color(depthColors[d.depth % depthColors.length])?.darker(0.1)
-          );
+        nodeGroup.select('foreignObject div').style(
+          'background-color',
+          (d3
+            .color(depthColors[d.depth % depthColors.length])
+            ?.darker(0.1)
+            ?.toString() ?? depthColors[d.depth % depthColors.length]) as string
+        );
       })
-      .on('mouseout', function (event, d) {
+      .on('mouseout', function (_event, d) {
         d3.select(this)
           .select('foreignObject div')
           .style('background-color', depthColors[d.depth % depthColors.length]);

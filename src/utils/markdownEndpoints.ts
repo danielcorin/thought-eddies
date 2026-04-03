@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getEntry, type CollectionEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 
 export interface MarkdownResponse {
   content: string;
@@ -62,7 +62,7 @@ export const createMarkdownWithFrontmatter = (
 };
 
 export const createContentEndpoint = <
-  T extends 'posts' | 'logs' | 'til' | 'rss',
+  T extends 'posts' | 'logs' | 'til' | 'rss' | 'projects',
 >(
   collection: T,
   getSlugFromParams?: (
@@ -82,7 +82,10 @@ export const createContentEndpoint = <
         return createNotFoundResponse();
       }
 
-      const fullContent = createMarkdownWithFrontmatter(entry.data, entry.body);
+      const fullContent = createMarkdownWithFrontmatter(
+        entry.data,
+        entry.body ?? ''
+      );
       return createMarkdownResponse(fullContent);
     } catch (error) {
       return createErrorResponse(error);

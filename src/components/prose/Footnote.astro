@@ -1,14 +1,11 @@
 ---
-import { marked } from 'marked';
-
 interface Props {
   content: string;
   number?: number;
 }
 
-const { content, number } = Astro.props;
+const { content: _content, number } = Astro.props;
 const id = number || Math.random().toString(36).substring(7);
-const htmlContent = marked.parseInline(content);
 ---
 
 <sup class="footnote-ref">

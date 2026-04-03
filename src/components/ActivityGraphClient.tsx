@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ActivityGraphProps {
   title: string;
   currentData: number[];

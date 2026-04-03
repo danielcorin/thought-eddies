@@ -26,7 +26,7 @@ const contentPath = path.join(
   project.id
 );
 
-let timelineEntries = await getTimelineEntries(contentPath, 'projects', project.id);
+let timelineEntries = await getTimelineEntries(contentPath);
 
 if (timelineEntries.length === 0) {
   return Astro.redirect(`/projects/${project.id}`, 302);

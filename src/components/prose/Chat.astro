@@ -153,7 +153,7 @@ function formatToolInput(input: Record<string, unknown>): string {
                       Thinking process
                     </summary>
                     <div class="thinking-content">
-                      {getContent(message.content).thinking.map((thought, index) => (
+                      {getContent(message.content).thinking.map((thought, _index) => (
                         <Markdown of={thought} />
                       ))}
                     </div>

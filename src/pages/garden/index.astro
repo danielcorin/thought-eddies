@@ -31,7 +31,7 @@ const categories = Array.from(categoriesMap.entries())
   .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
 // Sort categories alphabetically
-const sortedCategories = categories.sort((a, b) => a.displayName.localeCompare(b.displayName));
+// Categories are already sorted above
 ---
 
 <Layout title="Garden" pageType="garden">
@@ -44,7 +44,7 @@ const sortedCategories = categories.sort((a, b) => a.displayName.localeCompare(b
     </p>
 
     <div class="garden-categories">
-      {categories.map((category, categoryIndex) => (
+      {categories.map((category, _categoryIndex) => (
         <div class="garden-category">
           <h2>
             {category.displayName}
@@ -54,7 +54,7 @@ const sortedCategories = categories.sort((a, b) => a.displayName.localeCompare(b
           </h2>
 
           <div class="category-entries">
-            {category.entries.map((entry, index) => {
+            {category.entries.map((entry, _index) => {
               const href = `/garden/${entry.id.replace(/\.(md|mdx)$/, '')}`;
 
               return (
