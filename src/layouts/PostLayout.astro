@@ -182,9 +182,9 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
         </a>
       )}
       {atprotoUrl && (
-        <a href={atprotoUrl} target="_blank" rel="noopener noreferrer" class="bluesky-button">
-          <Icon name="ph:butterfly" />
-          <span>bluesky</span>
+        <a href={atprotoUrl} target="_blank" rel="noopener noreferrer" class="atproto-button">
+          <Icon name="ph:at" />
+          <span>atproto</span>
         </a>
       )}
     </div>
@@ -412,7 +412,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
   .raw-button,
   .edit-button,
   .commit-button,
-  .bluesky-button {
+  .atproto-button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -429,7 +429,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
   .raw-button:hover,
   .edit-button:hover,
   .commit-button:hover,
-  .bluesky-button:hover {
+  .atproto-button:hover {
     background: var(--color-bg-hover);
     color: var(--color-accent);
   }
@@ -437,7 +437,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
   .raw-button svg,
   .edit-button svg,
   .commit-button svg,
-  .bluesky-button svg {
+  .atproto-button svg {
     width: 1rem;
     height: 1rem;
   }
