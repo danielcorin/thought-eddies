@@ -59,7 +59,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "sequoia-cli": "^0.5.1",
     "unist-util-visit": "^5.1.0",
-    "wrangler": "^4.80.0"
+    "wrangler": "^4.75.0"
   },
   "pnpm": {
     "overrides": {

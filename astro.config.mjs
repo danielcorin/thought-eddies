@@ -17,8 +17,6 @@ import rehypeUltrathink from './plugins/rehype-ultrathink.mjs';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
-const isDev = process.argv.includes('dev');
-
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.danielcorin.com',
@@ -67,8 +65,5 @@ export default defineConfig({
       excludeLangs: ['d2'],
     },
   },
-  adapter: cloudflare({
-    imageService: isDev ? 'passthrough' : 'compile',
-    prerenderEnvironment: 'node',
-  }),
+  adapter: cloudflare({ imageService: 'compile' }),
 });
