@@ -65,5 +65,5 @@ export default defineConfig({
       excludeLangs: ['d2'],
     },
   },
-  adapter: cloudflare({ imageService: 'compile' }),
+  adapter: cloudflare(),
 });
