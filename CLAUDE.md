@@ -31,7 +31,7 @@ Use `just` commands for new content:
 - `just til category "Title"` - new TIL entry
 - `just log` - new daily log
 
-Content schemas are defined in `src/content.config.ts`. Key fields:
+Content schemas are defined in `src/content/config.ts`. Key fields:
 
 - Posts: `draft: true` by default, set `draft: false` to publish
 - All content uses frontmatter validated by Zod schemas

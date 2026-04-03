@@ -1,4 +1,5 @@
 ---
+import { Markdown } from '@astropub/md';
 import { Icon } from 'astro-icon/components';
 
 interface Props {
@@ -127,7 +128,7 @@ function formatToolInputPreview(input: string): string {
           <div class="bubble user-bubble">
             {contentBlocks.map((block, index) => (
               block.type === 'text' ? (
-                <Fragment set:html={block.content} />
+                <Markdown of={block.content} />
               ) : block.type === 'image' ? (
                 <img
                   src={block.src}
@@ -160,7 +161,7 @@ function formatToolInputPreview(input: string): string {
               </summary>
               <div class="thinking-content">
                 {thinking.map((thought) => (
-                  <Fragment set:html={thought} />
+                  <Markdown of={thought} />
                 ))}
               </div>
             </details>
@@ -188,7 +189,7 @@ function formatToolInputPreview(input: string): string {
               </details>
             ) : block.type === 'text' ? (
               <div class="bubble assistant-bubble">
-                <Fragment set:html={block.content} />
+                <Markdown of={block.content} />
               </div>
             ) : block.type === 'image' ? (
               <div class="bubble assistant-bubble">
@@ -218,7 +219,7 @@ function formatToolInputPreview(input: string): string {
         <div class="bubble system-bubble">
           {contentBlocks.map((block, index) => (
             block.type === 'text' ? (
-              <Fragment set:html={block.content} />
+              <Markdown of={block.content} />
             ) : block.type === 'image' ? (
               <img
                 src={block.src}
