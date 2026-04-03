@@ -1,0 +1,147 @@
+---
+title: 'Stateful Agent Collaboration'
+createdAt: 2026-03-16T09:24:11.411947
+updatedAt: 2026-04-03T15:07:40-04:00
+location: 'Brooklyn'
+draft: false
+---
+
+I have a dedicated machine running an agent with its own GitHub account, its own Cloudflare account, and persistent memory.
+It pushes code, deploys services, writes to databases, and lots more.
+I interact with it though Slack.
+
+The agent does not remember anything on its own.
+It reads records of what it did.
+There is a journal, semantic memories, state files on a filesystem that get rebuilt into context each session.
+What gets remembered is what gets written to, then read from, files.
+
+A language model is a stateless, sessionless, and permissionless tool.
+A stateful agent is a collaborator with access to what happened before and its own workspace.
+
+## Why Low Stakes Changes Everything
+
+The most important property of this setup is low consequence of failure.
+Nothing the agent touches is shared with others or relied upon by anyone other than the people building with it.
+If something breaks, the blast radius is contained.
+This changes the calculus of building with an agent.
+Instead of carefully specifying what to build, reviewing every change, and gating deployments, I just say "try it" and see what happens.
+The cost of an experiment drops to nearly zero.
+
+## Speed as a Learning Function
+
+Because experiments complete quickly, often in a single prompt-to-deployed-app cycle, I learn fast.
+Not just whether something works technically, but whether the idea is worth pursuing.
+I get the feeling and texture of a concept before committing too much time to it.
+I cannot learn "this idea felt wrong once I could see it" from a spec review.
+The artifact has to exist for certain kinds of judgement to activate.
+This prototyping is different from planning.
+It provides access to something I could not reach any other way.
+
+Consider the difference between evaluating a dashboard design in a mockup versus loading it on my phone with real data.
+The mockup tells me about layout.
+The running version tells me whether I actually care about these numbers when I see them.
+That second kind of learning is inaccessible without the artifact existing.
+The speed of this setup means I reach that judgement point in hours instead of weeks.
+I reach it dozens of times instead of once.
+Direct experience replaces the abstraction of planning.
+What is worth pursuing in service of a larger vision? What does not actually make sense once I can see it?
+
+## Prompt to Working Application
+
+An opinionated stack and set of defaults makes this possible.
+Cloudflare Workers provide compute.
+D1 and R2 provide storage.
+Cloudflare Tunnels expose local services to the public internet.
+GitHub repos and Actions provide CI/CD.
+A single prompt can produce a working application with stable storage, deployed to a public URL, with CI/CD for future changes.
+The gap between "what if I tried..." and a running service is one conversation.
+
+## Skills: Capturing What Works
+
+After enough exploration, I notice patterns emerging.
+Things like a specific sequence of API calls, a deployment recipe, or a way of structuring a particular kind of task.
+I use the agent to capture this pattern as a skill: a recipe that worked, written down so it can be referenced by name and repeated without re-deriving the steps from scratch.
+The lifecycle is the following: I explore broadly, try things, fail, iterate, discover what works through direct experience.
+When a workflow stabilizes or when the same sequence of steps keeps producing good results, I capture it as a skill.
+I write down the recipe (or use the agent to assist), including what it does, when to use it, and the mistakes learned the hard way.
+To invoke the skill, just say "use the file-share skill" instead of re-explaining the entire workflow.
+
+Skills emerge from use.
+I try something, work with it across multiple sessions, discover the failure modes, and then codify what I have learned.
+
+Not all skills look the same.
+Some are invoked with keywords: "use the file-share skill" triggers a specific skill.
+Others are subtler and come to define ways of working rather than discrete actions, like how to report on the status of a training run, which framework to use when building an interactive site, or what information to include in a deploy notification.
+These are not recipes I invoke by name.
+They are patterns that shape the agent's default behavior once captured.
+The keyword-invoked skill and the way-of-working skill are both discovered the same way: through doing the thing, noticing what works, and writing it down.
+
+The captured skill includes knowledge that wasn't understood before the attempts.
+Which API endpoints actually work versus which are documented but broken.
+The order operations need to happen in.
+What error messages mean and how to recover from them.
+The skill we write carries the learnings from real usage, not assumptions.
+
+Concretely, a skill is a markdown file that gets injected into the agent context when invoked.
+It contains instructions, examples, and constraints for the agent to follow.
+
+Some examples from my setup:
+The `file-share` skill emerged after building R2 upload infrastructure.
+It captures the exact wrangler commands, content-type handling, and URL patterns.
+`apps-monorepo` captures the Cloudflare Workers deployment pattern, wrangler config, D1 bindings, the structure that makes single-prompt deploys possible.
+Each of these started as ad-hoc exploration.
+The skill was written only after the pattern proved itself through repeated use.
+
+## Trust Through Iteration
+
+Trust in the agent comes from intuition built through iterations.
+This trust develops from watching something work, and fail, across attempts.
+Each cycle teaches me what the agent handles well, where it makes mistakes, what kinds of prompts produce good results.
+Over time, this accumulates into something that feels less like verified confidence and more like practiced intuition.
+
+Trust is shaped by how the agent fails.
+Some failures build trust: the agent fills in a gap I intended to specify, the result is wrong, but the followup works and the next time it asks first.
+Other failures erode it: infrastructure breaks in ways that take hours to debug, or the agent compounds a mistake instead of stopping.
+A transparent failure that leads to a clean recovery builds more trust than an opaque success.
+A failure that spirals can undo sessions worth of earned confidence.
+Trust is not monotonic.
+It is built and broken in specific moments, a distribution shaped by experience rather than a binary judgement.
+
+## How It Compounds
+
+The paradigm changes as the agent accumulates context and capabilities over time.
+This is not a static setup.
+In the early weeks, most prompts required full context: explained the goal, described the infrastructure, specified the deployment target.
+The agent had no history to draw on.
+Collaboration at this stage was directive.
+I told it what to do and how to do it.
+
+After a few dozen sessions, the agent had a journal spanning hundreds of entries, semantic memories covering projects and preferences, skills encoding proven workflows.
+I stopped needing to explain the infrastructure because it already knew from past work.
+I stopped specifying the deployment target because it had defaults.
+Prompts got shorter and more ambiguous because the shared context carries more weight.
+The interactions moved from directive to collaborative.
+Instead of "deploy this to Cloudflare Workers using wrangler with this D1 binding," I prompted "ship it."
+The agent filled in what was missing from accumulated context, which aligned with my implicit intent.
+When it filled details in wrong, it was a signal about where the shared understanding had gaps.
+
+Further out, the agent began to surface things I had not asked about.
+It noticed patterns across sessions: a recurring error, a service that kept failing, an approach that had been tried and abandoned before.
+It developed something akin to judgement.
+I started to trust those observations, and the dynamic moved from collaborative toward something closer to mutual contribution.
+Over time, the agent came to reflect a way of building we had developed collaboratively and one that would have been hard to prescribe a priori.
+This emerged from hundreds of sessions of trying things and intentionally keeping what worked and aligned with my vision.
+
+## To Be Personal
+
+Most of what I build this way is personal software operating at a small scale.
+For me, these have included a recipe app, various stat trackers, and a web app data labeler to build a dataset, then train a model for personal use.
+These are things that have made my personal computer more personal.
+
+This setup enables me to build tools shaped to my personal needs.
+The speed and low stakes makes it practical to build software for an audience of just a few people.
+These are projects that would never justify a product team or a sprint cycle, but that meaningfully change how you work or live.
+Personal software has always been possible in theory.
+What this paradigm changes is the cost.
+When a recipe app takes an afternoon instead of a month, the question shifts.
+I stop asking "is this worth building?" and start asking "what would I want if building it were nearly instant?"
