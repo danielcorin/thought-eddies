@@ -10,9 +10,7 @@ export interface TimelineEntry {
 }
 
 export async function getTimelineEntries(
-  contentPath: string,
-  collection: string,
-  slug: string
+  contentPath: string
 ): Promise<TimelineEntry[]> {
   const timelinePath = path.join(contentPath, 'timeline');
 

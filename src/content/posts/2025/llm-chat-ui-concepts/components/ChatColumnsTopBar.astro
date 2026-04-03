@@ -50,7 +50,7 @@ function getContent(content: string | ContentItem[]): {
 <section class="chat-section">
   <div class="chat-container">
     {
-      messages.map((message, index) => (
+      messages.map((message, _index) => (
         <div class={`message-column ${message.role}-column`}>
           <div class="label-column">
             <div class={`message-label ${message.role}-label`}>

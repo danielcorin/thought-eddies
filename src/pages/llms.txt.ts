@@ -27,8 +27,8 @@ export const GET: APIRoute = async () => {
   );
 
   const sortedProjects = projects.sort((a, b) => {
-    const dateA = new Date(a.data.createdAt || a.data.date).getTime();
-    const dateB = new Date(b.data.createdAt || b.data.date).getTime();
+    const dateA = new Date(a.data.createdAt || 0).getTime();
+    const dateB = new Date(b.data.createdAt || 0).getTime();
     return dateB - dateA;
   });
 

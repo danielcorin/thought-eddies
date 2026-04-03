@@ -57,11 +57,12 @@ if (isProject) {
 }
 
 // Get all posts/tils to find prev/next
-const allEntries = await getCollection(collectionType);
+type EntryType = { id: string; data: Record<string, any>; filePath?: string; body?: string; collection: string };
+const allEntries: EntryType[] = await getCollection(collectionType) as EntryType[];
 const sortedEntries = allEntries
-  .filter((entry) => shouldShowPost(entry))
+  .filter((entry: EntryType) => shouldShowPost(entry as any))
   .sort(
-    (a, b) => {
+    (a: EntryType, b: EntryType) => {
       // RSS content uses 'date' field, others use 'createdAt'
       const dateA = isRss ? a.data.date : a.data.createdAt;
       const dateB = isRss ? b.data.date : b.data.createdAt;
@@ -74,18 +75,18 @@ const currentIndex = sortedEntries.findIndex(
   (entry) => entry.id === currentEntry?.id,
 );
 
-const prevEntry =
+const prevEntry: EntryType | null =
   currentIndex < sortedEntries.length - 1 ? sortedEntries[currentIndex + 1] : null;
-const nextEntry = currentIndex > 0 ? sortedEntries[currentIndex - 1] : null;
+const nextEntry: EntryType | null = currentIndex > 0 ? sortedEntries[currentIndex - 1] : null;
 
 // Get all posts and TILs for recommendations
 const allPosts = await getCollection('posts');
 const allTils = await getCollection('til');
 
 // Find similar entries, excluding prev and next
-const excludeEntries = [prevEntry, nextEntry].filter(Boolean) as typeof sortedEntries;
+const excludeEntries = [prevEntry, nextEntry].filter(Boolean) as any[];
 const similarContent = currentEntry
-  ? findSimilarContent(currentEntry, allPosts, allTils, 3, excludeEntries)
+  ? findSimilarContent(currentEntry as any, allPosts, allTils, 3, excludeEntries as any)
   : [];
 
 // Get commit URL for the current file

@@ -9,8 +9,8 @@ export const GET: APIRoute = async () => {
     // Get all projects and sort by date
     const projects = await getCollection('projects', ({ data }) => !data.draft);
     const sortedProjects = projects.sort((a, b) => {
-      const dateA = new Date(a.data.createdAt || a.data.date).getTime();
-      const dateB = new Date(b.data.createdAt || b.data.date).getTime();
+      const dateA = new Date(a.data.createdAt || 0).getTime();
+      const dateB = new Date(b.data.createdAt || 0).getTime();
       return dateB - dateA;
     });
 
@@ -23,7 +23,7 @@ Personal projects and experiments.
 `;
 
     sortedProjects.forEach((project) => {
-      const date = formatDate(project.data.createdAt || project.data.date);
+      const date = formatDate(project.data.createdAt || new Date(0));
       const slug = project.id.replace(/\.mdx?$/, '');
 
       content += `### [${project.data.title}](/projects/${slug}/index.md)\n`;

@@ -49,7 +49,7 @@ export default function ClusteredTree({ messages }: { messages: Message[] }) {
     const treeData = treeLayout(root);
 
     // Only apply embedding positions if they exist
-    treeData.descendants().forEach((d, i) => {
+    treeData.descendants().forEach((d, _i) => {
       if (d.data.embedding_2d) {
         const [x, y] = d.data.embedding_2d;
         const scale = 60;
@@ -58,8 +58,7 @@ export default function ClusteredTree({ messages }: { messages: Message[] }) {
       }
     });
 
-    const links = g
-      .selectAll('.link')
+    g.selectAll('.link')
       .data(treeData.links())
       .join('path')
       .attr('class', 'link')
@@ -69,8 +68,8 @@ export default function ClusteredTree({ messages }: { messages: Message[] }) {
         'd',
         d3
           .linkVertical()
-          .x((d) => d.x)
-          .y((d) => d.y)
+          .x((d: any) => d.x)
+          .y((d: any) => d.y) as any
       );
 
     const depthColors = [
@@ -110,20 +109,21 @@ export default function ClusteredTree({ messages }: { messages: Message[] }) {
 
     // Add mouseover event to bring node to front
     nodes
-      .on('mouseover', function (event, d) {
+      .on('mouseover', function (_event, d) {
         // Raise this node's group to the front
         const nodeGroup = d3.select(this);
         nodeGroup.raise();
 
         // Update styles
-        nodeGroup
-          .select('foreignObject div')
-          .style(
-            'background-color',
-            d3.color(depthColors[d.depth % depthColors.length])?.darker(0.1)
-          );
+        nodeGroup.select('foreignObject div').style(
+          'background-color',
+          (d3
+            .color(depthColors[d.depth % depthColors.length])
+            ?.darker(0.1)
+            ?.toString() ?? depthColors[d.depth % depthColors.length]) as string
+        );
       })
-      .on('mouseout', function (event, d) {
+      .on('mouseout', function (_event, d) {
         // Restore original background color
         d3.select(this)
           .select('foreignObject div')

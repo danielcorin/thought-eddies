@@ -27,7 +27,6 @@ export async function GET({ props }: { props: Props }) {
 
   return generateOGImage({
     title: entry.data.title,
-    description: entry.data.description,
     category: categoryDisplay,
   });
 }

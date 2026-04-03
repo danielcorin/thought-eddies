@@ -46,7 +46,7 @@ const allHeadings = title
   const plusIcon = toggleButton?.querySelector(".plus-icon");
 
   const toggleToc = (collapse: boolean) => {
-    const isCollapsed = collapse
+    collapse
       ? toc?.classList.add("collapsed")
       : toc?.classList.remove("collapsed");
     toggleButton?.setAttribute("aria-expanded", collapse ? "false" : "true");

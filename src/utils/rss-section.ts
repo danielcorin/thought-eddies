@@ -26,10 +26,20 @@ export async function generateSectionRSSFeed(
   // Get content for the specific section that is not draft
   const items = await getCollection(section, ({ data }) => !data.draft);
 
+  // Helper to extract date from any collection entry
+  const getDate = (data: Record<string, any>): Date => {
+    return data.createdAt || data.publishedAt || data.date || new Date(0);
+  };
+
+  // Helper to extract description from any collection entry
+  const getDescription = (data: Record<string, any>): string => {
+    return data.description || '';
+  };
+
   // Sort items by creation date
   const sortedItems = items.sort((a, b) => {
-    const dateA = a.data.createdAt || a.data.publishedAt || a.data.date;
-    const dateB = b.data.createdAt || b.data.publishedAt || b.data.date;
+    const dateA = getDate(a.data as Record<string, any>);
+    const dateB = getDate(b.data as Record<string, any>);
     return new Date(dateB).getTime() - new Date(dateA).getTime();
   });
 
@@ -43,7 +53,7 @@ export async function generateSectionRSSFeed(
         htmlContent = await container.renderToString(Content);
       } catch (error) {
         console.warn(`Failed to render MDX for ${item.id}:`, error);
-        htmlContent = `<p>${item.data.description || ''}</p>`;
+        htmlContent = `<p>${'description' in item.data ? item.data.description || '' : ''}</p>`;
       }
 
       // Add RSS footer with thank you message
@@ -70,13 +80,13 @@ export async function generateSectionRSSFeed(
       }
 
       // Use appropriate date field
-      const pubDate =
-        item.data.createdAt || item.data.publishedAt || item.data.date;
+      const itemData = item.data as Record<string, any>;
+      const pubDate = getDate(itemData);
 
       return {
         title: item.data.title,
         pubDate,
-        description: item.data.description || item.data.title,
+        description: getDescription(itemData) || item.data.title,
         link: `${linkPath}?ref=feed`,
         customData: `<content:encoded><![CDATA[${htmlContent}]]></content:encoded>`,
       };

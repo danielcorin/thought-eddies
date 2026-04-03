@@ -58,7 +58,7 @@ function getBubbleSize(text: string): string {
 <section class="chat-stream">
     <div class="stream-container">
         {
-            messages.map((message, index) => {
+            messages.map((message, _index) => {
                 const content = getContent(message.content);
                 const bubbleSize = getBubbleSize(content.text);
 

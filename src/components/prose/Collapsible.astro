@@ -5,7 +5,7 @@ interface Props {
   open?: boolean;
 }
 
-const { open = false } = Astro.props;
+const { open: _open = false } = Astro.props;
 const id = `collapsible-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
@@ -50,8 +50,9 @@ const id = `collapsible-${Math.random().toString(36).substr(2, 9)}`;
       wrapper.appendChild(contentDiv);
 
       // Make heading clickable
-      heading.style.cursor = 'pointer';
-      heading.style.userSelect = 'none';
+      const headingEl: HTMLElement = heading as HTMLElement;
+      headingEl.style.cursor = 'pointer';
+      headingEl.style.userSelect = 'none';
 
       const toggle = () => {
         const isOpen = contentDiv.style.display !== 'none';

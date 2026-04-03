@@ -193,16 +193,16 @@ const processedNote = await marked.parseInline(note);
 
     // Initialize sidenotes as visible on wide screens
     sidenoteContainers.forEach(container => {
-      const toggle = container.querySelector('.sidenote-toggle');
+      const toggle = container.querySelector('.sidenote-toggle') as HTMLInputElement | null;
       if (toggle && window.innerWidth >= 1400) {
         toggle.checked = true;
       }
     });
 
     sidenoteContainers.forEach(container => {
-      const trigger = container.querySelector('.sidenote-trigger');
-      const content = container.querySelector('.sidenote-content');
-      const toggle = container.querySelector('.sidenote-toggle');
+      const trigger = container.querySelector<HTMLElement>('.sidenote-trigger');
+      const content = container.querySelector<HTMLElement>('.sidenote-content');
+      const toggle = container.querySelector<HTMLInputElement>('.sidenote-toggle');
 
       if (trigger && content) {
         // Hovering over sidenote highlights trigger
@@ -245,7 +245,7 @@ const processedNote = await marked.parseInline(note);
 
       // Reset all previous adjustments
       containers.forEach(container => {
-        const content = container.querySelector('.sidenote-content');
+        const content = container.querySelector('.sidenote-content') as HTMLElement | null;
         if (content) {
           content.style.marginTop = '';
         }
@@ -253,19 +253,19 @@ const processedNote = await marked.parseInline(note);
 
       // Filter to only visible sidenotes (where toggle is checked)
       const visibleContainers = containers.filter(container => {
-        const toggle = container.querySelector('.sidenote-toggle');
+        const toggle = container.querySelector('.sidenote-toggle') as HTMLInputElement | null;
         return toggle && toggle.checked;
       });
 
       // Get visible content elements
-      const visibleContents = visibleContainers
-        .map(container => container.querySelector('.sidenote-content'))
-        .filter(Boolean);
+      const visibleContents: HTMLElement[] = visibleContainers
+        .map(container => container.querySelector('.sidenote-content') as HTMLElement | null)
+        .filter((el): el is HTMLElement => el !== null);
 
       // Check and adjust overlaps only among visible sidenotes
       for (let i = 1; i < visibleContents.length; i++) {
-        const current = visibleContents[i];
-        const previous = visibleContents[i - 1];
+        const current: HTMLElement = visibleContents[i];
+        const previous: HTMLElement = visibleContents[i - 1];
 
         const currentRect = current.getBoundingClientRect();
         const previousRect = previous.getBoundingClientRect();

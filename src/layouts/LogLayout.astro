@@ -48,7 +48,7 @@ const currentLog = sortedLogs[currentIndex];
 
 // Get commit URL for the current file
 const repoUrl = 'https://github.com/danielcorin/thought-eddies';
-const commitUrl = currentLog ? getCommitUrl(currentLog.filePath, repoUrl) : null;
+const commitUrl = currentLog?.filePath ? getCommitUrl(currentLog.filePath as string, repoUrl) : null;
 
 // Helper function to format date with two-digit day using UTC
 const formatDateWithPaddedDay = (date: Date): string => {

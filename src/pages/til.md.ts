@@ -55,7 +55,6 @@ Short-form posts about things I've learned.
         const date = formatDate(til.data.createdAt);
 
         const slug = til.id.replace(/\.mdx?$/, '');
-        const category = til.id.split('/')[0];
 
         content += `- [${til.data.title}](/til/${slug}/index.md) - ${date}\n`;
       });

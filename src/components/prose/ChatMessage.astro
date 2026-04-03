@@ -136,13 +136,15 @@ function formatToolInputPreview(input: string): string {
                   class="message-image"
                 />
               ) : (
+                block.type === 'iframe' ? (
                 <iframe
-                  src={block.src}
-                  title={block.title || `Embedded content ${index + 1}`}
-                  width={block.width || '100%'}
-                  height={block.height || '450'}
+                  src={(block as Extract<ContentBlock, { type: 'iframe' }>).src}
+                  title={(block as Extract<ContentBlock, { type: 'iframe' }>).title || `Embedded content ${index + 1}`}
+                  width={(block as Extract<ContentBlock, { type: 'iframe' }>).width || '100%'}
+                  height={(block as Extract<ContentBlock, { type: 'iframe' }>).height || '450'}
                   class="message-iframe"
                 />
+              ) : null
               )
             ))}
           </div>
@@ -199,17 +201,17 @@ function formatToolInputPreview(input: string): string {
                   class="message-image"
                 />
               </div>
-            ) : (
+            ) : block.type === 'iframe' ? (
               <div class="bubble assistant-bubble">
                 <iframe
-                  src={block.src}
-                  title={block.title || `Embedded content ${index + 1}`}
-                  width={block.width || '100%'}
-                  height={block.height || '450'}
+                  src={(block as Extract<ContentBlock, { type: 'iframe' }>).src}
+                  title={(block as Extract<ContentBlock, { type: 'iframe' }>).title || `Embedded content ${index + 1}`}
+                  width={(block as Extract<ContentBlock, { type: 'iframe' }>).width || '100%'}
+                  height={(block as Extract<ContentBlock, { type: 'iframe' }>).height || '450'}
                   class="message-iframe"
                 />
               </div>
-            )
+            ) : null
           ))}
         </div>
       </div>
@@ -226,15 +228,15 @@ function formatToolInputPreview(input: string): string {
                 alt={block.alt || `Image ${index + 1} from system message`}
                 class="message-image"
               />
-            ) : (
+            ) : block.type === 'iframe' ? (
               <iframe
-                src={block.src}
-                title={block.title || `Embedded content ${index + 1}`}
-                width={block.width || '100%'}
-                height={block.height || '450'}
+                src={(block as Extract<ContentBlock, { type: 'iframe' }>).src}
+                title={(block as Extract<ContentBlock, { type: 'iframe' }>).title || `Embedded content ${index + 1}`}
+                width={(block as Extract<ContentBlock, { type: 'iframe' }>).width || '100%'}
+                height={(block as Extract<ContentBlock, { type: 'iframe' }>).height || '450'}
                 class="message-iframe"
               />
-            )
+            ) : null
           ))}
         </div>
       </div>
@@ -649,7 +651,7 @@ function formatToolInputPreview(input: string): string {
 <script>
   // Resize iframes based on their content dimensions
   function resizeIframes() {
-    const iframes = document.querySelectorAll('.message-iframe');
+    const iframes = document.querySelectorAll<HTMLIFrameElement>('.message-iframe');
     iframes.forEach((iframe) => {
       iframe.addEventListener('load', () => {
         try {

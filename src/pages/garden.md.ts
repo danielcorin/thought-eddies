@@ -1,6 +1,5 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { formatDate } from '@utils/markdownEndpoints';
 
 export const prerender = true;
 
@@ -45,7 +44,7 @@ A place for thoughts, ideas and essays I tend to.
 `;
 
     // List all categories with entries
-    categories.forEach(({ displayName, name, entries }) => {
+    categories.forEach(({ displayName, name: _name, entries }) => {
       content += `### ${displayName} (${entries.length})\n\n`;
 
       entries.forEach((entry) => {

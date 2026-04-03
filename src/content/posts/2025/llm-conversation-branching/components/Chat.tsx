@@ -13,7 +13,7 @@ interface ChatProps {
 
 export default function Chat({
   messages,
-  selectedId,
+  selectedId: _selectedId,
   setSelectedId,
 }: ChatProps) {
   return (

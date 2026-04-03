@@ -11,8 +11,8 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   const sortedProjects = projects
     .filter((project) => !project.data.draft && !project.id.includes("level"))
     .sort((a, b) => {
-      const dateA = (a.data.createdAt || a.data.date).valueOf();
-      const dateB = (b.data.createdAt || b.data.date).valueOf();
+      const dateA = (a.data.createdAt || new Date(0)).valueOf();
+      const dateB = (b.data.createdAt || new Date(0)).valueOf();
       return dateB - dateA;
     });
 
