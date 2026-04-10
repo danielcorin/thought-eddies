@@ -13,7 +13,7 @@ export async function sendEmail(
   { to, subject, html, text, headers }: SendEmailParams
 ): Promise<number> {
   const body: Record<string, unknown> = {
-    from: env.FROM_EMAIL,
+    from: `Thought Eddies <${env.FROM_EMAIL}>`,
     to: [to],
     subject,
     html,
