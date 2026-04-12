@@ -106,6 +106,23 @@ export function welcomeEmail(unsubscribeUrl: string): string {
   `);
 }
 
+function addNewsletterRef(href: string): string {
+  try {
+    const url = new URL(href);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return href;
+    url.searchParams.set('ref', 'newsletter');
+    return url.toString();
+  } catch {
+    return href;
+  }
+}
+
+function addRefToLinks(html: string): string {
+  return html.replace(/href="(https?:\/\/[^"]+)"/g, (_, href) => {
+    return `href="${addNewsletterRef(href)}"`;
+  });
+}
+
 export function newsletterEmail({
   subject,
   html,
@@ -117,14 +134,15 @@ export function newsletterEmail({
   url?: string;
   unsubscribeUrl: string;
 }): string {
-  const webLink = url
-    ? `<p style="margin-bottom: 30px;"><a href="${url}" style="${linkStyle}">Read on the web</a></p>`
+  const trackedUrl = url ? addNewsletterRef(url) : undefined;
+  const webLink = trackedUrl
+    ? `<p style="margin-bottom: 30px;"><a href="${trackedUrl}" style="${linkStyle}">Read on the web</a></p>`
     : '';
 
   return emailWrapper(`
     <h1 style="margin-top: 0; font-size: 24px;">${subject}</h1>
     ${webLink}
-    <div>${html}</div>
+    <div>${addRefToLinks(html)}</div>
     <div style="${footerStyle}">
       <p style="margin-bottom: 8px;">${randomSignoff(linkStyle)}</p>
       <a href="${unsubscribeUrl}" style="${linkStyle}">Unsubscribe</a>
