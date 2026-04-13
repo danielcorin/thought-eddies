@@ -41,3 +41,7 @@ newsletter/admin.js
 
 # Sequoia state
 .sequoia-state.json
+
+# Scripts
+__pycache__/
+.threads_logs_state.json
