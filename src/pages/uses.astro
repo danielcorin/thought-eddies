@@ -1,5 +1,7 @@
 ---
 import Navigation from '@components/layout/Navigation.astro';
+import ClickableImages from '@components/ClickableImages.astro';
+import FullscreenImageViewer from '@components/FullscreenImageViewer.astro';
 import Layout from '@layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
 
@@ -33,9 +35,12 @@ const lastUpdated = latestEntry.data.date.toLocaleDateString('en-US', {
       <p class="last-updated">Last updated: {lastUpdated}</p>
     </div>
     <article class="prose">
-      <Content />
+      <ClickableImages>
+        <Content />
+      </ClickableImages>
     </article>
   </main>
+  <FullscreenImageViewer />
 </Layout>
 
 <style>
