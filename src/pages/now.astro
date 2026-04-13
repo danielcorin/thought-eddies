@@ -1,5 +1,7 @@
 ---
 import Navigation from '@components/layout/Navigation.astro';
+import ClickableImages from '@components/ClickableImages.astro';
+import FullscreenImageViewer from '@components/FullscreenImageViewer.astro';
 import Layout from '@layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
 
@@ -34,9 +36,12 @@ const lastUpdated = latestEntry.data.date.toLocaleDateString('en-US', {
     </div>
     <article class="prose">
       <p><em>What is a <a href="https://nownownow.com/about">now page</a>?</em></p>
-      <Content />
+      <ClickableImages>
+        <Content />
+      </ClickableImages>
     </article>
   </main>
+  <FullscreenImageViewer />
 </Layout>
 
 <style>
