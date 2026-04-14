@@ -7,7 +7,7 @@ const { inline = true } = Astro.props;
 
 const tagName = inline ? "span" : "div";
 const className = inline ? "inline-spoiler" : "block-spoiler";
-const id = `spoiler-${Math.random().toString(36).substr(2, 9)}`;
+const id = `spoiler-${Math.random().toString(36).substring(2, 11)}`;
 ---
 
 <style>

@@ -85,8 +85,6 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { redirectTo } = Astro.props;
-
 // Perform redirect
-return Astro.redirect(redirectTo, 301);
+return Astro.redirect(Astro.props.redirectTo, 301);
 ---

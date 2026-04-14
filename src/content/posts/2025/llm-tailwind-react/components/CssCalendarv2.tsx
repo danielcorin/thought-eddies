@@ -223,7 +223,7 @@ export default function Calendar() {
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Add new task..."
-          onKeyPress={(e) => e.key === 'Enter' && addTask()}
+          onKeyDown={(e) => e.key === 'Enter' && addTask()}
           style={styles.input}
         />
         <button onClick={addTask} style={styles.button}>

@@ -150,8 +150,7 @@ export function getHotkeysForPage(pageType?: string): Hotkey[] {
 export function formatHotkeyDisplay(hotkey: Hotkey): string {
   const parts: string[] = [];
   const isMac =
-    typeof window !== 'undefined' &&
-    navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    typeof window !== 'undefined' && /mac/i.test(navigator.userAgent);
 
   if (hotkey.modifiers) {
     // Use a Set to avoid duplicates
