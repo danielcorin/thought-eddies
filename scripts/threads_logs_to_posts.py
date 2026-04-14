@@ -163,9 +163,6 @@ def main():
         print("No messages found")
         return
 
-    # Messages come newest-first; reverse to process chronologically
-    messages.reverse()
-
     # Filter to only new messages
     if last_processed_id:
         new_messages = []
