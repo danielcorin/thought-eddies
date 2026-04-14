@@ -136,7 +136,7 @@ const initialContent = await markdown(rawMarkdown);
         <div id="source-content" set:html={initialContent} />
     </div>
 </div>
-<script define:vars={{ qaPairs, renderedVersions, initialContent }}>
+<script is:inline define:vars={{ qaPairs, renderedVersions, initialContent }}>
     const sourceContent = document.getElementById("source-content");
     const questions = document.querySelectorAll(".question-btn");
     const answerBoxes = document.querySelectorAll(".answer-box");

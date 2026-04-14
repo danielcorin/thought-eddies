@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { open: _open = false } = Astro.props;
-const id = `collapsible-${Math.random().toString(36).substr(2, 9)}`;
+const id = `collapsible-${Math.random().toString(36).substring(2, 11)}`;
 ---
 
 <div class="collapsible-wrapper" data-collapsible-id={id}>
