@@ -16,6 +16,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from collections import defaultdict
@@ -94,14 +95,95 @@ def format_frontmatter_ts(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%dT%H:%M:%S") + offset[:-2] + ":" + offset[-2:]
 
 
-def create_or_update_log(date_str: str, entries: list[str], first_msg_dt: datetime, dry_run: bool = False) -> Path:
+SAFE_CHARS_RE = re.compile(r"[^a-zA-Z0-9._-]+")
+
+
+def safe_filename(name: str) -> str:
+    name = SAFE_CHARS_RE.sub("-", name).strip("-.")
+    return name or "file"
+
+
+def is_image(content_type: str | None, filename: str) -> bool:
+    if content_type and content_type.startswith("image/"):
+        return True
+    return Path(filename).suffix.lower() in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif"}
+
+
+def download_attachment(url_path: str, dest: Path) -> None:
+    resp = requests.get(
+        f"{API_URL}{url_path}",
+        headers={"Authorization": f"Bearer {BOT_TOKEN}"},
+        stream=True,
+    )
+    resp.raise_for_status()
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with dest.open("wb") as f:
+        for chunk in resp.iter_content(chunk_size=64 * 1024):
+            if chunk:
+                f.write(chunk)
+
+
+def optimize_png(path: Path) -> None:
+    if shutil.which("pngquant") is None:
+        print("  pngquant not found, skipping optimization", file=sys.stderr)
+        return
+    result = subprocess.run(
+        ["pngquant", "--quality=65-80", "--ext=.png", "--force", str(path)],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(f"  pngquant failed for {path}: {result.stderr}", file=sys.stderr)
+
+
+def resolve_log_paths(date_str: str) -> tuple[Path, Path, Path, Path]:
+    """Return (year_month_dir, flat_file, dir_file, images_dir) for a date."""
     year, month, day = date_str.split("-")
-    log_dir = LOGS_DIR / year / month
-    log_file = log_dir / f"{day}.mdx"
+    base = LOGS_DIR / year / month
+    return base, base / f"{day}.mdx", base / day / "index.mdx", base / day / "images"
+
+
+def existing_log_file(date_str: str) -> Path | None:
+    _, flat, dir_file, _ = resolve_log_paths(date_str)
+    if dir_file.exists():
+        return dir_file
+    if flat.exists():
+        return flat
+    return None
+
+
+def migrate_to_folder(date_str: str, dry_run: bool) -> Path:
+    """Ensure date uses DD/index.mdx layout. Returns the index.mdx path."""
+    _, flat, dir_file, _ = resolve_log_paths(date_str)
+    if dir_file.exists():
+        return dir_file
+    if flat.exists():
+        if dry_run:
+            print(f"[dry-run] Would migrate {flat} -> {dir_file}")
+            return dir_file
+        dir_file.parent.mkdir(parents=True, exist_ok=True)
+        flat.rename(dir_file)
+        print(f"Migrated {flat} -> {dir_file}")
+    return dir_file
+
+
+def create_or_update_log(
+    date_str: str,
+    entries: list[str],
+    first_msg_dt: datetime,
+    has_attachments: bool,
+    dry_run: bool = False,
+) -> Path:
+    _, flat, dir_file, _ = resolve_log_paths(date_str)
+
+    use_folder = has_attachments or dir_file.exists()
+    if use_folder:
+        log_file = migrate_to_folder(date_str, dry_run)
+    else:
+        log_file = flat
 
     if log_file.exists():
         existing = log_file.read_text()
-        # Append new entries separated by ---
         new_content = existing.rstrip() + "\n\n---\n\n" + "\n\n---\n\n".join(entries) + "\n"
     else:
         ts = format_frontmatter_ts(first_msg_dt)
@@ -120,11 +202,60 @@ tags: []
         print(new_content)
         print("---")
     else:
-        log_dir.mkdir(parents=True, exist_ok=True)
+        log_file.parent.mkdir(parents=True, exist_ok=True)
         log_file.write_text(new_content)
         print(f"Wrote {log_file}")
 
     return log_file
+
+
+def process_attachments(
+    date_str: str,
+    msg_id: str,
+    attachments: list[dict],
+    dry_run: bool,
+) -> list[str]:
+    """Download attachments to DD/images/, optimize PNGs, return markdown lines."""
+    if not attachments:
+        return []
+    _, _, _, images_dir = resolve_log_paths(date_str)
+    lines: list[str] = []
+    for att in attachments:
+        url_path = att.get("url")
+        filename = att.get("filename") or att.get("id") or "file"
+        content_type = att.get("contentType")
+        if not url_path:
+            continue
+        # Prefix with short id slice to avoid collisions across messages
+        short_id = (att.get("id") or msg_id)[:8]
+        safe_name = safe_filename(filename)
+        local_name = f"{short_id}-{safe_name}"
+        dest = images_dir / local_name
+
+        if dry_run:
+            print(f"[dry-run] Would download {url_path} -> {dest}")
+        else:
+            download_attachment(url_path, dest)
+            print(f"Downloaded {dest}")
+            if dest.suffix.lower() == ".png":
+                optimize_png(dest)
+
+        rel = f"images/{local_name}"
+        if is_image(content_type, filename):
+            alt = Path(filename).stem.replace("-", " ").replace("_", " ")
+            lines.append(f"![{alt}]({rel})")
+        else:
+            lines.append(f"[{filename}]({rel})")
+    return lines
+
+
+def render_entry(text: str, attachment_md: list[str]) -> str:
+    parts: list[str] = []
+    if text:
+        parts.append(text)
+    if attachment_md:
+        parts.append("\n\n".join(attachment_md))
+    return "\n\n".join(parts)
 
 
 def fix_typos(file_path: Path):
@@ -146,6 +277,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Preview without writing files")
     parser.add_argument("--limit", type=int, default=50, help="Number of messages to fetch")
     parser.add_argument("--skip-fix-typos", action="store_true", help="Skip running fix-typos")
+    parser.add_argument("--debug", action="store_true", help="Print raw message JSON for inspection")
     args = parser.parse_args()
 
     if not BOT_TOKEN:
@@ -185,20 +317,37 @@ def main():
 
     print(f"Processing {len(new_messages)} new message(s)")
 
-    # Group by date
-    by_date: dict[str, list[tuple[datetime, str]]] = defaultdict(list)
+    if args.debug:
+        print("=== RAW MESSAGE DUMP ===")
+        for i, msg in enumerate(new_messages):
+            print(f"--- Message {i} ---")
+            print(json.dumps(msg, indent=2, default=str))
+        print("=== END RAW MESSAGE DUMP ===")
+
+    # Group by date; carry message id + attachments through so we can download per-entry
+    by_date: dict[str, list[tuple[datetime, str, str, list[dict]]]] = defaultdict(list)
     for msg in new_messages:
         dt = parse_timestamp(msg["created_at"])
         date_str = dt.strftime("%Y-%m-%d")
-        by_date[date_str].append((dt, one_sentence_per_line(normalize_quotes(msg["content"]))))
+        text = one_sentence_per_line(normalize_quotes(msg.get("content") or ""))
+        attachments = msg.get("attachments") or []
+        by_date[date_str].append((dt, msg["id"], text, attachments))
 
     # Create/update log files
     modified_files: list[Path] = []
     for date_str in sorted(by_date.keys()):
-        pairs = by_date[date_str]
-        first_msg_dt = pairs[0][0]
-        entries = [content for _, content in pairs]
-        log_file = create_or_update_log(date_str, entries, first_msg_dt, dry_run=args.dry_run)
+        rows = by_date[date_str]
+        first_msg_dt = rows[0][0]
+        has_attachments = any(atts for _, _, _, atts in rows)
+
+        entries: list[str] = []
+        for _, mid, text, atts in rows:
+            attachment_md = process_attachments(date_str, mid, atts, dry_run=args.dry_run)
+            entries.append(render_entry(text, attachment_md))
+
+        log_file = create_or_update_log(
+            date_str, entries, first_msg_dt, has_attachments=has_attachments, dry_run=args.dry_run
+        )
         modified_files.append(log_file)
 
     # Run fix-typos on each modified file
