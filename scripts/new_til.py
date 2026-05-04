@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import re
+import shlex
 from datetime import datetime
 from pathlib import Path
 import subprocess
@@ -45,8 +47,8 @@ draft: false
     print(f"Created TIL: {til_file}")
 
     # Open the file in editor
-    editor = 'cursor'
-    subprocess.run([editor, str(til_file)])
+    editor = shlex.split(os.environ.get("EDITOR") or "code")
+    subprocess.run([*editor, str(til_file)])
 
     return str(til_file)
 

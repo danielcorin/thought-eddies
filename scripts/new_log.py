@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import os
+import shlex
 from datetime import datetime
 from pathlib import Path
 import subprocess
@@ -40,8 +42,8 @@ tags: []
         log_file.write_text(content)
 
     # Open the file in editor
-    editor = 'cursor'
-    subprocess.run([editor, str(log_file)])
+    editor = shlex.split(os.environ.get("EDITOR") or "code")
+    subprocess.run([*editor, str(log_file)])
 
 if __name__ == "__main__":
     create_or_open_log()
