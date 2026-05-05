@@ -5,6 +5,7 @@ import { getCollection, render } from 'astro:content';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { getContainerRenderer as getMDXRenderer } from '@astrojs/mdx';
 import reactRenderer from '@astrojs/react/server.js';
+import svelteRenderer from '@astrojs/svelte/server.js';
 import { loadRenderers } from 'astro:container';
 import { addRSSFooter } from './rss';
 
@@ -21,6 +22,10 @@ export async function generateSectionRSSFeed(
   container.addServerRenderer({
     name: '@astrojs/react',
     renderer: reactRenderer,
+  });
+  container.addServerRenderer({
+    name: '@astrojs/svelte',
+    renderer: svelteRenderer,
   });
 
   // Get content for the specific section that is not draft

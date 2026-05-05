@@ -7,6 +7,7 @@ import { getCollection, render } from 'astro:content';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { getContainerRenderer as getMDXRenderer } from '@astrojs/mdx';
 import reactRenderer from '@astrojs/react/server.js';
+import svelteRenderer from '@astrojs/svelte/server.js';
 import { loadRenderers } from 'astro:container';
 
 // Strip ANSI color codes from text
@@ -33,6 +34,10 @@ export async function generateRSSFeed(context: { site: string }) {
   container.addServerRenderer({
     name: '@astrojs/react',
     renderer: reactRenderer,
+  });
+  container.addServerRenderer({
+    name: '@astrojs/svelte',
+    renderer: svelteRenderer,
   });
 
   // Get posts, TILs, and RSS content that are not drafts

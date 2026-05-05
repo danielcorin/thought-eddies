@@ -1,6 +1,7 @@
 // @ts-check
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
+import svelte from '@astrojs/svelte';
 import tailwind from '@astrojs/tailwind';
 import cloudflare from '@astrojs/cloudflare';
 import astroD2 from 'astro-d2';
@@ -29,6 +30,7 @@ export default defineConfig({
   },
   integrations: [
     react(),
+    svelte(),
     astroD2({
       experimental: { useD2js: true },
       sketch: true,
