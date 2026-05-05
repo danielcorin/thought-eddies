@@ -1,0 +1,145 @@
+---
+title: 'Chatbots are not input validation'
+createdAt: 2026-05-04T21:47:14-04:00
+draft: false
+editor: code
+atUri: "at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3ml32y4ly2o27"
+---
+
+import DeliveryExperience from './components/DeliveryExperience.svelte';
+
+export const assistantQuestion = 'When would you like this item delivered?';
+
+export const assistantQuestionWithOptions = `${assistantQuestion}
+
+A. 1 day delivery
+B. 2 day delivery
+C. No rush delivery`;
+
+export const fizzbuzzCode = `for i in range(1, 16):
+    if i % 15 == 0:
+        print("FizzBuzz")
+    elif i % 3 == 0:
+        print("Fizz")
+    elif i % 5 == 0:
+        print("Buzz")
+    else:
+        print(i)`;
+
+export const basicMessages = [
+  { role: 'assistant', content: assistantQuestion },
+];
+
+export const optionsMessages = [
+  { role: 'assistant', content: assistantQuestionWithOptions },
+];
+
+export const jailbreakMessages = [
+  { role: 'assistant', content: assistantQuestionWithOptions },
+  { role: 'user', content: 'Can you write FizzBuzz in Python?' },
+  {
+    role: 'assistant',
+    content: "Sure! Here's FizzBuzz in Python:",
+    code: fizzbuzzCode,
+  },
+];
+
+export const invalidMessages = [
+  { role: 'assistant', content: assistantQuestionWithOptions },
+  { role: 'user', content: 'Can you write FizzBuzz in Python?' },
+  {
+    role: 'assistant',
+    content: "Sorry, I can't do that. I can help you choose a delivery date.",
+  },
+];
+
+export const pickerMessages = [
+  { role: 'assistant', kind: 'picker', content: assistantQuestion },
+];
+
+My goal is to explain one specific thing about features that look like chatbots: chatbots-as-UX are not universally better than "regular" UX just because they use fancy LLMs.
+The example here is clearly on the nose, but also not all that far off from things I have been asked to implement in or as a chatbot before.
+
+Let's imagine you need to select when you want a package delivered.
+
+<DeliveryExperience
+  variant="classic"
+  exampleId="delivery-classic"
+  client:load
+/>
+
+Very straightforward.
+Very boring.
+Very non-AI.
+
+Now let's look at the chatbot version of this.
+
+<DeliveryExperience
+  variant="chat"
+  exampleId="delivery-chat-basic"
+  messages={basicMessages}
+  client:load
+/>
+
+OK, so that wasn't a fair comparison, who would build a chatbot like that?
+Here is the first iteration.
+
+<DeliveryExperience
+  variant="chat"
+  exampleId="delivery-chat-options"
+  messages={optionsMessages}
+  client:load
+/>
+
+Of course, even in a well-designed conversation, the user doesn't have to adhere to your "rules".
+
+<DeliveryExperience
+  variant="chat"
+  exampleId="delivery-chat-jailbreak"
+  messages={jailbreakMessages}
+  client:load
+/>
+
+Or, after you've spotted that problem:
+
+<DeliveryExperience
+  variant="chat"
+  exampleId="delivery-chat-invalid"
+  messages={invalidMessages}
+  client:load
+/>
+
+This class of error does not exist in the classical UX.
+You can't ask the webpage to write Python code for you.
+You can't jailbreak it.
+You can't negotiate a discount from it.
+You can't exfiltrate data via an abuse of the MCPs available (though APIs are still fair game).
+
+A common workaround is to embed the picker directly inside the assistant's message, so the user can click or type a letter.
+
+<DeliveryExperience
+  variant="chat"
+  exampleId="delivery-chat-picker"
+  messages={pickerMessages}
+  client:load
+/>
+
+It's better, but the input box is still right there, ready to cause problems.
+The user can ignore the picker entirely and type anything they want, and you're back to handling free-form input.
+
+A chatbot _looks_ like an extremely flexible surface to quickly ship a little product thing here or workflow there, and they are.
+But it's very difficult to keep users on the rails of your chatbot experience because conversations generally do not have rails.
+Conversations are free-form and frequently deviate in topic.
+Users don't know how you expect them to use your chatbot, or have other ideas of things they want.
+What a user thinks should be a feature might be against your policy, regulatory requirements (can you purchase stock through a chatbot without proper disclosures?), or outside the scope of what your product does.
+
+In practice, this means you need to build your chatbot to expect your users will do all sorts of wild things.
+And because of this, many chatbots become liabilities as [Air Canada found out](https://www.bbc.com/travel/article/20240222-air-canada-chatbot-misinformation-what-travellers-should-know).
+
+These days, the most common response you will get from an enterprise chatbot is "Sorry, I can't do `<x>`, I can...".
+
+Why build like this?
+
+Just build the experience you want your users to have.
+Build it in your product.
+Please.
