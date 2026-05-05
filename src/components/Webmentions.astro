@@ -1,0 +1,402 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getWebmentionsForTarget, type Webmention, type WebmentionProperty } from '@utils/webmentions';
+
+interface Props {
+  target: string;
+}
+
+const { target } = Astro.props;
+const mentions = await getWebmentionsForTarget(target);
+
+function hasText(m: Webmention): boolean {
+  return !!(m.content?.text?.trim() || m.name?.trim());
+}
+
+function sourceHost(m: Webmention): string {
+  try {
+    return new URL(m['wm-source']).host.replace(/^www\./, '');
+  } catch {
+    return m['wm-source'];
+  }
+}
+
+function displayName(m: Webmention): string {
+  return m.author?.name?.trim() || sourceHost(m);
+}
+
+function authorLink(m: Webmention): string {
+  return m.author?.url || m.url || m['wm-source'];
+}
+
+function authorPhoto(m: Webmention): string | undefined {
+  return m.author?.photo?.trim() || undefined;
+}
+
+function formatDate(iso?: string): string {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  } catch {
+    return '';
+  }
+}
+
+const TYPE_LABEL: Record<WebmentionProperty, string> = {
+  'in-reply-to': 'replied',
+  'mention-of': 'mentioned',
+  'like-of': 'liked',
+  'repost-of': 'reposted',
+  'bookmark-of': 'bookmarked',
+};
+
+// Any mention with substantive text becomes a card, regardless of wm-property.
+// Likes/reposts/bookmarks without text get facepiles. In-reply-to/mention-of
+// without text become a "linked from" list so empty author cards don't appear.
+const cards: Webmention[] = [];
+const likes: Webmention[] = [];
+const reposts: Webmention[] = [];
+const bookmarks: Webmention[] = [];
+const links: Webmention[] = [];
+
+for (const m of mentions) {
+  if (hasText(m)) {
+    cards.push(m);
+    continue;
+  }
+  switch (m['wm-property']) {
+    case 'like-of':
+      likes.push(m);
+      break;
+    case 'repost-of':
+      reposts.push(m);
+      break;
+    case 'bookmark-of':
+      bookmarks.push(m);
+      break;
+    default:
+      links.push(m);
+  }
+}
+---
+
+{
+  mentions.length > 0 && (
+    <section class="webmentions">
+      <h2>Webmentions</h2>
+
+      {(likes.length > 0 || reposts.length > 0 || bookmarks.length > 0) && (
+        <div class="facepile-groups">
+          {likes.length > 0 && (
+            <div class="facepile-group">
+              <div class="facepile-label">
+                <Icon name="ph:heart" />
+                <span>{`${likes.length} ${likes.length === 1 ? 'like' : 'likes'}`}</span>
+              </div>
+              <ul class="facepile">
+                {likes.map((m) => (
+                  <li>
+                    <a href={authorLink(m)} target="_blank" rel="noopener noreferrer" title={displayName(m)}>
+                      {authorPhoto(m) ? (
+                        <img src={authorPhoto(m)} alt={displayName(m)} loading="lazy" />
+                      ) : (
+                        <span class="avatar-fallback">{displayName(m).charAt(0).toUpperCase()}</span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {reposts.length > 0 && (
+            <div class="facepile-group">
+              <div class="facepile-label">
+                <Icon name="ph:repeat" />
+                <span>{`${reposts.length} ${reposts.length === 1 ? 'repost' : 'reposts'}`}</span>
+              </div>
+              <ul class="facepile">
+                {reposts.map((m) => (
+                  <li>
+                    <a href={authorLink(m)} target="_blank" rel="noopener noreferrer" title={displayName(m)}>
+                      {authorPhoto(m) ? (
+                        <img src={authorPhoto(m)} alt={displayName(m)} loading="lazy" />
+                      ) : (
+                        <span class="avatar-fallback">{displayName(m).charAt(0).toUpperCase()}</span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {bookmarks.length > 0 && (
+            <div class="facepile-group">
+              <div class="facepile-label">
+                <Icon name="ph:bookmark-simple" />
+                <span>{`${bookmarks.length} ${bookmarks.length === 1 ? 'bookmark' : 'bookmarks'}`}</span>
+              </div>
+              <ul class="facepile">
+                {bookmarks.map((m) => (
+                  <li>
+                    <a href={authorLink(m)} target="_blank" rel="noopener noreferrer" title={displayName(m)}>
+                      {authorPhoto(m) ? (
+                        <img src={authorPhoto(m)} alt={displayName(m)} loading="lazy" />
+                      ) : (
+                        <span class="avatar-fallback">{displayName(m).charAt(0).toUpperCase()}</span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {cards.length > 0 && (
+        <div class="cards">
+          <div class="cards-label">
+            <Icon name="ph:chat-circle" />
+            <span>{`${cards.length} ${cards.length === 1 ? 'response' : 'responses'}`}</span>
+          </div>
+          <ul class="card-list">
+            {cards.map((m) => (
+              <li class="card">
+                <div class="card-header">
+                  <a class="card-author" href={authorLink(m)} target="_blank" rel="noopener noreferrer">
+                    {authorPhoto(m) ? (
+                      <img src={authorPhoto(m)} alt={displayName(m)} loading="lazy" />
+                    ) : (
+                      <span class="avatar-fallback">{displayName(m).charAt(0).toUpperCase()}</span>
+                    )}
+                    <span class="card-name">{displayName(m)}</span>
+                  </a>
+                  <span class={`card-badge card-badge-${m['wm-property']}`}>
+                    {TYPE_LABEL[m['wm-property']]}
+                  </span>
+                </div>
+                <p class="card-text">{m.content?.text || m.name}</p>
+                <a class="card-meta" href={m.url || m['wm-source']} target="_blank" rel="noopener noreferrer">
+                  {formatDate(m.published || m['wm-received'])}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {links.length > 0 && (
+        <div class="links">
+          <div class="links-label">
+            <Icon name="ph:link" />
+            <span>{`${links.length} ${links.length === 1 ? 'mention' : 'mentions'}`}</span>
+          </div>
+          <ul class="link-list">
+            {links.map((m) => (
+              <li>
+                <a href={m['wm-source']} target="_blank" rel="noopener noreferrer">
+                  <span class="link-host">{sourceHost(m)}</span>
+                  <span class="link-date">{formatDate(m['wm-received'])}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  )
+}
+
+<style>
+  .webmentions {
+    margin-top: calc(var(--spacing-xl) * 2);
+  }
+
+  .webmentions h2 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  .facepile-groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .facepile-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .facepile-label,
+  .cards-label,
+  .links-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    font-family: var(--font-mono);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .facepile-label svg,
+  .cards-label svg,
+  .links-label svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .facepile {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .facepile a {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--color-bg-code);
+  }
+
+  .facepile img,
+  .card-author img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    background: var(--color-bg-code);
+  }
+
+  .cards {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .card {
+    padding: var(--spacing-md);
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .card-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  .card-author img,
+  .card-author .avatar-fallback {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+  }
+
+  .card-author:hover .card-name {
+    color: var(--color-accent);
+  }
+
+  .card-badge {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs, 0.75rem);
+    color: var(--color-ink-light);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    background: var(--color-bg-hover, rgba(127, 127, 127, 0.1));
+  }
+
+  .card-text {
+    margin: 0;
+    color: var(--color-ink);
+    font-size: var(--text-base);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .card-meta {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    width: fit-content;
+  }
+
+  .card-meta:hover {
+    color: var(--color-accent);
+  }
+
+  .link-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .link-list a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .link-list a:hover .link-host {
+    color: var(--color-accent);
+  }
+
+  .link-date {
+    color: var(--color-ink-light);
+  }
+</style>
