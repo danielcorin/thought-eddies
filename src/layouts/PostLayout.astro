@@ -11,6 +11,7 @@ import { shouldShowPost } from "@utils/posts";
 import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
 import ClickableImages from "@components/ClickableImages.astro";
 import BlueskyComments from "@components/BlueskyComments.tsx";
+import Webmentions from "@components/Webmentions.astro";
 import SubscribeForm from "@components/SubscribeForm.astro";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -96,6 +97,8 @@ const commitUrl = currentEntry ? getCommitUrl(currentEntry.filePath, repoUrl) : 
 const atprotoUrl = frontmatter.atUri
   ? `https://pdsls.dev/at/${frontmatter.atUri.replace('at://', '')}`
   : undefined;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 
 // Calculate reading time if enabled
 const readingTime = frontmatter.readingTime && currentEntry?.body
@@ -197,6 +200,8 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
     {frontmatter.bsky && (
       <BlueskyComments uri={frontmatter.bsky} client:visible />
     )}
+
+    <Webmentions target={canonicalUrl} />
 
     <nav class="post-navigation">
       <div class="nav-item nav-prev-wrapper">
