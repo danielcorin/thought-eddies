@@ -6,6 +6,9 @@ dev:
 
 run: dev
 
+embed:
+    pnpm embed
+
 post name:
     python3 scripts/new_post.py "{{name}}"
 

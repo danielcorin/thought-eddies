@@ -45,3 +45,7 @@ newsletter/admin.js
 # Scripts
 __pycache__/
 .threads_logs_state.json
+
+# Map generation cache
+src/data/embeddings.cache.json
+specs
