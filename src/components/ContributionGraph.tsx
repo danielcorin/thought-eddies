@@ -251,8 +251,8 @@ export default function ContributionGraph({
 
       <div className="contribution-wrapper">
         <svg
-          width={WEEKS_IN_YEAR * (CELL_SIZE + CELL_GAP) + DAY_LABEL_WIDTH}
-          height={DAYS_IN_WEEK * (CELL_SIZE + CELL_GAP) + MONTH_LABEL_HEIGHT}
+          viewBox={`0 0 ${WEEKS_IN_YEAR * (CELL_SIZE + CELL_GAP) + DAY_LABEL_WIDTH} ${DAYS_IN_WEEK * (CELL_SIZE + CELL_GAP) + MONTH_LABEL_HEIGHT}`}
+          preserveAspectRatio="xMidYMid meet"
           className="contribution-graph"
         >
           {/* Month labels */}
