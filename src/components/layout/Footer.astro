@@ -113,6 +113,12 @@ import { Icon } from "astro-icon/components";
       >
     </nav>
   </div>
+  <nav class="footer-pages" aria-label="Page links">
+    <a href="/now">/now</a>
+    <a href="/uses">/uses</a>
+    <a href="/activity">/activity</a>
+    <a href="/map">/map</a>
+  </nav>
 </footer>
 
 <style>
@@ -121,7 +127,7 @@ import { Icon } from "astro-icon/components";
   }
 
   .footer-content {
-    padding: 3rem var(--spacing-lg);
+    padding: 3rem var(--spacing-lg) 1.5rem;
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
@@ -210,6 +216,28 @@ import { Icon } from "astro-icon/components";
   .social-icon {
     font-size: 1.5rem;
     display: block;
+  }
+
+  .footer-pages {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg) 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  .footer-pages a {
+    color: var(--color-ink-light);
+    opacity: 0.7;
+    text-decoration: none;
+    font-size: var(--text-sm);
+    transition: opacity 0.2s ease;
+  }
+
+  .footer-pages a:hover {
+    opacity: 1;
   }
 
   /* Reduce gap on mobile to prevent line wrap */
