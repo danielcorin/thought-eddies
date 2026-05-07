@@ -1,9 +1,19 @@
 ---
+import { Icon } from 'astro-icon/components';
 import Navigation from '@components/layout/Navigation.astro';
 import ClickableImages from '@components/ClickableImages.astro';
 import FullscreenImageViewer from '@components/FullscreenImageViewer.astro';
 import Layout from '@layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
+
+function formatDate(d: Date): string {
+  return new Date(d).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+}
 
 // Get all now entries and sort by date to get the most recent
 const nowEntries = await getCollection('now');
@@ -13,18 +23,18 @@ const sortedEntries = nowEntries.sort((a, b) =>
 
 // Get the most recent entry
 const latestEntry = sortedEntries[0];
+const olderEntry = sortedEntries[1] ?? null;
 
 if (!latestEntry) {
   return Astro.redirect('/404');
 }
 
 const { Content } = await render(latestEntry);
-const lastUpdated = latestEntry.data.date.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-  timeZone: 'UTC'
-});
+const lastUpdated = formatDate(latestEntry.data.date);
+const olderHref = olderEntry
+  ? `/now/${new Date(olderEntry.data.date).toISOString().slice(0, 10)}`
+  : null;
+const olderDate = olderEntry ? formatDate(olderEntry.data.date) : null;
 ---
 
 <Layout title="Now" pageType="now">
@@ -40,9 +50,42 @@ const lastUpdated = latestEntry.data.date.toLocaleDateString('en-US', {
         <Content />
       </ClickableImages>
     </article>
+    <nav class="entry-navigation" aria-label="Entry pagination">
+      <div class="nav-item nav-prev-wrapper">
+        {olderHref && olderDate && (
+          <a href={olderHref} class="nav-prev">
+            <Icon name="ph:arrow-left" />
+            <span class="nav-date">{olderDate}</span>
+          </a>
+        )}
+      </div>
+      <div class="nav-item nav-next-wrapper" />
+    </nav>
   </main>
   <FullscreenImageViewer />
 </Layout>
+
+<script>
+  document.addEventListener('keydown', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (
+      target &&
+      (target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable)
+    ) {
+      return;
+    }
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'ArrowLeft') {
+      const link = document.querySelector('.nav-prev') as HTMLAnchorElement | null;
+      if (link) link.click();
+    } else if (e.key === 'ArrowRight') {
+      const link = document.querySelector('.nav-next') as HTMLAnchorElement | null;
+      if (link) link.click();
+    }
+  });
+</script>
 
 <style>
   .page-header {
@@ -129,5 +172,85 @@ const lastUpdated = latestEntry.data.date.toLocaleDateString('en-US', {
     border: none;
     border-top: 1px solid var(--color-border);
     margin: var(--spacing-xl) 0;
+  }
+
+  .entry-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    margin-top: var(--spacing-xl);
+    gap: var(--spacing-lg);
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+  }
+
+  .nav-prev-wrapper {
+    justify-content: flex-start;
+  }
+
+  .nav-next-wrapper {
+    justify-content: flex-end;
+  }
+
+  .nav-prev,
+  .nav-next {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    padding-left: 3rem;
+    padding-right: 3rem;
+    background: var(--color-bg-code);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: background 0.2s;
+    max-width: 320px;
+    position: relative;
+  }
+
+  .nav-prev:hover,
+  .nav-next:hover {
+    background: var(--color-bg-hover);
+  }
+
+  .nav-prev svg,
+  .nav-next svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    color: var(--color-ink-light);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .nav-prev svg {
+    left: var(--spacing-md);
+  }
+
+  .nav-next svg {
+    right: var(--spacing-md);
+  }
+
+  .nav-date {
+    font-size: var(--text-base);
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .entry-navigation {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .nav-prev,
+    .nav-next {
+      width: 100%;
+      max-width: 100%;
+    }
   }
 </style>

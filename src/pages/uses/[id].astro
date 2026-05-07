@@ -4,7 +4,11 @@ import Navigation from '@components/layout/Navigation.astro';
 import ClickableImages from '@components/ClickableImages.astro';
 import FullscreenImageViewer from '@components/FullscreenImageViewer.astro';
 import Layout from '@layouts/Layout.astro';
-import { getCollection, render } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+function dateSlug(d: Date): string {
+  return new Date(d).toISOString().slice(0, 10);
+}
 
 function formatDate(d: Date): string {
   return new Date(d).toLocaleDateString('en-US', {
@@ -15,26 +19,31 @@ function formatDate(d: Date): string {
   });
 }
 
-// Get all uses entries and sort by date to get the most recent
-const usesEntries = await getCollection('uses');
-const sortedEntries = usesEntries.sort((a, b) =>
-  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
-
-// Get the most recent entry
-const latestEntry = sortedEntries[0];
-const olderEntry = sortedEntries[1] ?? null;
-
-if (!latestEntry) {
-  return Astro.redirect('/404');
+export async function getStaticPaths() {
+  const entries = await getCollection('uses');
+  const sorted = entries.sort(
+    (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+  );
+  return sorted.map((entry, i) => ({
+    params: { id: new Date(entry.data.date).toISOString().slice(0, 10) },
+    props: {
+      entry,
+      newer: i > 0 ? sorted[i - 1] : null,
+      older: i < sorted.length - 1 ? sorted[i + 1] : null,
+    },
+  }));
 }
 
-const { Content } = await render(latestEntry);
-const lastUpdated = formatDate(latestEntry.data.date);
-const olderHref = olderEntry
-  ? `/uses/${new Date(olderEntry.data.date).toISOString().slice(0, 10)}`
-  : null;
-const olderDate = olderEntry ? formatDate(olderEntry.data.date) : null;
+type Props = {
+  entry: CollectionEntry<'uses'>;
+  newer: CollectionEntry<'uses'> | null;
+  older: CollectionEntry<'uses'> | null;
+};
+
+const { entry, newer, older } = Astro.props as Props;
+const { Content } = await render(entry);
+
+const formatted = formatDate(entry.data.date);
 ---
 
 <Layout title="Uses" pageType="uses">
@@ -42,7 +51,7 @@ const olderDate = olderEntry ? formatDate(olderEntry.data.date) : null;
   <main>
     <div class="page-header">
       <h1 class="page-title">Uses</h1>
-      <p class="last-updated">Last updated: {lastUpdated}</p>
+      <p class="last-updated">{formatted}</p>
     </div>
     <article class="prose">
       <ClickableImages>
@@ -51,14 +60,25 @@ const olderDate = olderEntry ? formatDate(olderEntry.data.date) : null;
     </article>
     <nav class="entry-navigation" aria-label="Entry pagination">
       <div class="nav-item nav-prev-wrapper">
-        {olderHref && olderDate && (
-          <a href={olderHref} class="nav-prev">
-            <Icon name="ph:arrow-left" />
-            <span class="nav-date">{olderDate}</span>
-          </a>
-        )}
+        {
+          older && (
+            <a href={`/uses/${dateSlug(older.data.date)}`} class="nav-prev">
+              <Icon name="ph:arrow-left" />
+              <span class="nav-date">{formatDate(older.data.date)}</span>
+            </a>
+          )
+        }
       </div>
-      <div class="nav-item nav-next-wrapper" />
+      <div class="nav-item nav-next-wrapper">
+        {
+          newer && (
+            <a href={`/uses/${dateSlug(newer.data.date)}`} class="nav-next">
+              <span class="nav-date">{formatDate(newer.data.date)}</span>
+              <Icon name="ph:arrow-right" />
+            </a>
+          )
+        }
+      </div>
     </nav>
   </main>
   <FullscreenImageViewer />

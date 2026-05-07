@@ -18,6 +18,12 @@ log:
 til category name:
     python3 scripts/new_til.py "{{category}}" "{{name}}"
 
+uses:
+    python3 scripts/new_uses.py
+
+now:
+    python3 scripts/new_now.py
+
 
 # Publish posts to standard.site via Sequoia
 sequoia-publish *args:
