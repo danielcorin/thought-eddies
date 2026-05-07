@@ -1,0 +1,61 @@
+---
+import Navigation from '@components/layout/Navigation.astro';
+import Layout from '@layouts/Layout.astro';
+import LatentMap from '@components/LatentMap';
+---
+
+<Layout title="Map">
+  <Navigation />
+  <div class="map-container">
+    <LatentMap client:only="react" />
+  </div>
+</Layout>
+
+<style is:global>
+  body:has(.map-container) {
+    overflow: hidden;
+  }
+
+  body:has(.map-container) main {
+    max-width: none;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  body:has(.map-container) .content-wrapper {
+    max-width: none;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  body:has(.map-container) .site-nav {
+    flex: 0 0 auto;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  body:has(.map-container) footer,
+  body:has(.map-container) #scroll-to-top {
+    display: none;
+  }
+</style>
+
+<style>
+  .map-container {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+</style>
