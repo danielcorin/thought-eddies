@@ -1,7 +1,7 @@
 // Fetches webmentions from webmention.io at build time.
 // Uses the per-domain token endpoint when WEBMENTION_IO_TOKEN is set (server-only,
 // never exposed to the client) so we can match mentions by canonical path,
-// stripping query strings like ?ref=feed/ that some sources include in wm-target.
+// stripping any query strings that sources may include in wm-target.
 // Falls back to the public per-target endpoint when no token is available.
 
 export type WebmentionProperty =

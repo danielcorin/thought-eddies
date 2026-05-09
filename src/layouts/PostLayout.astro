@@ -208,10 +208,10 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
         {
           prevEntry && (
             <a href={
-              isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}?ref=arrow_nav` :
-              isProject ? `/projects/${prevEntry.id}?ref=arrow_nav` :
-              isRss ? `/rss/${prevEntry.id}?ref=arrow_nav` :
-              `/posts/${prevEntry.id}?ref=arrow_nav`
+              isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` :
+              isProject ? `/projects/${prevEntry.id}` :
+              isRss ? `/rss/${prevEntry.id}` :
+              `/posts/${prevEntry.id}`
             } class="nav-prev">
               <Icon name="ph:arrow-left" />
               <div class="nav-content">
@@ -226,10 +226,10 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
         {
           nextEntry && (
             <a href={
-              isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}?ref=arrow_nav` :
-              isProject ? `/projects/${nextEntry.id}?ref=arrow_nav` :
-              isRss ? `/rss/${nextEntry.id}?ref=arrow_nav` :
-              `/posts/${nextEntry.id}?ref=arrow_nav`
+              isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` :
+              isProject ? `/projects/${nextEntry.id}` :
+              isRss ? `/rss/${nextEntry.id}` :
+              `/posts/${nextEntry.id}`
             } class="nav-next">
               <div class="nav-content">
                 <span class="nav-label">Next</span>

@@ -164,8 +164,7 @@ export default function SearchPage() {
         case 'Enter':
           if (selectedIndex >= 0 && selectedIndex < results.length) {
             e.preventDefault();
-            const url = results[selectedIndex].item.url + '?ref=search';
-            window.location.href = url;
+            window.location.href = results[selectedIndex].item.url;
           }
           break;
       }
@@ -454,24 +453,21 @@ export default function SearchPage() {
                   >
                     <div className="result-header">
                       <time className="result-date">
-                        <a
-                          href={item.url + '?ref=search'}
-                          className="result-date-link"
-                        >
+                        <a href={item.url} className="result-date-link">
                           {formatDate(item.date)}
                         </a>
                       </time>
                       <a
                         href={
                           result.type === 'post'
-                            ? '/posts?ref=search'
+                            ? '/posts'
                             : result.type === 'log'
-                              ? '/logs?ref=search'
+                              ? '/logs'
                               : result.type === 'til'
-                                ? '/til?ref=search'
+                                ? '/til'
                                 : result.type === 'project'
-                                  ? '/projects?ref=search'
-                                  : '/garden?ref=search'
+                                  ? '/projects'
+                                  : '/garden'
                         }
                         className="result-type"
                       >
@@ -488,10 +484,7 @@ export default function SearchPage() {
                     </div>
                     <div className="result-content">
                       <h2 className="result-title">
-                        <a
-                          href={item.url + '?ref=search'}
-                          className="result-title-link"
-                        >
+                        <a href={item.url} className="result-title-link">
                           {item.title}
                         </a>
                       </h2>
@@ -506,7 +499,7 @@ export default function SearchPage() {
                           {tags.map((tag, i) => (
                             <a
                               key={i}
-                              href={`/tags/${encodeURIComponent(tag)}?ref=search`}
+                              href={`/tags/${encodeURIComponent(tag)}`}
                               className="result-tag"
                             >
                               {tag}
@@ -514,7 +507,7 @@ export default function SearchPage() {
                           ))}
                         </div>
                         <a
-                          href={item.url + '?ref=search'}
+                          href={item.url}
                           className="read-more"
                           aria-label="Read full post"
                         >
