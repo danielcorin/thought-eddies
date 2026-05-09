@@ -90,7 +90,7 @@ export default function SearchModal() {
           e.preventDefault();
           const selected = results[selectedIndex];
           if (selected) {
-            window.location.href = selected.item.url + '?ref=search';
+            window.location.href = selected.item.url;
           }
         }
       }
@@ -303,7 +303,7 @@ export default function SearchModal() {
                     ref={(el) => {
                       itemRefs.current[index] = el;
                     }}
-                    href={item.url + '?ref=search'}
+                    href={item.url}
                     className={`block px-4 py-3 transition-colors ${
                       isSelected
                         ? 'bg-gray-100 dark:bg-gray-700'
@@ -326,7 +326,7 @@ export default function SearchModal() {
                             {tags.slice(0, 3).map((tag, i) => (
                               <a
                                 key={i}
-                                href={`/tags/${encodeURIComponent(tag)}?ref=search`}
+                                href={`/tags/${encodeURIComponent(tag)}`}
                                 className="inline-block px-2.5 py-1 text-xs rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 no-underline hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors font-medium"
                                 onClick={(e) => e.stopPropagation()}
                               >
@@ -345,14 +345,14 @@ export default function SearchModal() {
                         <a
                           href={
                             result.type === 'post'
-                              ? '/posts?ref=search'
+                              ? '/posts'
                               : result.type === 'log'
-                                ? '/logs?ref=search'
+                                ? '/logs'
                                 : result.type === 'til'
-                                  ? '/til?ref=search'
+                                  ? '/til'
                                   : result.type === 'project'
-                                    ? '/projects?ref=search'
-                                    : '/garden?ref=search'
+                                    ? '/projects'
+                                    : '/garden'
                           }
                           className="inline-block px-3 py-1 text-xs rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900 text-blue-800 dark:text-blue-200 transition-all hover:bg-blue-100 hover:border-blue-300 dark:hover:bg-blue-800 no-underline font-medium"
                           onClick={(e) => e.stopPropagation()}

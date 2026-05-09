@@ -76,7 +76,7 @@ const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
         <div class="nav-item nav-prev-wrapper">
           {
             prevLog && (
-              <a href={`/logs/${prevLog.id}?ref=arrow_nav`} class="nav-prev">
+              <a href={`/logs/${prevLog.id}`} class="nav-prev">
                 <Icon name="ph:arrow-left" />
                 <span>
                   {formatDateWithPaddedDay(new Date(prevLog.data.date))}
@@ -91,7 +91,7 @@ const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
         <div class="nav-item nav-next-wrapper">
           {
             nextLog && (
-              <a href={`/logs/${nextLog.id}?ref=arrow_nav`} class="nav-next">
+              <a href={`/logs/${nextLog.id}`} class="nav-next">
                 <span>
                   {formatDateWithPaddedDay(new Date(nextLog.data.date))}
                 </span>

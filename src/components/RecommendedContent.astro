@@ -13,9 +13,9 @@ function getContentUrl(item: CollectionEntry<"posts"> | CollectionEntry<"til">) 
     if (item.collection === "til") {
         const [category, ...slugParts] = item.id.split('/');
         const slug = slugParts.join('/').replace(/\.(md|mdx)$/, '');
-        return `/til/${category}/${slug}?ref=recommended`;
+        return `/til/${category}/${slug}`;
     }
-    return `/posts/${item.id}?ref=recommended`;
+    return `/posts/${item.id}`;
 }
 ---
 

@@ -90,7 +90,7 @@ export async function generateRSSFeed(context: { site: string }) {
         pubDate,
         description:
           (itemData.description as string | undefined) || item.data.title,
-        link: `${linkPath}?ref=feed`,
+        link: linkPath,
         customData: `<content:encoded><![CDATA[${htmlContent}]]></content:encoded>`,
       };
     })

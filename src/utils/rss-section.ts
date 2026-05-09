@@ -92,7 +92,7 @@ export async function generateSectionRSSFeed(
         title: item.data.title,
         pubDate,
         description: getDescription(itemData) || item.data.title,
-        link: `${linkPath}?ref=feed`,
+        link: linkPath,
         customData: `<content:encoded><![CDATA[${htmlContent}]]></content:encoded>`,
       };
     })
