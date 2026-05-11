@@ -1,5 +1,6 @@
 import { ParentSize } from '@visx/responsive';
 import { scaleLinear } from '@visx/scale';
+import { History, Pause, Play, SkipBack, SkipForward, X } from 'lucide-react';
 import {
   useCallback,
   useEffect,
@@ -9,7 +10,6 @@ import {
   useState,
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
-  type WheelEvent as ReactWheelEvent,
 } from 'react';
 import embeddingsData from '../data/embeddings.json';
 
@@ -59,13 +59,27 @@ type ViewTransform = {
   k: number;
 };
 
-type DragState = {
+type DragGesture = {
+  kind: 'drag';
   pointerId: number;
   startX: number;
   startY: number;
   transform: ViewTransform;
   moved: boolean;
 };
+
+type PinchGesture = {
+  kind: 'pinch';
+  pointerIds: [number, number];
+  startDist: number;
+  startWorldX: number;
+  startWorldY: number;
+  startK: number;
+};
+
+type Gesture = DragGesture | PinchGesture;
+
+type ActivePointer = { x: number; y: number };
 
 type ThemeColors = {
   ink: string;
@@ -88,6 +102,10 @@ type HighlightState = {
 const PADDING = 60;
 const MIN_RADIUS = 3;
 const MAX_RADIUS = 11;
+const MOBILE_MIN_RADIUS = 1.5;
+const MOBILE_MAX_RADIUS = 5;
+const MOBILE_BREAKPOINT_PX = 600;
+const MOBILE_HIT_PADDING = 12;
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 8;
 const NODE_HIT_PADDING = 6;
@@ -186,6 +204,18 @@ function formatPointMetadata(point: Point) {
   return parts.filter(Boolean).join(' · ');
 }
 
+function formatTimestamp(ms: number) {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+const DAY_MS = 86400 * 1000;
+const PLAY_BASE_DAYS_PER_SEC = 90;
+const PLAY_GAP_THRESHOLD_DAYS = 14;
+const PLAY_GAP_BUFFER_DAYS = 4;
+const FRESH_RECENT_DAYS = 30;
+const FRESH_FADE_DAYS = 90;
+const FADED_OPACITY = 0.5;
+
 function getThemeColors(): ThemeColors {
   if (document.documentElement.classList.contains('dark')) return DARK_THEME;
   return LIGHT_THEME;
@@ -282,6 +312,7 @@ function drawMap({
   transform,
   xScale,
   yScale,
+  nodeOpacityById,
 }: {
   canvas: HTMLCanvasElement;
   width: number;
@@ -294,6 +325,7 @@ function drawMap({
   transform: ViewTransform;
   xScale: (value: number) => number;
   yScale: (value: number) => number;
+  nodeOpacityById: Map<number, number> | null;
 }) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -322,7 +354,8 @@ function drawMap({
   ctx.stroke();
 
   for (const node of visibleNodes) {
-    drawNode(ctx, node, 0.9 * baseOpacity, null);
+    const mult = nodeOpacityById?.get(node.idx) ?? 1;
+    drawNode(ctx, node, 0.9 * baseOpacity * mult, null);
   }
 
   if (highlightState.topic && highlightState.topicEdges.length > 0) {
@@ -370,10 +403,11 @@ function drawMap({
     const node = nodes[idx];
     const isActive = highlightState.activeIdxs.has(idx);
     const inTopic = highlightState.topicNeighborIdxs?.has(idx) ?? false;
+    const mult = nodeOpacityById?.get(idx) ?? 1;
     drawNode(
       ctx,
       node,
-      0.94,
+      0.94 * mult,
       isActive ? theme.ink : inTopic ? theme.accent : null,
       1.5,
       isActive ? 2 : 0
@@ -394,12 +428,14 @@ function findNodeAt({
   clientX,
   clientY,
   rect,
+  hitPadding,
 }: {
   nodes: RenderNode[];
   transform: ViewTransform;
   clientX: number;
   clientY: number;
   rect: DOMRect;
+  hitPadding: number;
 }) {
   const worldX = (clientX - rect.left - transform.x) / transform.k;
   const worldY = (clientY - rect.top - transform.y) / transform.k;
@@ -410,7 +446,7 @@ function findNodeAt({
     const dx = worldX - node.cx;
     const dy = worldY - node.cy;
     const distance = dx * dx + dy * dy;
-    const hitRadius = node.r + NODE_HIT_PADDING / transform.k;
+    const hitRadius = node.r + hitPadding / transform.k;
 
     if (distance <= hitRadius * hitRadius && distance < bestDistance) {
       bestDistance = distance;
@@ -426,9 +462,11 @@ function MapInner({ width, height, data }: InnerProps) {
   const edges = data.edges;
   const topics = data.topics ?? [];
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const transformRef = useRef<ViewTransform>({ x: 0, y: 0, k: 1 });
   const drawFrameRef = useRef<number | null>(null);
-  const dragRef = useRef<DragState | null>(null);
+  const gestureRef = useRef<Gesture | null>(null);
+  const activePointersRef = useRef<Map<number, ActivePointer>>(new Map());
   const hoverIdxRef = useRef<number | null>(null);
   const hoverCommitTimeoutRef = useRef<number | null>(null);
   const hoverClearTimeoutRef = useRef<number | null>(null);
@@ -458,6 +496,12 @@ function MapInner({ width, height, data }: InnerProps) {
   const [legendExpanded, setLegendExpanded] = useState(false);
   const [hiddenTypes, setHiddenTypes] = useState<Set<string>>(() => new Set());
   const [hiddenYears, setHiddenYears] = useState<Set<string>>(() => new Set());
+  const [timelineActive, setTimelineActive] = useState(false);
+  const [cursorTime, setCursorTime] = useState<number | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [playSpeed, setPlaySpeed] = useState<1 | 2 | 4>(1);
+  const playFrameRef = useRef<number | null>(null);
+  const lastPlayFrameTimeRef = useRef<number | null>(null);
 
   const { xScale, yScale, nodes, renderEdges, presentTypes, presentYears } =
     useMemo(() => {
@@ -472,9 +516,12 @@ function MapInner({ width, height, data }: InnerProps) {
         domain: [Math.min(...ys), Math.max(...ys)],
         range: [PADDING, height - PADDING],
       });
+      const isMobile = width < MOBILE_BREAKPOINT_PX;
       const sizeScale = scaleLinear<number>({
         domain: [Math.min(...lws), Math.max(...lws)],
-        range: [MIN_RADIUS, MAX_RADIUS],
+        range: isMobile
+          ? [MOBILE_MIN_RADIUS, MOBILE_MAX_RADIUS]
+          : [MIN_RADIUS, MAX_RADIUS],
       });
       const nodes = points.map(
         (point, idx): RenderNode => ({
@@ -520,6 +567,29 @@ function MapInner({ width, height, data }: InnerProps) {
       };
     }, [points, edges, width, height]);
 
+  const { timelineStart, timelineEnd, sortedPostTimes, nodeTimes } =
+    useMemo(() => {
+      const dated: { idx: number; time: number }[] = [];
+      for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        if (!point.date || point.date.startsWith('1970-01-01')) continue;
+        const t = new Date(point.date).getTime();
+        if (Number.isFinite(t)) dated.push({ idx: i, time: t });
+      }
+      dated.sort((a, b) => a.time - b.time);
+      const sortedTimes = dated.map((d) => d.time);
+      const map = new Map<number, number>();
+      for (const d of dated) map.set(d.idx, d.time);
+      const lastPost = sortedTimes[sortedTimes.length - 1];
+      const now = Date.now();
+      return {
+        timelineStart: sortedTimes[0] ?? now,
+        timelineEnd: lastPost != null ? Math.max(lastPost, now) : now,
+        sortedPostTimes: sortedTimes,
+        nodeTimes: map,
+      };
+    }, [points]);
+
   const {
     visibleNodes,
     visibleEdges,
@@ -530,9 +600,15 @@ function MapInner({ width, height, data }: InnerProps) {
     const visibleNodeIdxs = new Set<number>();
     const visibleNodes: RenderNode[] = [];
 
+    const useTimelineFilter = timelineActive && cursorTime != null;
     for (const node of nodes) {
-      if (hiddenTypes.has(node.type)) continue;
-      if (hiddenYears.has(getPointYear(node))) continue;
+      if (useTimelineFilter) {
+        const t = nodeTimes.get(node.idx);
+        if (t == null || t > cursorTime) continue;
+      } else {
+        if (hiddenTypes.has(node.type)) continue;
+        if (hiddenYears.has(getPointYear(node))) continue;
+      }
       visibleNodeIdxs.add(node.idx);
       visibleNodes.push(node);
     }
@@ -558,7 +634,36 @@ function MapInner({ width, height, data }: InnerProps) {
       visibleEdgeIdxs,
       visibleIncidentEdges,
     };
-  }, [hiddenTypes, hiddenYears, nodes, points, renderEdges]);
+  }, [
+    hiddenTypes,
+    hiddenYears,
+    nodes,
+    points,
+    renderEdges,
+    timelineActive,
+    cursorTime,
+    nodeTimes,
+  ]);
+
+  const nodeOpacityById = useMemo(() => {
+    if (!timelineActive || cursorTime == null) return null;
+    const recentMs = FRESH_RECENT_DAYS * DAY_MS;
+    const fadeMs = FRESH_FADE_DAYS * DAY_MS;
+    const map = new Map<number, number>();
+    for (const node of visibleNodes) {
+      const t = nodeTimes.get(node.idx);
+      if (t == null) continue;
+      const age = cursorTime - t;
+      let opacity = 1;
+      if (age >= fadeMs) opacity = FADED_OPACITY;
+      else if (age > recentMs) {
+        const u = (age - recentMs) / (fadeMs - recentMs);
+        opacity = 1 - u * (1 - FADED_OPACITY);
+      }
+      map.set(node.idx, opacity);
+    }
+    return map;
+  }, [timelineActive, cursorTime, visibleNodes, nodeTimes]);
 
   const focusIdxs = useMemo(() => {
     const idxs: number[] = [];
@@ -652,11 +757,13 @@ function MapInner({ width, height, data }: InnerProps) {
       transform: transformRef.current,
       xScale,
       yScale,
+      nodeOpacityById,
     });
   }, [
     height,
     highlightState,
     nodes,
+    nodeOpacityById,
     renderEdges,
     visibleEdges,
     visibleNodes,
@@ -778,6 +885,9 @@ function MapInner({ width, height, data }: InnerProps) {
     [cancelHoverClear, cancelHoverCommit, commitHover, moveTooltip]
   );
 
+  const hitPadding =
+    width < MOBILE_BREAKPOINT_PX ? MOBILE_HIT_PADDING : NODE_HIT_PADDING;
+
   const updateHover = useCallback(
     (clientX: number, clientY: number) => {
       const canvas = canvasRef.current;
@@ -789,6 +899,7 @@ function MapInner({ width, height, data }: InnerProps) {
         clientX,
         clientY,
         rect: canvas.getBoundingClientRect(),
+        hitPadding,
       });
 
       if (!hit) {
@@ -798,7 +909,7 @@ function MapInner({ width, height, data }: InnerProps) {
 
       scheduleHoverCommit(hit, clientX, clientY);
     },
-    [scheduleHoverClear, scheduleHoverCommit, visibleNodes]
+    [hitPadding, scheduleHoverClear, scheduleHoverCommit, visibleNodes]
   );
 
   const clearSelection = useCallback(() => {
@@ -856,99 +967,226 @@ function MapInner({ width, height, data }: InnerProps) {
     setHiddenYears(new Set(presentYears));
   }, [presentYears]);
 
-  const handlePointerDown = useCallback(
-    (event: ReactPointerEvent<HTMLCanvasElement>) => {
-      if (event.button !== 0) return;
-
-      event.preventDefault();
-      event.currentTarget.setPointerCapture(event.pointerId);
-      dragRef.current = {
-        pointerId: event.pointerId,
-        startX: event.clientX,
-        startY: event.clientY,
-        transform: { ...transformRef.current },
-        moved: false,
+  const startPinch = useCallback(
+    (pointerIds: [number, number], rect: DOMRect): PinchGesture | null => {
+      const pointers = activePointersRef.current;
+      const a = pointers.get(pointerIds[0]);
+      const b = pointers.get(pointerIds[1]);
+      if (!a || !b) return null;
+      const midCanvasX = (a.x + b.x) / 2 - rect.left;
+      const midCanvasY = (a.y + b.y) / 2 - rect.top;
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      if (dist === 0) return null;
+      const transform = transformRef.current;
+      return {
+        kind: 'pinch',
+        pointerIds,
+        startDist: dist,
+        startWorldX: (midCanvasX - transform.x) / transform.k,
+        startWorldY: (midCanvasY - transform.y) / transform.k,
+        startK: transform.k,
       };
-      setIsDragging(true);
     },
     []
   );
 
+  const handlePointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLCanvasElement>) => {
+      if (event.button !== 0 && event.pointerType === 'mouse') return;
+
+      event.preventDefault();
+      event.currentTarget.setPointerCapture(event.pointerId);
+
+      const pointers = activePointersRef.current;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      const ids = Array.from(pointers.keys());
+
+      if (ids.length === 1) {
+        gestureRef.current = {
+          kind: 'drag',
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          transform: { ...transformRef.current },
+          moved: false,
+        };
+        setIsDragging(true);
+        return;
+      }
+
+      if (ids.length === 2) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const pinch = startPinch(ids.slice(0, 2) as [number, number], rect);
+        if (pinch) {
+          gestureRef.current = pinch;
+          setIsDragging(true);
+          clearHover();
+        }
+      }
+    },
+    [clearHover, startPinch]
+  );
+
   const handlePointerMove = useCallback(
     (event: ReactPointerEvent<HTMLCanvasElement>) => {
-      const drag = dragRef.current;
+      const pointers = activePointersRef.current;
 
-      if (drag && drag.pointerId === event.pointerId) {
-        const dx = event.clientX - drag.startX;
-        const dy = event.clientY - drag.startY;
+      if (pointers.has(event.pointerId)) {
+        pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      }
 
-        if (!drag.moved && Math.hypot(dx, dy) >= DRAG_THRESHOLD) {
-          drag.moved = true;
+      const gesture = gestureRef.current;
+
+      if (gesture?.kind === 'drag' && gesture.pointerId === event.pointerId) {
+        const dx = event.clientX - gesture.startX;
+        const dy = event.clientY - gesture.startY;
+
+        if (!gesture.moved && Math.hypot(dx, dy) >= DRAG_THRESHOLD) {
+          gesture.moved = true;
           clearHover();
         }
 
         transformRef.current = {
-          x: drag.transform.x + dx,
-          y: drag.transform.y + dy,
-          k: drag.transform.k,
+          x: gesture.transform.x + dx,
+          y: gesture.transform.y + dy,
+          k: gesture.transform.k,
         };
         scheduleDraw();
         return;
       }
 
-      updateHover(event.clientX, event.clientY);
+      if (gesture?.kind === 'pinch') {
+        const a = pointers.get(gesture.pointerIds[0]);
+        const b = pointers.get(gesture.pointerIds[1]);
+        if (!a || !b) return;
+        const rect = event.currentTarget.getBoundingClientRect();
+        const midCanvasX = (a.x + b.x) / 2 - rect.left;
+        const midCanvasY = (a.y + b.y) / 2 - rect.top;
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        if (dist === 0) return;
+        const ratio = dist / gesture.startDist;
+        const nextK = clamp(gesture.startK * ratio, MIN_ZOOM, MAX_ZOOM);
+        transformRef.current = {
+          x: midCanvasX - gesture.startWorldX * nextK,
+          y: midCanvasY - gesture.startWorldY * nextK,
+          k: nextK,
+        };
+        scheduleDraw();
+        return;
+      }
+
+      if (pointers.size === 0) {
+        updateHover(event.clientX, event.clientY);
+      }
     },
     [clearHover, scheduleDraw, updateHover]
   );
 
   const handlePointerEnd = useCallback(
     (event: ReactPointerEvent<HTMLCanvasElement>) => {
-      const drag = dragRef.current;
-      if (!drag || drag.pointerId !== event.pointerId) return;
+      const pointers = activePointersRef.current;
+      if (!pointers.has(event.pointerId)) return;
 
-      dragRef.current = null;
+      pointers.delete(event.pointerId);
       if (event.currentTarget.hasPointerCapture(event.pointerId)) {
         event.currentTarget.releasePointerCapture(event.pointerId);
       }
-      setIsDragging(false);
 
-      if (drag.moved) {
+      const gesture = gestureRef.current;
+
+      if (gesture?.kind === 'pinch') {
+        const remainingIds = Array.from(pointers.keys());
+        if (remainingIds.length >= 2) {
+          const rect = event.currentTarget.getBoundingClientRect();
+          const pinch = startPinch(
+            remainingIds.slice(0, 2) as [number, number],
+            rect
+          );
+          if (pinch) gestureRef.current = pinch;
+          return;
+        }
+        if (remainingIds.length === 1) {
+          const remainingId = remainingIds[0];
+          const rem = pointers.get(remainingId);
+          if (rem) {
+            gestureRef.current = {
+              kind: 'drag',
+              pointerId: remainingId,
+              startX: rem.x,
+              startY: rem.y,
+              transform: { ...transformRef.current },
+              moved: true,
+            };
+          } else {
+            gestureRef.current = null;
+          }
+          return;
+        }
+        gestureRef.current = null;
+        setIsDragging(false);
         scheduleDraw();
         return;
       }
 
-      const hit = findNodeAt({
-        nodes: visibleNodes,
-        transform: transformRef.current,
-        clientX: event.clientX,
-        clientY: event.clientY,
-        rect: event.currentTarget.getBoundingClientRect(),
-      });
+      if (gesture?.kind === 'drag' && gesture.pointerId === event.pointerId) {
+        gestureRef.current = null;
+        setIsDragging(false);
 
-      if (hit) {
-        setSelectedIdx(hit.idx);
-        setSelectedAt({ x: event.clientX, y: event.clientY });
-        setSelectedCardPosition({
-          x: event.clientX + PINNED_CARD_OFFSET,
-          y: event.clientY + PINNED_CARD_OFFSET,
+        if (gesture.moved) {
+          scheduleDraw();
+          return;
+        }
+
+        const hit = findNodeAt({
+          nodes: visibleNodes,
+          transform: transformRef.current,
+          clientX: event.clientX,
+          clientY: event.clientY,
+          rect: event.currentTarget.getBoundingClientRect(),
+          hitPadding,
         });
-      } else {
-        clearSelection();
+
+        if (timelineActive) {
+          setTimelineActive(false);
+          setPlaying(false);
+        }
+
+        if (hit) {
+          setSelectedIdx(hit.idx);
+          setSelectedAt({ x: event.clientX, y: event.clientY });
+          setSelectedCardPosition({
+            x: event.clientX + PINNED_CARD_OFFSET,
+            y: event.clientY + PINNED_CARD_OFFSET,
+          });
+        } else {
+          clearSelection();
+        }
       }
     },
-    [clearSelection, scheduleDraw, visibleNodes]
+    [
+      clearSelection,
+      hitPadding,
+      scheduleDraw,
+      startPinch,
+      timelineActive,
+      visibleNodes,
+    ]
   );
 
   const handlePointerLeave = useCallback(() => {
-    if (dragRef.current) return;
+    if (gestureRef.current) return;
     clearHover();
   }, [clearHover]);
 
-  const handleWheel = useCallback(
-    (event: ReactWheelEvent<HTMLDivElement>) => {
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
 
-      const rect = event.currentTarget.getBoundingClientRect();
+      const rect = container.getBoundingClientRect();
       const current = transformRef.current;
       const nextK = clamp(
         current.k * Math.exp(-event.deltaY * 0.001),
@@ -968,9 +1206,11 @@ function MapInner({ width, height, data }: InnerProps) {
 
       scheduleDraw();
       updateHover(event.clientX, event.clientY);
-    },
-    [scheduleDraw, updateHover]
-  );
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, [scheduleDraw, updateHover]);
 
   useEffect(() => {
     scheduleDraw();
@@ -986,14 +1226,169 @@ function MapInner({ width, height, data }: InnerProps) {
   }, [scheduleDraw]);
 
   useEffect(() => {
+    if (!timelineActive || !playing) {
+      if (playFrameRef.current != null) {
+        cancelAnimationFrame(playFrameRef.current);
+        playFrameRef.current = null;
+      }
+      lastPlayFrameTimeRef.current = null;
+      return;
+    }
+
+    const tick = (now: number) => {
+      const last = lastPlayFrameTimeRef.current ?? now;
+      const dt = Math.min(0.1, (now - last) / 1000);
+      lastPlayFrameTimeRef.current = now;
+
+      setCursorTime((prev) => {
+        const cur = prev ?? timelineStart;
+        const advanceMs = PLAY_BASE_DAYS_PER_SEC * playSpeed * dt * DAY_MS;
+        let next = cur + advanceMs;
+
+        let lo = 0;
+        let hi = sortedPostTimes.length;
+        while (lo < hi) {
+          const mid = (lo + hi) >>> 1;
+          if (sortedPostTimes[mid] <= cur) lo = mid + 1;
+          else hi = mid;
+        }
+        const nextPost = sortedPostTimes[lo];
+        if (nextPost != null) {
+          const gap = nextPost - cur;
+          if (gap > PLAY_GAP_THRESHOLD_DAYS * DAY_MS) {
+            const target = nextPost - PLAY_GAP_BUFFER_DAYS * DAY_MS;
+            if (target > next) next = target;
+          }
+        }
+
+        if (next >= timelineEnd) {
+          setPlaying(false);
+          return timelineEnd;
+        }
+        return next;
+      });
+
+      playFrameRef.current = requestAnimationFrame(tick);
+    };
+
+    playFrameRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (playFrameRef.current != null) {
+        cancelAnimationFrame(playFrameRef.current);
+        playFrameRef.current = null;
+      }
+      lastPlayFrameTimeRef.current = null;
+    };
+  }, [
+    timelineActive,
+    playing,
+    playSpeed,
+    timelineStart,
+    timelineEnd,
+    sortedPostTimes,
+  ]);
+
+  const openTimeline = useCallback(() => {
+    setTimelineActive(true);
+    setCursorTime((prev) => prev ?? timelineStart);
+    setSelectedIdx(null);
+    setSelectedAt(null);
+    setSelectedCardPosition(null);
+    setTopicIdx(null);
+    clearHover();
+  }, [clearHover, timelineStart]);
+
+  const closeTimeline = useCallback(() => {
+    setTimelineActive(false);
+    setPlaying(false);
+  }, []);
+
+  const togglePlay = useCallback(() => {
+    setPlaying((prev) => {
+      const next = !prev;
+      if (next) {
+        setCursorTime((curr) => {
+          if (curr == null || curr >= timelineEnd) return timelineStart;
+          return curr;
+        });
+      }
+      return next;
+    });
+  }, [timelineEnd, timelineStart]);
+
+  const stepPrev = useCallback(() => {
+    if (sortedPostTimes.length === 0) return;
+    setPlaying(false);
+    setCursorTime((curr) => {
+      const cur = curr ?? timelineStart;
+      let lo = 0;
+      let hi = sortedPostTimes.length;
+      while (lo < hi) {
+        const mid = (lo + hi) >>> 1;
+        if (sortedPostTimes[mid] < cur) lo = mid + 1;
+        else hi = mid;
+      }
+      const idx = lo - 1;
+      if (idx < 0) return timelineStart;
+      return sortedPostTimes[idx];
+    });
+  }, [sortedPostTimes, timelineStart]);
+
+  const stepNext = useCallback(() => {
+    if (sortedPostTimes.length === 0) return;
+    setPlaying(false);
+    setCursorTime((curr) => {
+      const cur = curr ?? timelineStart;
+      let lo = 0;
+      let hi = sortedPostTimes.length;
+      while (lo < hi) {
+        const mid = (lo + hi) >>> 1;
+        if (sortedPostTimes[mid] <= cur) lo = mid + 1;
+        else hi = mid;
+      }
+      if (lo >= sortedPostTimes.length) return timelineEnd;
+      return sortedPostTimes[lo];
+    });
+  }, [sortedPostTimes, timelineEnd, timelineStart]);
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      clearHighlight();
+      if (event.key === 'Escape') {
+        if (timelineActive) {
+          setTimelineActive(false);
+          setPlaying(false);
+          return;
+        }
+        clearHighlight();
+        return;
+      }
+
+      if (
+        !timelineActive ||
+        (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')
+      ) {
+        return;
+      }
+
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      if (event.key === 'ArrowLeft') stepPrev();
+      else stepNext();
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [clearHighlight]);
+  }, [clearHighlight, stepNext, stepPrev, timelineActive]);
 
   const updateSelectedCardPosition = useCallback(() => {
     if (!selectedAt || !selectedCardRef.current) return;
@@ -1050,6 +1445,9 @@ function MapInner({ width, height, data }: InnerProps) {
       }
       if (tooltipFrameRef.current != null) {
         window.cancelAnimationFrame(tooltipFrameRef.current);
+      }
+      if (playFrameRef.current != null) {
+        window.cancelAnimationFrame(playFrameRef.current);
       }
       if (hoverCommitTimeoutRef.current != null) {
         window.clearTimeout(hoverCommitTimeoutRef.current);
@@ -1109,7 +1507,7 @@ function MapInner({ width, height, data }: InnerProps) {
 
   return (
     <div
-      onWheel={handleWheel}
+      ref={containerRef}
       onMouseLeave={handlePointerLeave}
       style={{
         position: 'relative',
@@ -1473,6 +1871,210 @@ function MapInner({ width, height, data }: InnerProps) {
           </>
         )}
       </div>
+
+      {sortedPostTimes.length > 0 && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+          style={{
+            position: 'absolute',
+            left: '50%',
+            bottom: width < MOBILE_BREAKPOINT_PX ? 72 : 16,
+            transform: 'translateX(-50%)',
+            background: 'var(--color-bg, rgba(255,255,255,0.92))',
+            border: '1px solid var(--color-border, #ccc)',
+            borderRadius: 6,
+            padding: timelineActive ? '8px 12px' : '6px 10px',
+            fontSize: 12,
+            lineHeight: 1.5,
+            width: timelineActive ? 'min(640px, calc(100% - 32px))' : 'auto',
+            maxWidth: 'calc(100% - 32px)',
+            zIndex: 10,
+          }}
+        >
+          {!timelineActive ? (
+            <button
+              type="button"
+              onClick={openTimeline}
+              style={{
+                ...legendActionStyle,
+                padding: '4px 10px',
+                fontSize: 12,
+                fontWeight: 600,
+                minHeight: 32,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <History size={14} aria-hidden />
+              Play History
+            </button>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 6,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  flexWrap: 'wrap',
+                }}
+              >
+                <div style={{ display: 'flex', gap: 2 }}>
+                  <button
+                    type="button"
+                    onClick={stepPrev}
+                    disabled={cursorTime != null && cursorTime <= timelineStart}
+                    style={{
+                      ...legendActionStyle,
+                      padding: '4px 6px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    aria-label="Previous post"
+                  >
+                    <SkipBack size={14} aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={togglePlay}
+                    style={{
+                      ...legendActionStyle,
+                      minWidth: 36,
+                      padding: '4px 8px',
+                      fontWeight: 600,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    aria-label={playing ? 'Pause' : 'Play'}
+                  >
+                    {playing ? (
+                      <Pause size={14} aria-hidden />
+                    ) : (
+                      <Play size={14} aria-hidden />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={stepNext}
+                    disabled={cursorTime != null && cursorTime >= timelineEnd}
+                    style={{
+                      ...legendActionStyle,
+                      padding: '4px 6px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    aria-label="Next post"
+                  >
+                    <SkipForward size={14} aria-hidden />
+                  </button>
+                </div>
+                <div style={{ display: 'flex', gap: 2 }}>
+                  {([1, 2, 4] as const).map((s) => {
+                    const active = playSpeed === s;
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setPlaySpeed(s)}
+                        style={{
+                          ...legendActionStyle,
+                          padding: '2px 6px',
+                          fontWeight: active ? 600 : 400,
+                          background: active
+                            ? 'var(--color-accent, #3b6fb5)'
+                            : 'transparent',
+                          color: active
+                            ? 'var(--color-bg, #fff)'
+                            : 'var(--color-ink, #1c1c1c)',
+                        }}
+                      >
+                        {s}x
+                      </button>
+                    );
+                  })}
+                </div>
+                <div
+                  style={{
+                    flex: 1,
+                    textAlign: 'center',
+                    fontVariantNumeric: 'tabular-nums',
+                    fontWeight: 600,
+                    minWidth: 80,
+                  }}
+                >
+                  {cursorTime != null ? formatTimestamp(cursorTime) : ''}
+                </div>
+                <button
+                  type="button"
+                  onClick={closeTimeline}
+                  style={{
+                    ...legendActionStyle,
+                    padding: '4px 6px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  aria-label="Close timeline"
+                >
+                  <X size={14} aria-hidden />
+                </button>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                }}
+              >
+                <span
+                  style={{
+                    opacity: 0.7,
+                    fontVariantNumeric: 'tabular-nums',
+                    fontSize: 11,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {formatTimestamp(timelineStart)}
+                </span>
+                <input
+                  type="range"
+                  min={timelineStart}
+                  max={timelineEnd}
+                  step={DAY_MS}
+                  value={cursorTime ?? timelineStart}
+                  onChange={(e) => {
+                    setCursorTime(Number(e.currentTarget.value));
+                  }}
+                  onPointerDown={() => setPlaying(false)}
+                  style={{ flex: 1, minWidth: 0 }}
+                  aria-label="Timeline scrubber"
+                />
+                <span
+                  style={{
+                    opacity: 0.7,
+                    fontVariantNumeric: 'tabular-nums',
+                    fontSize: 11,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {formatTimestamp(timelineEnd)}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
