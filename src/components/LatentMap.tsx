@@ -110,10 +110,12 @@ const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 8;
 const NODE_HIT_PADDING = 6;
 const DRAG_THRESHOLD = 3;
+const MOBILE_DRAG_THRESHOLD = 8;
 const HOVER_COMMIT_DELAY_MS = 45;
 const HOVER_CLEAR_DELAY_MS = 90;
 const PINNED_CARD_OFFSET = 12;
 const PINNED_CARD_MARGIN = 12;
+const MOBILE_CONTROL_INSET = 12;
 
 const TYPE_COLORS: Record<string, string> = {
   posts: '#3b6fb5',
@@ -206,6 +208,12 @@ function formatPointMetadata(point: Point) {
 
 function formatTimestamp(ms: number) {
   return new Date(ms).toISOString().slice(0, 10);
+}
+
+function getDragThreshold(pointerType: string) {
+  return pointerType === 'touch' || pointerType === 'pen'
+    ? MOBILE_DRAG_THRESHOLD
+    : DRAG_THRESHOLD;
 }
 
 const DAY_MS = 86400 * 1000;
@@ -1042,10 +1050,15 @@ function MapInner({ width, height, data }: InnerProps) {
         const dx = event.clientX - gesture.startX;
         const dy = event.clientY - gesture.startY;
 
-        if (!gesture.moved && Math.hypot(dx, dy) >= DRAG_THRESHOLD) {
+        if (
+          !gesture.moved &&
+          Math.hypot(dx, dy) >= getDragThreshold(event.pointerType)
+        ) {
           gesture.moved = true;
           clearHover();
         }
+
+        if (!gesture.moved) return;
 
         transformRef.current = {
           x: gesture.transform.x + dx,
@@ -1458,15 +1471,22 @@ function MapInner({ width, height, data }: InnerProps) {
     };
   }, []);
 
+  const isMobile = width < MOBILE_BREAKPOINT_PX;
+  const mobileBottomInset = `calc(${MOBILE_CONTROL_INSET}px + env(safe-area-inset-bottom))`;
+  const mobileLeftInset = `calc(${MOBILE_CONTROL_INSET}px + env(safe-area-inset-left))`;
+  const mobileRightInset = `calc(${MOBILE_CONTROL_INSET}px + env(safe-area-inset-right))`;
+  const mobileCornerMaxWidth = `calc(50% - ${MOBILE_CONTROL_INSET + 6}px)`;
+
   const legendActionStyle: CSSProperties = {
     border: '1px solid var(--color-border, #ccc)',
     background: 'transparent',
     color: 'var(--color-ink, #1c1c1c)',
     borderRadius: 4,
-    padding: '2px 6px',
+    padding: isMobile ? '4px 8px' : '2px 6px',
     fontSize: 11,
     fontFamily: 'inherit',
     cursor: 'pointer',
+    touchAction: 'manipulation',
   };
 
   const toggleLabelStyle = (active: boolean): CSSProperties => ({
@@ -1483,7 +1503,8 @@ function MapInner({ width, height, data }: InnerProps) {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 8,
+    gap: isMobile ? 6 : 8,
+    flexWrap: isMobile ? 'wrap' : 'nowrap',
     marginBottom: 6,
   };
 
@@ -1493,7 +1514,7 @@ function MapInner({ width, height, data }: InnerProps) {
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 600,
-    minHeight: 32,
+    minHeight: isMobile ? 36 : 32,
   };
 
   const panelToggleStyle: CSSProperties = {
@@ -1502,7 +1523,7 @@ function MapInner({ width, height, data }: InnerProps) {
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 600,
-    minHeight: 32,
+    minHeight: isMobile ? 36 : 32,
   };
 
   return (
@@ -1516,6 +1537,8 @@ function MapInner({ width, height, data }: InnerProps) {
         overflow: 'hidden',
         overscrollBehavior: 'contain',
         touchAction: 'none',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
       }}
     >
       <canvas
@@ -1531,6 +1554,8 @@ function MapInner({ width, height, data }: InnerProps) {
           display: 'block',
           width,
           height,
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
           cursor: isDragging
             ? 'grabbing'
             : hoverIdx != null
@@ -1714,17 +1739,22 @@ function MapInner({ width, height, data }: InnerProps) {
         onWheel={(e) => e.stopPropagation()}
         style={{
           position: 'absolute',
-          left: 16,
-          bottom: 16,
+          left: isMobile ? mobileLeftInset : 16,
+          bottom: isMobile ? mobileBottomInset : 16,
           background: 'var(--color-bg, rgba(255,255,255,0.92))',
           border: '1px solid var(--color-border, #ccc)',
           borderRadius: 6,
           padding: legendExpanded ? '10px 12px' : '8px 10px',
           fontSize: 12,
           lineHeight: 1.5,
-          maxWidth: 'min(300px, calc(100% - 32px))',
-          maxHeight: 'calc(100% - 32px)',
+          maxWidth: isMobile
+            ? mobileCornerMaxWidth
+            : 'min(300px, calc(100% - 32px))',
+          maxHeight: isMobile
+            ? 'min(58dvh, calc(100% - 24px))'
+            : 'calc(100% - 32px)',
           overflowY: 'auto',
+          boxSizing: 'border-box',
           zIndex: 10,
         }}
       >
@@ -1745,7 +1775,14 @@ function MapInner({ width, height, data }: InnerProps) {
             }}
           >
             <div style={{ fontWeight: 600 }}>Legend</div>
-            <div style={{ opacity: 0.7, fontSize: 11, whiteSpace: 'nowrap' }}>
+            <div
+              style={{
+                opacity: 0.7,
+                fontSize: 11,
+                whiteSpace: 'nowrap',
+                display: isMobile && !legendExpanded ? 'none' : undefined,
+              }}
+            >
               {visibleNodes.length}/{nodes.length}
             </div>
           </div>
@@ -1829,7 +1866,9 @@ function MapInner({ width, height, data }: InnerProps) {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gridTemplateColumns: isMobile
+                  ? '1fr'
+                  : 'repeat(3, minmax(0, 1fr))',
                 gap: 4,
               }}
             >
@@ -1879,17 +1918,29 @@ function MapInner({ width, height, data }: InnerProps) {
           onWheel={(e) => e.stopPropagation()}
           style={{
             position: 'absolute',
-            left: '50%',
-            bottom: width < MOBILE_BREAKPOINT_PX ? 72 : 16,
-            transform: 'translateX(-50%)',
+            left: isMobile ? 'auto' : '50%',
+            right: isMobile ? mobileRightInset : 'auto',
+            bottom: isMobile ? mobileBottomInset : 16,
+            transform: isMobile ? 'none' : 'translateX(-50%)',
             background: 'var(--color-bg, rgba(255,255,255,0.92))',
             border: '1px solid var(--color-border, #ccc)',
             borderRadius: 6,
-            padding: timelineActive ? '8px 12px' : '6px 10px',
+            padding: timelineActive
+              ? isMobile
+                ? '8px'
+                : '8px 12px'
+              : '6px 10px',
             fontSize: 12,
             lineHeight: 1.5,
-            width: timelineActive ? 'min(640px, calc(100% - 32px))' : 'auto',
-            maxWidth: 'calc(100% - 32px)',
+            width: timelineActive
+              ? isMobile
+                ? mobileCornerMaxWidth
+                : 'min(640px, calc(100% - 32px))'
+              : 'auto',
+            maxWidth: isMobile ? mobileCornerMaxWidth : 'calc(100% - 32px)',
+            maxHeight: isMobile ? 'min(58dvh, calc(100% - 24px))' : undefined,
+            overflowY: isMobile && timelineActive ? 'auto' : undefined,
+            boxSizing: 'border-box',
             zIndex: 10,
           }}
         >
@@ -1916,14 +1967,15 @@ function MapInner({ width, height, data }: InnerProps) {
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 6,
+                gap: isMobile ? 8 : 6,
               }}
             >
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 8,
+                  justifyContent: isMobile ? 'flex-end' : 'flex-start',
+                  gap: isMobile ? 4 : 8,
                   flexWrap: 'wrap',
                 }}
               >
@@ -2007,7 +2059,9 @@ function MapInner({ width, height, data }: InnerProps) {
                 <div
                   style={{
                     flex: 1,
-                    textAlign: 'center',
+                    flexBasis: isMobile ? '100%' : undefined,
+                    order: isMobile ? 3 : undefined,
+                    textAlign: isMobile ? 'right' : 'center',
                     fontVariantNumeric: 'tabular-nums',
                     fontWeight: 600,
                     minWidth: 80,
@@ -2043,6 +2097,7 @@ function MapInner({ width, height, data }: InnerProps) {
                     fontVariantNumeric: 'tabular-nums',
                     fontSize: 11,
                     whiteSpace: 'nowrap',
+                    display: isMobile ? 'none' : undefined,
                   }}
                 >
                   {formatTimestamp(timelineStart)}
@@ -2066,6 +2121,7 @@ function MapInner({ width, height, data }: InnerProps) {
                     fontVariantNumeric: 'tabular-nums',
                     fontSize: 11,
                     whiteSpace: 'nowrap',
+                    display: isMobile ? 'none' : undefined,
                   }}
                 >
                   {formatTimestamp(timelineEnd)}
