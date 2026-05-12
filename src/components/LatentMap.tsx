@@ -216,6 +216,14 @@ function getDragThreshold(pointerType: string) {
     : DRAG_THRESHOLD;
 }
 
+function getTouchById(touches: TouchList, id: number) {
+  for (let i = 0; i < touches.length; i++) {
+    const touch = touches.item(i);
+    if (touch?.identifier === id) return touch;
+  }
+  return null;
+}
+
 const DAY_MS = 86400 * 1000;
 const PLAY_BASE_DAYS_PER_SEC = 90;
 const PLAY_GAP_THRESHOLD_DAYS = 14;
@@ -475,6 +483,7 @@ function MapInner({ width, height, data }: InnerProps) {
   const drawFrameRef = useRef<number | null>(null);
   const gestureRef = useRef<Gesture | null>(null);
   const activePointersRef = useRef<Map<number, ActivePointer>>(new Map());
+  const lastTouchTimeRef = useRef(0);
   const hoverIdxRef = useRef<number | null>(null);
   const hoverCommitTimeoutRef = useRef<number | null>(null);
   const hoverClearTimeoutRef = useRef<number | null>(null);
@@ -975,6 +984,36 @@ function MapInner({ width, height, data }: InnerProps) {
     setHiddenYears(new Set(presentYears));
   }, [presentYears]);
 
+  const selectAt = useCallback(
+    (clientX: number, clientY: number, rect: DOMRect) => {
+      const hit = findNodeAt({
+        nodes: visibleNodes,
+        transform: transformRef.current,
+        clientX,
+        clientY,
+        rect,
+        hitPadding,
+      });
+
+      if (timelineActive) {
+        setTimelineActive(false);
+        setPlaying(false);
+      }
+
+      if (hit) {
+        setSelectedIdx(hit.idx);
+        setSelectedAt({ x: clientX, y: clientY });
+        setSelectedCardPosition({
+          x: clientX + PINNED_CARD_OFFSET,
+          y: clientY + PINNED_CARD_OFFSET,
+        });
+      } else {
+        clearSelection();
+      }
+    },
+    [clearSelection, hitPadding, timelineActive, visibleNodes]
+  );
+
   const startPinch = useCallback(
     (pointerIds: [number, number], rect: DOMRect): PinchGesture | null => {
       const pointers = activePointersRef.current;
@@ -1000,10 +1039,21 @@ function MapInner({ width, height, data }: InnerProps) {
 
   const handlePointerDown = useCallback(
     (event: ReactPointerEvent<HTMLCanvasElement>) => {
+      if (event.pointerType === 'touch') return;
+      if (
+        event.pointerType === 'mouse' &&
+        Date.now() - lastTouchTimeRef.current < 700
+      ) {
+        return;
+      }
       if (event.button !== 0 && event.pointerType === 'mouse') return;
 
       event.preventDefault();
-      event.currentTarget.setPointerCapture(event.pointerId);
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      } catch {
+        // Some Safari builds expose pointer events without reliable capture.
+      }
 
       const pointers = activePointersRef.current;
       pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -1102,8 +1152,12 @@ function MapInner({ width, height, data }: InnerProps) {
       if (!pointers.has(event.pointerId)) return;
 
       pointers.delete(event.pointerId);
-      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-        event.currentTarget.releasePointerCapture(event.pointerId);
+      try {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+      } catch {
+        // Pointer capture may be unavailable after touch cancellation in Safari.
       }
 
       const gesture = gestureRef.current;
@@ -1151,46 +1205,208 @@ function MapInner({ width, height, data }: InnerProps) {
           return;
         }
 
-        const hit = findNodeAt({
-          nodes: visibleNodes,
-          transform: transformRef.current,
-          clientX: event.clientX,
-          clientY: event.clientY,
-          rect: event.currentTarget.getBoundingClientRect(),
-          hitPadding,
-        });
-
-        if (timelineActive) {
-          setTimelineActive(false);
-          setPlaying(false);
-        }
-
-        if (hit) {
-          setSelectedIdx(hit.idx);
-          setSelectedAt({ x: event.clientX, y: event.clientY });
-          setSelectedCardPosition({
-            x: event.clientX + PINNED_CARD_OFFSET,
-            y: event.clientY + PINNED_CARD_OFFSET,
-          });
-        } else {
-          clearSelection();
-        }
+        selectAt(
+          event.clientX,
+          event.clientY,
+          event.currentTarget.getBoundingClientRect()
+        );
       }
     },
-    [
-      clearSelection,
-      hitPadding,
-      scheduleDraw,
-      startPinch,
-      timelineActive,
-      visibleNodes,
-    ]
+    [scheduleDraw, selectAt, startPinch]
   );
 
   const handlePointerLeave = useCallback(() => {
     if (gestureRef.current) return;
     clearHover();
   }, [clearHover]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const preventTouchDefault = (event: TouchEvent) => {
+      lastTouchTimeRef.current = Date.now();
+      if (event.cancelable) event.preventDefault();
+    };
+
+    const syncActiveTouches = (touches: TouchList) => {
+      const pointers = activePointersRef.current;
+      pointers.clear();
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches.item(i);
+        if (!touch) continue;
+        pointers.set(touch.identifier, {
+          x: touch.clientX,
+          y: touch.clientY,
+        });
+      }
+      return pointers;
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      preventTouchDefault(event);
+      const pointers = syncActiveTouches(event.touches);
+      const ids = Array.from(pointers.keys());
+
+      if (ids.length === 1) {
+        const touch = getTouchById(event.touches, ids[0]);
+        if (!touch) return;
+        gestureRef.current = {
+          kind: 'drag',
+          pointerId: touch.identifier,
+          startX: touch.clientX,
+          startY: touch.clientY,
+          transform: { ...transformRef.current },
+          moved: false,
+        };
+        setIsDragging(true);
+        return;
+      }
+
+      if (ids.length >= 2) {
+        const pinch = startPinch(
+          ids.slice(0, 2) as [number, number],
+          canvas.getBoundingClientRect()
+        );
+        if (pinch) {
+          gestureRef.current = pinch;
+          setIsDragging(true);
+          clearHover();
+        }
+      }
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      preventTouchDefault(event);
+      const pointers = syncActiveTouches(event.touches);
+      const gesture = gestureRef.current;
+
+      if (gesture?.kind === 'drag') {
+        const touch = getTouchById(event.touches, gesture.pointerId);
+        if (!touch) return;
+
+        const dx = touch.clientX - gesture.startX;
+        const dy = touch.clientY - gesture.startY;
+
+        if (!gesture.moved && Math.hypot(dx, dy) >= getDragThreshold('touch')) {
+          gesture.moved = true;
+          clearHover();
+        }
+
+        if (!gesture.moved) return;
+
+        transformRef.current = {
+          x: gesture.transform.x + dx,
+          y: gesture.transform.y + dy,
+          k: gesture.transform.k,
+        };
+        scheduleDraw();
+        return;
+      }
+
+      if (gesture?.kind === 'pinch') {
+        const a = pointers.get(gesture.pointerIds[0]);
+        const b = pointers.get(gesture.pointerIds[1]);
+        if (!a || !b) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const midCanvasX = (a.x + b.x) / 2 - rect.left;
+        const midCanvasY = (a.y + b.y) / 2 - rect.top;
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        if (dist === 0) return;
+
+        const ratio = dist / gesture.startDist;
+        const nextK = clamp(gesture.startK * ratio, MIN_ZOOM, MAX_ZOOM);
+        transformRef.current = {
+          x: midCanvasX - gesture.startWorldX * nextK,
+          y: midCanvasY - gesture.startWorldY * nextK,
+          k: nextK,
+        };
+        scheduleDraw();
+      }
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      preventTouchDefault(event);
+      const gesture = gestureRef.current;
+      const endedTouch =
+        gesture?.kind === 'drag'
+          ? getTouchById(event.changedTouches, gesture.pointerId)
+          : null;
+      const pointers = syncActiveTouches(event.touches);
+
+      if (gesture?.kind === 'pinch') {
+        const remainingIds = Array.from(pointers.keys());
+        if (remainingIds.length >= 2) {
+          const pinch = startPinch(
+            remainingIds.slice(0, 2) as [number, number],
+            canvas.getBoundingClientRect()
+          );
+          if (pinch) gestureRef.current = pinch;
+          return;
+        }
+
+        if (remainingIds.length === 1) {
+          const remainingId = remainingIds[0];
+          const rem = pointers.get(remainingId);
+          if (rem) {
+            gestureRef.current = {
+              kind: 'drag',
+              pointerId: remainingId,
+              startX: rem.x,
+              startY: rem.y,
+              transform: { ...transformRef.current },
+              moved: true,
+            };
+          } else {
+            gestureRef.current = null;
+          }
+          return;
+        }
+
+        gestureRef.current = null;
+        setIsDragging(false);
+        scheduleDraw();
+        return;
+      }
+
+      if (gesture?.kind === 'drag') {
+        gestureRef.current = null;
+        setIsDragging(false);
+
+        if (gesture.moved) {
+          scheduleDraw();
+          return;
+        }
+
+        selectAt(
+          endedTouch?.clientX ?? gesture.startX,
+          endedTouch?.clientY ?? gesture.startY,
+          canvas.getBoundingClientRect()
+        );
+        return;
+      }
+
+      if (event.touches.length === 0) {
+        gestureRef.current = null;
+        setIsDragging(false);
+      }
+    };
+
+    canvas.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+    canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, [clearHover, scheduleDraw, selectAt, startPinch]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -1556,6 +1772,7 @@ function MapInner({ width, height, data }: InnerProps) {
           height,
           userSelect: 'none',
           WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none',
           cursor: isDragging
             ? 'grabbing'
             : hoverIdx != null
