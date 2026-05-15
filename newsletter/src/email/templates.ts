@@ -58,22 +58,94 @@ function pageWrapper(content: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Newsletter</title>
+  <title>Newsletter — danielcorin.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      color: #1a1a1a;
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      color: #2d3436;
       line-height: 1.6;
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #ffffff;
+      min-height: 100vh;
+      background-color: #f4f1e4;
+      background-image: radial-gradient(
+        color-mix(in srgb, #b4b4b4 60%, transparent) 1px,
+        transparent 1px
+      );
+      background-size: 20px 20px;
     }
-    a { color: #2563eb; text-decoration: underline; }
+    .page-container {
+      max-width: 75ch;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    h1 {
+      font-family: 'Futura', sans-serif;
+      font-weight: 600;
+      font-size: 2.25rem;
+      line-height: 1.4;
+      color: #2d3436;
+      margin-bottom: 0.75rem;
+    }
+    p {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: #2d3436;
+    }
+    a { color: #0984e3; text-decoration: underline; transition: opacity 0.2s; }
+    a:hover { opacity: 0.8; }
+    a:focus-visible { outline: 2px solid #0984e3; outline-offset: 2px; }
+    .site-link {
+      font-family: 'Futura', sans-serif;
+      font-weight: bold;
+      font-size: 1.125rem;
+      color: #2d3436;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 2rem;
+    }
+    .site-link:hover { color: #0984e3; }
+    .muted { color: #636e72; font-size: 0.875rem; }
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1c1b17;
+        color: #cccccc;
+        background-image: radial-gradient(
+          color-mix(in srgb, #4a4a4a 60%, transparent) 1px,
+          transparent 1px
+        );
+      }
+      h1 { color: #cccccc; }
+      p { color: #cccccc; }
+      a { color: #4dabf7; }
+      a:focus-visible { outline-color: #4dabf7; }
+      .site-link { color: #cccccc; }
+      .site-link:hover { color: #4dabf7; }
+      .muted { color: #a8a8a8; }
+      input[type="email"] {
+        background: #2a2925 !important;
+        color: #cccccc !important;
+        border-color: #4a4a4a !important;
+      }
+      button[type="submit"] {
+        background-color: #2a2925 !important;
+        color: #cccccc !important;
+        border-color: #4a4a4a !important;
+      }
+    }
+    @media (max-width: 640px) {
+      .page-container { padding: 2rem 1.5rem; }
+      h1 { font-size: 1.875rem; }
+    }
   </style>
 </head>
 <body>
-  ${content}
+  <div class="page-container">
+    <a href="https://www.danielcorin.com" class="site-link">danielcorin.com</a>
+    ${content}
+  </div>
 </body>
 </html>`;
 }
@@ -176,38 +248,41 @@ export function subscribePendingPage(): string {
 
 export function subscribePage(turnstileSiteKey: string): string {
   return pageWrapper(`
-    <h1>Subscribe to danielcorin.com</h1>
+    <h1>Subscribe</h1>
     <p>You'll only receive emails when new posts are published to <a href="https://www.danielcorin.com">danielcorin.com</a>, nothing else.</p>
     <p>Enter your email below and we'll send you a confirmation link.</p>
-    <form method="POST" action="/api/subscribe" style="margin: 30px 0;">
+    <form method="POST" action="/api/subscribe" style="margin: 2rem 0; display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-start;">
       <input type="email" name="email" placeholder="you@example.com" required style="
-        padding: 10px 14px;
-        font-size: 16px;
-        border: 1px solid #d1d5db;
+        font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1px solid #b4b4b4;
         border-radius: 4px;
         width: 100%;
         max-width: 300px;
-        box-sizing: border-box;
+        background: #e8e5d8;
+        color: #2d3436;
       ">
-      <!-- Honeypot field -->
       <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;">
         <input type="text" name="website" tabindex="-1" autocomplete="off">
       </div>
       <div class="cf-turnstile" data-sitekey="${turnstileSiteKey}"></div>
       <button type="submit" style="
+        font-family: 'Futura', sans-serif;
         display: block;
-        padding: 12px 24px;
-        background-color: #1a1a1a;
-        color: #ffffff;
-        border: none;
+        padding: 0.75rem 1.5rem;
+        background-color: #e8e5d8;
+        color: #2d3436;
+        border: 1px solid #b4b4b4;
         border-radius: 4px;
-        font-size: 16px;
+        font-size: 1rem;
+        font-weight: 600;
         cursor: pointer;
-        margin-top: 12px;
-      ">Subscribe</button>
+        transition: background-color 0.2s, color 0.2s;
+      " onmouseover="var d=window.matchMedia('(prefers-color-scheme:dark)').matches;this.style.backgroundColor=d?'#4dabf7':'#0984e3';this.style.color='#fff';this.style.borderColor=d?'#4dabf7':'#0984e3'" onmouseout="var d=window.matchMedia('(prefers-color-scheme:dark)').matches;this.style.backgroundColor=d?'#2a2925':'#e8e5d8';this.style.color=d?'#cccccc':'#2d3436';this.style.borderColor=d?'#4a4a4a':'#b4b4b4'">Subscribe</button>
     </form>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
-    <p style="font-size: 14px; color: #6b7280;">If you have any questions, feel free to email me at <a href="mailto:hey@danielcorin.com">hey@danielcorin.com</a>.</p>
+    <p class="muted">If you have any questions, feel free to email me at <a href="mailto:hey@danielcorin.com">hey@danielcorin.com</a>.</p>
   `);
 }
 
@@ -218,14 +293,17 @@ export function unsubscribePage(token: string): string {
     <p>If something's off, I'd love to hear about it — <a href="mailto:hey@danielcorin.com">hey@danielcorin.com</a>.</p>
     <form method="POST" action="/api/unsubscribe?token=${token}">
       <button type="submit" style="
-        padding: 10px 20px;
-        background-color: #1a1a1a;
-        color: #ffffff;
-        border: none;
+        font-family: 'Futura', sans-serif;
+        padding: 0.75rem 1.5rem;
+        background-color: #e8e5d8;
+        color: #2d3436;
+        border: 1px solid #b4b4b4;
         border-radius: 4px;
-        font-size: 16px;
+        font-size: 1rem;
+        font-weight: 600;
         cursor: pointer;
-      ">Yes, unsubscribe me</button>
+        transition: background-color 0.2s, color 0.2s;
+      " onmouseover="var d=window.matchMedia('(prefers-color-scheme:dark)').matches;this.style.backgroundColor=d?'#4dabf7':'#0984e3';this.style.color='#fff';this.style.borderColor=d?'#4dabf7':'#0984e3'" onmouseout="var d=window.matchMedia('(prefers-color-scheme:dark)').matches;this.style.backgroundColor=d?'#2a2925':'#e8e5d8';this.style.color=d?'#cccccc':'#2d3436';this.style.borderColor=d?'#4a4a4a':'#b4b4b4'">Yes, unsubscribe me</button>
     </form>
   `);
 }
