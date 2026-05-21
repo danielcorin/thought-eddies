@@ -53,6 +53,10 @@ drafts-list:
 nl-send file *args:
     node scripts/send_newsletter.mjs {{file}} {{args}}
 
+# Deploy newsletter worker to Cloudflare
+nl-deploy:
+    npx wrangler deploy --config newsletter/wrangler.toml
+
 # Open newsletter subscriber admin UI
 nl-admin:
     node newsletter/admin.js
