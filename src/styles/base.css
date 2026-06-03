@@ -620,7 +620,9 @@ sup a[data-footnote-ref]:hover {
 
 .heading-link-wrapper::after {
   content: '#';
-  margin-left: var(--spacing-xs);
+  position: absolute;
+  left: -1em;
+  top: 0;
   color: var(--color-ink-light);
   transition:
     opacity 0.2s ease,
@@ -629,7 +631,6 @@ sup a[data-footnote-ref]:hover {
   font-size: 0.9em;
   opacity: 0;
   text-decoration: none;
-  display: inline-block;
 }
 
 .heading-link-wrapper:hover::after {

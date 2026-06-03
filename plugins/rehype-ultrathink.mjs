@@ -48,6 +48,3 @@ export default function rehypeUltrathink() {
     });
   };
 }
-
-
-
