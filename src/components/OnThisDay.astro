@@ -1,0 +1,141 @@
+---
+import { getContentPreview } from "@utils/text";
+import type { OnThisDayEntry } from "@utils/findOnThisDay";
+
+export interface Props {
+    items: OnThisDayEntry[];
+}
+
+const { items } = Astro.props;
+
+// Build the URL for an entry based on its collection
+function getContentUrl(entry: any): string {
+    const id = entry.id.replace(/\.(md|mdx)$/, "");
+    switch (entry.collection) {
+        case "til": {
+            const [category, ...slugParts] = id.split("/");
+            return `/til/${category}/${slugParts.join("/")}`;
+        }
+        case "logs":
+            return `/logs/${id}`;
+        case "projects":
+            return `/projects/${id}`;
+        case "rss":
+            return `/rss/${id}`;
+        default:
+            return `/posts/${id}`;
+    }
+}
+
+function getTitle(entry: any): string {
+    if ("title" in entry.data && entry.data.title) return entry.data.title;
+    if (entry.collection === "logs") return "Log";
+    return entry.id;
+}
+
+function yearsLabel(yearDelta: number): string {
+    const n = Math.abs(yearDelta);
+    const unit = n === 1 ? "year" : "years";
+    return yearDelta < 0 ? `${n} ${unit} ago` : `${n} ${unit} later`;
+}
+---
+
+{
+    items.length > 0 && (
+        <section class="on-this-day">
+            <h2>On this day</h2>
+            <div class="on-this-day-list">
+                {items.map(({ entry, yearDelta }) => {
+                    const preview =
+                        ("description" in entry.data &&
+                            entry.data.description) ||
+                        getContentPreview(entry.body || "", 150);
+                    const url = getContentUrl(entry);
+                    return (
+                        <div class="on-this-day-item">
+                            <div class="on-this-day-heading">
+                                <h3>
+                                    <a href={url}>{getTitle(entry)}</a>
+                                </h3>
+                                <span class="years-ago">
+                                    {yearsLabel(yearDelta)}
+                                </span>
+                            </div>
+                            {preview && (
+                                <p class="on-this-day-excerpt">{preview}</p>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        </section>
+    )
+}
+
+<style>
+    .on-this-day {
+        margin-top: calc(var(--spacing-xl) * 2);
+        padding-top: 0;
+    }
+
+    .on-this-day h2 {
+        font-size: var(--text-lg);
+        margin-bottom: var(--spacing-lg);
+        color: var(--color-ink);
+        font-weight: 600;
+    }
+
+    .on-this-day-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+
+    .on-this-day-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .on-this-day-item h3 {
+        font-family: var(--font-primary);
+        font-size: var(--text-base);
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .on-this-day-item h3 a {
+        color: var(--color-ink);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .on-this-day-item h3 a:hover {
+        color: var(--color-accent);
+        opacity: 0.8;
+    }
+
+    .years-ago {
+        flex-shrink: 0;
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        color: var(--color-ink-light);
+        white-space: nowrap;
+    }
+
+    .on-this-day-excerpt {
+        font-size: var(--text-sm);
+        color: var(--color-ink-light);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .on-this-day {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-xl);
+        }
+    }
+</style>
