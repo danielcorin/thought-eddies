@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/Users/danielcorin/dev/thought-eddies/.venv/bin/python
+
 """
 Fetch recent messages from Threads #logs channel and create log posts.
 
