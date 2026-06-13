@@ -9,6 +9,8 @@ import Breadcrumbs from "@components/Breadcrumbs.astro";
 import ClickableImages from "@components/ClickableImages.astro";
 import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
 import { getCommitUrl } from '@utils/git';
+import OnThisDay from "@components/OnThisDay.astro";
+import { findOnThisDay } from "@utils/findOnThisDay";
 import {
   getLogDateComponents,
   formatLogFullDate,
@@ -45,6 +47,9 @@ const nextLog =
 
 // Find the current log object
 const currentLog = sortedLogs[currentIndex];
+
+// Find logs published on this day in prior years
+const onThisDay = currentLog ? findOnThisDay(currentLog, allLogs) : [];
 
 // Get commit URL for the current file
 const repoUrl = 'https://github.com/danielcorin/thought-eddies';
@@ -140,6 +145,8 @@ const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
           </a>
         )}
       </div>
+
+      <OnThisDay items={onThisDay} />
     </article>
   </main>
 </Layout>

@@ -1,9 +1,11 @@
 ---
 import Navigation from "@components/layout/Navigation.astro";
 import RecommendedContent from "@components/RecommendedContent.astro";
+import OnThisDay from "@components/OnThisDay.astro";
 import Tag from "@components/Tag.astro";
 import ArticleMetadata from "@components/ArticleMetadata.astro";
 import { findSimilarContent } from "@utils/findSimilarContent";
+import { findOnThisDay } from "@utils/findOnThisDay";
 import { Icon } from "astro-icon/components";
 import { getCollection, getEntry } from "astro:content";
 import Layout from "./Layout.astro";
@@ -88,6 +90,11 @@ const allTils = await getCollection('til');
 const excludeEntries = [prevEntry, nextEntry].filter(Boolean) as any[];
 const similarContent = currentEntry
   ? findSimilarContent(currentEntry as any, allPosts, allTils, 3, excludeEntries as any)
+  : [];
+
+// Find entries in the same collection published on this day in prior years
+const onThisDay = currentEntry
+  ? findOnThisDay(currentEntry as any, allEntries)
   : [];
 
 // Get commit URL for the current file
@@ -194,6 +201,8 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
     </div>
 
     <RecommendedContent content={similarContent} />
+
+    <OnThisDay items={onThisDay} />
 
     <SubscribeForm />
 
