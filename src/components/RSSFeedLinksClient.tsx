@@ -33,7 +33,11 @@ export default function RSSFeedLinksClient({
       setError(null);
 
       try {
-        const response = await fetch(feedUrl);
+        // Proxy through our own origin: the feed host (raindrop.page) doesn't
+        // send CORS headers, so a direct browser fetch is blocked.
+        const response = await fetch(
+          `/api/feed?url=${encodeURIComponent(feedUrl)}`
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
