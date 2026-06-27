@@ -80,12 +80,6 @@
 
           body {
             min-height: 100vh;
-            background-image: radial-gradient(
-              color-mix(in srgb, var(--color-border) 60%, transparent) 1px,
-              transparent 1px
-            );
-            background-size: 20px 20px;
-            background-position: 0 0;
             background-color: var(--color-bg);
             color: var(--color-ink);
             font-family: var(--font-prose);
