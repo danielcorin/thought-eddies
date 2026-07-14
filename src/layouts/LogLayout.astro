@@ -30,16 +30,17 @@ const { year: logYear, month: logMonth, day: logDay } = getLogDateComponents(
 const allLogs = await getCollection("logs");
 const sortedLogs = allLogs
   .filter((log) => !log.data.draft)
-  .sort(
-    (a, b) => new Date(a.data.date).getTime() - new Date(b.data.date).getTime(),
-  );
+  .sort((a, b) => {
+    const aDate = getLogDateComponents(a.id, new Date(a.data.date));
+    const bDate = getLogDateComponents(b.id, new Date(b.data.date));
+    return (
+      Date.UTC(aDate.year, aDate.month - 1, aDate.day) -
+      Date.UTC(bDate.year, bDate.month - 1, bDate.day)
+    );
+  });
 
-// Find current log index
-const currentLogDate = new Date(frontmatter.date).toISOString().split("T")[0];
-const currentIndex = sortedLogs.findIndex(
-  (log) =>
-    new Date(log.data.date).toISOString().split("T")[0] === currentLogDate,
-);
+// The collection ID comes from the file path, so it is the canonical log day.
+const currentIndex = sortedLogs.findIndex((log) => log.id === slug);
 
 const prevLog = currentIndex > 0 ? sortedLogs[currentIndex - 1] : null;
 const nextLog =
@@ -55,11 +56,10 @@ const onThisDay = currentLog ? findOnThisDay(currentLog, allLogs) : [];
 const repoUrl = 'https://github.com/danielcorin/thought-eddies';
 const commitUrl = currentLog?.filePath ? getCommitUrl(currentLog.filePath as string, repoUrl) : null;
 
-// Helper function to format date with two-digit day using UTC
-const formatDateWithPaddedDay = (date: Date): string => {
-  const month = SHORT_MONTH_NAMES[date.getUTCMonth()];
-  const day = String(date.getUTCDate()).padStart(2, "0");
-  return `${month} ${day}`;
+// Format navigation labels from the file-derived log ID, not its timestamp.
+const formatLogDay = (id: string, fallbackDate: Date): string => {
+  const { month, day } = getLogDateComponents(id, fallbackDate);
+  return `${SHORT_MONTH_NAMES[month - 1]} ${String(day).padStart(2, "0")}`;
 };
 
 // Format current log date using parsed values (timezone-safe)
@@ -84,7 +84,7 @@ const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
               <a href={`/logs/${prevLog.id}`} class="nav-prev">
                 <Icon name="ph:arrow-left" />
                 <span>
-                  {formatDateWithPaddedDay(new Date(prevLog.data.date))}
+                  {formatLogDay(prevLog.id, new Date(prevLog.data.date))}
                 </span>
               </a>
             )
@@ -98,7 +98,7 @@ const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
             nextLog && (
               <a href={`/logs/${nextLog.id}`} class="nav-next">
                 <span>
-                  {formatDateWithPaddedDay(new Date(nextLog.data.date))}
+                  {formatLogDay(nextLog.id, new Date(nextLog.data.date))}
                 </span>
                 <Icon name="ph:arrow-right" />
               </a>
