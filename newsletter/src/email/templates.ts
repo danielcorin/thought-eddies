@@ -54,90 +54,165 @@ function emailWrapper(content: string): string {
 
 function pageWrapper(content: string): string {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Newsletter — danielcorin.com</title>
+  <script>
+    (function () {
+      var savedTheme = localStorage.getItem('theme');
+      var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.className = savedTheme || (systemDark ? 'dark' : 'light');
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --spacing-xs: 0.5rem;
+      --spacing-sm: 0.75rem;
+      --spacing-md: 1rem;
+      --spacing-lg: 2rem;
+      --spacing-xl: 3rem;
+      --color-bg: #f4f1e4;
+      --color-bg-code: #e8e5d8;
+      --color-bg-hover: color-mix(in srgb, #e8e5d8 70%, #0984e3 30%);
+      --color-ink: #2d3436;
+      --color-ink-light: #636e72;
+      --color-accent: #0984e3;
+      --color-border: #b4b4b4;
+      --font-primary: 'Futura', sans-serif;
+      --font-prose: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      color-scheme: light;
+    }
+    :root.dark {
+      --color-bg: #1c1b17;
+      --color-bg-code: #2a2925;
+      --color-bg-hover: color-mix(in srgb, #2a2925 70%, #4dabf7 30%);
+      --color-ink: #cccccc;
+      --color-ink-light: #a8a8a8;
+      --color-accent: #4dabf7;
+      --color-border: #4a4a4a;
+      color-scheme: dark;
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      transition: color 300ms, background-color 300ms;
+      transition-behavior: allow-discrete;
+    }
     body {
-      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-      color: #2d3436;
+      font-family: var(--font-prose);
+      color: var(--color-ink);
       line-height: 1.6;
       min-height: 100vh;
-      background-color: #f4f1e4;
-      background-image: radial-gradient(
-        color-mix(in srgb, #b4b4b4 60%, transparent) 1px,
-        transparent 1px
-      );
-      background-size: 20px 20px;
+      background-color: var(--color-bg);
+      transition: color 300ms, background-color 300ms;
+      transition-behavior: allow-discrete;
     }
     .page-container {
       max-width: 75ch;
       margin: 0 auto;
-      padding: 3rem 2rem;
+      padding: var(--spacing-md) var(--spacing-lg) var(--spacing-xl);
     }
     h1 {
-      font-family: 'Futura', sans-serif;
+      font-family: var(--font-primary);
       font-weight: 600;
       font-size: 2.25rem;
       line-height: 1.4;
-      color: #2d3436;
-      margin-bottom: 0.75rem;
+      color: var(--color-ink);
+      margin-bottom: var(--spacing-sm);
     }
     p {
       font-size: 1rem;
-      margin-bottom: 1rem;
-      color: #2d3436;
+      margin-bottom: var(--spacing-md);
+      color: var(--color-ink);
     }
-    a { color: #0984e3; text-decoration: underline; transition: opacity 0.2s; }
-    a:hover { opacity: 0.8; }
-    a:focus-visible { outline: 2px solid #0984e3; outline-offset: 2px; }
+    a {
+      color: var(--color-ink);
+      text-decoration: underline;
+      transition: color 0.2s, opacity 0.2s;
+    }
+    a:hover { color: var(--color-accent); opacity: 0.8; }
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
     .site-link {
-      font-family: 'Futura', sans-serif;
+      font-family: var(--font-primary);
       font-weight: bold;
       font-size: 1.125rem;
-      color: #2d3436;
+      color: var(--color-ink);
       text-decoration: none;
       display: inline-block;
-      margin-bottom: 2rem;
+      margin-bottom: var(--spacing-lg);
     }
-    .site-link:hover { color: #0984e3; }
-    .muted { color: #636e72; font-size: 0.875rem; }
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #1c1b17;
-        color: #cccccc;
-        background-image: radial-gradient(
-          color-mix(in srgb, #4a4a4a 60%, transparent) 1px,
-          transparent 1px
-        );
-      }
-      h1 { color: #cccccc; }
-      p { color: #cccccc; }
-      a { color: #4dabf7; }
-      a:focus-visible { outline-color: #4dabf7; }
-      .site-link { color: #cccccc; }
-      .site-link:hover { color: #4dabf7; }
-      .muted { color: #a8a8a8; }
-      input[type="email"] {
-        background: #2a2925 !important;
-        color: #cccccc !important;
-        border-color: #4a4a4a !important;
-      }
-      button[type="submit"] {
-        background-color: #2a2925 !important;
-        color: #cccccc !important;
-        border-color: #4a4a4a !important;
-      }
+    .site-link:hover { color: var(--color-accent); }
+    .muted { color: var(--color-ink-light); font-size: 0.875rem; }
+    .muted a { color: inherit; }
+    .subscription-form,
+    .unsubscribe-form {
+      margin: var(--spacing-lg) 0;
+    }
+    .subscription-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-sm);
+      align-items: flex-start;
+    }
+    .subscription-controls {
+      display: flex;
+      gap: var(--spacing-xs);
+      width: 100%;
+      max-width: 400px;
+    }
+    .subscription-input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      color: var(--color-ink);
+      background: var(--color-bg-code);
+      border: 1px solid var(--color-border);
+      border-radius: 0.25rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .subscription-input::placeholder {
+      color: var(--color-ink-light);
+      opacity: 0.6;
+    }
+    .subscription-input:focus { border-color: var(--color-accent); }
+    .subscription-button {
+      padding: 0.5rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-ink);
+      background: var(--color-bg-code);
+      border: 1px solid var(--color-border);
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .subscription-button:hover {
+      background: var(--color-bg-hover);
+      color: var(--color-accent);
     }
     @media (max-width: 640px) {
-      .page-container { padding: 2rem 1.5rem; }
+      .page-container {
+        padding-right: var(--spacing-lg);
+        padding-left: var(--spacing-lg);
+      }
       h1 { font-size: 1.875rem; }
+      .subscription-controls { flex-direction: column; max-width: 100%; }
+      .subscription-button { width: 100%; }
     }
   </style>
 </head>
@@ -251,35 +326,15 @@ export function subscribePage(turnstileSiteKey: string): string {
     <h1>Subscribe</h1>
     <p>You'll only receive emails when new posts are published to <a href="https://www.danielcorin.com">danielcorin.com</a>, nothing else.</p>
     <p>Enter your email below and we'll send you a confirmation link.</p>
-    <form method="POST" action="/api/subscribe" style="margin: 2rem 0; display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-start;">
-      <input type="email" name="email" placeholder="you@example.com" required style="
-        font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        border: 1px solid #b4b4b4;
-        border-radius: 4px;
-        width: 100%;
-        max-width: 300px;
-        background: #e8e5d8;
-        color: #2d3436;
-      ">
+    <form method="POST" action="/api/subscribe" class="subscription-form">
+      <div class="subscription-controls">
+        <input type="email" name="email" placeholder="you@example.com" aria-label="Email address" autocomplete="email" required class="subscription-input">
+        <button type="submit" class="subscription-button">Subscribe</button>
+      </div>
       <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;">
         <input type="text" name="website" tabindex="-1" autocomplete="off">
       </div>
-      <div class="cf-turnstile" data-sitekey="${turnstileSiteKey}"></div>
-      <button type="submit" style="
-        font-family: 'Futura', sans-serif;
-        display: block;
-        padding: 0.75rem 1.5rem;
-        background-color: #e8e5d8;
-        color: #2d3436;
-        border: 1px solid #b4b4b4;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s, color 0.2s;
-      " onmouseover="var d=window.matchMedia('(prefers-color-scheme:dark)').matches;this.style.backgroundColor=d?'#4dabf7':'#0984e3';this.style.color='#fff';this.style.borderColor=d?'#4dabf7':'#0984e3'" onmouseout="var d=window.matchMedia('(prefers-color-scheme:dark)').matches;this.style.backgroundColor=d?'#2a2925':'#e8e5d8';this.style.color=d?'#cccccc':'#2d3436';this.style.borderColor=d?'#4a4a4a':'#b4b4b4'">Subscribe</button>
+      <div class="cf-turnstile" data-sitekey="${turnstileSiteKey}" data-theme="auto"></div>
     </form>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
     <p class="muted">If you have any questions, feel free to email me at <a href="mailto:hey@danielcorin.com">hey@danielcorin.com</a>.</p>
@@ -291,19 +346,8 @@ export function unsubscribePage(token: string): string {
     <h1>Unsubscribe</h1>
     <p>Are you sure you want to unsubscribe?</p>
     <p>If something's off, I'd love to hear about it — <a href="mailto:hey@danielcorin.com">hey@danielcorin.com</a>.</p>
-    <form method="POST" action="/api/unsubscribe?token=${token}">
-      <button type="submit" style="
-        font-family: 'Futura', sans-serif;
-        padding: 0.75rem 1.5rem;
-        background-color: #e8e5d8;
-        color: #2d3436;
-        border: 1px solid #b4b4b4;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s, color 0.2s;
-      " onmouseover="var d=window.matchMedia('(prefers-color-scheme:dark)').matches;this.style.backgroundColor=d?'#4dabf7':'#0984e3';this.style.color='#fff';this.style.borderColor=d?'#4dabf7':'#0984e3'" onmouseout="var d=window.matchMedia('(prefers-color-scheme:dark)').matches;this.style.backgroundColor=d?'#2a2925':'#e8e5d8';this.style.color=d?'#cccccc':'#2d3436';this.style.borderColor=d?'#4a4a4a':'#b4b4b4'">Yes, unsubscribe me</button>
+    <form method="POST" action="/api/unsubscribe?token=${token}" class="unsubscribe-form">
+      <button type="submit" class="subscription-button">Yes, unsubscribe me</button>
     </form>
   `);
 }
