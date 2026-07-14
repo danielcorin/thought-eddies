@@ -1,0 +1,66 @@
+[env]
+_.file = { path = ".env", redact = true }
+
+[tasks.default]
+description = "List available tasks"
+run = "mise tasks"
+
+[tasks.dev]
+description = "Start the development server"
+run = "pnpm dev"
+
+[tasks.run]
+description = "Start the development server"
+run = "pnpm dev"
+
+[tasks.embed]
+description = "Generate post embeddings"
+run = "pnpm embed"
+
+[tasks.post]
+description = "Create a new blog post"
+run = "python3 scripts/new_post.py"
+
+[tasks.log]
+description = "Create a new daily log"
+run = "python3 scripts/new_log.py"
+
+[tasks.til]
+description = "Create a new TIL entry"
+run = "python3 scripts/new_til.py"
+
+[tasks.uses]
+description = "Create a new uses entry"
+run = "python3 scripts/new_uses.py"
+
+[tasks.now]
+description = "Create a new now entry"
+run = "python3 scripts/new_now.py"
+
+[tasks.sequoia-publish]
+description = "Publish posts to standard.site via Sequoia"
+run = "npx sequoia publish"
+
+[tasks.sequoia-dry-run]
+description = "Dry-run publishing to preview changes"
+run = "npx sequoia publish --dry-run"
+
+[tasks.sequoia-inject]
+description = "Inject AT URI link tags into built HTML"
+run = "npx sequoia inject"
+
+[tasks.nl-send]
+description = "Send a newsletter for a post"
+run = "node scripts/send_newsletter.mjs"
+
+[tasks.nl-deploy]
+description = "Deploy the newsletter worker to Cloudflare"
+run = "npx wrangler deploy --config newsletter/wrangler.toml"
+
+[tasks.nl-admin]
+description = "Open the newsletter subscriber admin UI"
+run = "node newsletter/admin.js"
+
+[tasks.tl]
+description = "Convert Threads logs to posts"
+run = "./scripts/threads_logs_to_posts.py"

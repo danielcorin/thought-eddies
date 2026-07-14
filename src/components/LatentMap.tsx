@@ -2360,8 +2360,8 @@ export default function LatentMap() {
     return (
       <div style={{ padding: 24 }}>
         <p>
-          No embeddings available yet. Run <code>just embed</code> to generate
-          them.
+          No embeddings available yet. Run <code>mise run embed</code> to
+          generate them.
         </p>
       </div>
     );

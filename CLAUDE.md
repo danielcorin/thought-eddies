@@ -23,13 +23,16 @@ pnpm build        # Production build
 pnpm format       # Format with Prettier
 ```
 
+Local environment variables are loaded from `.env` by mise (configured in
+`mise.toml`). Do not add a direnv `.envrc`.
+
 ## Content Creation
 
-Use `just` commands for new content:
+Use mise tasks for new content (`just` is a project-local alias for `mise`):
 
-- `just post "Title"` - new blog post
-- `just til category "Title"` - new TIL entry
-- `just log` - new daily log
+- `mise run post "Title"` - new blog post
+- `mise run til category "Title"` - new TIL entry
+- `mise run log` - new daily log
 
 Content schemas are defined in `src/content/config.ts`. Key fields:
 
@@ -55,5 +58,6 @@ Full AT URIs (`at://did:plc:.../app.bsky.feed.post/...`) are also supported.
 ## Notes
 
 - Package manager: pnpm (not npm/yarn)
+- Environment manager: mise (not direnv)
 - Quote paths with special characters in bash
 - Prefer Astro components; use React only when interactivity requires it
