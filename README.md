@@ -11,8 +11,17 @@ A digital garden and blog platform built with Astro, featuring multiple content 
 
 ## Development
 
+This project uses [mise](https://mise.jdx.dev/) to load local environment
+variables from `.env`. With mise activated in your shell, trust the project
+configuration the first time you enter the repository:
+
 ```sh
-# Install dependencies
+mise trust
+```
+
+Then install the project dependencies:
+
+```sh
 pnpm install
 
 # Start development server on localhost:4321
@@ -35,22 +44,24 @@ pnpm build
 pnpm preview
 ```
 
-## Using Just
+## Project Tasks
 
-This project includes a `justfile` for common tasks:
+Common tasks are defined in `mise.toml`. Run `mise run` with no task to list
+them. The project also defines `just` as a shell alias for `mise`, so the
+old task commands continue to work when mise is activated.
 
 ```sh
 # List all available commands
-just
+mise run
 
 # Create a new blog post
-just post "My New Post Title"
+mise run post "My New Post Title"
 
 # Create a new daily log entry
-just log
+mise run log
 
 # Create a new TIL entry
-just til "category" "TIL Title"
+mise run til "category" "TIL Title"
 ```
 
 ## Content Management
