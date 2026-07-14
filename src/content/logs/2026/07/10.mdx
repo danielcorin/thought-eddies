@@ -1,0 +1,44 @@
+---
+date: '2026-07-10T16:13:05-04:00'
+title: '2026-07-10'
+draft: false
+tags: []
+---
+
+The moat of SaaS seems to have changed, but it hasn't gone away, for several reasons.
+
+1. Switching cost: If you're using something like Jira or Linear today, even if you think it's worthwhile to build and maintain a replacement, getting the organization to switch over to the new thing doesn't happen overnight.
+
+2. Deployment: I hadn't considered this one until recently, but builders using agents to code often haven't worked with infrastructure before.
+   The trope is "hey, check out my new site: localhost:3000," but the reality is that infrastructure is a new domain, even if you've gotten good at writing code with agents.
+   I've seen some fascinating outages, like one caused by someone who was surprised when the agent called a delete endpoint on a database and nothing asked for confirmation.
+   Many systems were built for the old world and are still catching up.
+
+3. Who owns availability: Agent-coded prototypes are great, but real users and infrastructure come with additional responsibility.
+   Who picks up the phone if a team in another time zone is having an issue with the software?
+   In the case of production software, building the tool is just the first step.
+   Most of the time, effort, energy, and cost comes from maintenance.
+   If you haven't maintained a production system before, you might not have even considered this, but it becomes real quickly.
+
+4. Does getting all of the above right for a particular piece of in-house software actually cost less than paying for the SaaS product?
+   It's possible to rapidly build the software you want and need in a short amount of time, but are the team or individuals doing the work prepared for the real cost that comes after deployment?
+   For most of the math to work, you either need inexpensive labor or an extremely expensive SaaS bill.
+   If you're an engineer reading this, it's possible your salary costs more than the SaaS tool you're attempting to replace for the whole company.
+
+5. Tokens aren't free.
+   Maybe you're all in on the dark software factory.
+   You have agents monitoring and patching the systems.
+   Agents taking internal feedback requests.
+   Agents running on-call.
+   All this inference isn't free, and the cost is variable, compared to the roughly fixed cost of the initial development effort.
+   With time, some margins will compress, and just the threat of building something in-house will allow larger orgs to negotiate better deals.
+   But it seems we're in for more of a reconfiguration than a reckoning.
+
+---
+
+So silly that Xcode certificates break when you still need to accept a new agreement and there is no way to just do it in the Xcode app
+
+---
+
+Every voice to text app I've tried is (or ends up) bloated, broken, or uses a cloud model.
+GPT-5.6 Sol creates exactly what I need in 3 prompts.
