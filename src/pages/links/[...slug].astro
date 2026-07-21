@@ -1,0 +1,114 @@
+---
+import Navigation from '@components/layout/Navigation.astro';
+import Layout from '@layouts/Layout.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const links = await getCollection('links', ({ data }) => !data.draft);
+  return links.map((link: CollectionEntry<'links'>) => ({
+    params: { slug: link.id },
+    props: { link },
+  }));
+}
+
+const { link } = Astro.props as { link: CollectionEntry<'links'> };
+const { Content } = await render(link);
+const canonicalUrl = new URL(`/links/${link.id}/`, Astro.site).toString();
+const published = link.data.createdAt.toISOString();
+const displayDate = published.split('T')[0];
+const targetHost = new URL(link.data.target).hostname.replace(/^www\./, '');
+---
+
+<Layout title={link.data.title} pageType="feeds">
+  <Navigation selected="feeds" />
+  <article class="h-entry bookmark">
+    <header>
+      <p class="bookmark-label">Bookmark</p>
+      <h1 class="p-name">
+        <a
+          class="u-bookmark-of h-cite"
+          href={link.data.target}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="p-name">{link.data.title}</span>
+        </a>
+      </h1>
+      <div class="metadata">
+        <time class="dt-published" datetime={published}>{displayDate}</time>
+        <span aria-hidden="true">·</span>
+        <span>{targetHost}</span>
+        <span aria-hidden="true">·</span>
+        <span>
+          Saved by
+          <a
+            class="p-author h-card"
+            rel="author"
+            href="https://www.danielcorin.com/"
+          >
+            <span class="p-name">Daniel Corin</span>
+          </a>
+        </span>
+      </div>
+    </header>
+
+    <div class="e-content">
+      <Content />
+    </div>
+
+    <a class="u-url permalink" href={canonicalUrl}>Permalink</a>
+  </article>
+</Layout>
+
+<style>
+  .bookmark {
+    max-width: 48rem;
+    margin: 0 auto;
+  }
+
+  .bookmark-label {
+    margin: 0 0 var(--spacing-sm);
+    color: var(--color-ink-light);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h1 a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  h1 a:hover {
+    color: var(--color-accent);
+  }
+
+  .metadata {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    color: var(--color-ink-light);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .metadata a,
+  .permalink {
+    color: inherit;
+  }
+
+  .e-content {
+    margin-top: var(--spacing-xl);
+  }
+
+  .permalink {
+    display: inline-block;
+    margin-top: var(--spacing-xl);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+</style>

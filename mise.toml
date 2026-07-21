@@ -64,3 +64,11 @@ run = "node newsletter/admin.js"
 [tasks.tl]
 description = "Convert Threads logs to posts"
 run = "./scripts/threads_logs_to_posts.py"
+
+[tasks.links]
+description = "Convert a Raindrop collection to link posts"
+run = "python3 scripts/raindrop_links_to_posts.py"
+
+[tasks.link-webmentions]
+description = "Discover or send Webmentions for link posts (dry-run by default)"
+run = "python3 scripts/send_link_webmentions.py"

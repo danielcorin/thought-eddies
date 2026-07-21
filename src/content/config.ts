@@ -77,6 +77,19 @@ const feeds = defineCollection({
   }),
 });
 
+const links = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/links' }),
+  schema: z.object({
+    title: z.string(),
+    target: z.string().url(),
+    createdAt: z.date(),
+    updatedAt: z.date().optional(),
+    raindropId: z.number().int().positive(),
+    tags: z.array(z.string()).optional().default([]),
+    draft: z.boolean().optional().default(false),
+  }),
+});
+
 const uses = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/uses' }),
   schema: z.object({
@@ -177,6 +190,7 @@ export const collections = {
   about,
   logs,
   feeds,
+  links,
   uses,
   now,
   til,
