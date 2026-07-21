@@ -34,3 +34,6 @@ pnpm-lock.yaml
 
 # Exclude specific MDX file from formatting
 src/content/posts/2024/claude-artifacts/index.mdx
+
+# Generated from Raindrop; formatting would make the importer non-idempotent
+src/content/links/
