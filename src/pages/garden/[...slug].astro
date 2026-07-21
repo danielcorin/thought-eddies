@@ -4,6 +4,7 @@ import Layout from '@layouts/Layout.astro';
 import Navigation from '@components/layout/Navigation.astro';
 import Breadcrumbs from '@components/Breadcrumbs.astro';
 import TableOfContents from '@components/layout/TableOfContents.astro';
+import Webmentions from '@components/Webmentions.astro';
 
 export async function getStaticPaths() {
   const gardenEntries = await getCollection('garden');
@@ -24,6 +25,7 @@ const categoryDisplay = category.split('-').map(word =>
 ).join(' ');
 
 const ogImage = `/garden/${entry.id.replace(/\.(md|mdx)$/, '')}/og.png`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
 <Layout title={entry.data.title} ogImage={ogImage}>
@@ -52,6 +54,8 @@ const ogImage = `/garden/${entry.id.replace(/\.(md|mdx)$/, '')}/og.png`;
       <div class="garden-note">
         <p>This is a living document in my digital garden. It may grow, change, or branch into new ideas over time.</p>
       </div>
+
+      <Webmentions target={canonicalUrl} />
     </article>
   </main>
 </Layout>

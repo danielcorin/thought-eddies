@@ -8,9 +8,22 @@ interface Props {
 
 const { target } = Astro.props;
 const mentions = await getWebmentionsForTarget(target);
+const MAX_CARD_TEXT_LENGTH = 500;
 
 function hasText(m: Webmention): boolean {
   return !!(m.content?.text?.trim() || m.name?.trim());
+}
+
+function cardText(m: Webmention): string {
+  const text = (m.content?.text || m.name || '').trim();
+  if (text.length <= MAX_CARD_TEXT_LENGTH) return text;
+
+  const excerpt = text.slice(0, MAX_CARD_TEXT_LENGTH + 1);
+  const lastSpace = excerpt.lastIndexOf(' ');
+  const end =
+    lastSpace > MAX_CARD_TEXT_LENGTH * 0.8 ? lastSpace : MAX_CARD_TEXT_LENGTH;
+
+  return `${excerpt.slice(0, end).trimEnd()}…`;
 }
 
 function sourceHost(m: Webmention): string {
@@ -181,7 +194,7 @@ for (const m of mentions) {
                     {TYPE_LABEL[m['wm-property']]}
                   </span>
                 </div>
-                <p class="card-text">{m.content?.text || m.name}</p>
+                <p class="card-text">{cardText(m)}</p>
                 <a class="card-meta" href={m.url || m['wm-source']} target="_blank" rel="noopener noreferrer">
                   {formatDate(m.published || m['wm-received'])}
                 </a>
