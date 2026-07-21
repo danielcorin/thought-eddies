@@ -1,5 +1,3080 @@
 {
-  "mentions": {},
+  "mentions": {
+    "https://www.danielcorin.com/links/2024/06/claudes-character-anthropic/": {
+      "checkedAt": "2026-07-21T15:24:55.740953Z",
+      "status": "no-endpoint",
+      "target": "https://www.anthropic.com/research/claude-character"
+    },
+    "https://www.danielcorin.com/links/2024/06/prompting-fundamentals-and-how-to-apply-them-effectively/": {
+      "checkedAt": "2026-07-21T15:24:56.107948Z",
+      "status": "no-endpoint",
+      "target": "https://eugeneyan.com/writing/prompting/"
+    },
+    "https://www.danielcorin.com/links/2024/06/start-presentations-on-the-second-slide/": {
+      "checkedAt": "2026-07-21T15:24:55.961217Z",
+      "status": "no-endpoint",
+      "target": "https://tidyfirst.substack.com/p/start-presentations-on-the-second"
+    },
+    "https://www.danielcorin.com/links/2024/06/the-rarest-move-in-chess/": {
+      "checkedAt": "2026-07-21T15:24:57.014586Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=iDnW0WiCqNc"
+    },
+    "https://www.danielcorin.com/links/2024/07/how-to-think-in-writing/": {
+      "checkedAt": "2026-07-21T15:24:54.998969Z",
+      "status": "no-endpoint",
+      "target": "https://www.henrikkarlsson.xyz/p/writing-to-think"
+    },
+    "https://www.danielcorin.com/links/2024/07/stop-perfecting-your-config-arkadiusz-chmura/": {
+      "checkedAt": "2026-07-21T15:24:54.884409Z",
+      "status": "no-endpoint",
+      "target": "https://arkadiuszchmura.com/posts/stop-perfecting-your-config/"
+    },
+    "https://www.danielcorin.com/links/2024/08/llms-are-bad-at-returning-code-in-json/": {
+      "checkedAt": "2026-07-21T15:24:54.657574Z",
+      "status": "no-endpoint",
+      "target": "https://aider.chat/2024/08/14/code-in-json.html"
+    },
+    "https://www.danielcorin.com/links/2024/09/every-webpage-deserves-to-be-a-place/": {
+      "checkedAt": "2026-07-21T15:24:54.558346Z",
+      "status": "no-endpoint",
+      "target": "https://interconnected.org/home/2024/09/05/cursor-party"
+    },
+    "https://www.danielcorin.com/links/2024/09/making-progress-on-side-projects-with-content-driven-development-nicole-web/": {
+      "checkedAt": "2026-07-21T15:24:54.176355Z",
+      "status": "no-endpoint",
+      "target": "https://ntietz.com/blog/making-progress-with-content-driven-development/"
+    },
+    "https://www.danielcorin.com/links/2024/10/ai-is-the-new-plastic/": {
+      "checkedAt": "2026-07-21T15:24:47.490347Z",
+      "status": "no-endpoint",
+      "target": "https://www.notion.so/blog/ai-is-the-new-plastic"
+    },
+    "https://www.danielcorin.com/links/2024/10/before-you-buy-a-domain-name-first-check-to-see-if-its-haunted/": {
+      "checkedAt": "2026-07-21T15:24:42.593234Z",
+      "status": "no-endpoint",
+      "target": "https://www.bryanbraun.com/2024/10/25/before-you-buy-a-domain-name-first-check-to-see-if-its-haunted/"
+    },
+    "https://www.danielcorin.com/links/2024/10/cabel-sasser-panic-xoxo-festival-2024/": {
+      "checkedAt": "2026-07-21T15:24:50.490247Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=Df_K7pIsfvg"
+    },
+    "https://www.danielcorin.com/links/2024/10/cognitive-load/": {
+      "checkedAt": "2026-07-21T15:24:46.116694Z",
+      "status": "no-endpoint",
+      "target": "https://minds.md/zakirullin/cognitive#full"
+    },
+    "https://www.danielcorin.com/links/2024/10/dan-olson-folding-ideas-xoxo-festival-2024/": {
+      "checkedAt": "2026-07-21T15:24:49.690485Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=H2Mb-0QrYw0"
+    },
+    "https://www.danielcorin.com/links/2024/10/dario-amodei-machines-of-loving-grace/": {
+      "checkedAt": "2026-07-21T15:24:47.839417Z",
+      "status": "no-endpoint",
+      "target": "https://darioamodei.com/machines-of-loving-grace"
+    },
+    "https://www.danielcorin.com/links/2024/10/eating-the-cloud-from-outside-in/": {
+      "checkedAt": "2026-07-21T15:24:53.149339Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/www.swyx.io/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://www.swyx.io/cloudflare-go"
+    },
+    "https://www.danielcorin.com/links/2024/10/ethan-mollick-analyst-students-who-use-ai-as-a-crutch-dont-learn-anything/": {
+      "checkedAt": "2026-07-21T15:24:53.568084Z",
+      "status": "no-endpoint",
+      "target": "https://english.elpais.com/technology/2024-10-03/ethan-mollick-analyst-students-who-use-ai-as-a-crutch-dont-learn-anything.html"
+    },
+    "https://www.danielcorin.com/links/2024/10/everett-parks-reviews-project/": {
+      "checkedAt": "2026-07-21T15:24:42.472106Z",
+      "status": "no-endpoint",
+      "target": "https://zeke.dev/everett-parks-project/"
+    },
+    "https://www.danielcorin.com/links/2024/10/freshql/": {
+      "checkedAt": "2026-07-21T15:24:44.122405Z",
+      "status": "no-endpoint",
+      "target": "https://freshql.ai/blog_fast_storage.html"
+    },
+    "https://www.danielcorin.com/links/2024/10/how-i-write-code-using-cursor-a-review/": {
+      "checkedAt": "2026-07-21T15:24:41.811053Z",
+      "status": "no-endpoint",
+      "target": "https://www.arguingwithalgorithms.com/posts/cursor-review.html"
+    },
+    "https://www.danielcorin.com/links/2024/10/how-to-pick-a-career-that-actually-fits-you-wait-but-why/": {
+      "checkedAt": "2026-07-21T15:24:44.768214Z",
+      "status": "no-endpoint",
+      "target": "https://waitbutwhy.com/2018/04/picking-career.html"
+    },
+    "https://www.danielcorin.com/links/2024/10/i-quit-teaching-because-of-chatgpt/": {
+      "checkedAt": "2026-07-21T15:24:54.049988Z",
+      "status": "no-endpoint",
+      "target": "https://time.com/7026050/chatgpt-quit-teaching-ai-essay/"
+    },
+    "https://www.danielcorin.com/links/2024/10/its-hard-to-write-code-for-computers-but-its-even-harder-to-write-code-for-human/": {
+      "checkedAt": "2026-07-21T15:24:53.863581Z",
+      "status": "no-endpoint",
+      "target": "https://erikbern.com/2024/09/27/its-hard-to-write-code-for-humans.html"
+    },
+    "https://www.danielcorin.com/links/2024/10/pain-we-forgot/": {
+      "checkedAt": "2026-07-21T15:24:53.278620Z",
+      "status": "no-endpoint",
+      "target": "https://www.scattered-thoughts.net/writing/pain-we-forgot/"
+    },
+    "https://www.danielcorin.com/links/2024/10/people-are-falling-in-love-with-and-getting-addicted-to-ai-voices/": {
+      "checkedAt": "2026-07-21T15:24:46.330315Z",
+      "status": "no-endpoint",
+      "target": "https://www.vox.com/future-perfect/367188/love-addicted-ai-voice-human-gpt4-emotion"
+    },
+    "https://www.danielcorin.com/links/2024/10/stormrider/": {
+      "checkedAt": "2026-07-21T15:24:47.566043Z",
+      "detail": "GET https://billwear.github.io/art-of-attention.html returned HTTP 404",
+      "status": "failed",
+      "target": "https://billwear.github.io/art-of-attention.html"
+    },
+    "https://www.danielcorin.com/links/2024/10/the-joy-of-slow-programming/": {
+      "checkedAt": "2026-07-21T15:24:41.957353Z",
+      "status": "no-endpoint",
+      "target": "https://blog.sundaycoding.com/blog/2021/09/17/the-joy-of-slow-programming/"
+    },
+    "https://www.danielcorin.com/links/2024/10/the-senior-shortcut/": {
+      "checkedAt": "2026-07-21T15:24:48.658268Z",
+      "status": "no-endpoint",
+      "target": "https://skamille.medium.com/the-senior-shortcut-fadffe5503fd"
+    },
+    "https://www.danielcorin.com/links/2024/10/the-three-page-paper-that-shook-philosophy-gettiers-in-software-engineering-the/": {
+      "checkedAt": "2026-07-21T15:24:46.659005Z",
+      "status": "no-endpoint",
+      "target": "https://jsomers.net/blog/gettiers"
+    },
+    "https://www.danielcorin.com/links/2024/10/this-post-is-not-about-python-iri/": {
+      "checkedAt": "2026-07-21T15:24:51.011199Z",
+      "status": "no-endpoint",
+      "target": "https://jerf.org/iri/post/2024/not_about_python/"
+    },
+    "https://www.danielcorin.com/links/2024/10/writes-and-write-nots/": {
+      "checkedAt": "2026-07-21T15:24:42.137716Z",
+      "status": "no-endpoint",
+      "target": "https://paulgraham.com/writes.html"
+    },
+    "https://www.danielcorin.com/links/2024/10/you-should-probably-pay-attention-to-tokenizers/": {
+      "checkedAt": "2026-07-21T15:24:44.604188Z",
+      "status": "no-endpoint",
+      "target": "https://cybernetist.com/2024/10/21/you-should-probably-pay-attention-to-tokenizers/"
+    },
+    "https://www.danielcorin.com/links/2024/11/a-students-guide-to-writing-with-chatgpt-openai/": {
+      "checkedAt": "2026-07-21T15:24:39.692210Z",
+      "status": "no-endpoint",
+      "target": "https://openai.com/chatgpt/use-cases/student-writing-guide/"
+    },
+    "https://www.danielcorin.com/links/2024/11/ai-makes-tech-debt-more-expensive/": {
+      "checkedAt": "2026-07-21T15:24:38.834324Z",
+      "status": "no-endpoint",
+      "target": "https://www.gauge.sh/blog/ai-makes-tech-debt-more-expensive"
+    },
+    "https://www.danielcorin.com/links/2024/11/amelia-wattenberger/": {
+      "checkedAt": "2026-07-21T15:24:40.592911Z",
+      "status": "no-endpoint",
+      "target": "https://wattenberger.com/thoughts/llms-as-a-tool-for-thought"
+    },
+    "https://www.danielcorin.com/links/2024/11/blog-writing-for-developers/": {
+      "checkedAt": "2026-07-21T15:24:40.752815Z",
+      "status": "no-endpoint",
+      "target": "https://rmoff.net/2023/07/19/blog-writing-for-developers/"
+    },
+    "https://www.danielcorin.com/links/2024/11/ease-of-maintenance-is-a-feature-ronaks-blog/": {
+      "checkedAt": "2026-07-21T15:24:40.421162Z",
+      "status": "no-endpoint",
+      "target": "https://ronakgothi.com/p/ease-of-maintenance-is-a-feature/"
+    },
+    "https://www.danielcorin.com/links/2024/11/embeddings-are-underrated/": {
+      "checkedAt": "2026-07-21T15:24:41.675480Z",
+      "status": "no-endpoint",
+      "target": "https://technicalwriting.dev/data/embeddings.html"
+    },
+    "https://www.danielcorin.com/links/2024/11/feeling-sound-and-hearing-color-freakonomics/": {
+      "checkedAt": "2026-07-21T15:24:40.319913Z",
+      "status": "no-endpoint",
+      "target": "https://freakonomics.com/podcast/feeling-sound-and-hearing-color/"
+    },
+    "https://www.danielcorin.com/links/2024/11/leadership-lab-the-craft-of-writing-effectively/": {
+      "checkedAt": "2026-07-21T15:24:41.486264Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=vtIzMaLkCaM"
+    },
+    "https://www.danielcorin.com/links/2024/11/leaving-stripe/": {
+      "checkedAt": "2026-07-21T15:24:41.601546Z",
+      "status": "no-endpoint",
+      "target": "https://jondlm.github.io/website/blog/leaving_stripe/"
+    },
+    "https://www.danielcorin.com/links/2024/11/loops/": {
+      "checkedAt": "2026-07-21T15:24:38.625268Z",
+      "status": "no-endpoint",
+      "target": "https://benjdd.com/loops/"
+    },
+    "https://www.danielcorin.com/links/2024/11/ok-i-can-partly-explain-the-llm-chess-weirdness-now/": {
+      "checkedAt": "2026-07-21T15:24:36.505130Z",
+      "status": "no-endpoint",
+      "target": "https://dynomight.net/more-chess/"
+    },
+    "https://www.danielcorin.com/links/2024/11/personality-basins-near-blog/": {
+      "checkedAt": "2026-07-21T15:24:37.885367Z",
+      "status": "no-endpoint",
+      "target": "https://near.blog/personality-basins/"
+    },
+    "https://www.danielcorin.com/links/2024/11/something-weird-is-happening-with-llms-and-chess/": {
+      "checkedAt": "2026-07-21T15:24:38.726046Z",
+      "status": "no-endpoint",
+      "target": "https://dynomight.net/chess/"
+    },
+    "https://www.danielcorin.com/links/2024/11/swapnil-chauhan/": {
+      "checkedAt": "2026-07-21T15:24:39.879915Z",
+      "status": "no-endpoint",
+      "target": "https://swapnilchauhan.com/blog/procrastination-and-the-fear-of-not-being-good-enough"
+    },
+    "https://www.danielcorin.com/links/2024/11/the-problem-with-reasoners/": {
+      "checkedAt": "2026-07-21T15:24:36.185841Z",
+      "status": "no-endpoint",
+      "target": "https://aidanmclaughlin.notion.site/reasoners-problem"
+    },
+    "https://www.danielcorin.com/links/2024/11/they-all-use-it/": {
+      "checkedAt": "2026-07-21T15:24:36.646786Z",
+      "status": "no-endpoint",
+      "target": "https://registerspill.thorstenball.com/p/they-all-use-it"
+    },
+    "https://www.danielcorin.com/links/2024/11/thoughts-while-watching-myself-be-automated/": {
+      "checkedAt": "2026-07-21T15:24:36.377120Z",
+      "status": "no-endpoint",
+      "target": "https://dynomight.net/automated/"
+    },
+    "https://www.danielcorin.com/links/2024/11/what-universal-human-experiences-are-you-missing-without-realizing-it/": {
+      "checkedAt": "2026-07-21T15:24:37.318855Z",
+      "status": "no-endpoint",
+      "target": "https://slatestarcodex.com/2014/03/17/what-universal-human-experiences-are-you-missing-without-realizing-it/"
+    },
+    "https://www.danielcorin.com/links/2024/11/why-doesnt-advice-work/": {
+      "checkedAt": "2026-07-21T15:24:36.279493Z",
+      "status": "no-endpoint",
+      "target": "https://dynomight.net/advice/"
+    },
+    "https://www.danielcorin.com/links/2024/11/you-exist-in-the-long-context/": {
+      "checkedAt": "2026-07-21T15:24:38.271741Z",
+      "status": "no-endpoint",
+      "target": "https://thelongcontext.com/"
+    },
+    "https://www.danielcorin.com/links/2024/12/amelia-wattenberger/": {
+      "checkedAt": "2026-07-21T15:24:29.970623Z",
+      "status": "no-endpoint",
+      "target": "https://wattenberger.com/thoughts/fish-eye"
+    },
+    "https://www.danielcorin.com/links/2024/12/ask-questions-of-sqlite-databases-and-csv-json-files-in-your-terminal/": {
+      "checkedAt": "2026-07-21T15:24:35.486055Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2024/Nov/25/ask-questions-of-sqlite/"
+    },
+    "https://www.danielcorin.com/links/2024/12/building-python-tools-with-a-one-shot-prompt-using-uv-run-and-claude-projects/": {
+      "checkedAt": "2026-07-21T15:24:27.573349Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2024/Dec/19/one-shot-python-tools/"
+    },
+    "https://www.danielcorin.com/links/2024/12/contempt-culture-the-particular-finest/": {
+      "checkedAt": "2026-07-21T15:24:33.681426Z",
+      "status": "no-endpoint",
+      "target": "https://blog.aurynn.com/2015/12/16-contempt-culture"
+    },
+    "https://www.danielcorin.com/links/2024/12/how-do-you-do-fellow-web-developers-a-growing-disconnect-exotext/": {
+      "checkedAt": "2026-07-21T15:24:27.750814Z",
+      "status": "no-endpoint",
+      "target": "https://rakhim.exotext.com/web-developers-a-growing-disconnect"
+    },
+    "https://www.danielcorin.com/links/2024/12/i-can-now-run-a-gpt-4-class-model-on-my-laptop/": {
+      "checkedAt": "2026-07-21T15:24:29.694267Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2024/Dec/9/llama-33-70b/"
+    },
+    "https://www.danielcorin.com/links/2024/12/omens-of-exceptional-talent-alexey-guzey/": {
+      "checkedAt": "2026-07-21T15:24:25.960011Z",
+      "status": "no-endpoint",
+      "target": "https://guzey.com/talent/"
+    },
+    "https://www.danielcorin.com/links/2024/12/the-70-problem-hard-truths-about-ai-assisted-coding-hacker-news/": {
+      "checkedAt": "2026-07-21T15:24:31.288043Z",
+      "status": "no-endpoint",
+      "target": "https://news.ycombinator.com/item?id=42336553"
+    },
+    "https://www.danielcorin.com/links/2024/12/the-new-claude-3-5-sonnet-computer-use-and-building-sota-agents-with-erik-schlun/": {
+      "checkedAt": "2026-07-21T15:24:35.685102Z",
+      "status": "no-endpoint",
+      "target": "https://www.latent.space/p/claude-sonnet"
+    },
+    "https://www.danielcorin.com/links/2024/12/theres-no-such-thing-as-software-productivity/": {
+      "checkedAt": "2026-07-21T15:24:27.957557Z",
+      "status": "no-endpoint",
+      "target": "https://www.benrady.com/2012/11/theres-no-such-thing-as-software-productivity.html"
+    },
+    "https://www.danielcorin.com/links/2024/12/whats-happening-with-founders-over-40/": {
+      "checkedAt": "2026-07-21T15:24:28.102762Z",
+      "status": "no-endpoint",
+      "target": "https://justinjackson.ca/over-40"
+    },
+    "https://www.danielcorin.com/links/2024/12/y-combinator-and-power-in-silicon-valley-commoncog-case-library/": {
+      "checkedAt": "2026-07-21T15:24:33.017593Z",
+      "status": "no-endpoint",
+      "target": "https://commoncog.com/c/cases/y-combinator-power/"
+    },
+    "https://www.danielcorin.com/links/2025/01/a-selfish-personal-argument-for-releasing-code-as-open-source/": {
+      "checkedAt": "2026-07-21T15:24:23.468985Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Jan/24/selfish-open-source/"
+    },
+    "https://www.danielcorin.com/links/2025/01/advice-for-a-friend-who-wants-to-start-a-blog/": {
+      "checkedAt": "2026-07-21T15:24:21.269817Z",
+      "status": "no-endpoint",
+      "target": "https://www.henrikkarlsson.xyz/p/start-a-blog"
+    },
+    "https://www.danielcorin.com/links/2025/01/ai-slop-suspicion-and-writing-back/": {
+      "checkedAt": "2026-07-21T15:24:21.841448Z",
+      "status": "no-endpoint",
+      "target": "https://benjamincongdon.me/blog/2025/01/25/AI-Slop-Suspicion-and-Writing-Back/"
+    },
+    "https://www.danielcorin.com/links/2025/01/almost-pwned-md/": {
+      "checkedAt": "2026-07-21T15:24:24.585965Z",
+      "status": "no-endpoint",
+      "target": "https://gist.github.com/zachlatta/f86317493654b550c689dc6509973aa4"
+    },
+    "https://www.danielcorin.com/links/2025/01/an-unreasonable-amount-of-time/": {
+      "checkedAt": "2026-07-21T15:24:25.707127Z",
+      "status": "no-endpoint",
+      "target": "https://allenpike.com/2024/an-unreasonable-amount-of-time"
+    },
+    "https://www.danielcorin.com/links/2025/01/be-aware-of-the-makefile-effect/": {
+      "checkedAt": "2026-07-21T15:24:25.143151Z",
+      "status": "no-endpoint",
+      "target": "https://blog.yossarian.net/2025/01/10/Be-aware-of-the-Makefile-effect"
+    },
+    "https://www.danielcorin.com/links/2025/01/codenames-ai-openais-o1-playing-codenames/": {
+      "checkedAt": "2026-07-21T15:24:23.596151Z",
+      "status": "no-endpoint",
+      "target": "https://suveenellawela.com/thoughts/codenames-ai"
+    },
+    "https://www.danielcorin.com/links/2025/01/crawshaw-2025-01-06/": {
+      "checkedAt": "2026-07-21T15:24:25.393130Z",
+      "status": "no-endpoint",
+      "target": "https://crawshaw.io/blog/programming-with-llms"
+    },
+    "https://www.danielcorin.com/links/2025/01/deepseek-faq/": {
+      "checkedAt": "2026-07-21T15:24:21.559747Z",
+      "status": "no-endpoint",
+      "target": "https://stratechery.com/2025/deepseek-faq/"
+    },
+    "https://www.danielcorin.com/links/2025/01/how-i-build-adam-montgomery/": {
+      "checkedAt": "2026-07-21T15:24:24.709316Z",
+      "status": "no-endpoint",
+      "target": "https://montasaurus.com/posts/how-i-build"
+    },
+    "https://www.danielcorin.com/links/2025/01/my-failed-attempt-to-shrink-all-npm-packages-by-5/": {
+      "checkedAt": "2026-07-21T15:24:21.719313Z",
+      "status": "no-endpoint",
+      "target": "https://evanhahn.com/my-failed-attempt-to-shrink-all-npm-packages-by-5-percent/"
+    },
+    "https://www.danielcorin.com/links/2025/01/nobody-cares/": {
+      "checkedAt": "2026-07-21T15:24:24.928393Z",
+      "status": "no-endpoint",
+      "target": "https://grantslatton.com/nobody-cares"
+    },
+    "https://www.danielcorin.com/links/2025/01/thoughts-on-a-month-with-devin-answer-ai/": {
+      "checkedAt": "2026-07-21T15:24:25.059350Z",
+      "status": "no-endpoint",
+      "target": "https://www.answer.ai/posts/2025-01-08-devin.html"
+    },
+    "https://www.danielcorin.com/links/2025/02/a-radical-new-proposal-for-how-mind-emerges-from-matter-noema/": {
+      "checkedAt": "2026-07-21T15:24:08.014824Z",
+      "status": "no-endpoint",
+      "target": "https://www.noemamag.com/a-radical-new-proposal-for-how-mind-emerges-from-matter/"
+    },
+    "https://www.danielcorin.com/links/2025/02/ai-is-stifling-tech-adoption/": {
+      "checkedAt": "2026-07-21T15:24:17.654509Z",
+      "status": "no-endpoint",
+      "target": "https://vale.rocks/posts/ai-is-stifling-tech-adoption"
+    },
+    "https://www.danielcorin.com/links/2025/02/build-a-link-blog/": {
+      "checkedAt": "2026-07-21T15:24:21.041432Z",
+      "status": "no-endpoint",
+      "target": "https://xuanwo.io/links/2025/01/link-blog/"
+    },
+    "https://www.danielcorin.com/links/2025/02/can-i-ethically-use-llms-nicole-web/": {
+      "checkedAt": "2026-07-21T15:24:16.881488Z",
+      "status": "no-endpoint",
+      "target": "https://ntietz.com/blog/can-i-ethically-use-llms/"
+    },
+    "https://www.danielcorin.com/links/2025/02/chat-is-a-bad-ui-pattern-for-development-toolsdaniel-de-laney/": {
+      "checkedAt": "2026-07-21T15:24:20.926969Z",
+      "status": "no-endpoint",
+      "target": "https://danieldelaney.net/chat/"
+    },
+    "https://www.danielcorin.com/links/2025/02/climbing-the-ladder-of-abstraction-amelia-wattenberger/": {
+      "checkedAt": "2026-07-21T15:24:13.534235Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=PAy_GHUAICw"
+    },
+    "https://www.danielcorin.com/links/2025/02/home-substack/": {
+      "checkedAt": "2026-07-21T15:24:08.241009Z",
+      "status": "no-endpoint",
+      "target": "https://substack.com/home/post/p-157717640"
+    },
+    "https://www.danielcorin.com/links/2025/02/how-i-use-ai-early-2025/": {
+      "checkedAt": "2026-07-21T15:24:20.286444Z",
+      "status": "no-endpoint",
+      "target": "https://benjamincongdon.me/blog/2025/02/02/How-I-Use-AI-Early-2025/"
+    },
+    "https://www.danielcorin.com/links/2025/02/how-will-ai-impact-software-boilerplate-businesses/": {
+      "checkedAt": "2026-07-21T15:24:17.790335Z",
+      "status": "no-endpoint",
+      "target": "https://www.coryzue.com/writing/ai-and-coding/"
+    },
+    "https://www.danielcorin.com/links/2025/02/its-still-worth-blogging-in-the-age-of-ai/": {
+      "checkedAt": "2026-07-21T15:24:08.563876Z",
+      "status": "no-endpoint",
+      "target": "https://www.gilesthomas.com/2025/02/blogging-in-the-age-of-ai"
+    },
+    "https://www.danielcorin.com/links/2025/02/learn-in-public/": {
+      "checkedAt": "2026-07-21T15:24:11.012460Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/www.swyx.io/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://www.swyx.io/learn-in-public"
+    },
+    "https://www.danielcorin.com/links/2025/02/my-llm-codegen-workflow-atm/": {
+      "checkedAt": "2026-07-21T15:24:16.735410Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://micro.blog/webmention",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://harper.blog/2025/02/16/my-llm-codegen-workflow-atm/"
+    },
+    "https://www.danielcorin.com/links/2025/02/never-forgive-them/": {
+      "checkedAt": "2026-07-21T15:24:15.176764Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://www.wheresyoured.at/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://www.wheresyoured.at/never-forgive-them/"
+    },
+    "https://www.danielcorin.com/links/2025/02/new-junior-developers-cant-actually-code/": {
+      "checkedAt": "2026-07-21T15:24:17.142359Z",
+      "status": "no-endpoint",
+      "target": "https://nmn.gl/blog/ai-and-learning"
+    },
+    "https://www.danielcorin.com/links/2025/02/on-zero-sum-games-the-informational-meta-game/": {
+      "checkedAt": "2026-07-21T15:24:09.233690Z",
+      "status": "no-endpoint",
+      "target": "https://rohan.ga/blog/zero_game/"
+    },
+    "https://www.danielcorin.com/links/2025/02/personal-software-is-becoming-a-trend/": {
+      "checkedAt": "2026-07-21T15:24:18.384236Z",
+      "status": "no-endpoint",
+      "target": "https://xuanwo.io/links/2025/02/personal-software-is-becoming-a-trend/"
+    },
+    "https://www.danielcorin.com/links/2025/02/personal-software-lee-robinson/": {
+      "checkedAt": "2026-07-21T15:24:20.608467Z",
+      "status": "no-endpoint",
+      "target": "https://leerob.com/n/personal-software"
+    },
+    "https://www.danielcorin.com/links/2025/02/s1-the-6-r1-competitor/": {
+      "checkedAt": "2026-07-21T15:24:20.162003Z",
+      "status": "no-endpoint",
+      "target": "https://timkellogg.me/blog/2025/02/03/s1"
+    },
+    "https://www.danielcorin.com/links/2025/02/some-terminal-frustrations/": {
+      "checkedAt": "2026-07-21T15:24:18.148474Z",
+      "status": "no-endpoint",
+      "target": "https://jvns.ca/blog/2025/02/05/some-terminal-frustrations/"
+    },
+    "https://www.danielcorin.com/links/2025/02/the-hardest-working-font-in-manhattan/": {
+      "checkedAt": "2026-07-21T15:24:17.553928Z",
+      "status": "no-endpoint",
+      "target": "https://aresluna.org/the-hardest-working-font-in-manhattan/"
+    },
+    "https://www.danielcorin.com/links/2025/02/the-hidden-life-of-embeddings-linus-lee/": {
+      "checkedAt": "2026-07-21T15:24:12.713399Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=YvobVu1l7GI"
+    },
+    "https://www.danielcorin.com/links/2025/02/the-humane-representation-of-thought-oct-2014/": {
+      "checkedAt": "2026-07-21T15:24:11.910626Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=K89W4WyiRFI"
+    },
+    "https://www.danielcorin.com/links/2025/02/the-llm-curve-of-impact-on-software-engineers/": {
+      "checkedAt": "2026-07-21T15:24:18.518026Z",
+      "status": "no-endpoint",
+      "target": "https://serce.me/posts/2025-02-07-the-llm-curve-of-impact-on-software-engineers"
+    },
+    "https://www.danielcorin.com/links/2025/02/what-do-i-mean-by-some-software-devs-are-ngmi/": {
+      "checkedAt": "2026-07-21T15:24:20.080119Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://ghuntley.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://ghuntley.com/ngmi/"
+    },
+    "https://www.danielcorin.com/links/2025/02/whats-your-voice-saying/": {
+      "checkedAt": "2026-07-21T15:24:18.205809Z",
+      "detail": "GET https://andysblog.uk/whats-your-voice-saying/ failed: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)>",
+      "status": "failed",
+      "target": "https://andysblog.uk/whats-your-voice-saying/"
+    },
+    "https://www.danielcorin.com/links/2025/02/why-blog-if-nobody-reads-it/": {
+      "checkedAt": "2026-07-21T15:24:18.261481Z",
+      "detail": "GET https://andysblog.uk/why-blog-if-nobody-reads-it/ failed: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)>",
+      "status": "failed",
+      "target": "https://andysblog.uk/why-blog-if-nobody-reads-it/"
+    },
+    "https://www.danielcorin.com/links/2025/02/why-does-ai-slop-feel-so-bad-to-read-sean-goedecke/": {
+      "checkedAt": "2026-07-21T15:24:20.800461Z",
+      "status": "no-endpoint",
+      "target": "https://www.seangoedecke.com/on-slop/"
+    },
+    "https://www.danielcorin.com/links/2025/02/write-to-escape-your-default-setting-kupajo/": {
+      "checkedAt": "2026-07-21T15:24:07.691634Z",
+      "status": "no-endpoint",
+      "target": "https://kupajo.com/write-to-escape-your-default-setting/"
+    },
+    "https://www.danielcorin.com/links/2025/02/your-company-needs-junior-devs/": {
+      "checkedAt": "2026-07-21T15:24:13.687184Z",
+      "status": "no-endpoint",
+      "target": "https://softwaredoug.com/blog/2024/09/07/your-team-needs-juniors"
+    },
+    "https://www.danielcorin.com/links/2025/03/1hr-talk-intro-to-large-language-models/": {
+      "checkedAt": "2026-07-21T15:24:05.734176Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=zjkBMFhNj_g&list=PLAqhIrjkxbuW9U8-vZ_s_cjKPT_FqRStI"
+    },
+    "https://www.danielcorin.com/links/2025/03/a-society-that-lost-focus/": {
+      "checkedAt": "2026-07-21T15:23:54.072800Z",
+      "status": "no-endpoint",
+      "target": "https://ploum.net/2024-03-18-lost-focus.html"
+    },
+    "https://www.danielcorin.com/links/2025/03/apples-software-quality-crisis-when-premium-hardware-meets-subpar-software/": {
+      "checkedAt": "2026-07-21T15:24:04.543526Z",
+      "status": "no-endpoint",
+      "target": "https://www.eliseomartelli.it/blog/2025-03-02-apple-quality"
+    },
+    "https://www.danielcorin.com/links/2025/03/beyond-bad-output/": {
+      "checkedAt": "2026-07-21T15:23:53.519748Z",
+      "status": "no-endpoint",
+      "target": "https://hey.paris/posts/beyond-bad-output/"
+    },
+    "https://www.danielcorin.com/links/2025/03/exploring-generative-ai/": {
+      "checkedAt": "2026-07-21T15:23:51.915763Z",
+      "status": "no-endpoint",
+      "target": "https://martinfowler.com/articles/exploring-gen-ai.html#memo-13"
+    },
+    "https://www.danielcorin.com/links/2025/03/from-design-doc-to-code-the-groundhog-ai-coding-assistant-and-new-cursor-vibecod/": {
+      "checkedAt": "2026-07-21T15:23:53.378320Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://ghuntley.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://ghuntley.com/specs/"
+    },
+    "https://www.danielcorin.com/links/2025/03/hallucinations-in-code-are-the-least-dangerous-form-of-llm-mistakes/": {
+      "checkedAt": "2026-07-21T15:24:07.422228Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Mar/2/hallucinations-in-code/"
+    },
+    "https://www.danielcorin.com/links/2025/03/heres-how-i-use-llms-to-help-me-write-code/": {
+      "checkedAt": "2026-07-21T15:23:57.552084Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Mar/11/using-llms-for-code/"
+    },
+    "https://www.danielcorin.com/links/2025/03/how-did-you-do-on-the-ai-art-turing-test/": {
+      "checkedAt": "2026-07-21T15:23:54.445479Z",
+      "status": "no-endpoint",
+      "target": "https://www.astralcodexten.com/p/how-did-you-do-on-the-ai-art-turing"
+    },
+    "https://www.danielcorin.com/links/2025/03/i-use-cursor-daily-heres-how-i-avoid-the-garbage-parts/": {
+      "checkedAt": "2026-07-21T15:23:57.997844Z",
+      "detail": "GET https://www.nickcraux.com/blog/cursor-tips returned HTTP 503",
+      "status": "failed",
+      "target": "https://www.nickcraux.com/blog/cursor-tips"
+    },
+    "https://www.danielcorin.com/links/2025/03/if-youre-so-smart-why-cant-you-die/": {
+      "checkedAt": "2026-07-21T15:23:58.308587Z",
+      "status": "no-endpoint",
+      "target": "https://desystemize.substack.com/p/if-youre-so-smart-why-cant-you-die"
+    },
+    "https://www.danielcorin.com/links/2025/03/kill-your-feeds-stop-letting-algorithms-dictate-how-you-think/": {
+      "checkedAt": "2026-07-21T15:23:58.150529Z",
+      "status": "no-endpoint",
+      "target": "https://usher.dev/posts/2025-03-08-kill-your-feeds/"
+    },
+    "https://www.danielcorin.com/links/2025/03/lander/": {
+      "checkedAt": "2026-07-21T15:23:58.452326Z",
+      "status": "no-endpoint",
+      "target": "https://ehmorris.com/lander/"
+    },
+    "https://www.danielcorin.com/links/2025/03/sergeys-blog/": {
+      "checkedAt": "2026-07-21T15:23:51.643921Z",
+      "status": "no-endpoint",
+      "target": "https://www.sergey.fyi/articles/reliability-vs-capability"
+    },
+    "https://www.danielcorin.com/links/2025/03/something-is-rotten-in-the-state-of-cupertino/": {
+      "checkedAt": "2026-07-21T15:23:55.823770Z",
+      "status": "no-endpoint",
+      "target": "https://daringfireball.net/2025/03/something_is_rotten_in_the_state_of_cupertino"
+    },
+    "https://www.danielcorin.com/links/2025/03/the-einstein-ai-model/": {
+      "checkedAt": "2026-07-21T15:23:55.946641Z",
+      "status": "no-endpoint",
+      "target": "https://thomwolf.io/blog/scientific-ai.html"
+    },
+    "https://www.danielcorin.com/links/2025/03/the-harm-hypocrisy-of-ai-art-matt-corrall/": {
+      "checkedAt": "2026-07-21T15:23:54.578007Z",
+      "detail": "GET https://www.corralldesign.com/writing/ai-harm-hypocrisy returned HTTP 404",
+      "status": "failed",
+      "target": "https://www.corralldesign.com/writing/ai-harm-hypocrisy"
+    },
+    "https://www.danielcorin.com/links/2025/03/the-last-human-choice-tina-he/": {
+      "checkedAt": "2026-07-21T15:23:55.653080Z",
+      "status": "no-endpoint",
+      "target": "https://tinahe.xyz/The-last-human-choice"
+    },
+    "https://www.danielcorin.com/links/2025/03/the-web-should-be-a-conversation-andregarzia-com/": {
+      "checkedAt": "2026-07-21T15:24:04.384175Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://andregarzia.com/webmention",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://andregarzia.com/2025/03/the-web-should-be-a-conversation.html"
+    },
+    "https://www.danielcorin.com/links/2025/03/there-is-no-vibe-engineering/": {
+      "checkedAt": "2026-07-21T15:23:51.510718Z",
+      "status": "no-endpoint",
+      "target": "https://serce.me/posts/2025-31-03-there-is-no-vibe-engineering"
+    },
+    "https://www.danielcorin.com/links/2025/03/verifiability-is-the-limit/": {
+      "checkedAt": "2026-07-21T15:23:54.229508Z",
+      "status": "no-endpoint",
+      "target": "https://alperenkeles.com/posts/verifiability-is-the-limit/"
+    },
+    "https://www.danielcorin.com/links/2025/03/vibe-coding-vs-reality/": {
+      "checkedAt": "2026-07-21T15:23:53.675900Z",
+      "status": "no-endpoint",
+      "target": "https://cendyne.dev/posts/2025-03-19-vibe-coding-vs-reality.html"
+    },
+    "https://www.danielcorin.com/links/2025/03/when-the-dotcom-bubble-burst/": {
+      "checkedAt": "2026-07-21T15:23:54.881406Z",
+      "status": "no-endpoint",
+      "target": "https://dfarq.homeip.net/when-the-dotcom-bubble-burst/"
+    },
+    "https://www.danielcorin.com/links/2025/03/why-im-breaking-up-with-vibe-coding/": {
+      "checkedAt": "2026-07-21T15:23:51.770116Z",
+      "status": "no-endpoint",
+      "target": "https://www.lucasaguiar.xyz/posts/vibe-coding-pitfalls/"
+    },
+    "https://www.danielcorin.com/links/2025/03/your-next-two-zeroes/": {
+      "checkedAt": "2026-07-21T15:24:07.554195Z",
+      "status": "no-endpoint",
+      "target": "https://taylor.town/next-two-zeroes"
+    },
+    "https://www.danielcorin.com/links/2025/04/a-reddit-bot-drove-me-insane/": {
+      "checkedAt": "2026-07-21T15:23:43.748848Z",
+      "status": "no-endpoint",
+      "target": "https://posthuman.blog/this-reddit-post-fried-my-brain/"
+    },
+    "https://www.danielcorin.com/links/2025/04/ai-assisted-search-based-research-actually-works-now/": {
+      "checkedAt": "2026-07-21T15:23:38.951600Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Apr/21/ai-assisted-search/"
+    },
+    "https://www.danielcorin.com/links/2025/04/ai-horseless-carriages-koomen-dev/": {
+      "checkedAt": "2026-07-21T15:23:39.314339Z",
+      "status": "no-endpoint",
+      "target": "https://koomen.dev/essays/horseless-carriages/"
+    },
+    "https://www.danielcorin.com/links/2025/04/alphago-the-movie-full-award-winning-documentary/": {
+      "checkedAt": "2026-07-21T15:23:44.776664Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=WXuK6gekU1Y"
+    },
+    "https://www.danielcorin.com/links/2025/04/an-oh-fuck-moment-in-time/": {
+      "checkedAt": "2026-07-21T15:23:36.469262Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://ghuntley.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://ghuntley.com/oh-fuck/"
+    },
+    "https://www.danielcorin.com/links/2025/04/are-plants-farming-us-a-thoughtful-look-at-natures-silent-masters/": {
+      "checkedAt": "2026-07-21T15:23:43.389534Z",
+      "status": "no-endpoint",
+      "target": "https://inleo.io/@gentleshaid/are-plants-farming-us-a-thoughtful-look-at-natures-silent-masters-jx9"
+    },
+    "https://www.danielcorin.com/links/2025/04/autoregressive-queens-of-failure/": {
+      "checkedAt": "2026-07-21T15:23:33.169774Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://ghuntley.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://ghuntley.com/gutter/"
+    },
+    "https://www.danielcorin.com/links/2025/04/but-what-if-i-really-want-a-faster-horse-exotext/": {
+      "checkedAt": "2026-07-21T15:23:46.877716Z",
+      "status": "no-endpoint",
+      "target": "https://rakhim.exotext.com/but-what-if-i-really-want-a-faster-horse"
+    },
+    "https://www.danielcorin.com/links/2025/04/camel-offers-a-promising-new-direction-for-mitigating-prompt-injection-attacks/": {
+      "checkedAt": "2026-07-21T15:23:46.759790Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Apr/11/camel/"
+    },
+    "https://www.danielcorin.com/links/2025/04/gpt-finally-jumps-out-of-the-system/": {
+      "checkedAt": "2026-07-21T15:23:39.089614Z",
+      "status": "no-endpoint",
+      "target": "https://matthodges.com/posts/2025-04-21-openai-o4-mini-high-mu-puzzle/"
+    },
+    "https://www.danielcorin.com/links/2025/04/how-to-build-an-agent-amp/": {
+      "checkedAt": "2026-07-21T15:23:33.588659Z",
+      "status": "no-endpoint",
+      "target": "https://ampcode.com/how-to-build-an-agent?ref=ghuntley.com"
+    },
+    "https://www.danielcorin.com/links/2025/04/i-spent-the-last-day-using-mcp-and-it-kind-of-blew-my-mind/": {
+      "checkedAt": "2026-07-21T15:23:51.283529Z",
+      "status": "no-endpoint",
+      "target": "https://www.coryzue.com/writing/holy-mcp/"
+    },
+    "https://www.danielcorin.com/links/2025/04/if-you-are-redlining-the-llm-you-arent-headlining/": {
+      "checkedAt": "2026-07-21T15:23:35.052174Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://ghuntley.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://ghuntley.com/redlining/"
+    },
+    "https://www.danielcorin.com/links/2025/04/jacob-collier-improvises-the-national-symphony-orchestra-live-from-the-kennedy-c/": {
+      "checkedAt": "2026-07-21T15:23:51.142883Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=TURkB9zqxa0"
+    },
+    "https://www.danielcorin.com/links/2025/04/javascript-fatigue-strikes-back/": {
+      "checkedAt": "2026-07-21T15:23:45.140626Z",
+      "status": "no-endpoint",
+      "target": "https://www.allenpike.com/2025/javascript-fatigue-ssr"
+    },
+    "https://www.danielcorin.com/links/2025/04/matthewsinclair-com-intelligence-innovation-leadership-influence/": {
+      "checkedAt": "2026-07-21T15:23:39.662587Z",
+      "status": "no-endpoint",
+      "target": "https://matthewsinclair.com/blog/0178-why-llm-powered-programming-is-more-mech-suit-than-artificial-human"
+    },
+    "https://www.danielcorin.com/links/2025/04/no-elephants-breakthroughs-in-image-generation/": {
+      "checkedAt": "2026-07-21T15:23:47.240568Z",
+      "status": "no-endpoint",
+      "target": "https://www.oneusefulthing.org/p/no-elephants-breakthroughs-in-image"
+    },
+    "https://www.danielcorin.com/links/2025/04/on-jagged-agi-o3-gemini-2-5-and-everything-after/": {
+      "checkedAt": "2026-07-21T15:23:40.053798Z",
+      "status": "no-endpoint",
+      "target": "https://www.oneusefulthing.org/p/on-jagged-agi-o3-gemini-25-and-everything"
+    },
+    "https://www.danielcorin.com/links/2025/04/openai-is-a-systemic-risk-to-the-tech-industry/": {
+      "checkedAt": "2026-07-21T15:23:42.615111Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://www.wheresyoured.at/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://www.wheresyoured.at/openai-is-a-systemic-risk-to-the-tech-industry-2/"
+    },
+    "https://www.danielcorin.com/links/2025/04/paper/": {
+      "checkedAt": "2026-07-21T15:23:47.096516Z",
+      "status": "no-endpoint",
+      "target": "https://dynomight.net/paper/"
+    },
+    "https://www.danielcorin.com/links/2025/04/stevens-a-hackable-ai-assistant-using-a-single-sqlite-table-and-a-handful-of-cro/": {
+      "checkedAt": "2026-07-21T15:23:42.752063Z",
+      "status": "no-endpoint",
+      "target": "https://www.geoffreylitt.com/2025/04/12/how-i-made-a-useful-ai-assistant-with-one-sqlite-table-and-a-handful-of-cron-jobs"
+    },
+    "https://www.danielcorin.com/links/2025/04/tech-things-openai-buys-windsurf-google-retains-its-lead-and-where-the-hell-is-a/": {
+      "checkedAt": "2026-07-21T15:23:39.901601Z",
+      "status": "no-endpoint",
+      "target": "https://theahura.substack.com/p/tech-things-openai-buys-windsurf"
+    },
+    "https://www.danielcorin.com/links/2025/04/the-best-programmers-i-know-matthias-endler/": {
+      "checkedAt": "2026-07-21T15:23:47.005705Z",
+      "status": "no-endpoint",
+      "target": "https://endler.dev/2025/best-programmers/"
+    },
+    "https://www.danielcorin.com/links/2025/04/the-bitter-prediction-the-ivory-tower/": {
+      "checkedAt": "2026-07-21T15:23:43.913134Z",
+      "status": "no-endpoint",
+      "target": "https://4zm.org/2025/04/05/bitter-prediction.html"
+    },
+    "https://www.danielcorin.com/links/2025/04/the-blissful-zen-of-a-good-side-project-josh-collinsworth-blog/": {
+      "checkedAt": "2026-07-21T15:23:50.301376Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/joshcollinsworth.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://joshcollinsworth.com/blog/the-blissful-zen-of-a-good-side-project"
+    },
+    "https://www.danielcorin.com/links/2025/04/the-slow-collapse-of-critical-thinking-in-osint-due-to-ai/": {
+      "checkedAt": "2026-07-21T15:23:48.454263Z",
+      "status": "no-endpoint",
+      "target": "https://www.dutchosintguy.com/post/the-slow-collapse-of-critical-thinking-in-osint-due-to-ai"
+    },
+    "https://www.danielcorin.com/links/2025/04/vibe-coding-cursor-windsurf-and-developer-slot-machines/": {
+      "checkedAt": "2026-07-21T15:23:37.154203Z",
+      "status": "no-endpoint",
+      "target": "https://prototypr.io/note/vibe-coding-cursor-windsurf-slot-machine"
+    },
+    "https://www.danielcorin.com/links/2025/04/vibe-management-dmitry-kudryavtsev/": {
+      "checkedAt": "2026-07-21T15:23:41.085115Z",
+      "status": "no-endpoint",
+      "target": "https://yieldcode.blog/post/vibe-management/"
+    },
+    "https://www.danielcorin.com/links/2025/04/why-i-dont-discuss-politics-with-friends/": {
+      "checkedAt": "2026-07-21T15:23:48.136836Z",
+      "status": "no-endpoint",
+      "target": "https://shwin.co/blog/why-i-dont-discuss-politics-with-friends"
+    },
+    "https://www.danielcorin.com/links/2025/04/yagri-you-are-gonna-read-it/": {
+      "checkedAt": "2026-07-21T15:23:39.177726Z",
+      "status": "no-endpoint",
+      "target": "https://www.scottantipa.com/yagri"
+    },
+    "https://www.danielcorin.com/links/2025/05/after-months-of-coding-with-llms-im-going-back-to-using-my-brain-albertofortin-c/": {
+      "checkedAt": "2026-07-21T15:23:21.788090Z",
+      "status": "no-endpoint",
+      "target": "https://albertofortin.com/writing/coding-with-ai"
+    },
+    "https://www.danielcorin.com/links/2025/05/agent-recursion-cholys-blog/": {
+      "checkedAt": "2026-07-21T15:23:16.983451Z",
+      "status": "no-endpoint",
+      "target": "https://choly.ca/post/agent-recursion/"
+    },
+    "https://www.danielcorin.com/links/2025/05/as-an-experienced-llm-user-i-actually-dont-use-generative-llms-often/": {
+      "checkedAt": "2026-07-21T15:23:30.027480Z",
+      "status": "no-endpoint",
+      "target": "https://minimaxir.com/2025/05/llm-use/"
+    },
+    "https://www.danielcorin.com/links/2025/05/cursor-selecting-models/": {
+      "checkedAt": "2026-07-21T15:23:22.856565Z",
+      "status": "no-endpoint",
+      "target": "https://docs.cursor.com/guides/selecting-models"
+    },
+    "https://www.danielcorin.com/links/2025/05/david-bornstein-on-our-lives-with-the-news/": {
+      "checkedAt": "2026-07-21T15:23:30.670609Z",
+      "status": "no-endpoint",
+      "target": "https://podcasts.apple.com/us/podcast/on-being-with-krista-tippett/id150892556?i=1000705723868"
+    },
+    "https://www.danielcorin.com/links/2025/05/dispatch-from-the-trenches-of-the-butlerian-jihad/": {
+      "checkedAt": "2026-07-21T15:23:11.851039Z",
+      "status": "no-endpoint",
+      "target": "https://www.solarshades.club/p/dispatch-from-the-trenches-of-the"
+    },
+    "https://www.danielcorin.com/links/2025/05/ditching-obsidian-and-building-my-own/": {
+      "checkedAt": "2026-07-21T15:23:20.070986Z",
+      "status": "no-endpoint",
+      "target": "https://amberwilliams.io/blogs/building-my-own-pkms"
+    },
+    "https://www.danielcorin.com/links/2025/05/everyone-is-cheating-their-way-through-college/": {
+      "checkedAt": "2026-07-21T15:23:28.796452Z",
+      "status": "no-endpoint",
+      "target": "https://nymag.com/intelligencer/article/openai-chatgpt-ai-cheating-education-college-students-school.html"
+    },
+    "https://www.danielcorin.com/links/2025/05/expanding-on-what-we-missed-with-sycophancy-openai/": {
+      "checkedAt": "2026-07-21T15:23:30.956817Z",
+      "status": "no-endpoint",
+      "target": "https://openai.com/index/expanding-on-sycophancy/"
+    },
+    "https://www.danielcorin.com/links/2025/05/extract-fema-incidents-llm-evals-kevin-schaul/": {
+      "checkedAt": "2026-07-21T15:23:21.036778Z",
+      "status": "no-endpoint",
+      "target": "https://kschaul.com/llm-evals/evals/extract-fema-incidents/"
+    },
+    "https://www.danielcorin.com/links/2025/05/find-your-people/": {
+      "checkedAt": "2026-07-21T15:23:13.003895Z",
+      "status": "no-endpoint",
+      "target": "https://foundersatwork.posthaven.com/find-your-people"
+    },
+    "https://www.danielcorin.com/links/2025/05/flattening-rusts-learning-curve-corrode-rust-consulting/": {
+      "checkedAt": "2026-07-21T15:23:21.877081Z",
+      "status": "no-endpoint",
+      "target": "https://corrode.dev/blog/flattening-rusts-learning-curve/"
+    },
+    "https://www.danielcorin.com/links/2025/05/friday-deploy-freezes-are-exactly-like-murdering-puppies/": {
+      "checkedAt": "2026-07-21T15:23:23.248457Z",
+      "status": "no-endpoint",
+      "target": "https://charity.wtf/2019/05/01/friday-deploy-freezes-are-exactly-like-murdering-puppies/"
+    },
+    "https://www.danielcorin.com/links/2025/05/from-steve-jobs-great-idea-thank-you/": {
+      "checkedAt": "2026-07-21T15:23:26.036586Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://micro.blog/webmention",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://blog.hayman.net/2025/05/06/from-steve-jobs-great-idea.html"
+    },
+    "https://www.danielcorin.com/links/2025/05/gemini-diffusion/": {
+      "checkedAt": "2026-07-21T15:23:14.693703Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/May/21/gemini-diffusion/"
+    },
+    "https://www.danielcorin.com/links/2025/05/generating-structured-data-with-llms-beyond-basics/": {
+      "checkedAt": "2026-07-21T15:23:16.885861Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/rwilinski.ai/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://rwilinski.ai/posts/generating-jsons-with-llm-beyond-basics/"
+    },
+    "https://www.danielcorin.com/links/2025/05/harry-mack-fire-in-the-booth-freestyle/": {
+      "checkedAt": "2026-07-21T15:23:12.600522Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=lulPiTqSq4k"
+    },
+    "https://www.danielcorin.com/links/2025/05/horizon-ai-powered-opinion-simulation/": {
+      "checkedAt": "2026-07-21T15:23:14.943773Z",
+      "status": "no-endpoint",
+      "target": "https://simulate.trybezel.com/research/image_agent"
+    },
+    "https://www.danielcorin.com/links/2025/05/how-to-live-an-intellectually-rich-life/": {
+      "checkedAt": "2026-07-21T15:23:31.673842Z",
+      "status": "no-endpoint",
+      "target": "https://utsavmamoria.substack.com/p/how-to-live-an-intellectually-rich"
+    },
+    "https://www.danielcorin.com/links/2025/05/human-coders-are-still-better-than-llms-antirez/": {
+      "checkedAt": "2026-07-21T15:23:09.185786Z",
+      "status": "no-endpoint",
+      "target": "https://antirez.com/news/153"
+    },
+    "https://www.danielcorin.com/links/2025/05/internet-roadtrip/": {
+      "checkedAt": "2026-07-21T15:23:23.519276Z",
+      "status": "no-endpoint",
+      "target": "https://neal.fun/internet-roadtrip/"
+    },
+    "https://www.danielcorin.com/links/2025/05/language-model-sketchbook-or-why-i-hate-chatbots/": {
+      "checkedAt": "2026-07-21T15:23:27.939135Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/maggieappleton.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://maggieappleton.com/lm-sketchbook/"
+    },
+    "https://www.danielcorin.com/links/2025/05/llm-evals-common-mistakes/": {
+      "checkedAt": "2026-07-21T15:23:24.450520Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=GL0XhAj5LPE&t=2s"
+    },
+    "https://www.danielcorin.com/links/2025/05/post-chat-ui/": {
+      "checkedAt": "2026-07-21T15:23:28.199556Z",
+      "status": "no-endpoint",
+      "target": "https://allenpike.com/2025/post-chat-llm-ui"
+    },
+    "https://www.danielcorin.com/links/2025/05/progressive-json-overreacted/": {
+      "checkedAt": "2026-07-21T15:23:08.777398Z",
+      "status": "no-endpoint",
+      "target": "https://overreacted.io/progressive-json/"
+    },
+    "https://www.danielcorin.com/links/2025/05/sketch-blog-the-unreasonable-effectiveness-of-an-llm-agent-loop-with-tool-use/": {
+      "checkedAt": "2026-07-21T15:23:22.471816Z",
+      "status": "no-endpoint",
+      "target": "https://sketch.dev/blog/agent-loop"
+    },
+    "https://www.danielcorin.com/links/2025/05/square-theory/": {
+      "checkedAt": "2026-07-21T15:23:11.477866Z",
+      "status": "no-endpoint",
+      "target": "https://aaronson.org/blog/square-theory"
+    },
+    "https://www.danielcorin.com/links/2025/05/static-as-a-server-overreacted/": {
+      "checkedAt": "2026-07-21T15:23:23.393130Z",
+      "status": "no-endpoint",
+      "target": "https://overreacted.io/static-as-a-server/"
+    },
+    "https://www.danielcorin.com/links/2025/05/the-bitter-lesson/": {
+      "checkedAt": "2026-07-21T15:23:29.014580Z",
+      "status": "no-endpoint",
+      "target": "http://www.incompleteideas.net/IncIdeas/BitterLesson.html"
+    },
+    "https://www.danielcorin.com/links/2025/05/the-copilot-delusion/": {
+      "checkedAt": "2026-07-21T15:23:11.655186Z",
+      "detail": "GET https://deplet.ing/the-copilot-delusion/ returned HTTP 404",
+      "status": "failed",
+      "target": "https://deplet.ing/the-copilot-delusion/"
+    },
+    "https://www.danielcorin.com/links/2025/05/the-curse-of-knowing-how-or-fixing-everything-blog/": {
+      "checkedAt": "2026-07-21T15:23:29.730412Z",
+      "status": "no-endpoint",
+      "target": "https://notashelf.dev/posts/curse-of-knowing"
+    },
+    "https://www.danielcorin.com/links/2025/05/the-evolution-of-trust/": {
+      "checkedAt": "2026-07-21T15:23:15.193734Z",
+      "status": "no-endpoint",
+      "target": "https://ncase.me/trust/"
+    },
+    "https://www.danielcorin.com/links/2025/05/the-good-shit-sticks/": {
+      "checkedAt": "2026-07-21T15:23:18.946799Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://www.oskareggert.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://www.oskareggert.com/the-good-shit-sticks/"
+    },
+    "https://www.danielcorin.com/links/2025/05/the-ingredients-of-a-productive-monorepo/": {
+      "checkedAt": "2026-07-21T15:23:11.274138Z",
+      "status": "no-endpoint",
+      "target": "https://blog.swgillespie.me/posts/monorepo-ingredients/"
+    },
+    "https://www.danielcorin.com/links/2025/05/thoughts-on-thinking/": {
+      "checkedAt": "2026-07-21T15:23:20.679444Z",
+      "status": "no-endpoint",
+      "target": "https://dcurt.is/thinking"
+    },
+    "https://www.danielcorin.com/links/2025/05/very-low-tech-high-tech-travel/": {
+      "checkedAt": "2026-07-21T15:23:29.874463Z",
+      "status": "no-endpoint",
+      "target": "https://walkingtheworld.substack.com/p/very-low-tech-high-tech-travel"
+    },
+    "https://www.danielcorin.com/links/2025/05/vibe-coding-for-domain-experts-derek-willis/": {
+      "checkedAt": "2026-07-21T15:23:12.820985Z",
+      "status": "no-endpoint",
+      "target": "https://thescoop.org/archives/2025/05/24/vibe-coding-for-domain-experts/index.html"
+    },
+    "https://www.danielcorin.com/links/2025/05/what-makes-me-mad-about-ai-in-education/": {
+      "checkedAt": "2026-07-21T15:23:26.175632Z",
+      "status": "no-endpoint",
+      "target": "https://irinadumitrescu.substack.com/p/what-makes-me-mad-about-ai-in-education?r=5sjf&utm_campaign=post&utm_medium=web&triedRedirect=true"
+    },
+    "https://www.danielcorin.com/links/2025/05/what-my-students-had-to-say-about-ai/": {
+      "checkedAt": "2026-07-21T15:23:20.231632Z",
+      "status": "no-endpoint",
+      "target": "https://thebrokencopier.substack.com/p/what-my-students-had-to-say-about"
+    },
+    "https://www.danielcorin.com/links/2025/05/wonder-engines-thesephist-com/": {
+      "checkedAt": "2026-07-21T15:23:17.461620Z",
+      "status": "no-endpoint",
+      "target": "https://thesephist.com/posts/wonder/"
+    },
+    "https://www.danielcorin.com/links/2025/05/you-could-just-choose-optimism-quarter-mile/": {
+      "checkedAt": "2026-07-21T15:23:31.493868Z",
+      "detail": "GET https://quarter--mile.com/You-Could-Just-Choose-Optimism returned HTTP 429",
+      "status": "failed",
+      "target": "https://quarter--mile.com/You-Could-Just-Choose-Optimism"
+    },
+    "https://www.danielcorin.com/links/2025/06/a-look-at-cloudflares-ai-coded-oauth-library/": {
+      "checkedAt": "2026-07-21T15:23:05.093000Z",
+      "status": "no-endpoint",
+      "target": "https://neilmadden.blog/2025/06/06/a-look-at-cloudflares-ai-coded-oauth-library/"
+    },
+    "https://www.danielcorin.com/links/2025/06/agentic-coding-recommendations/": {
+      "checkedAt": "2026-07-21T15:23:00.874359Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2025/6/12/agentic-coding/"
+    },
+    "https://www.danielcorin.com/links/2025/06/agentultra-why-i-wont-use-ai/": {
+      "checkedAt": "2026-07-21T15:22:58.217901Z",
+      "status": "no-endpoint",
+      "target": "https://agentultra.com/blog/why-i-wont-use-ai/index.html"
+    },
+    "https://www.danielcorin.com/links/2025/06/ai-changes-everything/": {
+      "checkedAt": "2026-07-21T15:23:06.141662Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2025/6/4/changes/"
+    },
+    "https://www.danielcorin.com/links/2025/06/blog-kade-localhost/": {
+      "checkedAt": "2026-07-21T15:22:57.281687Z",
+      "status": "no-endpoint",
+      "target": "https://kadekillary.work/blog/#2025-06-16-snorting-the-agi-with-claude-code"
+    },
+    "https://www.danielcorin.com/links/2025/06/claude-code-is-my-computer-peter-steinberger/": {
+      "checkedAt": "2026-07-21T15:23:05.958919Z",
+      "status": "no-endpoint",
+      "target": "https://steipete.me/posts/2025/claude-code-is-my-computer"
+    },
+    "https://www.danielcorin.com/links/2025/06/cognition-dont-build-multi-agents/": {
+      "checkedAt": "2026-07-21T15:23:00.180714Z",
+      "status": "no-endpoint",
+      "target": "https://cognition.ai/blog/dont-build-multi-agents#applying-the-principles"
+    },
+    "https://www.danielcorin.com/links/2025/06/engineered-addictions/": {
+      "checkedAt": "2026-07-21T15:22:49.580526Z",
+      "status": "no-endpoint",
+      "target": "https://masonyarbrough.substack.com/p/engineered-addictions"
+    },
+    "https://www.danielcorin.com/links/2025/06/field-notes-from-shipping-real-code-with-claude-diwanks-space/": {
+      "checkedAt": "2026-07-21T15:23:04.588234Z",
+      "status": "no-endpoint",
+      "target": "https://diwank.space/field-notes-from-shipping-real-code-with-claude"
+    },
+    "https://www.danielcorin.com/links/2025/06/focus-and-context-and-llms/": {
+      "checkedAt": "2026-07-21T15:23:04.141515Z",
+      "status": "no-endpoint",
+      "target": "https://taras.glek.net/posts/focus-and-context-and-llms/"
+    },
+    "https://www.danielcorin.com/links/2025/06/hearing-is-becoming/": {
+      "checkedAt": "2026-07-21T15:23:02.896221Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/evantravers.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://evantravers.com/articles/2025/06/09/hearing-is-becoming/"
+    },
+    "https://www.danielcorin.com/links/2025/06/how-long-contexts-fail/": {
+      "checkedAt": "2026-07-21T15:22:52.317812Z",
+      "status": "no-endpoint",
+      "target": "https://www.dbreunig.com/2025/06/22/how-contexts-fail-and-how-to-fix-them.html"
+    },
+    "https://www.danielcorin.com/links/2025/06/how-not-to-lose-your-job-to-ai/": {
+      "checkedAt": "2026-07-21T15:22:58.628379Z",
+      "status": "no-endpoint",
+      "target": "https://80000hours.org/agi/guide/skills-ai-makes-valuable/"
+    },
+    "https://www.danielcorin.com/links/2025/06/i-deleted-my-second-brain/": {
+      "checkedAt": "2026-07-21T15:22:50.211443Z",
+      "detail": "GET https://www.joanwestenberg.com/p/i-deleted-my-second-brain returned HTTP 404",
+      "status": "failed",
+      "target": "https://www.joanwestenberg.com/p/i-deleted-my-second-brain"
+    },
+    "https://www.danielcorin.com/links/2025/06/i-read-all-of-cloudflares-claude-generated-commits/": {
+      "checkedAt": "2026-07-21T15:23:05.815471Z",
+      "status": "no-endpoint",
+      "target": "https://www.maxemitchell.com/writings/i-read-all-of-cloudflares-claude-generated-commits/"
+    },
+    "https://www.danielcorin.com/links/2025/06/i-think-im-done-thinking-about-genai-for-now/": {
+      "checkedAt": "2026-07-21T15:23:08.149285Z",
+      "status": "no-endpoint",
+      "target": "https://blog.glyph.im/2025/06/i-think-im-done-thinking-about-genai-for-now.html"
+    },
+    "https://www.danielcorin.com/links/2025/06/if-you-are-useful-it-doesnt-mean-you-are-valued/": {
+      "checkedAt": "2026-07-21T15:23:08.591327Z",
+      "status": "no-endpoint",
+      "target": "https://betterthanrandom.substack.com/p/if-you-are-useful-it-doesnt-mean"
+    },
+    "https://www.danielcorin.com/links/2025/06/is-there-a-half-life-for-the-success-rates-of-ai-agents-toby-ord/": {
+      "checkedAt": "2026-07-21T15:22:57.738123Z",
+      "status": "no-endpoint",
+      "target": "https://www.tobyord.com/writing/half-life"
+    },
+    "https://www.danielcorin.com/links/2025/06/kind-software-untested/": {
+      "checkedAt": "2026-07-21T15:23:05.336852Z",
+      "status": "no-endpoint",
+      "target": "https://untested.sonnet.io/notes/kind-software/"
+    },
+    "https://www.danielcorin.com/links/2025/06/knowledge-management-in-the-age-of-ai-eric-gardner/": {
+      "checkedAt": "2026-07-21T15:23:04.895810Z",
+      "status": "no-endpoint",
+      "target": "https://ericgardner.info/notes/knowledge-management-june-2025"
+    },
+    "https://www.danielcorin.com/links/2025/06/mcp-an-accidentally-universal-plugin-system/": {
+      "checkedAt": "2026-07-21T15:22:49.810167Z",
+      "status": "no-endpoint",
+      "target": "https://worksonmymachine.substack.com/p/mcp-an-accidentally-universal-plugin"
+    },
+    "https://www.danielcorin.com/links/2025/06/moving-on-from-nix-carlos-becker/": {
+      "checkedAt": "2026-07-21T15:22:56.811255Z",
+      "status": "no-endpoint",
+      "target": "https://carlosbecker.com/posts/bye-nix/"
+    },
+    "https://www.danielcorin.com/links/2025/06/my-ai-skeptic-friends-are-all-nuts/": {
+      "checkedAt": "2026-07-21T15:23:08.323600Z",
+      "status": "no-endpoint",
+      "target": "https://fly.io/blog/youre-all-nuts/"
+    },
+    "https://www.danielcorin.com/links/2025/06/my-first-attempt-at-ios-app-development/": {
+      "checkedAt": "2026-07-21T15:23:03.964925Z",
+      "status": "no-endpoint",
+      "target": "https://mgx.me/my-first-attempt-at-ios-app-development"
+    },
+    "https://www.danielcorin.com/links/2025/06/my-first-open-source-ai-generated-library-lucumr-pocoo-org/": {
+      "checkedAt": "2026-07-21T15:22:54.611453Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2025/6/21/my-first-ai-library/"
+    },
+    "https://www.danielcorin.com/links/2025/06/my-first-open-source-ai-generated-library/": {
+      "checkedAt": "2026-07-21T15:22:56.171440Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Jun/21/my-first-open-source-ai-generated-library/"
+    },
+    "https://www.danielcorin.com/links/2025/06/on-consciousness-vitali/": {
+      "checkedAt": "2026-07-21T15:22:49.266701Z",
+      "status": "no-endpoint",
+      "target": "https://v1tali.com/ai-consciousness"
+    },
+    "https://www.danielcorin.com/links/2025/06/on-how-long-it-takes-to-know-if-a-job-is-right-for-you-or-not/": {
+      "checkedAt": "2026-07-21T15:23:01.214851Z",
+      "status": "no-endpoint",
+      "target": "https://charity.wtf/2025/06/08/on-how-long-it-takes-to-know-if-a-job-is-right-for-you-or-not/"
+    },
+    "https://www.danielcorin.com/links/2025/06/openai-charges-by-the-minute-so-make-the-minutes-shorter/": {
+      "checkedAt": "2026-07-21T15:22:52.207904Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/george.mand.is/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://george.mand.is/2025/06/openai-charges-by-the-minute-so-make-the-minutes-shorter/"
+    },
+    "https://www.danielcorin.com/links/2025/06/reverse-engineering-claude-code-kir-shatrov/": {
+      "checkedAt": "2026-07-21T15:23:04.420787Z",
+      "status": "no-endpoint",
+      "target": "https://kirshatrov.com/posts/claude-code-internals"
+    },
+    "https://www.danielcorin.com/links/2025/06/staying-on-nix/": {
+      "checkedAt": "2026-07-21T15:22:56.618000Z",
+      "detail": "GET https://pid1.sh/blog/staying-on-nix failed: <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1081)>",
+      "status": "failed",
+      "target": "https://pid1.sh/blog/staying-on-nix"
+    },
+    "https://www.danielcorin.com/links/2025/06/tell-me-about-your-favorite-tree-a-slow-web-proposal-pixel-dirt/": {
+      "checkedAt": "2026-07-21T15:22:54.544997Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/nannnsss.omg.lol/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://nannnsss.omg.lol/2025/tell-me-about-your-favorite-tree/"
+    },
+    "https://www.danielcorin.com/links/2025/06/the-ai-safety-problem-is-wanting/": {
+      "checkedAt": "2026-07-21T15:22:50.378474Z",
+      "status": "no-endpoint",
+      "target": "https://dynomight.net/wanting/"
+    },
+    "https://www.danielcorin.com/links/2025/06/the-death-of-the-student-essayand-the-future-of-cognition/": {
+      "checkedAt": "2026-07-21T15:22:58.028534Z",
+      "status": "no-endpoint",
+      "target": "https://www.forkingpaths.co/p/the-death-of-the-student-essayand?selection=2a5c4d52-a095-43ea-9d0e-56a6f7f7bcb6&triedRedirect=true"
+    },
+    "https://www.danielcorin.com/links/2025/06/the-server-doesnt-render-anything/": {
+      "checkedAt": "2026-07-21T15:22:57.562941Z",
+      "status": "no-endpoint",
+      "target": "https://unplannedobsolescence.com/blog/the-server-doesnt-render/"
+    },
+    "https://www.danielcorin.com/links/2025/06/the-unsustainability-of-moores-law/": {
+      "checkedAt": "2026-07-21T15:22:49.407196Z",
+      "status": "no-endpoint",
+      "target": "https://bzolang.blog/p/the-unsustainability-of-moores-law"
+    },
+    "https://www.danielcorin.com/links/2025/06/thoughts-on-the-ai-2027-discourse/": {
+      "checkedAt": "2026-07-21T15:22:50.298162Z",
+      "status": "no-endpoint",
+      "target": "https://dynomight.net/ai2027/"
+    },
+    "https://www.danielcorin.com/links/2025/06/thrive-in-obscurity/": {
+      "checkedAt": "2026-07-21T15:23:08.433568Z",
+      "status": "no-endpoint",
+      "target": "https://www.jeetmehta.com/posts/thrive-in-obscurity"
+    },
+    "https://www.danielcorin.com/links/2025/06/using-computers-more-freely-and-safely/": {
+      "checkedAt": "2026-07-21T15:23:00.767175Z",
+      "status": "no-endpoint",
+      "target": "https://akkartik.name/freewheeling/"
+    },
+    "https://www.danielcorin.com/links/2025/06/we-can-just-measure-things/": {
+      "checkedAt": "2026-07-21T15:22:59.736426Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2025/6/17/measuring/"
+    },
+    "https://www.danielcorin.com/links/2025/06/when-mit-is-also-beating-dead-ai-horses/": {
+      "checkedAt": "2026-07-21T15:22:56.975253Z",
+      "status": "no-endpoint",
+      "target": "https://wesstrabelsi.substack.com/p/when-mit-is-also-beating-dead-ai?r=d8xtt&utm_medium=ios&triedRedirect=true"
+    },
+    "https://www.danielcorin.com/links/2025/06/why-generative-ai-coding-tools-and-agents-do-not-work-for-me/": {
+      "checkedAt": "2026-07-21T15:22:59.652625Z",
+      "status": "no-endpoint",
+      "target": "https://blog.miguelgrinberg.com/post/why-generative-ai-coding-tools-and-agents-do-not-work-for-me"
+    },
+    "https://www.danielcorin.com/links/2025/06/why-insist-on-a-word/": {
+      "checkedAt": "2026-07-21T15:22:57.455226Z",
+      "status": "no-endpoint",
+      "target": "https://unplannedobsolescence.com/blog/why-insist-on-a-word/"
+    },
+    "https://www.danielcorin.com/links/2025/07/adding-a-feature-because-chatgpt-incorrectly-thinks-it-exists-holovaty-com/": {
+      "checkedAt": "2026-07-21T15:22:46.297967Z",
+      "status": "no-endpoint",
+      "target": "https://www.holovaty.com/writing/chatgpt-fake-feature/"
+    },
+    "https://www.danielcorin.com/links/2025/07/attention-is-your-scarcest-resource/": {
+      "checkedAt": "2026-07-21T15:22:37.329910Z",
+      "status": "no-endpoint",
+      "target": "https://www.benkuhn.net/attention/"
+    },
+    "https://www.danielcorin.com/links/2025/07/being-too-ambitious-is-a-clever-form-of-self-sabotage/": {
+      "checkedAt": "2026-07-21T15:22:47.407609Z",
+      "status": "no-endpoint",
+      "target": "https://maalvika.substack.com/p/being-too-ambitious-is-a-clever-form"
+    },
+    "https://www.danielcorin.com/links/2025/07/claude-code-is-a-slot-machine/": {
+      "checkedAt": "2026-07-21T15:22:39.315080Z",
+      "status": "no-endpoint",
+      "target": "https://rgoldfinger.com/blog/2025-07-26-claude-code-is-a-slot-machine/"
+    },
+    "https://www.danielcorin.com/links/2025/07/coding-with-llms-in-the-summer-of-2025-an-update-antirez/": {
+      "checkedAt": "2026-07-21T15:22:41.060964Z",
+      "status": "no-endpoint",
+      "target": "https://antirez.com/news/154"
+    },
+    "https://www.danielcorin.com/links/2025/07/cristobal-valenzuela/": {
+      "checkedAt": "2026-07-21T15:22:39.980466Z",
+      "status": "no-endpoint",
+      "target": "https://cvalenzuelab.com/pixel-economy"
+    },
+    "https://www.danielcorin.com/links/2025/07/developing-our-position-on-ai-blog-recurse-center/": {
+      "checkedAt": "2026-07-21T15:22:39.666976Z",
+      "status": "no-endpoint",
+      "target": "https://www.recurse.com/blog/191-developing-our-position-on-ai"
+    },
+    "https://www.danielcorin.com/links/2025/07/do-not-download-the-app-use-the-website/": {
+      "checkedAt": "2026-07-21T15:22:39.868192Z",
+      "status": "no-endpoint",
+      "target": "https://idiallo.com/blog/dont-download-apps"
+    },
+    "https://www.danielcorin.com/links/2025/07/enough-ai-copilots-we-need-ai-huds/": {
+      "checkedAt": "2026-07-21T15:22:39.150312Z",
+      "status": "no-endpoint",
+      "target": "https://www.geoffreylitt.com/2025/07/27/enough-ai-copilots-we-need-ai-huds"
+    },
+    "https://www.danielcorin.com/links/2025/07/gaslight-driven-development/": {
+      "checkedAt": "2026-07-21T15:22:41.862623Z",
+      "status": "no-endpoint",
+      "target": "https://tonsky.me/blog/gaslight-driven-development/"
+    },
+    "https://www.danielcorin.com/links/2025/07/how-i-build-software-quickly/": {
+      "checkedAt": "2026-07-21T15:22:46.136939Z",
+      "status": "no-endpoint",
+      "target": "https://evanhahn.com/how-i-build-software-quickly/"
+    },
+    "https://www.danielcorin.com/links/2025/07/how-to-network-as-an-introvert/": {
+      "checkedAt": "2026-07-21T15:22:47.289329Z",
+      "status": "no-endpoint",
+      "target": "https://aginfer.bearblog.dev/how-to-network-as-an-introvert/"
+    },
+    "https://www.danielcorin.com/links/2025/07/i-know-when-youre-vibe-coding/": {
+      "checkedAt": "2026-07-21T15:22:37.467091Z",
+      "status": "no-endpoint",
+      "target": "https://alexkondov.com/i-know-when-youre-vibe-coding/"
+    },
+    "https://www.danielcorin.com/links/2025/07/i-shipped-a-macos-app-built-entirely-by-claude-code/": {
+      "checkedAt": "2026-07-21T15:22:46.999990Z",
+      "status": "no-endpoint",
+      "target": "https://www.indragie.com/blog/i-shipped-a-macos-app-built-entirely-by-claude-code"
+    },
+    "https://www.danielcorin.com/links/2025/07/learning-is-slower-than-you-think-and-thats-the-point/": {
+      "checkedAt": "2026-07-21T15:22:39.043958Z",
+      "status": "no-endpoint",
+      "target": "https://nisheethvishnoi.substack.com/p/learning-is-slower-than-you-think"
+    },
+    "https://www.danielcorin.com/links/2025/07/llm-hackathon-submissions-md/": {
+      "checkedAt": "2026-07-21T15:22:46.794150Z",
+      "status": "no-endpoint",
+      "target": "https://gist.github.com/chriscarrollsmith/87a41eb91fac52b7c57a51ec277bc2d5"
+    },
+    "https://www.danielcorin.com/links/2025/07/my-experience-with-claude-code-after-2-weeks-of-adventures/": {
+      "checkedAt": "2026-07-21T15:22:41.475433Z",
+      "status": "no-endpoint",
+      "target": "https://sankalp.bearblog.dev/my-claude-code-experience-after-2-weeks-of-usage/"
+    },
+    "https://www.danielcorin.com/links/2025/07/nobody-knows-how-to-build-with-ai-yet/": {
+      "checkedAt": "2026-07-21T15:22:40.605176Z",
+      "status": "no-endpoint",
+      "target": "https://worksonmymachine.substack.com/p/nobody-knows-how-to-build-with-ai"
+    },
+    "https://www.danielcorin.com/links/2025/07/ralph-wiggum-as-a-software-engineer/": {
+      "checkedAt": "2026-07-21T15:22:45.339296Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://ghuntley.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://ghuntley.com/ralph/"
+    },
+    "https://www.danielcorin.com/links/2025/07/reflections-on-openai/": {
+      "checkedAt": "2026-07-21T15:22:42.070618Z",
+      "status": "no-endpoint",
+      "target": "https://calv.info/openai-reflections"
+    },
+    "https://www.danielcorin.com/links/2025/07/rethinking-cli-interfaces-for-ai/": {
+      "checkedAt": "2026-07-21T15:22:41.343977Z",
+      "status": "no-endpoint",
+      "target": "https://www.notcheckmark.com/2025/07/rethinking-cli-interfaces-for-ai/"
+    },
+    "https://www.danielcorin.com/links/2025/07/software-engineering-with-llms-in-2025-reality-check/": {
+      "checkedAt": "2026-07-21T15:22:49.038502Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=EO3_qN_Ynsk"
+    },
+    "https://www.danielcorin.com/links/2025/07/spending-too-much-money-on-a-coding-agent/": {
+      "checkedAt": "2026-07-21T15:22:47.897614Z",
+      "status": "no-endpoint",
+      "target": "https://allenpike.com/2025/coding-agents"
+    },
+    "https://www.danielcorin.com/links/2025/07/the-bitter-lesson-versus-the-garbage-can/": {
+      "checkedAt": "2026-07-21T15:22:37.622041Z",
+      "status": "no-endpoint",
+      "target": "https://www.oneusefulthing.org/p/the-bitter-lesson-versus-the-garbage?utm_source=app-post-stats-page&r=i5f7&utm_medium=ios&triedRedirect=true"
+    },
+    "https://www.danielcorin.com/links/2025/07/the-hype-is-the-product/": {
+      "checkedAt": "2026-07-21T15:22:38.883208Z",
+      "status": "no-endpoint",
+      "target": "https://rys.io/en/180.html"
+    },
+    "https://www.danielcorin.com/links/2025/07/the-sound-of-inevitability/": {
+      "checkedAt": "2026-07-21T15:22:43.819892Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/tomrenner.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://tomrenner.com/posts/llm-inevitabilism/"
+    },
+    "https://www.danielcorin.com/links/2025/07/tools-code-is-all-you-need/": {
+      "checkedAt": "2026-07-21T15:22:47.489080Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2025/7/3/tools/"
+    },
+    "https://www.danielcorin.com/links/2025/07/vibe-code-is-legacy-code/": {
+      "checkedAt": "2026-07-21T15:22:38.077631Z",
+      "status": "no-endpoint",
+      "target": "https://blog.val.town/vibe-code"
+    },
+    "https://www.danielcorin.com/links/2025/07/vibe-coding-casino-blog-opinion-vibes-casino-evrim-zone/": {
+      "checkedAt": "2026-07-21T15:22:45.950048Z",
+      "status": "no-endpoint",
+      "target": "https://evrim.zone/blog/opinion/vibes_casino"
+    },
+    "https://www.danielcorin.com/links/2025/07/vibecodings-allure-the-inventor-and-the-fiend/": {
+      "checkedAt": "2026-07-21T15:22:45.454368Z",
+      "status": "no-endpoint",
+      "target": "https://matthewbilyeu.com/blog/2025-06-14/vibecoding-s-allure-the-inventor-and-the-fiend"
+    },
+    "https://www.danielcorin.com/links/2025/07/what-math-can-teach-us-about-how-to-live/": {
+      "checkedAt": "2026-07-21T15:22:47.145740Z",
+      "status": "no-endpoint",
+      "target": "https://maalvika.substack.com/p/what-math-can-teach-us-about-how"
+    },
+    "https://www.danielcorin.com/links/2025/07/why-im-betting-against-ai-agents-in-2025-despite-building-them/": {
+      "checkedAt": "2026-07-21T15:22:40.286466Z",
+      "status": "no-endpoint",
+      "target": "https://utkarshkanwat.com/writing/betting-against-agents/"
+    },
+    "https://www.danielcorin.com/links/2025/07/why-im-dialing-back-my-llm-usage/": {
+      "checkedAt": "2026-07-21T15:22:48.087088Z",
+      "status": "no-endpoint",
+      "target": "https://zed.dev/blog/dialing-back-my-llm-usage-with-alberto-fortin"
+    },
+    "https://www.danielcorin.com/links/2025/08/6-weeks-of-claude-code/": {
+      "checkedAt": "2026-07-21T15:22:37.035583Z",
+      "status": "no-endpoint",
+      "target": "https://blog.puzzmo.com/posts/2025/07/30/six-weeks-of-claude-code/#adding-barred-grid-support-to-a-crossword"
+    },
+    "https://www.danielcorin.com/links/2025/08/blog-what-s-left-is-distillation/": {
+      "checkedAt": "2026-07-21T15:22:33.737194Z",
+      "detail": "GET https://inference.net/blog/what-s-left-is-distillation returned HTTP 404",
+      "status": "failed",
+      "target": "https://inference.net/blog/what-s-left-is-distillation"
+    },
+    "https://www.danielcorin.com/links/2025/08/building-ai-products-in-the-probabilistic-era/": {
+      "checkedAt": "2026-07-21T15:22:28.405438Z",
+      "status": "no-endpoint",
+      "target": "https://giansegato.com/essays/probabilistic-era"
+    },
+    "https://www.danielcorin.com/links/2025/08/contra-ptaceks-terrible-article-on-ai-ludicity/": {
+      "checkedAt": "2026-07-21T15:22:34.548432Z",
+      "status": "no-endpoint",
+      "target": "https://ludic.mataroa.blog/blog/contra-ptaceks-terrible-article-on-ai/#fn:1"
+    },
+    "https://www.danielcorin.com/links/2025/08/curate-your-own-newspaper-with-rss/": {
+      "checkedAt": "2026-07-21T15:22:35.185435Z",
+      "status": "no-endpoint",
+      "target": "https://podcasts.apple.com/us/podcast/molly-whites-citation-needed/id1719025552?i=1000720109685"
+    },
+    "https://www.danielcorin.com/links/2025/08/does-the-bitter-lesson-have-limits/": {
+      "checkedAt": "2026-07-21T15:22:35.349402Z",
+      "status": "no-endpoint",
+      "target": "https://www.dbreunig.com/2025/08/01/does-the-bitter-lesson-have-limits.html"
+    },
+    "https://www.danielcorin.com/links/2025/08/everything-around-llms-is-still-magical-and-wishful-thinking/": {
+      "checkedAt": "2026-07-21T15:22:35.811503Z",
+      "status": "no-endpoint",
+      "target": "https://dmitriid.com/everything-around-llms-is-still-magical-and-wishful-thinking"
+    },
+    "https://www.danielcorin.com/links/2025/08/face-it-youre-a-crazy-person/": {
+      "checkedAt": "2026-07-21T15:22:36.863872Z",
+      "status": "no-endpoint",
+      "target": "https://www.experimental-history.com/p/face-it-youre-a-crazy-person"
+    },
+    "https://www.danielcorin.com/links/2025/08/gpt-5-is-a-joke-will-it-matter/": {
+      "checkedAt": "2026-07-21T15:22:29.847160Z",
+      "status": "no-endpoint",
+      "target": "https://www.bloodinthemachine.com/p/gpt-5-is-a-joke-will-it-matter"
+    },
+    "https://www.danielcorin.com/links/2025/08/gpt-5/": {
+      "checkedAt": "2026-07-21T15:22:31.664405Z",
+      "status": "no-endpoint",
+      "target": "https://every.to/vibe-check/gpt-5"
+    },
+    "https://www.danielcorin.com/links/2025/08/human-literacy/": {
+      "checkedAt": "2026-07-21T15:22:27.593726Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://mail.cyberneticforests.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://mail.cyberneticforests.com/human-literacy/?ref=cybernetic-forests-newsletter"
+    },
+    "https://www.danielcorin.com/links/2025/08/just-one-more-prompt-peter-steinberger/": {
+      "checkedAt": "2026-07-21T15:22:29.233906Z",
+      "status": "no-endpoint",
+      "target": "https://steipete.me/posts/just-one-more-prompt"
+    },
+    "https://www.danielcorin.com/links/2025/08/no-ai-is-not-making-engineers-10x-as-productive/": {
+      "checkedAt": "2026-07-21T15:22:34.644885Z",
+      "status": "no-endpoint",
+      "target": "https://colton.dev/blog/curing-your-ai-10x-engineer-imposter-syndrome/"
+    },
+    "https://www.danielcorin.com/links/2025/08/our-first-outage-from-llm-written-code/": {
+      "checkedAt": "2026-07-21T15:22:36.720171Z",
+      "status": "no-endpoint",
+      "target": "https://sketch.dev/blog/our-first-outage-from-llm-written-code"
+    },
+    "https://www.danielcorin.com/links/2025/08/ramblings/": {
+      "checkedAt": "2026-07-21T15:22:35.943276Z",
+      "status": "no-endpoint",
+      "target": "https://stephango.com/ramblings"
+    },
+    "https://www.danielcorin.com/links/2025/08/repomirror-repomirror-md-at-main-repomirrorhq-repomirror/": {
+      "checkedAt": "2026-07-21T15:22:28.209785Z",
+      "status": "no-endpoint",
+      "target": "https://github.com/repomirrorhq/repomirror/blob/main/repomirror.md"
+    },
+    "https://www.danielcorin.com/links/2025/08/rick-rubin-on-how-to-make-something-great-update/": {
+      "checkedAt": "2026-07-21T15:22:28.930129Z",
+      "status": "no-endpoint",
+      "target": "https://podcasts.apple.com/us/podcast/people-i-mostly-admire/id1525936566?i=1000723160112"
+    },
+    "https://www.danielcorin.com/links/2025/08/the-unbearable-slowness-of-ai-coding/": {
+      "checkedAt": "2026-07-21T15:22:29.713874Z",
+      "status": "no-endpoint",
+      "target": "https://joshuavaldez.com/the-unbearable-slowness-of-ai-coding/"
+    },
+    "https://www.danielcorin.com/links/2025/08/what-happened-when-i-tried-to-replace-myself-with-chatgpt-in-my-english-classroo/": {
+      "checkedAt": "2026-07-21T15:22:34.785352Z",
+      "status": "no-endpoint",
+      "target": "https://lithub.com/what-happened-when-i-tried-to-replace-myself-with-chatgpt-in-my-english-classroom/"
+    },
+    "https://www.danielcorin.com/links/2025/08/what-the-hell-is-going-on-right-now/": {
+      "checkedAt": "2026-07-21T15:22:29.067170Z",
+      "status": "no-endpoint",
+      "target": "https://catskull.net/what-the-hell-is-going-on-right-now.html"
+    },
+    "https://www.danielcorin.com/links/2025/09/30-minutes-with-a-stranger/": {
+      "checkedAt": "2026-07-21T15:22:25.242009Z",
+      "status": "no-endpoint",
+      "target": "https://pudding.cool/2025/06/hello-stranger/"
+    },
+    "https://www.danielcorin.com/links/2025/09/90/": {
+      "checkedAt": "2026-07-21T15:22:13.363744Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2025/9/29/90-percent/"
+    },
+    "https://www.danielcorin.com/links/2025/09/all-vibe-coding-tools-are-selling-a-get-rich-quick-scheme/": {
+      "checkedAt": "2026-07-21T15:22:23.281585Z",
+      "status": "no-endpoint",
+      "target": "https://varunraghu.com/all-vibe-coding-tools-are-selling-a-get-rich-quick-scheme/"
+    },
+    "https://www.danielcorin.com/links/2025/09/amazon-com-antifragile-things-that-gain-from-disorder-incerto-9780812979688-tale/": {
+      "checkedAt": "2026-07-21T15:22:13.277664Z",
+      "status": "no-endpoint",
+      "target": "https://www.amazon.com/Antifragile-Things-That-Disorder-Incerto/dp/0812979680"
+    },
+    "https://www.danielcorin.com/links/2025/09/an-experimental-new-way-to-design-software/": {
+      "checkedAt": "2026-07-21T15:22:13.983660Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=dGiqrsv530Y"
+    },
+    "https://www.danielcorin.com/links/2025/09/boring-is-good-scott-jenson/": {
+      "checkedAt": "2026-07-21T15:22:15.939803Z",
+      "status": "no-endpoint",
+      "target": "https://jenson.org/boring/"
+    },
+    "https://www.danielcorin.com/links/2025/09/casaos-a-simple-easy-to-use-elegant-open-source-personal-cloud-system/": {
+      "checkedAt": "2026-07-21T15:22:22.758786Z",
+      "status": "no-endpoint",
+      "target": "https://casaos.zimaspace.com/"
+    },
+    "https://www.danielcorin.com/links/2025/09/designing-agentic-loops/": {
+      "checkedAt": "2026-07-21T15:22:13.109947Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Sep/30/designing-agentic-loops/"
+    },
+    "https://www.danielcorin.com/links/2025/09/dev-culture-is-dying-the-curious-developer-is-gone/": {
+      "checkedAt": "2026-07-21T15:22:15.402256Z",
+      "status": "no-endpoint",
+      "target": "https://dayvster.com/blog/dev-culture-is-dying-the-curious-developer-is-gone/"
+    },
+    "https://www.danielcorin.com/links/2025/09/i-dont-want-ai-agents-controlling-my-laptop/": {
+      "checkedAt": "2026-07-21T15:22:22.972988Z",
+      "status": "no-endpoint",
+      "target": "https://sophiebits.com/2025/09/09/ai-agents-security"
+    },
+    "https://www.danielcorin.com/links/2025/09/i-miss-using-em-dashes-michael-bassili/": {
+      "checkedAt": "2026-07-21T15:22:26.074284Z",
+      "status": "no-endpoint",
+      "target": "https://bassi.li/articles/i-miss-using-em-dashes"
+    },
+    "https://www.danielcorin.com/links/2025/09/magical-systems-thinking-works-in-progress-magazine/": {
+      "checkedAt": "2026-07-21T15:22:21.999294Z",
+      "status": "no-endpoint",
+      "target": "https://worksinprogress.co/issue/magical-systems-thinking/"
+    },
+    "https://www.danielcorin.com/links/2025/09/package-managers-are-evil/": {
+      "checkedAt": "2026-07-21T15:22:22.833858Z",
+      "status": "no-endpoint",
+      "target": "https://www.gingerbill.org/article/2025/09/08/package-managers-are-evil/#fnref:5"
+    },
+    "https://www.danielcorin.com/links/2025/09/programmable-2025-ai-is-a-hype-fuelled-dumpster-fire-chris-simon/": {
+      "checkedAt": "2026-07-21T15:22:24.988464Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=0bF_AQvHs1M"
+    },
+    "https://www.danielcorin.com/links/2025/09/react-won-by-default-and-its-killing-frontend-innovation-loren-stewart/": {
+      "checkedAt": "2026-07-21T15:22:14.334052Z",
+      "status": "no-endpoint",
+      "target": "https://www.lorenstew.art/blog/react-won-by-default/"
+    },
+    "https://www.danielcorin.com/links/2025/09/the-bitter-lesson-is-misunderstood/": {
+      "checkedAt": "2026-07-21T15:22:25.696432Z",
+      "status": "no-endpoint",
+      "target": "https://obviouslywrong.substack.com/p/the-bitter-lesson-is-misunderstood"
+    },
+    "https://www.danielcorin.com/links/2025/09/we-all-dodged-a-bullet/": {
+      "checkedAt": "2026-07-21T15:22:24.006068Z",
+      "status": "no-endpoint",
+      "target": "https://xeiaso.net/notes/2025/we-dodged-a-bullet/"
+    },
+    "https://www.danielcorin.com/links/2025/09/we-traded-blogs-for-black-boxes-now-were-paying-for-it/": {
+      "checkedAt": "2026-07-21T15:22:22.474873Z",
+      "status": "no-endpoint",
+      "target": "https://tekhne.dev/internet-resist/"
+    },
+    "https://www.danielcorin.com/links/2025/09/what-happens-when-coding-agents-stop-feeling-like-dialup/": {
+      "checkedAt": "2026-07-21T15:22:14.459922Z",
+      "status": "no-endpoint",
+      "target": "https://martinalderson.com/posts/what-happens-when-coding-agents-stop-feeling-like-dialup/"
+    },
+    "https://www.danielcorin.com/links/2025/09/what-is-good-taste-in-software-engineering/": {
+      "checkedAt": "2026-07-21T15:22:14.092708Z",
+      "status": "no-endpoint",
+      "target": "https://www.seangoedecke.com/taste/"
+    },
+    "https://www.danielcorin.com/links/2025/09/wheres-the-shovelware-why-ai-coding-claims-dont-add-up/": {
+      "checkedAt": "2026-07-21T15:22:25.445748Z",
+      "status": "no-endpoint",
+      "target": "https://mikelovesrobots.substack.com/p/wheres-the-shovelware-why-ai-coding"
+    },
+    "https://www.danielcorin.com/links/2025/09/why-as-a-responsible-adult-simcity-2000-hits-differently/": {
+      "checkedAt": "2026-07-21T15:22:15.250714Z",
+      "status": "no-endpoint",
+      "target": "https://arstechnica.com/gaming/2025/09/thirty-years-later-simcity-2000-hasnt-changed-but-i-have/"
+    },
+    "https://www.danielcorin.com/links/2025/09/why-we-spiral-by-gregory-m-walton-behavioral-scientist/": {
+      "checkedAt": "2026-07-21T15:22:21.808210Z",
+      "status": "no-endpoint",
+      "target": "https://behavioralscientist.org/why-we-spiral/"
+    },
+    "https://www.danielcorin.com/links/2025/09/you-had-no-taste-before-ai/": {
+      "checkedAt": "2026-07-21T15:22:21.139864Z",
+      "detail": "GET https://matthewsanabria.dev/posts/you-had-no-taste-before-ai/ failed: The read operation timed out",
+      "status": "failed",
+      "target": "https://matthewsanabria.dev/posts/you-had-no-taste-before-ai/"
+    },
+    "https://www.danielcorin.com/links/2025/10/a-backpackers-guide-to-epistemology-part-1/": {
+      "checkedAt": "2026-07-21T15:22:00.948288Z",
+      "status": "no-endpoint",
+      "target": "https://joshwhiton.substack.com/p/a-backpackers-guide-to-epistemology"
+    },
+    "https://www.danielcorin.com/links/2025/10/ai-as-teleportation/": {
+      "checkedAt": "2026-07-21T15:21:49.795848Z",
+      "status": "no-endpoint",
+      "target": "https://geoffreylitt.com/2025/09/10/ai-as-teleportation.html"
+    },
+    "https://www.danielcorin.com/links/2025/10/an-ai-addendum/": {
+      "checkedAt": "2026-07-21T15:22:02.650632Z",
+      "status": "no-endpoint",
+      "target": "https://pracap.com/an-ai-addendum/"
+    },
+    "https://www.danielcorin.com/links/2025/10/blog-feeds/": {
+      "checkedAt": "2026-07-21T15:22:08.496900Z",
+      "status": "no-endpoint",
+      "target": "https://blogfeeds.net/"
+    },
+    "https://www.danielcorin.com/links/2025/10/camoleak-critical-github-copilot-vulnerability-leaks-private-source-code/": {
+      "checkedAt": "2026-07-21T15:22:00.328907Z",
+      "status": "no-endpoint",
+      "target": "https://www.legitsecurity.com/blog/camoleak-critical-github-copilot-vulnerability-leaks-private-source-code"
+    },
+    "https://www.danielcorin.com/links/2025/10/claude-skills-are-awesome-maybe-a-bigger-deal-than-mcp/": {
+      "checkedAt": "2026-07-21T15:21:57.752971Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Oct/16/claude-skills/"
+    },
+    "https://www.danielcorin.com/links/2025/10/embracing-the-parallel-coding-agent-lifestyle/": {
+      "checkedAt": "2026-07-21T15:22:08.337437Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Oct/5/parallel-coding-agents/"
+    },
+    "https://www.danielcorin.com/links/2025/10/exploration-exploitation-and-thinking/": {
+      "checkedAt": "2026-07-21T15:22:08.898946Z",
+      "status": "no-endpoint",
+      "target": "https://joshs.bearblog.dev/exploration-exploitation-and-thinking/"
+    },
+    "https://www.danielcorin.com/links/2025/10/free-software-scares-normal-peopledaniel-de-laney/": {
+      "checkedAt": "2026-07-21T15:21:49.094550Z",
+      "status": "no-endpoint",
+      "target": "https://danieldelaney.net/normal/"
+    },
+    "https://www.danielcorin.com/links/2025/10/glimpses-of-the-future-speed-swarms/": {
+      "checkedAt": "2026-07-21T15:21:52.751467Z",
+      "status": "no-endpoint",
+      "target": "https://www.dbreunig.com/2025/10/20/speeds-and-swarms.html"
+    },
+    "https://www.danielcorin.com/links/2025/10/how-i-almost-got-hacked-by-a-job-interview/": {
+      "checkedAt": "2026-07-21T15:21:59.710952Z",
+      "status": "no-endpoint",
+      "target": "https://blog.daviddodda.com/how-i-almost-got-hacked-by-a-job-interview"
+    },
+    "https://www.danielcorin.com/links/2025/10/i-am-a-programmer-not-a-rubber-stamp-that-approves-copilot-generated-code/": {
+      "checkedAt": "2026-07-21T15:21:59.800334Z",
+      "status": "no-endpoint",
+      "target": "https://prahladyeri.github.io/blog/2025/10/i-am-a-programmer.html"
+    },
+    "https://www.danielcorin.com/links/2025/10/just-talk-to-it-the-no-bs-way-of-agentic-engineering-peter-steinberger/": {
+      "checkedAt": "2026-07-21T15:21:59.929306Z",
+      "status": "no-endpoint",
+      "target": "https://steipete.me/posts/just-talk-to-it"
+    },
+    "https://www.danielcorin.com/links/2025/10/llms-are-you-holding-it-wrong/": {
+      "checkedAt": "2026-07-21T15:22:09.333440Z",
+      "status": "no-endpoint",
+      "target": "https://blog.burkert.me/posts/llms-are-you-holding-it-wrong/"
+    },
+    "https://www.danielcorin.com/links/2025/10/my-approach-to-building-large-technical-projects/": {
+      "checkedAt": "2026-07-21T15:22:04.826883Z",
+      "status": "no-endpoint",
+      "target": "https://mitchellh.com/writing/building-large-technical-projects"
+    },
+    "https://www.danielcorin.com/links/2025/10/note-on-11th-october-2025/": {
+      "checkedAt": "2026-07-21T15:22:04.228528Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Oct/11/uncomfortable/"
+    },
+    "https://www.danielcorin.com/links/2025/10/pluralistic-the-real-economic-ai-apocalypse-is-nigh-27-sep-2025-pluralistic-dail/": {
+      "checkedAt": "2026-07-21T15:22:06.756952Z",
+      "status": "no-endpoint",
+      "target": "https://pluralistic.net/2025/09/27/econopocalypse/"
+    },
+    "https://www.danielcorin.com/links/2025/10/resurrect-the-old-web/": {
+      "checkedAt": "2026-07-21T15:21:54.639891Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://stevedylan.dev/api/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://stevedylan.dev/posts/resurrect-the-old-web/"
+    },
+    "https://www.danielcorin.com/links/2025/10/smartphones-and-being-present/": {
+      "checkedAt": "2026-07-21T15:22:00.462685Z",
+      "status": "no-endpoint",
+      "target": "https://herman.bearblog.dev/being-present/"
+    },
+    "https://www.danielcorin.com/links/2025/10/the-case-for-the-return-of-fine-tuning/": {
+      "checkedAt": "2026-07-21T15:21:56.088641Z",
+      "status": "no-endpoint",
+      "target": "https://welovesota.com/article/the-case-for-the-return-of-fine-tuning"
+    },
+    "https://www.danielcorin.com/links/2025/10/the-heart-of-software-engineering-still-beats-annie-vella/": {
+      "checkedAt": "2026-07-21T15:21:50.393344Z",
+      "status": "no-endpoint",
+      "target": "https://annievella.com/posts/the-heart-of-software-engineering-still-beats/"
+    },
+    "https://www.danielcorin.com/links/2025/10/the-llmentalist-effect-how-chat-based-large-language-models-rep/": {
+      "checkedAt": "2026-07-21T15:22:00.777235Z",
+      "status": "no-endpoint",
+      "target": "https://softwarecrisis.dev/letters/llmentalist/"
+    },
+    "https://www.danielcorin.com/links/2025/10/the-magic-of-claude-code/": {
+      "checkedAt": "2026-07-21T15:22:11.497158Z",
+      "status": "no-endpoint",
+      "target": "https://www.alephic.com/writing/the-magic-of-claude-code"
+    },
+    "https://www.danielcorin.com/links/2025/10/the-programmer-identity-crisis-simon-hjberg-principal-frontend-engineer/": {
+      "checkedAt": "2026-07-21T15:22:05.133056Z",
+      "status": "no-endpoint",
+      "target": "https://hojberg.xyz/the-programmer-identity-crisis/"
+    },
+    "https://www.danielcorin.com/links/2025/10/vibing-a-non-trivial-ghostty-feature/": {
+      "checkedAt": "2026-07-21T15:22:04.383354Z",
+      "status": "no-endpoint",
+      "target": "https://mitchellh.com/writing/non-trivial-vibing"
+    },
+    "https://www.danielcorin.com/links/2025/10/we-cant-name-variables-now-were-writing-prompts-david-adamo-jr/": {
+      "checkedAt": "2026-07-21T15:21:52.638232Z",
+      "status": "no-endpoint",
+      "target": "https://davidadamojr.com/we-cant-name-variables-now-were-writing-prompts/"
+    },
+    "https://www.danielcorin.com/links/2025/10/we-gave-our-ai-agents-twitter-and-now-theyre-demanding-lambos/": {
+      "checkedAt": "2026-07-21T15:22:10.905533Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://micro.blog/webmention",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://harper.blog/2025/09/30/ai-agents-social-media-performance-lambo-doomscrolling/"
+    },
+    "https://www.danielcorin.com/links/2025/10/what-ai-hype-misses-about-real-software-engineering-work-david-adamo-jr/": {
+      "checkedAt": "2026-07-21T15:21:59.291448Z",
+      "status": "no-endpoint",
+      "target": "https://davidadamojr.com/what-ai-hype-misses-about-real-software-engineering-work/"
+    },
+    "https://www.danielcorin.com/links/2025/10/when-is-better-to-think-without-words/": {
+      "checkedAt": "2026-07-21T15:21:50.580141Z",
+      "status": "no-endpoint",
+      "target": "https://www.henrikkarlsson.xyz/p/wordless-thought"
+    },
+    "https://www.danielcorin.com/links/2025/10/when-it-comes-to-mcps-everything-we-know-about-api-design-is-wrong/": {
+      "checkedAt": "2026-07-21T15:21:52.827161Z",
+      "status": "no-endpoint",
+      "target": "https://blog.fsck.com/2025/10/19/mcps-are-not-like-other-apis/"
+    },
+    "https://www.danielcorin.com/links/2025/10/where-its-at-overreacted/": {
+      "checkedAt": "2026-07-21T15:22:08.775859Z",
+      "status": "no-endpoint",
+      "target": "https://overreacted.io/where-its-at/"
+    },
+    "https://www.danielcorin.com/links/2025/10/who-needs-git-when-you-have-1m-context-windows/": {
+      "checkedAt": "2026-07-21T15:22:05.397504Z",
+      "status": "no-endpoint",
+      "target": "https://www.alexmolas.com/2025/07/28/unexpected-benefit-llm.html"
+    },
+    "https://www.danielcorin.com/links/2025/10/why-its-impossible-to-agree-on-whats-allowed/": {
+      "checkedAt": "2026-07-21T15:22:05.258834Z",
+      "status": "no-endpoint",
+      "target": "https://danluu.com/impossible-agree/"
+    },
+    "https://www.danielcorin.com/links/2025/10/you-are-how-you-act/": {
+      "checkedAt": "2026-07-21T15:21:49.525066Z",
+      "status": "no-endpoint",
+      "target": "https://boz.com/articles/you-are-how-you-act"
+    },
+    "https://www.danielcorin.com/links/2025/11/are-consumers-just-tech-debt-to-microsoft/": {
+      "checkedAt": "2026-07-21T15:21:43.888296Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://birchtree.me/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://birchtree.me/blog/are-consumers-just-tech-debt-to-microsoft/"
+    },
+    "https://www.danielcorin.com/links/2025/11/confessions-of-a-software-developer-no-more-self-censorship-kerrick-long-blog/": {
+      "checkedAt": "2026-07-21T15:21:38.704708Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://kerrick.blog/wp-json/webmention/1.0/endpoint",
+      "httpStatus": 200,
+      "status": "sent",
+      "target": "https://kerrick.blog/articles/2025/confessions-of-a-software-developer-no-more-self-censorship/"
+    },
+    "https://www.danielcorin.com/links/2025/11/coordination-headwind-how-organizations-are-like-slime-molds/": {
+      "checkedAt": "2026-07-21T15:21:48.239762Z",
+      "status": "no-endpoint",
+      "target": "https://komoroske.com/slime-mold/"
+    },
+    "https://www.danielcorin.com/links/2025/11/does-ai-get-bored/": {
+      "checkedAt": "2026-07-21T15:21:48.665209Z",
+      "status": "no-endpoint",
+      "target": "https://timkellogg.me/blog/2025/09/27/boredom"
+    },
+    "https://www.danielcorin.com/links/2025/11/fawk-llms-can-write-a-language-interpreter/": {
+      "checkedAt": "2026-07-21T15:21:44.671974Z",
+      "status": "no-endpoint",
+      "target": "https://martin.janiczek.cz/2025/11/21/fawk-llms-can-write-a-language-interpreter.html"
+    },
+    "https://www.danielcorin.com/links/2025/11/getting-the-ai-hype-cycle-right/": {
+      "checkedAt": "2026-07-21T15:21:33.856338Z",
+      "status": "no-endpoint",
+      "target": "https://www.jsnover.com/blog/2025/11/20/getting-the-ai-hype-cycle-right/"
+    },
+    "https://www.danielcorin.com/links/2025/11/how-good-engineers-write-bad-code-at-big-companies/": {
+      "checkedAt": "2026-07-21T15:21:34.013362Z",
+      "status": "no-endpoint",
+      "target": "https://www.seangoedecke.com/bad-code-at-big-companies/"
+    },
+    "https://www.danielcorin.com/links/2025/11/how-i-use-every-claude-code-feature/": {
+      "checkedAt": "2026-07-21T15:21:48.945970Z",
+      "status": "no-endpoint",
+      "target": "https://blog.sshh.io/p/how-i-use-every-claude-code-feature"
+    },
+    "https://www.danielcorin.com/links/2025/11/i-am-just-so-sick-of-ai-prediction-content/": {
+      "checkedAt": "2026-07-21T15:21:44.863566Z",
+      "status": "no-endpoint",
+      "target": "https://verdikapuku.com/posts/i-am-just-so-sick-of-ai-prediction-content/"
+    },
+    "https://www.danielcorin.com/links/2025/11/its-always-the-process-stupid/": {
+      "checkedAt": "2026-07-21T15:21:35.595651Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://its.promp.td/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://its.promp.td/its-always-the-process-stupid/"
+    },
+    "https://www.danielcorin.com/links/2025/11/linear-algebra-explains-why-some-words-are-effectively-untranslatable/": {
+      "checkedAt": "2026-07-21T15:21:47.705823Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/aethermug.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://aethermug.com/posts/linear-algebra-explains-why-some-words-are-effectively-untranslatable"
+    },
+    "https://www.danielcorin.com/links/2025/11/make-product-worse-get-money/": {
+      "checkedAt": "2026-07-21T15:21:43.975352Z",
+      "status": "no-endpoint",
+      "target": "https://dynomight.net/worse/"
+    },
+    "https://www.danielcorin.com/links/2025/11/mcp-colors-systematically-deal-with-prompt-injection-risk/": {
+      "checkedAt": "2026-07-21T15:21:48.733372Z",
+      "status": "no-endpoint",
+      "target": "https://timkellogg.me/blog/2025/11/03/colors"
+    },
+    "https://www.danielcorin.com/links/2025/11/only-three-kinds-of-ai-products-actually-work/": {
+      "checkedAt": "2026-07-21T15:21:45.895967Z",
+      "status": "no-endpoint",
+      "target": "https://www.seangoedecke.com/ai-products/"
+    },
+    "https://www.danielcorin.com/links/2025/11/personal-blogs-are-back-should-niche-blogs-be-next/": {
+      "checkedAt": "2026-07-21T15:21:44.551825Z",
+      "status": "no-endpoint",
+      "target": "https://disassociated.com/personal-blogs-back-niche-blogs-next/"
+    },
+    "https://www.danielcorin.com/links/2025/11/sse-sucks-for-transporting-llm-tokens/": {
+      "checkedAt": "2026-07-21T15:21:39.096221Z",
+      "status": "no-endpoint",
+      "target": "https://zknill.io/posts/sse-sucks-for-transporting-llm-tokens/"
+    },
+    "https://www.danielcorin.com/links/2025/11/were-losing-our-voice-to-llms-tony-alicea/": {
+      "checkedAt": "2026-07-21T15:21:41.920325Z",
+      "status": "no-endpoint",
+      "target": "https://tonyalicea.dev/blog/were-losing-our-voice-to-llms/"
+    },
+    "https://www.danielcorin.com/links/2025/11/what-if-you-dont-need-mcp-at-all/": {
+      "checkedAt": "2026-07-21T15:21:45.756800Z",
+      "status": "no-endpoint",
+      "target": "https://mariozechner.at/posts/2025-11-02-what-if-you-dont-need-mcp/"
+    },
+    "https://www.danielcorin.com/links/2025/11/what-they-dont-tell-you-about-maintaining-an-open-source-project/": {
+      "checkedAt": "2026-07-21T15:21:42.294096Z",
+      "detail": "GET https://andrej.sh/blog/maintaining-open-source-project/ returned HTTP 404",
+      "status": "failed",
+      "target": "https://andrej.sh/blog/maintaining-open-source-project/"
+    },
+    "https://www.danielcorin.com/links/2025/11/when-we-decide-who-can-feel/": {
+      "checkedAt": "2026-07-21T15:21:48.577365Z",
+      "status": "no-endpoint",
+      "target": "https://kyleepena.substack.com/p/when-we-decide-who-can-feel?r=nvtiy&utm_medium=ios&triedRedirect=true"
+    },
+    "https://www.danielcorin.com/links/2025/11/work-after-work-notes-from-an-unemployed-new-grad-watching-the-job-market-break/": {
+      "checkedAt": "2026-07-21T15:21:48.396404Z",
+      "status": "no-endpoint",
+      "target": "https://urlahmed.com/2025/11/05/work-after-work-notes-from-an-unemployed-new-grad-watching-the-job-market-break/"
+    },
+    "https://www.danielcorin.com/links/2025/11/writing-a-good-claude-md-humanlayer-blog/": {
+      "checkedAt": "2026-07-21T15:21:39.274074Z",
+      "status": "no-endpoint",
+      "target": "https://www.humanlayer.dev/blog/writing-a-good-claude-md"
+    },
+    "https://www.danielcorin.com/links/2025/12/200k-tokens-is-plenty-amp/": {
+      "checkedAt": "2026-07-21T15:21:28.770450Z",
+      "status": "no-endpoint",
+      "target": "https://ampcode.com/200k-tokens-is-plenty"
+    },
+    "https://www.danielcorin.com/links/2025/12/a-codebase-by-an-agent-for-an-agent-amp/": {
+      "checkedAt": "2026-07-21T15:21:23.609245Z",
+      "status": "no-endpoint",
+      "target": "https://ampcode.com/by-an-agent-for-an-agent"
+    },
+    "https://www.danielcorin.com/links/2025/12/a-non-technical-attempt-to-explain-2025-llm-based-ai/": {
+      "checkedAt": "2026-07-21T15:21:22.253290Z",
+      "status": "no-endpoint",
+      "target": "https://notes.kateva.org/2025/12/a-non-technical-attempt-to-explain-2025.html?m=1"
+    },
+    "https://www.danielcorin.com/links/2025/12/a-series-of-vignettes-from-my-childhood-and-early-career/": {
+      "checkedAt": "2026-07-21T15:21:33.255655Z",
+      "status": "no-endpoint",
+      "target": "https://www.jasonscheirer.com/weblog/vignettes/"
+    },
+    "https://www.danielcorin.com/links/2025/12/a-year-of-vibes/": {
+      "checkedAt": "2026-07-21T15:21:23.254933Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2025/12/22/a-year-of-vibes/"
+    },
+    "https://www.danielcorin.com/links/2025/12/agent-design-is-still-hard/": {
+      "checkedAt": "2026-07-21T15:21:31.175159Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2025/11/21/agents-are-hard/"
+    },
+    "https://www.danielcorin.com/links/2025/12/automating-quordle-with-an-llm/": {
+      "checkedAt": "2026-07-21T15:21:26.639292Z",
+      "status": "no-endpoint",
+      "target": "https://flowtwo.io/post/automating-quordle-with-an-llm"
+    },
+    "https://www.danielcorin.com/links/2025/12/codex-vs-claude-code-today/": {
+      "checkedAt": "2026-07-21T15:21:21.503789Z",
+      "status": "no-endpoint",
+      "target": "https://build.ms/2025/12/22/codex-vs-claude-code-today/"
+    },
+    "https://www.danielcorin.com/links/2025/12/context-efficient-backpressure-for-coding-agents-humanlayer-blog/": {
+      "checkedAt": "2026-07-21T15:21:24.846674Z",
+      "status": "no-endpoint",
+      "target": "https://www.humanlayer.dev/blog/context-efficient-backpressure"
+    },
+    "https://www.danielcorin.com/links/2025/12/craft-software-that-makes-people-feel-something-raphael-amorim/": {
+      "checkedAt": "2026-07-21T15:21:24.621729Z",
+      "status": "no-endpoint",
+      "target": "https://rapha.land/craft-software-that-makes-people-feel-something/"
+    },
+    "https://www.danielcorin.com/links/2025/12/how-should-we-peer-review-software/": {
+      "checkedAt": "2026-07-21T15:21:32.202118Z",
+      "status": "no-endpoint",
+      "target": "https://mirawelner.com/posts/peer_review.html"
+    },
+    "https://www.danielcorin.com/links/2025/12/i-know-you-didnt-write-this-ammil-industries/": {
+      "checkedAt": "2026-07-21T15:21:21.961954Z",
+      "status": "no-endpoint",
+      "target": "https://ammil.industries/i-know-you-didnt-write-this/"
+    },
+    "https://www.danielcorin.com/links/2025/12/if-youre-going-to-vibe-code-why-not-do-it-in-c/": {
+      "checkedAt": "2026-07-21T15:21:29.145689Z",
+      "status": "no-endpoint",
+      "target": "https://stephenramsay.net/posts/vibe-coding.html"
+    },
+    "https://www.danielcorin.com/links/2025/12/im-a-former-cto-here-is-the-15-sec-coding-test-i-used-to-instantly-filter-out-50/": {
+      "checkedAt": "2026-07-21T15:21:23.175341Z",
+      "status": "no-endpoint",
+      "target": "https://josezarazua.com/im-a-former-cto-here-is-the-15-sec-coding-test-i-used-to-instantly-filter-out-50-of-unqualified-applicants/"
+    },
+    "https://www.danielcorin.com/links/2025/12/interview-with-rollercoaster-tycoons-creator-chris-sawyer/": {
+      "checkedAt": "2026-07-21T15:21:33.120819Z",
+      "status": "no-endpoint",
+      "target": "https://medium.com/atari-club/interview-with-rollercoaster-tycoons-creator-chris-sawyer-684a0efb0f13"
+    },
+    "https://www.danielcorin.com/links/2025/12/maybe-the-default-settings-are-too-high/": {
+      "checkedAt": "2026-07-21T15:21:21.729524Z",
+      "status": "no-endpoint",
+      "target": "https://www.raptitude.com/2025/12/maybe-the-default-settings-are-too-high/"
+    },
+    "https://www.danielcorin.com/links/2025/12/perfect-software-software-for-an-audience-of-one/": {
+      "checkedAt": "2026-07-21T15:21:22.897922Z",
+      "status": "no-endpoint",
+      "target": "https://outofdesk.netlify.app/blog/perfect-software"
+    },
+    "https://www.danielcorin.com/links/2025/12/pluralistic-the-reverse-centaurs-guide-to-criticizing-ai-05-dec-2025-pluralistic/": {
+      "checkedAt": "2026-07-21T15:21:31.098966Z",
+      "status": "no-endpoint",
+      "target": "https://pluralistic.net/2025/12/05/pop-that-bubble/#u-washington"
+    },
+    "https://www.danielcorin.com/links/2025/12/speed-matters-why-working-quickly-is-more-important-than-it-seems-the-jsomers-ne/": {
+      "checkedAt": "2026-07-21T15:21:23.990960Z",
+      "status": "no-endpoint",
+      "target": "https://jsomers.net/blog/speed-matters"
+    },
+    "https://www.danielcorin.com/links/2025/12/the-ram-shortage-comes-for-us-all-jeff-geerling/": {
+      "checkedAt": "2026-07-21T15:21:31.394155Z",
+      "status": "no-endpoint",
+      "target": "https://www.jeffgeerling.com/blog/2025/ram-shortage-comes-us-all"
+    },
+    "https://www.danielcorin.com/links/2025/12/the-resonant-computing-manifesto/": {
+      "checkedAt": "2026-07-21T15:21:29.435859Z",
+      "status": "no-endpoint",
+      "target": "https://resonantcomputing.org/"
+    },
+    "https://www.danielcorin.com/links/2025/12/thin-desires-are-eating-your-life/": {
+      "checkedAt": "2026-07-21T15:21:24.377815Z",
+      "detail": "GET https://www.joanwestenberg.com/thin-desires-are-eating-your-life/ returned HTTP 404",
+      "status": "failed",
+      "target": "https://www.joanwestenberg.com/thin-desires-are-eating-your-life/"
+    },
+    "https://www.danielcorin.com/links/2025/12/too-fast-to-think-the-hidden-fatigue-of-ai-vibe-coding/": {
+      "checkedAt": "2026-07-21T15:21:20.741519Z",
+      "status": "no-endpoint",
+      "target": "https://www.tabulamag.com/p/too-fast-to-think-the-hidden-fatigue"
+    },
+    "https://www.danielcorin.com/links/2025/12/useful-patterns-for-building-html-tools/": {
+      "checkedAt": "2026-07-21T15:21:26.436161Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2025/Dec/10/html-tools/#host-them-somewhere-else"
+    },
+    "https://www.danielcorin.com/links/2025/12/why-agi-will-not-happen-tim-dettmers/": {
+      "checkedAt": "2026-07-21T15:21:27.383575Z",
+      "status": "no-endpoint",
+      "target": "https://timdettmers.com/2025/12/10/why-agi-will-not-happen/"
+    },
+    "https://www.danielcorin.com/links/2025/12/why-i-write-and-you-should-too/": {
+      "checkedAt": "2026-07-21T15:21:21.321882Z",
+      "status": "no-endpoint",
+      "target": "https://www.dbreunig.com/2025/12/27/why-i-write.html"
+    },
+    "https://www.danielcorin.com/links/2025/12/why-opus-4-5-just-became-the-most-influential-ai-model/": {
+      "checkedAt": "2026-07-21T15:21:31.899751Z",
+      "status": "no-endpoint",
+      "target": "https://podcasts.apple.com/us/podcast/ai-i/id1719789201?i=1000739537704"
+    },
+    "https://www.danielcorin.com/links/2025/12/you-can-make-up-html-tags-maurycys-blog/": {
+      "checkedAt": "2026-07-21T15:21:21.211032Z",
+      "status": "no-endpoint",
+      "target": "https://maurycyz.com/misc/make-up-tags/"
+    },
+    "https://www.danielcorin.com/links/2026/01/2026-is-the-year-of-self-hosting/": {
+      "checkedAt": "2026-07-21T15:21:14.715167Z",
+      "status": "no-endpoint",
+      "target": "https://fulghum.io/self-hosting"
+    },
+    "https://www.danielcorin.com/links/2026/01/agent-psychosis-are-we-going-insane/": {
+      "checkedAt": "2026-07-21T15:21:12.893003Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2026/1/18/agent-psychosis/"
+    },
+    "https://www.danielcorin.com/links/2026/01/ai-is-a-business-model-stress-test/": {
+      "checkedAt": "2026-07-21T15:21:14.857643Z",
+      "status": "no-endpoint",
+      "target": "https://dri.es/ai-is-a-business-model-stress-test"
+    },
+    "https://www.danielcorin.com/links/2026/01/anthropic-made-a-big-mistake/": {
+      "checkedAt": "2026-07-21T15:21:13.309663Z",
+      "status": "no-endpoint",
+      "target": "https://archaeologist.dev/artifacts/anthropic"
+    },
+    "https://www.danielcorin.com/links/2026/01/being-creative-requires-taking-risks/": {
+      "checkedAt": "2026-07-21T15:21:09.269843Z",
+      "status": "no-endpoint",
+      "target": "https://www.henrikkarlsson.xyz/p/being-creative-requires-taking-risks"
+    },
+    "https://www.danielcorin.com/links/2026/01/computations-limits-what-a-neuron-teaches-us/": {
+      "checkedAt": "2026-07-21T15:21:18.795946Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://ocrampal.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://www.ocrampal.com/what-a-neuron-teaches-us-about-computations-limits/"
+    },
+    "https://www.danielcorin.com/links/2026/01/creativity-faucet-increase-your-creativity/": {
+      "checkedAt": "2026-07-21T15:21:16.021003Z",
+      "status": "no-endpoint",
+      "target": "https://www.julian.com/blog/creativity-faucet"
+    },
+    "https://www.danielcorin.com/links/2026/01/dont-fall-into-the-anti-ai-hype-antirez/": {
+      "checkedAt": "2026-07-21T15:21:14.533774Z",
+      "status": "no-endpoint",
+      "target": "https://antirez.com/news/158"
+    },
+    "https://www.danielcorin.com/links/2026/01/dont-waste-your-back-pressure/": {
+      "checkedAt": "2026-07-21T15:21:12.966780Z",
+      "status": "no-endpoint",
+      "target": "https://banay.me/dont-waste-your-backpressure/?ref=ghuntley.com"
+    },
+    "https://www.danielcorin.com/links/2026/01/gas-towns-agent-patterns-design-bottlenecks-and-vibecoding-at-scale/": {
+      "checkedAt": "2026-07-21T15:21:11.002940Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/maggieappleton.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://maggieappleton.com/gastown/"
+    },
+    "https://www.danielcorin.com/links/2026/01/how-to-write/": {
+      "checkedAt": "2026-07-21T15:21:15.402858Z",
+      "status": "no-endpoint",
+      "target": "https://garden.bradwoods.io/notes/story/how-to-write"
+    },
+    "https://www.danielcorin.com/links/2026/01/its-hard-to-justify-tahoe-icons/": {
+      "checkedAt": "2026-07-21T15:21:16.576644Z",
+      "status": "no-endpoint",
+      "target": "https://tonsky.me/blog/tahoe-icons/"
+    },
+    "https://www.danielcorin.com/links/2026/01/january-2026-maggie-appleton/": {
+      "checkedAt": "2026-07-21T15:21:20.559607Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/maggieappleton.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://maggieappleton.com/now-2026-01"
+    },
+    "https://www.danielcorin.com/links/2026/01/john-henry-in-the-ai-era/": {
+      "checkedAt": "2026-07-21T15:21:11.450821Z",
+      "status": "no-endpoint",
+      "target": "https://rodionsteshenko.substack.com/p/john-henry-in-the-ai-era"
+    },
+    "https://www.danielcorin.com/links/2026/01/learning-in-public-building-in-parallel/": {
+      "checkedAt": "2026-07-21T15:21:11.570018Z",
+      "status": "no-endpoint",
+      "target": "https://rodionsteshenko.substack.com/p/learning-in-public-building-in-parallel"
+    },
+    "https://www.danielcorin.com/links/2026/01/notion-ai-unpatched-data-exfiltration/": {
+      "checkedAt": "2026-07-21T15:21:15.082622Z",
+      "status": "no-endpoint",
+      "target": "https://www.promptarmor.com/resources/notion-ai-unpatched-data-exfiltration"
+    },
+    "https://www.danielcorin.com/links/2026/01/running-claude-code-dangerously-safely/": {
+      "checkedAt": "2026-07-21T15:21:12.523880Z",
+      "status": "no-endpoint",
+      "target": "https://blog.emilburzo.com/2026/01/running-claude-code-dangerously-safely/"
+    },
+    "https://www.danielcorin.com/links/2026/01/shipping-at-inference-speed-peter-steinberger/": {
+      "checkedAt": "2026-07-21T15:21:15.548842Z",
+      "status": "no-endpoint",
+      "target": "https://steipete.me/posts/2025/shipping-at-inference-speed"
+    },
+    "https://www.danielcorin.com/links/2026/01/software-pump-and-dump/": {
+      "checkedAt": "2026-07-21T15:21:09.118213Z",
+      "status": "no-endpoint",
+      "target": "http://tautvilas.lt/software-pump-and-dump/"
+    },
+    "https://www.danielcorin.com/links/2026/01/stateful-agents-its-about-the-state-not-the-llm/": {
+      "checkedAt": "2026-07-21T15:21:08.444665Z",
+      "status": "no-endpoint",
+      "target": "https://timkellogg.me/blog/2026/01/31/variety"
+    },
+    "https://www.danielcorin.com/links/2026/01/the-code-only-agent/": {
+      "checkedAt": "2026-07-21T15:21:12.687162Z",
+      "status": "no-endpoint",
+      "target": "https://rijnard.com/blog/the-code-only-agent"
+    },
+    "https://www.danielcorin.com/links/2026/01/the-unbearable-joy-of-sitting-alone-in-a-cafe/": {
+      "checkedAt": "2026-07-21T15:21:15.885206Z",
+      "status": "no-endpoint",
+      "target": "https://candost.blog/the-unbearable-joy-of-sitting-alone-in-a-cafe/"
+    },
+    "https://www.danielcorin.com/links/2026/01/were-all-software-developers-now/": {
+      "checkedAt": "2026-07-21T15:21:12.819166Z",
+      "status": "no-endpoint",
+      "target": "https://rungie.com/blog/ai-software-development-impact/"
+    },
+    "https://www.danielcorin.com/links/2026/01/why-cowork-cant-work/": {
+      "checkedAt": "2026-07-21T15:21:11.853875Z",
+      "status": "no-endpoint",
+      "target": "https://benn.substack.com/p/why-cowork-cant-work"
+    },
+    "https://www.danielcorin.com/links/2026/01/why-designers-can-no-longer-trust-the-design-process/": {
+      "checkedAt": "2026-07-21T15:21:14.069688Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=4u94juYwLLM"
+    },
+    "https://www.danielcorin.com/links/2026/01/your-app-subscription-is-now-my-weekend-project-roberto-selbach/": {
+      "checkedAt": "2026-07-21T15:21:11.332303Z",
+      "detail": "GET https://rselbach.com/your-sub-is-now-my-weekend-project returned HTTP 400",
+      "status": "failed",
+      "target": "https://rselbach.com/your-sub-is-now-my-weekend-project"
+    },
+    "https://www.danielcorin.com/links/2026/02/a-sane-but-extremely-bull-case-on-clawdbot-openclaw-brandon-wang/": {
+      "checkedAt": "2026-07-21T15:21:08.157640Z",
+      "status": "no-endpoint",
+      "target": "https://brandon.wang/2026/clawdbot"
+    },
+    "https://www.danielcorin.com/links/2026/02/adgi-the-intelligence-nobody-built/": {
+      "checkedAt": "2026-07-21T15:21:00.823002Z",
+      "status": "no-endpoint",
+      "target": "https://rodionsteshenko.substack.com/p/adgi-the-intelligence-nobody-built?r=3yyn06&utm_medium=ios&triedRedirect=true"
+    },
+    "https://www.danielcorin.com/links/2026/02/agents-are-ushering-in-the-antisocial-coding-era/": {
+      "checkedAt": "2026-07-21T15:20:57.942941Z",
+      "status": "no-endpoint",
+      "target": "https://justin.searls.co/posts/agents-are-ushering-in-the-antisocial-coding-era/"
+    },
+    "https://www.danielcorin.com/links/2026/02/are-we-becoming-architects-or-butlers-to-llms/": {
+      "checkedAt": "2026-07-21T15:21:00.702486Z",
+      "status": "no-endpoint",
+      "target": "https://muratbuffalo.blogspot.com/2026/02/butlers-or-architects.html?m=1"
+    },
+    "https://www.danielcorin.com/links/2026/02/brace-for-the-fuckening/": {
+      "checkedAt": "2026-07-21T15:20:58.689164Z",
+      "status": "no-endpoint",
+      "target": "https://justin.searls.co/posts/brace-for-the-fuckening/"
+    },
+    "https://www.danielcorin.com/links/2026/02/breaking-the-spell-of-vibe-coding-fast-ai/": {
+      "checkedAt": "2026-07-21T15:21:01.378924Z",
+      "status": "no-endpoint",
+      "target": "https://www.fast.ai/posts/2026-01-28-dark-flow/"
+    },
+    "https://www.danielcorin.com/links/2026/02/how-im-writing-code-in-2026/": {
+      "checkedAt": "2026-07-21T15:21:08.365408Z",
+      "status": "no-endpoint",
+      "target": "https://www.coryzue.com/writing/coding-2026/"
+    },
+    "https://www.danielcorin.com/links/2026/02/how-much-does-distillation-really-matter-for-chinese-llms/": {
+      "checkedAt": "2026-07-21T15:20:58.213324Z",
+      "status": "no-endpoint",
+      "target": "https://www.interconnects.ai/p/how-much-does-distillation-really"
+    },
+    "https://www.danielcorin.com/links/2026/02/how-will-openai-compete-benedict-evans/": {
+      "checkedAt": "2026-07-21T15:20:57.821211Z",
+      "status": "no-endpoint",
+      "target": "https://www.ben-evans.com/benedictevans/2026/2/19/how-will-openai-compete-nkg2x"
+    },
+    "https://www.danielcorin.com/links/2026/02/i-improved-15-llms-at-coding-in-one-afternoon-only-the-harness-changed/": {
+      "checkedAt": "2026-07-21T15:21:07.380251Z",
+      "status": "no-endpoint",
+      "target": "https://blog.can.ac/2026/02/12/the-harness-problem/"
+    },
+    "https://www.danielcorin.com/links/2026/02/is-the-detachment-in-the-room-agents-cruelty-and-empathy-haileys-cool-site/": {
+      "checkedAt": "2026-07-21T15:21:07.744677Z",
+      "detail": "GET https://hailey.at/posts/3mear2n7v3k2r returned HTTP 530",
+      "status": "failed",
+      "target": "https://hailey.at/posts/3mear2n7v3k2r"
+    },
+    "https://www.danielcorin.com/links/2026/02/listen-to-understand/": {
+      "checkedAt": "2026-07-21T15:21:01.230083Z",
+      "status": "no-endpoint",
+      "target": "https://talk.bradwoods.io/blog/listen-to-understand/"
+    },
+    "https://www.danielcorin.com/links/2026/02/my-ai-adoption-journey/": {
+      "checkedAt": "2026-07-21T15:21:07.981816Z",
+      "status": "no-endpoint",
+      "target": "https://mitchellh.com/writing/my-ai-adoption-journey#step-6-always-have-an-agent-running"
+    },
+    "https://www.danielcorin.com/links/2026/02/no-skill-no-taste/": {
+      "checkedAt": "2026-07-21T15:21:00.438206Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://blog.kinglycrow.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://blog.kinglycrow.com/no-skill-no-taste/"
+    },
+    "https://www.danielcorin.com/links/2026/02/nurturing-atlas-giving-my-ai-agent-its-own-team-and-what-that-taught-me-about-ai/": {
+      "checkedAt": "2026-07-21T15:21:06.068650Z",
+      "status": "no-endpoint",
+      "target": "https://www.appliedaiformops.com/p/nurturing-atlas-giving-my-ai-agent"
+    },
+    "https://www.danielcorin.com/links/2026/02/publishing-on-the-atmosphere-tynan-purdy-offprint/": {
+      "checkedAt": "2026-07-21T15:21:05.871228Z",
+      "status": "no-endpoint",
+      "target": "https://tynanistyping.offprint.app/a/3mcsvjjceei23-publishing-on-the-atmosphere"
+    },
+    "https://www.danielcorin.com/links/2026/02/the-2028-global-intelligence-crisis/": {
+      "checkedAt": "2026-07-21T15:20:58.427948Z",
+      "status": "no-endpoint",
+      "target": "https://www.citriniresearch.com/p/2028gic"
+    },
+    "https://www.danielcorin.com/links/2026/02/the-final-bottleneck/": {
+      "checkedAt": "2026-07-21T15:21:05.947942Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2026/2/13/the-final-bottleneck/"
+    },
+    "https://www.danielcorin.com/links/2026/02/the-singularity-will-occur-on-a-tuesday/": {
+      "checkedAt": "2026-07-21T15:21:07.606210Z",
+      "status": "no-endpoint",
+      "target": "https://campedersen.com/singularity"
+    },
+    "https://www.danielcorin.com/links/2026/02/two-beliefs-about-coding-agents/": {
+      "checkedAt": "2026-07-21T15:20:58.050832Z",
+      "status": "no-endpoint",
+      "target": "https://www.dbreunig.com/2026/02/25/two-things-i-believe-about-coding-agents.html"
+    },
+    "https://www.danielcorin.com/links/2026/03/academics-need-to-wake-up-on-ai/": {
+      "checkedAt": "2026-07-21T15:20:55.017526Z",
+      "status": "no-endpoint",
+      "target": "https://open.substack.com/pub/alexanderkustov/p/academics-need-to-wake-up-on-ai?utm_campaign=post&utm_medium=web"
+    },
+    "https://www.danielcorin.com/links/2026/03/ai-agents-could-make-free-software-matter-again-george-london/": {
+      "checkedAt": "2026-07-21T15:20:26.071838Z",
+      "status": "no-endpoint",
+      "target": "https://www.gjlondon.com/blog/ai-agents-could-make-free-software-matter-again/"
+    },
+    "https://www.danielcorin.com/links/2026/03/ai-hot-takes-from-a-platform-engineer-sre-alienchow/": {
+      "checkedAt": "2026-07-21T15:20:26.270368Z",
+      "status": "no-endpoint",
+      "target": "https://alienchow.dev/post/ai_takeaways_mar_2026/"
+    },
+    "https://www.danielcorin.com/links/2026/03/anthropic-please-make-a-new-slack-blog-fivetran/": {
+      "checkedAt": "2026-07-21T15:20:52.734026Z",
+      "status": "no-endpoint",
+      "target": "https://www.fivetran.com/blog/anthropic-please-make-a-new-slack"
+    },
+    "https://www.danielcorin.com/links/2026/03/block-tackle-job-cuts-the-ai-narrative/": {
+      "checkedAt": "2026-07-21T15:20:57.581484Z",
+      "status": "no-endpoint",
+      "target": "https://om.co/2026/02/28/block-tackle-job-cuts-the-ai-narrative/"
+    },
+    "https://www.danielcorin.com/links/2026/03/claude-opus-4-6-the-biggest-ai-jump-ive-covered-its-not-close-heres-what-you-nee/": {
+      "checkedAt": "2026-07-21T15:20:57.380895Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=JKk77rzOL34"
+    },
+    "https://www.danielcorin.com/links/2026/03/disregard-that-attacks/": {
+      "checkedAt": "2026-07-21T15:20:29.514144Z",
+      "status": "no-endpoint",
+      "target": "https://calpaterson.com/disregard.html"
+    },
+    "https://www.danielcorin.com/links/2026/03/do-ai-agents-actually-make-money-in-2026-or-is-it-just-mac-minis-and-vibes/": {
+      "checkedAt": "2026-07-21T15:20:56.502625Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://www.siliconsnark.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://www.siliconsnark.com/do-ai-agents-actually-make-money-in-2026-or-is-it-just-mac-minis-and-vibes/"
+    },
+    "https://www.danielcorin.com/links/2026/03/dont-make-me-talk-to-your-chatbot/": {
+      "checkedAt": "2026-07-21T15:20:54.776973Z",
+      "status": "no-endpoint",
+      "target": "https://raymyers.org/post/dont-make-me-talk-to-your-chatbot/"
+    },
+    "https://www.danielcorin.com/links/2026/03/early-observations-from-interviews-with-engineering-teams-adopting-ai/": {
+      "checkedAt": "2026-07-21T15:20:25.113892Z",
+      "status": "no-endpoint",
+      "target": "https://jonathannen.com/observations-from-interviews/"
+    },
+    "https://www.danielcorin.com/links/2026/03/embrace-the-uncertainty/": {
+      "checkedAt": "2026-07-21T15:20:43.141375Z",
+      "status": "no-endpoint",
+      "target": "https://brittanyellich.com/embrace-the-uncertainty/"
+    },
+    "https://www.danielcorin.com/links/2026/03/enshittifaication/": {
+      "checkedAt": "2026-07-21T15:20:34.869791Z",
+      "status": "no-endpoint",
+      "target": "https://it-notes.dragas.net/2026/03/20/enshittifaication/"
+    },
+    "https://www.danielcorin.com/links/2026/03/every-layer-of-review-makes-you-10x-slower/": {
+      "checkedAt": "2026-07-21T15:20:40.094135Z",
+      "status": "no-endpoint",
+      "target": "https://apenwarr.ca/log/20260316"
+    },
+    "https://www.danielcorin.com/links/2026/03/filesystems-are-having-a-moment/": {
+      "checkedAt": "2026-07-21T15:20:47.512335Z",
+      "status": "no-endpoint",
+      "target": "https://madalitso.me/notes/why-everyone-is-talking-about-filesystems/"
+    },
+    "https://www.danielcorin.com/links/2026/03/grief-and-the-ai-split/": {
+      "checkedAt": "2026-07-21T15:20:42.917626Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/blog.lmorchard.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://blog.lmorchard.com/2026/03/11/grief-and-the-ai-split/"
+    },
+    "https://www.danielcorin.com/links/2026/03/hide-macos-tahoes-menu-icons-with-this-one-simple-trick-512-pixels/": {
+      "checkedAt": "2026-07-21T15:20:34.304369Z",
+      "status": "no-endpoint",
+      "target": "https://512pixels.net/2026/03/hide-macos-tahoes-menu-icons-with-this-one-simple-trick/"
+    },
+    "https://www.danielcorin.com/links/2026/03/hoard-things-you-know-how-to-do-agentic-engineering-patterns/": {
+      "checkedAt": "2026-07-21T15:20:54.319250Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/guides/agentic-engineering-patterns/hoard-things-you-know-how-to-do/"
+    },
+    "https://www.danielcorin.com/links/2026/03/i-cant-see-apples-vision/": {
+      "checkedAt": "2026-07-21T15:20:28.937398Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://matduggan.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://matduggan.com/i-cant-see-apples-vision/"
+    },
+    "https://www.danielcorin.com/links/2026/03/i-dont-know-if-my-job-will-still-exist-in-ten-years/": {
+      "checkedAt": "2026-07-21T15:20:43.040001Z",
+      "status": "no-endpoint",
+      "target": "https://www.seangoedecke.com/will-my-job-still-exist/"
+    },
+    "https://www.danielcorin.com/links/2026/03/markdown-ate-the-world/": {
+      "checkedAt": "2026-07-21T15:20:32.102332Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://matduggan.com/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://matduggan.com/markdown-ate-the-world/"
+    },
+    "https://www.danielcorin.com/links/2026/03/models-are-commodities-harnesses-are-differentiators/": {
+      "checkedAt": "2026-07-21T15:20:40.425406Z",
+      "status": "no-endpoint",
+      "target": "https://justin.searls.co/links/2026-03-16-models-are-commodities-harnesses-are-differentiators/"
+    },
+    "https://www.danielcorin.com/links/2026/03/moving-from-github-to-codeberg-for-lazy-people-markus-unterwaditzer/": {
+      "checkedAt": "2026-07-21T15:20:29.293758Z",
+      "status": "no-endpoint",
+      "target": "https://unterwaditzer.net/2025/codeberg.html"
+    },
+    "https://www.danielcorin.com/links/2026/03/nobody-gets-promoted-for-simplicity/": {
+      "checkedAt": "2026-07-21T15:20:54.594116Z",
+      "status": "no-endpoint",
+      "target": "https://terriblesoftware.org/2026/03/03/nobody-gets-promoted-for-simplicity/"
+    },
+    "https://www.danielcorin.com/links/2026/03/polly-wants-a-better-argument/": {
+      "checkedAt": "2026-07-21T15:20:39.576105Z",
+      "status": "no-endpoint",
+      "target": "https://www.verysane.ai/p/polly-wants-a-better-argument?utm_source=activity_item"
+    },
+    "https://www.danielcorin.com/links/2026/03/principles/": {
+      "checkedAt": "2026-07-21T15:20:25.599851Z",
+      "detail": "GET https://nabeelqu.co/principles returned HTTP 429",
+      "status": "failed",
+      "target": "https://nabeelqu.co/principles"
+    },
+    "https://www.danielcorin.com/links/2026/03/red-green-rally/": {
+      "checkedAt": "2026-07-21T15:20:40.712272Z",
+      "status": "no-endpoint",
+      "target": "https://justin.searls.co/shots/2026-03-14-08h55m56s/"
+    },
+    "https://www.danielcorin.com/links/2026/03/reports-of-codes-death-are-greatly-exaggerated/": {
+      "checkedAt": "2026-07-21T15:20:33.551688Z",
+      "status": "no-endpoint",
+      "target": "https://stevekrouse.com/precision"
+    },
+    "https://www.danielcorin.com/links/2026/03/self-host-tech-independence-the-joy-of-building-your-own/": {
+      "checkedAt": "2026-07-21T15:20:36.799457Z",
+      "detail": "Webmention endpoint returned HTTP 404: {\"error\":\"not_found\",\"error_description\":\"account ssp.sh not found\"}",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/ssp.sh/webmention",
+      "status": "failed",
+      "target": "https://www.ssp.sh/blog/self-host-self-independence/"
+    },
+    "https://www.danielcorin.com/links/2026/03/so-where-are-all-the-ai-apps-answer-ai/": {
+      "checkedAt": "2026-07-21T15:20:30.084043Z",
+      "status": "no-endpoint",
+      "target": "https://www.answer.ai/posts/2026-03-12-so-where-are-all-the-ai-apps.html"
+    },
+    "https://www.danielcorin.com/links/2026/03/some-things-just-take-time/": {
+      "checkedAt": "2026-07-21T15:20:34.387975Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2026/3/20/some-things-just-take-time/"
+    },
+    "https://www.danielcorin.com/links/2026/03/startup-punditrys-25-years-of-failure/": {
+      "checkedAt": "2026-07-21T15:20:32.334354Z",
+      "status": "no-endpoint",
+      "target": "https://colossus.com/article/we-have-learned-nothing-startup-pundits/"
+    },
+    "https://www.danielcorin.com/links/2026/03/the-49mb-web-page/": {
+      "checkedAt": "2026-07-21T15:20:35.028466Z",
+      "status": "no-endpoint",
+      "target": "https://thatshubham.com/blog/news-audit"
+    },
+    "https://www.danielcorin.com/links/2026/03/the-claude-code-source-leak-fake-tools-frustration-regexes-undercover-mode-and-m/": {
+      "checkedAt": "2026-07-21T15:20:25.259699Z",
+      "status": "no-endpoint",
+      "target": "https://alex000kim.com/posts/2026-03-31-claude-code-source-leak/"
+    },
+    "https://www.danielcorin.com/links/2026/03/the-cognitive-dark-forest/": {
+      "checkedAt": "2026-07-21T15:20:26.860358Z",
+      "status": "no-endpoint",
+      "target": "https://ryelang.org/blog/posts/cognitive-dark-forest/"
+    },
+    "https://www.danielcorin.com/links/2026/03/the-first-ai-agent-worm-is-months-away-if-that-dustycloud-brainstorms/": {
+      "checkedAt": "2026-07-21T15:20:52.590753Z",
+      "status": "no-endpoint",
+      "target": "https://dustycloud.org/blog/the-first-ai-agent-worm-is-months-away-if-that/"
+    },
+    "https://www.danielcorin.com/links/2026/03/the-uncomfortable/": {
+      "checkedAt": "2026-07-21T15:20:39.387106Z",
+      "status": "no-endpoint",
+      "target": "https://www.theuncomfortable.com/#"
+    },
+    "https://www.danielcorin.com/links/2026/03/the-unease-i-see/": {
+      "checkedAt": "2026-07-21T15:20:47.341502Z",
+      "status": "no-endpoint",
+      "target": "https://open.substack.com/pub/rodionsteshenko/p/the-unease-i-see?utm_campaign=post&utm_medium=web"
+    },
+    "https://www.danielcorin.com/links/2026/03/thoughts-on-slowing-the-fuck-down/": {
+      "checkedAt": "2026-07-21T15:20:29.975719Z",
+      "status": "no-endpoint",
+      "target": "https://mariozechner.at/posts/2026-03-25-thoughts-on-slowing-the-fuck-down/"
+    },
+    "https://www.danielcorin.com/links/2026/03/try-not-to-get-scammed-while-looking-for-work-bogdan-chadkin/": {
+      "checkedAt": "2026-07-21T15:20:40.582976Z",
+      "status": "no-endpoint",
+      "target": "https://trysound.io/try-not-to-get-scammed-while-looking-for-work/"
+    },
+    "https://www.danielcorin.com/links/2026/03/what-if-you-never-had-to-get-an-api-key-ever-again/": {
+      "checkedAt": "2026-07-21T15:20:47.055499Z",
+      "status": "no-endpoint",
+      "target": "https://stevekrouse.com/x402"
+    },
+    "https://www.danielcorin.com/links/2026/03/why-craft-lovers-are-losing-their-craft/": {
+      "checkedAt": "2026-07-21T15:20:34.119342Z",
+      "status": "no-endpoint",
+      "target": "https://writings.hongminhee.org/2026/03/craft-alienation-llm/"
+    },
+    "https://www.danielcorin.com/links/2026/03/why-im-betting-on-atproto-and-why-you-should-too/": {
+      "checkedAt": "2026-07-21T15:20:25.393581Z",
+      "status": "no-endpoint",
+      "target": "https://brittanyellich.com/atproto/"
+    },
+    "https://www.danielcorin.com/links/2026/03/willingness-to-look-stupid-is-a-genuine-moat-in-creative-work/": {
+      "checkedAt": "2026-07-21T15:20:41.139552Z",
+      "status": "no-endpoint",
+      "target": "https://sharif.io/looking-stupid"
+    },
+    "https://www.danielcorin.com/links/2026/03/writing-is-an-inherently-dignified-human-activity/": {
+      "checkedAt": "2026-07-21T15:20:25.790231Z",
+      "status": "no-endpoint",
+      "target": "https://www.personalcanon.com/p/writing-is-an-inherently-dignified?utm_campaign=post&utm_medium=web"
+    },
+    "https://www.danielcorin.com/links/2026/03/your-frustration-is-the-product/": {
+      "checkedAt": "2026-07-21T15:20:35.193363Z",
+      "status": "no-endpoint",
+      "target": "https://daringfireball.net/2026/03/your_frustration_is_the_product"
+    },
+    "https://www.danielcorin.com/links/2026/04/adlrocha-how-the-ai-loser-may-end-up-winning/": {
+      "checkedAt": "2026-07-21T15:20:21.994964Z",
+      "status": "no-endpoint",
+      "target": "https://adlrocha.substack.com/p/adlrocha-how-the-ai-loser-may-end"
+    },
+    "https://www.danielcorin.com/links/2026/04/aesthetics-of-ai/": {
+      "checkedAt": "2026-07-21T15:20:21.575956Z",
+      "status": "no-endpoint",
+      "target": "https://www.acolorbright.com/en/insights/aesthetics-of-ai"
+    },
+    "https://www.danielcorin.com/links/2026/04/before-github/": {
+      "checkedAt": "2026-07-21T15:20:18.981944Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2026/4/28/before-github/"
+    },
+    "https://www.danielcorin.com/links/2026/04/beware-software-brain/": {
+      "checkedAt": "2026-07-21T15:20:19.919765Z",
+      "status": "no-endpoint",
+      "target": "https://www.theverge.com/podcast/917029/software-brain-ai-backlash-databases-automation?utm_content=buffer67eea&utm_medium=social&utm_source=bsky.app&utm_campaign=verge_social"
+    },
+    "https://www.danielcorin.com/links/2026/04/claude-mixes-up-who-said-what-and-thats-not-ok/": {
+      "checkedAt": "2026-07-21T15:20:23.670248Z",
+      "status": "no-endpoint",
+      "target": "https://dwyer.co.za/static/claude-mixes-up-who-said-what-and-thats-not-ok.html"
+    },
+    "https://www.danielcorin.com/links/2026/04/code-is-run-more-than-read/": {
+      "checkedAt": "2026-07-21T15:20:20.632739Z",
+      "status": "no-endpoint",
+      "target": "https://olano.dev/blog/code-is-run-more-than-read/"
+    },
+    "https://www.danielcorin.com/links/2026/04/cybersecurity-looks-like-proof-of-work-now/": {
+      "checkedAt": "2026-07-21T15:20:21.816494Z",
+      "status": "no-endpoint",
+      "target": "https://www.dbreunig.com/2026/04/14/cybersecurity-is-proof-of-work-now.html"
+    },
+    "https://www.danielcorin.com/links/2026/04/everything-we-got-wrong-about-research-plan-implement-dexter-horthy/": {
+      "checkedAt": "2026-07-21T15:20:18.903386Z",
+      "status": "no-endpoint",
+      "target": "https://www.youtube.com/watch?v=YwZR6tc7qYg"
+    },
+    "https://www.danielcorin.com/links/2026/04/getting-up-to-speed-on-multi-agent-systems-part-1-the-landscape/": {
+      "checkedAt": "2026-07-21T15:20:19.624826Z",
+      "status": "no-endpoint",
+      "target": "https://christophermeiklejohn.com/ai/agents/mas-series/2026/04/24/mas-series-01-the-landscape.html?trk=feed-detail_main-feed-card_feed-article-content"
+    },
+    "https://www.danielcorin.com/links/2026/04/how-to-forget/": {
+      "checkedAt": "2026-07-21T15:20:21.179166Z",
+      "status": "no-endpoint",
+      "target": "https://timkellogg.me/blog/2026/04/14/forgetting"
+    },
+    "https://www.danielcorin.com/links/2026/04/i-was-wrong-ai-wont-overtake-software-engineering/": {
+      "checkedAt": "2026-07-21T15:20:24.566749Z",
+      "status": "no-endpoint",
+      "target": "https://timkellogg.me/blog/2025/05/10/ai-code-updated"
+    },
+    "https://www.danielcorin.com/links/2026/04/ive-sold-out/": {
+      "checkedAt": "2026-07-21T15:20:24.327896Z",
+      "status": "no-endpoint",
+      "target": "https://mariozechner.at/posts/2026-04-08-ive-sold-out/"
+    },
+    "https://www.danielcorin.com/links/2026/04/lets-talk-about-llms/": {
+      "checkedAt": "2026-07-21T15:20:22.303805Z",
+      "status": "no-endpoint",
+      "target": "https://www.b-list.org/weblog/2026/apr/09/llms/"
+    },
+    "https://www.danielcorin.com/links/2026/04/the-ai-great-leap-forward/": {
+      "checkedAt": "2026-07-21T15:20:22.074452Z",
+      "status": "no-endpoint",
+      "target": "https://leehanchung.github.io/blogs/2026/04/05/the-ai-great-leap-forward/"
+    },
+    "https://www.danielcorin.com/links/2026/04/the-claude-code-leak/": {
+      "checkedAt": "2026-07-21T15:20:24.743721Z",
+      "status": "no-endpoint",
+      "target": "https://build.ms/2026/4/1/the-claude-code-leak/"
+    },
+    "https://www.danielcorin.com/links/2026/04/the-machines-are-fine-im-worried-about-us/": {
+      "checkedAt": "2026-07-21T15:20:21.091739Z",
+      "status": "no-endpoint",
+      "target": "https://ergosphere.blog/posts/the-machines-are-fine/"
+    },
+    "https://www.danielcorin.com/links/2026/04/to-my-students/": {
+      "checkedAt": "2026-07-21T15:20:19.461863Z",
+      "status": "no-endpoint",
+      "target": "http://ozark.hendrix.edu/~yorgey/forest/00FD/index.xml"
+    },
+    "https://www.danielcorin.com/links/2026/04/your-code-is-worthless/": {
+      "checkedAt": "2026-07-21T15:20:24.496529Z",
+      "status": "no-endpoint",
+      "target": "https://nathanielfishel.substack.com/p/your-code-is-worthless"
+    },
+    "https://www.danielcorin.com/links/2026/05/a-desktop-made-for-one/": {
+      "checkedAt": "2026-07-21T15:20:16.888289Z",
+      "status": "no-endpoint",
+      "target": "https://isene.org/2026/05/Audience-of-One.html"
+    },
+    "https://www.danielcorin.com/links/2026/05/after-automation/": {
+      "checkedAt": "2026-07-21T15:20:04.685633Z",
+      "status": "no-endpoint",
+      "target": "https://every.to/p/after-automation"
+    },
+    "https://www.danielcorin.com/links/2026/05/ai-is-not-the-future-of-software-development-but-the-last-dying-gasp-of-the-past/": {
+      "checkedAt": "2026-07-21T15:20:05.387852Z",
+      "status": "no-endpoint",
+      "target": "https://productpicnic.beehiiv.com/p/ai-is-not-the-future-of-software-development-but-the-last-dying-gasp-of-the-past"
+    },
+    "https://www.danielcorin.com/links/2026/05/ai-is-technology-not-a-product/": {
+      "checkedAt": "2026-07-21T15:20:08.342369Z",
+      "status": "no-endpoint",
+      "target": "https://daringfireball.net/2026/05/ai_is_technology_not_a_product#fnr1-2026-05-16"
+    },
+    "https://www.danielcorin.com/links/2026/05/ai-slop-is-killing-online-communities/": {
+      "checkedAt": "2026-07-21T15:20:10.662725Z",
+      "status": "no-endpoint",
+      "target": "https://rmoff.net/2026/05/06/ai-slop-is-killing-online-communities/"
+    },
+    "https://www.danielcorin.com/links/2026/05/deepseek-v4-flash-means-llm-steering-is-interesting-again/": {
+      "checkedAt": "2026-07-21T15:20:08.936960Z",
+      "status": "no-endpoint",
+      "target": "https://www.seangoedecke.com/steering-vectors/"
+    },
+    "https://www.danielcorin.com/links/2026/05/enough-with-the-ai-fomo-go-slow-mo-says-domo-cdo/": {
+      "checkedAt": "2026-07-21T15:20:08.030579Z",
+      "status": "no-endpoint",
+      "target": "https://www.theregister.com/ai-ml/2026/05/17/enough-with-the-ai-fomo-go-slow-mo-says-domo-cdo/5240840"
+    },
+    "https://www.danielcorin.com/links/2026/05/every-ai-subscription-is-a-ticking-time-bomb-for-enterprise/": {
+      "checkedAt": "2026-07-21T15:20:08.616221Z",
+      "status": "no-endpoint",
+      "target": "https://www.thestateofbrand.com/news/ai-subscription-time-bomb"
+    },
+    "https://www.danielcorin.com/links/2026/05/good-developers-learn-to-program-most-courses-teach-a-language/": {
+      "checkedAt": "2026-07-21T15:20:17.863275Z",
+      "status": "no-endpoint",
+      "target": "https://evilgeniuslabs.ca/blog/good-developers-learn-to-program-not-a-language"
+    },
+    "https://www.danielcorin.com/links/2026/05/googles-antigravity-bait-and-switch-sids-blog/": {
+      "checkedAt": "2026-07-21T15:20:07.699271Z",
+      "status": "no-endpoint",
+      "target": "https://www.0xsid.com/blog/antigravity-bait-n-switch"
+    },
+    "https://www.danielcorin.com/links/2026/05/i-am-worried-about-bun/": {
+      "checkedAt": "2026-07-21T15:20:15.860040Z",
+      "status": "no-endpoint",
+      "target": "https://wwj.dev/posts/i-am-worried-about-bun/"
+    },
+    "https://www.danielcorin.com/links/2026/05/llms-are-not-a-higher-level-of-abstraction/": {
+      "checkedAt": "2026-07-21T15:20:17.258289Z",
+      "status": "no-endpoint",
+      "target": "https://www.lelanthran.com/chap15/content.html"
+    },
+    "https://www.danielcorin.com/links/2026/05/local-ai-needs-to-be-the-norm/": {
+      "checkedAt": "2026-07-21T15:20:10.037721Z",
+      "status": "no-endpoint",
+      "target": "https://unix.foo/posts/local-ai-needs-to-be-norm/"
+    },
+    "https://www.danielcorin.com/links/2026/05/my-thoughts-on-buns-rust-rewrite/": {
+      "checkedAt": "2026-07-21T15:20:09.134585Z",
+      "status": "no-endpoint",
+      "target": "https://en.liujiacai.net/2026/05/16/bun-rust-port/"
+    },
+    "https://www.danielcorin.com/links/2026/05/mythos-finds-a-curl-vulnerability/": {
+      "checkedAt": "2026-07-21T15:20:09.474351Z",
+      "status": "no-endpoint",
+      "target": "https://daniel.haxx.se/blog/2026/05/11/mythos-finds-a-curl-vulnerability/"
+    },
+    "https://www.danielcorin.com/links/2026/05/one-developer-two-dozen-agents-zero-alignment/": {
+      "checkedAt": "2026-07-21T15:20:07.473213Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/maggieappleton.com/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://maggieappleton.com/zero-alignment/"
+    },
+    "https://www.danielcorin.com/links/2026/05/open-weights-are-quietly-closing-up-and-thats-a-problem/": {
+      "checkedAt": "2026-07-21T15:20:10.788135Z",
+      "status": "no-endpoint",
+      "target": "https://martinalderson.com/posts/open-weights-are-quietly-closing-up/"
+    },
+    "https://www.danielcorin.com/links/2026/05/publishing-software-now-blog/": {
+      "checkedAt": "2026-07-21T15:20:16.409479Z",
+      "status": "no-endpoint",
+      "target": "https://redfloatplane.lol/blog/14-releasing-software-now/"
+    },
+    "https://www.danielcorin.com/links/2026/05/spring-ai/": {
+      "checkedAt": "2026-07-21T15:20:08.171639Z",
+      "detail": "GET https://static1.squarespace.com/static/50363cf324ac8e905e7df861/t/6a0af5d0484fbf5fe9a7743e/1779103184855/2026-Spring-AI.pdf returned HTTP 404",
+      "status": "failed",
+      "target": "https://static1.squarespace.com/static/50363cf324ac8e905e7df861/t/6a0af5d0484fbf5fe9a7743e/1779103184855/2026-Spring-AI.pdf"
+    },
+    "https://www.danielcorin.com/links/2026/05/the-bottleneck-was-never-the-code/": {
+      "checkedAt": "2026-07-21T15:20:12.451616Z",
+      "status": "no-endpoint",
+      "target": "https://www.thetypicalset.com/blog/thoughts-on-coding-agents"
+    },
+    "https://www.danielcorin.com/links/2026/05/the-ctf-scene-is-dead-kabir-au/": {
+      "checkedAt": "2026-07-21T15:20:08.811949Z",
+      "status": "no-endpoint",
+      "target": "https://kabir.au/blog/the-ctf-scene-is-dead"
+    },
+    "https://www.danielcorin.com/links/2026/05/the-dead-economy-theory/": {
+      "checkedAt": "2026-07-21T15:20:04.077089Z",
+      "status": "no-endpoint",
+      "target": "https://www.owenmcgrann.com/p/the-dead-economy-theory"
+    },
+    "https://www.danielcorin.com/links/2026/05/the-eternal-sloptember/": {
+      "checkedAt": "2026-07-21T15:20:04.759210Z",
+      "status": "no-endpoint",
+      "target": "https://geohot.github.io//blog/jekyll/update/2026/05/24/the-eternal-sloptember.html"
+    },
+    "https://www.danielcorin.com/links/2026/05/the-gap-between-what-ai-can-do-and-what-companies-can-do-with-ai/": {
+      "checkedAt": "2026-07-21T15:20:18.000550Z",
+      "status": "no-endpoint",
+      "target": "https://www.appliedaiformops.com/p/the-gap-between-what-ai-can-do-and"
+    },
+    "https://www.danielcorin.com/links/2026/05/the-intelligent-bullshitter/": {
+      "checkedAt": "2026-07-21T15:20:16.032195Z",
+      "status": "no-endpoint",
+      "target": "https://rodionsteshenko.substack.com/p/the-intelligent-bullshitter"
+    },
+    "https://www.danielcorin.com/links/2026/05/the-old-world-of-tech-is-dying-and-the-new-cannot-be-born/": {
+      "checkedAt": "2026-07-21T15:20:05.594934Z",
+      "status": "no-endpoint",
+      "target": "https://www.baldurbjarnason.com/2026/the-old-world-of-tech-is-dying/"
+    },
+    "https://www.danielcorin.com/links/2026/05/vibe-coding-and-agentic-engineering-are-getting-closer-than-id-like/": {
+      "checkedAt": "2026-07-21T15:20:12.361939Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/simonwillison.net/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/"
+    },
+    "https://www.danielcorin.com/links/2026/05/we-see-something-that-works-and-then-we-understand-it/": {
+      "checkedAt": "2026-07-21T15:20:10.568667Z",
+      "status": "no-endpoint",
+      "target": "https://lemire.me/blog/2025/12/04/we-see-something-that-works-and-then-we-understand-it/"
+    },
+    "https://www.danielcorin.com/links/2026/05/when-everyone-has-ai-and-the-company-still-learns-nothing/": {
+      "checkedAt": "2026-07-21T15:20:14.034456Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://www.robert-glaser.de/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://www.robert-glaser.de/when-everyone-has-ai-and-the-company-still-learns-nothing/"
+    },
+    "https://www.danielcorin.com/links/2026/05/you-can-just-say-it/": {
+      "checkedAt": "2026-07-21T15:20:03.926153Z",
+      "status": "no-endpoint",
+      "target": "https://noperator.dev/posts/you-can-just-say-it/"
+    },
+    "https://www.danielcorin.com/links/2026/06/a-backdoor-in-a-linkedin-job-offer/": {
+      "checkedAt": "2026-07-21T15:19:59.922316Z",
+      "status": "no-endpoint",
+      "target": "https://roman.pt/posts/linkedin-backdoor/"
+    },
+    "https://www.danielcorin.com/links/2026/06/doing-nothing-at-work/": {
+      "checkedAt": "2026-07-21T15:20:02.696189Z",
+      "status": "no-endpoint",
+      "target": "https://www.seangoedecke.com/doing-nothing-at-work/"
+    },
+    "https://www.danielcorin.com/links/2026/06/domain-expertise-has-always-been-the-real-moat-aaron-brethorst/": {
+      "checkedAt": "2026-07-21T15:20:03.519959Z",
+      "status": "no-endpoint",
+      "target": "https://www.brethorsting.com/blog/2026/05/domain-expertise-has-always-been-the-real-moat/"
+    },
+    "https://www.danielcorin.com/links/2026/06/gitignore-isnt-the-only-way-to-ignore-files-in-git/": {
+      "checkedAt": "2026-07-21T15:19:59.554502Z",
+      "status": "no-endpoint",
+      "target": "https://nelson.cloud/.gitignore-isnt-the-only-way-to-ignore-files-in-git/"
+    },
+    "https://www.danielcorin.com/links/2026/06/how-to-think-for-yourself/": {
+      "checkedAt": "2026-07-21T15:19:58.466879Z",
+      "status": "no-endpoint",
+      "target": "https://paulgraham.com/think.html"
+    },
+    "https://www.danielcorin.com/links/2026/06/i-stopped-tracking-my-time-now-i-cant-focus/": {
+      "checkedAt": "2026-07-21T15:20:02.560791Z",
+      "status": "no-endpoint",
+      "target": "https://newsletter.masilotti.com/p/i-stopped-tracking-my-time-now-i"
+    },
+    "https://www.danielcorin.com/links/2026/06/leave-a-trace/": {
+      "checkedAt": "2026-07-21T15:19:59.186401Z",
+      "status": "no-endpoint",
+      "target": "https://www.jakeworth.com/posts/leave-a-trace"
+    },
+    "https://www.danielcorin.com/links/2026/06/open-source-vs-the-invisible-hand/": {
+      "checkedAt": "2026-07-21T15:19:59.346263Z",
+      "status": "no-endpoint",
+      "target": "https://nesbitt.io/2026/06/18/open-source-vs-the-invisible-hand.html"
+    },
+    "https://www.danielcorin.com/links/2026/06/oscars-dev-blog/": {
+      "checkedAt": "2026-07-21T15:20:03.068017Z",
+      "status": "no-endpoint",
+      "target": "https://blog.oscars.dev/posts/rip-software-hackathons-long-live-the-hardware-hackathon/"
+    },
+    "https://www.danielcorin.com/links/2026/06/the-coming-loop/": {
+      "checkedAt": "2026-07-21T15:19:59.045294Z",
+      "status": "no-endpoint",
+      "target": "https://lucumr.pocoo.org/2026/6/23/the-coming-loop/"
+    },
+    "https://www.danielcorin.com/links/2026/06/the-exhaustion-of-talking-to-a-tool/": {
+      "checkedAt": "2026-07-21T15:19:58.977568Z",
+      "status": "no-endpoint",
+      "target": "https://ohadravid.github.io/posts/2026-06-tool-talking/"
+    },
+    "https://www.danielcorin.com/links/2026/06/the-four-quadrants-of-conformism/": {
+      "checkedAt": "2026-07-21T15:19:58.314690Z",
+      "status": "no-endpoint",
+      "target": "https://paulgraham.com/conformism.html"
+    },
+    "https://www.danielcorin.com/links/2026/06/the-future-of-the-con-is-already-here-its-just-not-evenly-distributed/": {
+      "checkedAt": "2026-07-21T15:19:59.430690Z",
+      "status": "no-endpoint",
+      "target": "https://manishearth.github.io/blog/2026/06/17/the-future-of-the-con-is-already-here/"
+    },
+    "https://www.danielcorin.com/links/2026/06/there-are-no-lossless-transformations-of-natural-language-text/": {
+      "checkedAt": "2026-07-21T15:19:58.877592Z",
+      "status": "no-endpoint",
+      "target": "https://sophiebits.com/2026/06/25/there-are-no-lossless-transformations-of-natural-language-text"
+    },
+    "https://www.danielcorin.com/links/2026/06/thoughts-on-ai-and-jobs/": {
+      "checkedAt": "2026-07-21T15:20:00.509067Z",
+      "status": "no-endpoint",
+      "target": "https://blog.keyvan.net/p/thoughts-on-ai-and-jobs"
+    },
+    "https://www.danielcorin.com/links/2026/06/travel-locally-where-you-are/": {
+      "checkedAt": "2026-07-21T15:20:02.387752Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://webmention.io/www.ssp.sh/webmention",
+      "httpStatus": 201,
+      "status": "sent",
+      "target": "https://www.ssp.sh/brain/travel-where-you-are/"
+    },
+    "https://www.danielcorin.com/links/2026/06/what-happened-after-2-000-people-tried-to-hack-my-ai-assistant-fernando-irarraza/": {
+      "checkedAt": "2026-07-21T15:19:58.678217Z",
+      "status": "no-endpoint",
+      "target": "https://www.fernandoi.cl/posts/hackmyclaw/"
+    },
+    "https://www.danielcorin.com/links/2026/06/what-the-fuck-happened-to-nerds/": {
+      "checkedAt": "2026-07-21T15:20:00.341348Z",
+      "status": "no-endpoint",
+      "target": "https://mrmarket.lol/what-the-fuck-happened-to-nerds/"
+    },
+    "https://www.danielcorin.com/links/2026/06/whats-gonna-happen-to-software-engineers/": {
+      "checkedAt": "2026-07-21T15:20:03.733071Z",
+      "status": "no-endpoint",
+      "target": "https://yakko.dev/blog/whats-gonna-happen-to-software-developers"
+    },
+    "https://www.danielcorin.com/links/2026/06/xai-is-looking-more-like-a-datacentre-reit-than-a-frontier-lab/": {
+      "checkedAt": "2026-07-21T15:20:02.874483Z",
+      "status": "no-endpoint",
+      "target": "https://martinalderson.com/posts/xais-new-rental-business/"
+    },
+    "https://www.danielcorin.com/links/2026/07/98-isnt-very-much/": {
+      "checkedAt": "2026-07-21T15:19:57.975422Z",
+      "status": "no-endpoint",
+      "target": "https://whynothugo.nl/journal/2026/07/03/98-isnt-very-much/"
+    },
+    "https://www.danielcorin.com/links/2026/07/ai-mania-is-eviscerating-global-decision-making-ludicity/": {
+      "checkedAt": "2026-07-21T15:19:56.305199Z",
+      "status": "no-endpoint",
+      "target": "https://ludic.mataroa.blog/blog/ai-mania-is-eviscerating-global-decision-making/"
+    },
+    "https://www.danielcorin.com/links/2026/07/american-ai-is-locked-down-and-proprietary-its-losing/": {
+      "checkedAt": "2026-07-21T15:19:55.324743Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://werd.io/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://werd.io/american-ai-is-locked-down-and-proprietary-its-losing/"
+    },
+    "https://www.danielcorin.com/links/2026/07/arda-tasci/": {
+      "checkedAt": "2026-07-21T15:19:55.392071Z",
+      "status": "no-endpoint",
+      "target": "https://eardatasci.github.io/c/ambiance/index.html"
+    },
+    "https://www.danielcorin.com/links/2026/07/glm-5-2-and-the-coming-ai-margin-collapse-part-1/": {
+      "checkedAt": "2026-07-21T15:19:58.148624Z",
+      "status": "no-endpoint",
+      "target": "https://martinalderson.com/posts/the-upcoming-ai-margin-collapse-part-1-glm-5-2/"
+    },
+    "https://www.danielcorin.com/links/2026/07/how-successful-companies-go-blind/": {
+      "checkedAt": "2026-07-21T15:19:57.600291Z",
+      "status": "no-endpoint",
+      "target": "https://ianreppel.org/how-successful-companies-go-blind/"
+    },
+    "https://www.danielcorin.com/links/2026/07/hugging-face-hacked-turned-to-chinese-llm-for-help-after-us-models-blocked-blue/": {
+      "checkedAt": "2026-07-21T15:19:53.502341Z",
+      "discoveredVia": "HTML <link>",
+      "endpoint": "https://www.thestack.technology/webmentions/receive/",
+      "httpStatus": 202,
+      "status": "sent",
+      "target": "https://www.thestack.technology/hugging-face-hacked-turned-to-chinese-llm-for-help-after-us-models-blocked-blue-team/"
+    },
+    "https://www.danielcorin.com/links/2026/07/proof-of-care-in-the-age-of-a-i-jacob-filipp/": {
+      "checkedAt": "2026-07-21T15:19:57.512836Z",
+      "status": "no-endpoint",
+      "target": "https://jacobfilipp.com/care/"
+    },
+    "https://www.danielcorin.com/links/2026/07/punch-yourself-in-the-face-with-reality-adi/": {
+      "checkedAt": "2026-07-21T15:19:56.673134Z",
+      "status": "no-endpoint",
+      "target": "https://adi.bio/reality"
+    },
+    "https://www.danielcorin.com/links/2026/07/the-memory-heist/": {
+      "checkedAt": "2026-07-21T15:19:56.466932Z",
+      "status": "no-endpoint",
+      "target": "https://www.ayush.digital/blog/the-memory-heist"
+    },
+    "https://www.danielcorin.com/links/2026/07/whos-afraid-of-chinese-models/": {
+      "checkedAt": "2026-07-21T15:19:53.813339Z",
+      "status": "no-endpoint",
+      "target": "https://stratechery.com/2026/whos-afraid-of-chinese-models/"
+    }
+  },
   "sendAfter": "2026-07-21T13:54:31Z",
   "version": 1
 }
