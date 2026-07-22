@@ -37,7 +37,6 @@ export async function GET({ props }: { props: Props }) {
 
   return generateOGImage({
     title: til.data.title,
-    description: til.data.description,
     category: category.toUpperCase(),
     date: til.data.publishedAt ? formatDate(til.data.publishedAt) : undefined,
   });

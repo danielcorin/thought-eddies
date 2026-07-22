@@ -137,120 +137,64 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                 position: 'relative',
                 zIndex: 1,
               },
-              children: isMainPage
-                ? [
-                    // Main page title
-                    {
-                      type: 'h1',
+              children: [
+                // Page title (hero)
+                {
+                  type: 'h1',
+                  props: {
+                    style: {
+                      fontSize: isMainPage ? '96px' : '72px',
+                      fontWeight: 700,
+                      margin: '0 0 32px 0',
+                      background:
+                        'linear-gradient(135deg, #cccccc 0%, #ffffff 30%, #e8e8e8 70%, #cccccc 100%)',
+                      backgroundClip: 'text',
+                      color: 'transparent',
+                      lineHeight: 1.2,
+                      letterSpacing: '-0.02em',
+                      textShadow: '0 0 40px rgba(204,204,204,0.2)',
+                      textAlign: 'center',
+                    },
+                    children: content.title,
+                  },
+                },
+                // Main page tagline
+                isMainPage && content.description
+                  ? {
+                      type: 'p',
                       props: {
                         style: {
-                          fontSize: '96px',
-                          fontWeight: 700,
-                          margin: '0 0 32px 0',
-                          background:
-                            'linear-gradient(135deg, #cccccc 0%, #ffffff 30%, #e8e8e8 70%, #cccccc 100%)',
-                          backgroundClip: 'text',
-                          color: 'transparent',
-                          lineHeight: 1.2,
-                          letterSpacing: '-0.02em',
-                          textShadow: '0 0 40px rgba(204,204,204,0.2)',
+                          fontSize: '36px',
+                          fontWeight: 400,
+                          margin: '0',
+                          color: '#a8a8a8',
+                          lineHeight: 1.4,
+                          letterSpacing: '-0.01em',
                           textAlign: 'center',
                         },
-                        children: content.title,
+                        children: content.description,
                       },
-                    },
-                    // Main page description
-                    content.description
-                      ? {
-                          type: 'p',
-                          props: {
-                            style: {
-                              fontSize: '36px',
-                              fontWeight: 400,
-                              margin: '0',
-                              color: '#a8a8a8',
-                              lineHeight: 1.4,
-                              letterSpacing: '-0.01em',
-                              textAlign: 'center',
-                            },
-                            children: content.description,
-                          },
-                        }
-                      : null,
-                  ].filter(Boolean)
-                : [],
-            },
-          },
-          // Bottom section with title and metadata (for non-main pages)
-          !isMainPage
-            ? {
-                type: 'div',
-                props: {
-                  style: {
-                    position: 'absolute',
-                    bottom: '60px',
-                    left: '60px',
-                    right: '60px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '24px',
-                  },
-                  children: [
-                    // Title
-                    {
-                      type: 'h1',
-                      props: {
-                        style: {
-                          fontSize: '64px',
-                          fontWeight: 700,
-                          margin: '0',
-                          background:
-                            'linear-gradient(135deg, #cccccc 0%, #ffffff 30%, #e8e8e8 70%, #cccccc 100%)',
-                          backgroundClip: 'text',
-                          color: 'transparent',
-                          lineHeight: 1.2,
-                          letterSpacing: '-0.02em',
-                          textShadow: '0 0 40px rgba(204,204,204,0.2)',
-                        },
-                        children: content.title,
-                      },
-                    },
-                    // Description
-                    content.description
-                      ? {
-                          type: 'p',
-                          props: {
-                            style: {
-                              fontSize: '28px',
-                              fontWeight: 400,
-                              margin: '0',
-                              color: '#a8a8a8',
-                              lineHeight: 1.4,
-                              letterSpacing: '-0.01em',
-                              maxWidth: '900px',
-                            },
-                            children: content.description,
-                          },
-                        }
-                      : null,
-                    // Metadata row
-                    {
+                    }
+                  : null,
+                // Category / date metadata (non-main pages)
+                !isMainPage && (content.category || content.date)
+                  ? {
                       type: 'div',
                       props: {
                         style: {
                           display: 'flex',
                           alignItems: 'center',
+                          justifyContent: 'center',
                           gap: '20px',
                           flexWrap: 'wrap',
                         },
                         children: [
-                          // Category
                           content.category
                             ? {
                                 type: 'span',
                                 props: {
                                   style: {
-                                    fontSize: '22px',
+                                    fontSize: '24px',
                                     fontWeight: 500,
                                     color: '#cccccc',
                                     textTransform: 'uppercase',
@@ -260,26 +204,24 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                                 },
                               }
                             : null,
-                          // Separator
                           content.category && content.date
                             ? {
                                 type: 'span',
                                 props: {
                                   style: {
                                     color: '#4a4a4a',
-                                    fontSize: '22px',
+                                    fontSize: '24px',
                                   },
                                   children: '•',
                                 },
                               }
                             : null,
-                          // Date
                           content.date
                             ? {
                                 type: 'span',
                                 props: {
                                   style: {
-                                    fontSize: '22px',
+                                    fontSize: '24px',
                                     fontWeight: 400,
                                     color: '#a8a8a8',
                                   },
@@ -289,11 +231,11 @@ export async function generateOGImage(content: OGContent): Promise<Response> {
                             : null,
                         ].filter(Boolean),
                       },
-                    },
-                  ].filter(Boolean),
-                },
-              }
-            : null,
+                    }
+                  : null,
+              ].filter(Boolean),
+            },
+          },
           // Decorative elements
           {
             type: 'div',
