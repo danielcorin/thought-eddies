@@ -20,7 +20,6 @@ export async function GET({ props }: { props: Props }) {
 
   return generateOGImage({
     title: feed.data.title,
-    description: feed.body,
     category: 'Feed',
   });
 }

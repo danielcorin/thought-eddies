@@ -28,7 +28,6 @@ export async function GET({ props }: { props: Props }) {
 
   return generateOGImage({
     title: post.data.title,
-    description: post.data.description,
     category: 'Post',
     date: formatDate(post.data.createdAt),
   });
