@@ -126,6 +126,51 @@ import { Icon } from "astro-icon/components";
     margin-top: 4rem;
   }
 
+  .footer-content,
+  .footer-pages {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Soft local washes keep each footer row legible over decorative
+     backgrounds without turning either one into a hard-edged card. */
+  .footer-content::before,
+  .footer-pages::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 999px;
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--color-bg) 58%, transparent) 0%,
+      color-mix(in srgb, var(--color-bg) 36%, transparent) 52%,
+      transparent 100%
+    );
+    -webkit-backdrop-filter: blur(9px) saturate(0.72);
+    backdrop-filter: blur(9px) saturate(0.72);
+    -webkit-mask-image: radial-gradient(
+      ellipse at center,
+      black 38%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      ellipse at center,
+      black 38%,
+      transparent 100%
+    );
+  }
+
+  .footer-content::before {
+    inset: 1.5rem clamp(0.5rem, 2vw, 1.5rem) 0.25rem;
+  }
+
+  .footer-pages::before {
+    /* The nav's horizontal padding sits outside the links. Insetting by the
+       same amount keeps this wash no wider than the route row itself. */
+    inset: -0.5rem var(--spacing-lg) 1rem;
+  }
+
   .footer-content {
     padding: 3rem var(--spacing-lg) 1.5rem;
     max-width: 1200px;
@@ -219,6 +264,7 @@ import { Icon } from "astro-icon/components";
   }
 
   .footer-pages {
+    width: fit-content;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 var(--spacing-lg) 2rem;

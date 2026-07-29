@@ -1,0 +1,1044 @@
+---
+// Decorative WebGL band: fine sediment swirling in eddying water at the
+// bottom of the page. The water is a 2D Navier-Stokes simulation in
+// vorticity-streamfunction form (see the constants in the script);
+// dragging the pointer injects vorticity that stirs the powder, and the
+// resulting eddies advect, spread, and slowly relax back into the ambient
+// current. Renders nothing but a soft CSS gradient when WebGL is missing,
+// the device is constrained, or the user prefers reduced data.
+---
+
+<div class="eddy-current" data-eddy-current aria-hidden="true">
+  <div class="eddy-current-fallback"></div>
+  <canvas class="eddy-current-canvas"></canvas>
+</div>
+
+<style>
+  /* Fills the layout's footer-area stage; the footer content renders above
+     it. */
+  .eddy-current {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .eddy-current-fallback {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        55% 90% at 22% 72%,
+        color-mix(in srgb, var(--color-ink) 6%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        45% 80% at 58% 38%,
+        color-mix(in srgb, var(--color-ink) 4%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        60% 100% at 84% 70%,
+        color-mix(in srgb, var(--color-accent) 5%, transparent),
+        transparent 72%
+      ),
+      linear-gradient(
+        180deg,
+        var(--color-bg),
+        color-mix(in srgb, var(--color-ink) 4%, var(--color-bg))
+      );
+  }
+
+  /* While the particle canvas is live, the band sits on the plain page
+     background; the gradient wash only shows as the no-WebGL fallback. */
+  .eddy-current.is-active .eddy-current-fallback {
+    background: var(--color-bg);
+  }
+
+  .eddy-current-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 600ms ease-out;
+    pointer-events: none;
+  }
+
+  .eddy-current-canvas.is-visible {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eddy-current-canvas {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  type Rgb = [number, number, number];
+
+  const STATIC_FRAME_TIME = 34;
+
+  // Grain counts; the perf guard can step down to the reduced count. High
+  // counts at ~1px and low alpha read as powder rather than dots.
+  const PARTICLES_FULL = 26000;
+  const PARTICLES_REDUCED = 10000;
+
+  // The water is simulated with the 2D incompressible Navier-Stokes
+  // equations in vorticity-streamfunction form - the standard physics of
+  // fluid eddies:
+  //
+  //   dw/dt + (u . grad)w = nu grad^2 w - lambda (w - w_ambient)
+  //   grad^2 psi = -w,   u = (dpsi/dy, -dpsi/dx) + U_drift
+  //
+  // Vorticity w is advected by its own flow (eddies carry and distort each
+  // other), diffuses viscously, and relaxes toward the ambient eddies;
+  // solving the Poisson equation for the streamfunction psi each frame
+  // recovers a divergence-free velocity field, so the flow genuinely swirls
+  // instead of compressing. Dragging applies a localized force F g(r),
+  // which enters the vorticity equation as its curl: dw = curl(F g) dt.
+  // Units: band-heights and seconds; w is 1/s. The grid wraps in x and has
+  // free-slip walls (psi = 0) at the top and bottom of the band.
+  const GRID_ROWS = 28;
+  const FLOW_VISCOSITY = 0.0015; // nu
+  const FLOW_RELAX = 0.35; // lambda: stirred vorticity fades toward ambient
+  const OMEGA_MAX = 14; // safety clamp on vorticity
+  const SOLVER_SWEEPS = 12; // Gauss-Seidel sweeps for the Poisson solve
+  const STIR_FORCE = 4; // force per unit pointer speed
+  const STIR_MAX_SPEED = 2.2; // clamp on stirring speed
+  const STIR_RADIUS = 0.14; // gaussian radius of the stirring force
+  const DRIFT = 0.012; // uniform downstream current (zero vorticity)
+
+  // Ambient eddies: gaussian vorticity blobs with slowly wandering centers
+  // and breathing strength. omega is peak vorticity, sign via spin.
+  const EDDIES = [
+    { cx: 0.22, cy: 0.55, radius: 0.38, omega: 2.2, spin: 1 },
+    { cx: 0.52, cy: 0.38, radius: 0.34, omega: 2.5, spin: -1 },
+    { cx: 0.8, cy: 0.58, radius: 0.42, omega: 2.0, spin: 1 },
+  ];
+
+  const VERTEX_SHADER = `
+    attribute vec3 aParticle;
+    attribute float aRandom;
+
+    uniform float uAspect;
+    uniform float uPointScale;
+    uniform float uTime;
+
+    varying float vAlpha;
+    varying float vEnergy;
+
+    void main() {
+      vec2 pos = aParticle.xy;
+      // Total flow speed at the grain: ambient current plus stir. Fast
+      // water carries visibly denser, accent-tinted sediment; the small
+      // offset keeps the slow background drift plain ink.
+      float speed = aParticle.z;
+      float energy = clamp(speed * 3.0 - 0.03, 0.0, 1.0);
+      float shimmer =
+        0.85 + 0.15 * sin(uTime * (0.5 + aRandom) + aRandom * 41.0);
+
+      float alpha = (0.14 + 0.2 * aRandom) * shimmer;
+      // End the powder at a gently uneven height, with a broad fade that is
+      // fully transparent before the canvas clips it. Applying the top fade
+      // after the energy boost also prevents fast-moving grains from
+      // revealing the rectangular boundary. The other edges remain unfaded.
+      float topBoundary =
+        0.88 +
+        0.035 * sin(pos.x * 2.1 + 0.7) +
+        0.025 * sin(pos.x * 5.3 + 2.4);
+      float topFade =
+        1.0 - smoothstep(topBoundary - 0.28, topBoundary, pos.y);
+      vAlpha = min((alpha + energy * 0.5) * topFade, 0.8);
+      vEnergy = energy;
+
+      gl_PointSize = (1.1 + 0.6 * aRandom + energy * 1.3) * uPointScale;
+      gl_Position = vec4(
+        pos.x / uAspect * 2.0 - 1.0,
+        pos.y * 2.0 - 1.0,
+        0.0,
+        1.0
+      );
+    }
+  `;
+
+  // Premultiplied alpha: the canvas is transparent and composites over the
+  // CSS fallback gradient, which supplies the water's tonal background.
+  const FRAGMENT_SHADER = `
+    precision mediump float;
+
+    uniform vec3 uInk;
+    uniform vec3 uAccent;
+
+    varying float vAlpha;
+    varying float vEnergy;
+
+    void main() {
+      vec2 offset = gl_PointCoord - 0.5;
+      float dist = length(offset);
+      if (dist > 0.5) discard;
+      float mask = smoothstep(0.5, 0.15, dist);
+      vec3 color = mix(uInk, uAccent, vEnergy * 0.85);
+      float alpha = mask * vAlpha;
+      gl_FragColor = vec4(color * alpha, alpha);
+    }
+  `;
+
+  const FALLBACK_COLORS: { bg: Rgb; ink: Rgb; accent: Rgb } = {
+    bg: [0.957, 0.945, 0.894],
+    ink: [0.176, 0.204, 0.212],
+    accent: [0.035, 0.518, 0.89],
+  };
+
+  function parseCssColor(value: string, fallback: Rgb): Rgb {
+    const trimmed = value.trim();
+    const shortHex = trimmed.match(/^#([0-9a-f]{3})$/i);
+    if (shortHex) {
+      return [0, 1, 2].map(
+        (i) => parseInt(shortHex[1][i] + shortHex[1][i], 16) / 255
+      ) as Rgb;
+    }
+    const longHex = trimmed.match(/^#([0-9a-f]{6})$/i);
+    if (longHex) {
+      return [0, 2, 4].map(
+        (i) => parseInt(longHex[1].slice(i, i + 2), 16) / 255
+      ) as Rgb;
+    }
+    const rgbFunc = trimmed.match(/^rgba?\(([^)]+)\)$/i);
+    if (rgbFunc) {
+      const parts = rgbFunc[1]
+        .split(/[,\s/]+/)
+        .filter(Boolean)
+        .map(Number);
+      if (parts.length >= 3 && parts.slice(0, 3).every(Number.isFinite)) {
+        return [parts[0] / 255, parts[1] / 255, parts[2] / 255];
+      }
+    }
+    return fallback;
+  }
+
+  function readThemeColors() {
+    const style = getComputedStyle(document.documentElement);
+    return {
+      bg: parseCssColor(
+        style.getPropertyValue('--color-bg'),
+        FALLBACK_COLORS.bg
+      ),
+      ink: parseCssColor(
+        style.getPropertyValue('--color-ink'),
+        FALLBACK_COLORS.ink
+      ),
+      accent: parseCssColor(
+        style.getPropertyValue('--color-accent'),
+        FALLBACK_COLORS.accent
+      ),
+    };
+  }
+
+  function isConstrainedDevice() {
+    const nav = navigator as Navigator & {
+      connection?: { effectiveType?: string; saveData?: boolean };
+      deviceMemory?: number;
+    };
+    return {
+      saveData: Boolean(
+        nav.connection?.saveData ||
+        ['slow-2g', '2g'].includes(nav.connection?.effectiveType ?? '')
+      ),
+      lowPower:
+        window.matchMedia('(pointer: coarse)').matches ||
+        (navigator.hardwareConcurrency || 8) <= 4 ||
+        // Safari never reports deviceMemory; only trust it when present.
+        (nav.deviceMemory ?? 8) <= 4,
+    };
+  }
+
+  function createSeededRandom(seedValue: number) {
+    let seed = seedValue;
+    return () => {
+      seed = Math.imul(seed, 1664525) + 1013904223;
+      return (seed >>> 0) / 4294967296;
+    };
+  }
+
+  function compileProgram(gl: WebGLRenderingContext) {
+    const compile = (type: number, source: string) => {
+      if (!source) return null;
+      const shader = gl.createShader(type);
+      if (!shader) return null;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    };
+
+    const vertex = compile(gl.VERTEX_SHADER, VERTEX_SHADER);
+    const fragment = compile(gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    if (!vertex || !fragment) return null;
+
+    const program = gl.createProgram();
+    if (!program) return null;
+    gl.attachShader(program, vertex);
+    gl.attachShader(program, fragment);
+    gl.bindAttribLocation(program, 0, 'aParticle');
+    gl.bindAttribLocation(program, 1, 'aRandom');
+    gl.linkProgram(program);
+    gl.deleteShader(vertex);
+    gl.deleteShader(fragment);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      gl.deleteProgram(program);
+      return null;
+    }
+    return program;
+  }
+
+  function start() {
+    const hostCandidate = document.querySelector('[data-eddy-current]');
+    const canvasCandidate = hostCandidate?.querySelector('canvas');
+    if (
+      !(hostCandidate instanceof HTMLElement) ||
+      !(canvasCandidate instanceof HTMLCanvasElement)
+    ) {
+      return;
+    }
+    // Preserve the runtime narrowing in callbacks that execute after start().
+    const host = hostCandidate;
+    const canvas = canvasCandidate;
+
+    const { saveData, lowPower } = isConstrainedDevice();
+    if (saveData) return;
+
+    const reducedMotionQuery = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    );
+    const hoverQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    let gl: WebGLRenderingContext | null = null;
+    let program: WebGLProgram | null = null;
+    let uniforms: Record<string, WebGLUniformLocation | null> = {};
+    let particleBuffer: WebGLBuffer | null = null;
+    let randomBuffer: WebGLBuffer | null = null;
+    let initialized = false;
+    let failed = false;
+    let contextLost = false;
+    let inView = false;
+    let frameId = 0;
+    let lastFrameAt: number | null = null;
+    let elapsed = 0;
+    let revealed = false;
+    let hostRect: DOMRect | null = null;
+
+    let dpr = lowPower ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+    let particleCount = lowPower ? PARTICLES_REDUCED : PARTICLES_FULL;
+
+    const colors = readThemeColors();
+    const currentColors = {
+      bg: [...colors.bg] as Rgb,
+      ink: [...colors.ink] as Rgb,
+      accent: [...colors.accent] as Rgb,
+    };
+    let targetColors = colors;
+
+    // Particle state: [x, y, stirredSpeed] interleaved for the dynamic
+    // attribute upload, plus one static random per particle.
+    let particles = new Float32Array(0);
+    let randoms = new Float32Array(0);
+
+    // Vorticity-streamfunction solver state.
+    let gridCols = 0;
+    let omega = new Float32Array(0);
+    let omegaTmp = new Float32Array(0);
+    let psi = new Float32Array(0);
+    let gridVx = new Float32Array(0);
+    let gridVy = new Float32Array(0);
+
+    const stir = {
+      active: false,
+      x: 0,
+      y: 0,
+      prevX: 0,
+      prevY: 0,
+      hasPrev: false,
+    };
+
+    const guard = {
+      warmup: 0,
+      elapsed: 0,
+      frames: 0,
+      slow: 0,
+      zeroes: 0,
+      passed: false,
+    };
+
+    const staticMode = () => reducedMotionQuery.matches;
+    // Cached once per resize: clientWidth/clientHeight are layout reads and
+    // the particle loop would otherwise hit the DOM thousands of times a
+    // frame.
+    let aspect = 1;
+    // Per-frame snapshot of the ambient eddies so the grid loop does pure
+    // arithmetic.
+    const eddyCache = EDDIES.map(() => ({
+      cx: 0,
+      cy: 0,
+      strength: 0,
+      invR2: 0,
+    }));
+
+    function setupGrid() {
+      gridCols = Math.max(8, Math.ceil(GRID_ROWS * aspect));
+      const size = gridCols * GRID_ROWS;
+      omega = new Float32Array(size);
+      omegaTmp = new Float32Array(size);
+      psi = new Float32Array(size);
+      gridVx = new Float32Array(size);
+      gridVy = new Float32Array(size);
+    }
+
+    // Snapshot the ambient eddies' centers and spin for this frame.
+    function prepareAmbient(time: number) {
+      const t = time * 0.1;
+      for (let e = 0; e < EDDIES.length; e++) {
+        const eddy = EDDIES[e];
+        const cache = eddyCache[e];
+        cache.cx =
+          aspect * (eddy.cx + 0.04 * Math.sin(t * (0.6 + e * 0.11) + e * 2.1));
+        cache.cy = eddy.cy + 0.12 * Math.cos(t * (0.45 + e * 0.07) + e);
+        cache.strength =
+          eddy.omega *
+          eddy.spin *
+          (0.8 + 0.25 * Math.sin(t * (0.8 + e * 0.13)));
+        cache.invR2 = 1 / (eddy.radius * eddy.radius);
+      }
+    }
+
+    function ambientOmegaAt(x: number, y: number): number {
+      let sum = 0;
+      for (let e = 0; e < eddyCache.length; e++) {
+        const eddy = eddyCache[e];
+        const dx = x - eddy.cx;
+        const dy = y - eddy.cy;
+        const r2 = (dx * dx + dy * dy) * eddy.invR2;
+        if (r2 < 4) sum += eddy.strength * Math.exp(-r2);
+      }
+      return sum;
+    }
+
+    // One timestep of the vorticity equation, then the Poisson solve for
+    // the streamfunction, then velocities. See the constant block for the
+    // equations.
+    function stepFlow(delta: number) {
+      const rows = GRID_ROWS;
+      const cols = gridCols;
+      const dx = 1 / rows;
+      const cellsPerUnitX = cols / aspect;
+      const diffusion = Math.min((FLOW_VISCOSITY * delta) / (dx * dx), 0.2);
+      const relax = 1 - Math.exp(-FLOW_RELAX * delta);
+
+      prepareAmbient(elapsed);
+
+      // Advection: dw/dt = -(u . grad)w, semi-Lagrangian (trace the parcel
+      // back along the flow). x wraps, y clamps at the walls.
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          const index = j * cols + i;
+          const backX = (i + 0.5) / cellsPerUnitX - gridVx[index] * delta;
+          const backY = (j + 0.5) / rows - gridVy[index] * delta;
+          let gxf = (backX * cellsPerUnitX - 0.5) % cols;
+          if (gxf < 0) gxf += cols;
+          // A negative sub-ULP value can round to exactly cols when wrapped.
+          if (gxf >= cols) gxf = 0;
+          const gyf = Math.min(Math.max(backY * rows - 0.5, 0), rows - 1.001);
+          const x0 = gxf | 0;
+          const y0 = gyf | 0;
+          const fx = gxf - x0;
+          const fy = gyf - y0;
+          const x1 = (x0 + 1) % cols;
+          const y1 = Math.min(y0 + 1, rows - 1);
+          const r0 = y0 * cols;
+          const r1 = y1 * cols;
+          omegaTmp[index] =
+            omega[r0 + x0] * (1 - fx) * (1 - fy) +
+            omega[r0 + x1] * fx * (1 - fy) +
+            omega[r1 + x0] * (1 - fx) * fy +
+            omega[r1 + x1] * fx * fy;
+        }
+      }
+
+      // Viscous diffusion (nu grad^2 w) plus relaxation toward the ambient
+      // eddies (-lambda (w - w_ambient)), which both decays stirred
+      // vorticity and maintains the resting current.
+      for (let j = 0; j < rows; j++) {
+        const jm = Math.max(j - 1, 0) * cols;
+        const jp = Math.min(j + 1, rows - 1) * cols;
+        const row = j * cols;
+        const py = (j + 0.5) / rows;
+        for (let i = 0; i < cols; i++) {
+          const index = row + i;
+          const il = row + ((i + cols - 1) % cols);
+          const ir = row + ((i + 1) % cols);
+          const lap =
+            omegaTmp[il] +
+            omegaTmp[ir] +
+            omegaTmp[jm + i] +
+            omegaTmp[jp + i] -
+            4 * omegaTmp[index];
+          let w = omegaTmp[index] + lap * diffusion;
+          const ambient = ambientOmegaAt((i + 0.5) / cellsPerUnitX, py);
+          w += (ambient - w) * relax;
+          omega[index] = Math.min(Math.max(w, -OMEGA_MAX), OMEGA_MAX);
+        }
+      }
+
+      // Stirring: the drag applies a force F g(r) along its segment; its
+      // curl is the vorticity source, which lands as a +/- dipole across
+      // the path (curl(F g) = grad(g) x F).
+      if (stir.active && stir.hasPrev && delta > 0) {
+        let velocityX = (stir.x - stir.prevX) / delta;
+        let velocityY = (stir.y - stir.prevY) / delta;
+        const speed = Math.hypot(velocityX, velocityY);
+        if (speed > 0.02) {
+          const scale = speed > STIR_MAX_SPEED ? STIR_MAX_SPEED / speed : 1;
+          const forceX = velocityX * scale * STIR_FORCE;
+          const forceY = velocityY * scale * STIR_FORCE;
+          const segX = stir.x - stir.prevX;
+          const segY = stir.y - stir.prevY;
+          const segLen2 = Math.max(segX * segX + segY * segY, 1e-6);
+          const sigma2 = STIR_RADIUS * STIR_RADIUS;
+          const reachX = Math.ceil(STIR_RADIUS * 2 * cellsPerUnitX) + 1;
+          const reachY = Math.ceil(STIR_RADIUS * 2 * rows) + 1;
+          const minI =
+            Math.floor(Math.min(stir.prevX, stir.x) * cellsPerUnitX) - reachX;
+          const maxI =
+            Math.ceil(Math.max(stir.prevX, stir.x) * cellsPerUnitX) + reachX;
+          const minJ = Math.max(
+            Math.floor(Math.min(stir.prevY, stir.y) * rows) - reachY,
+            0
+          );
+          const maxJ = Math.min(
+            Math.ceil(Math.max(stir.prevY, stir.y) * rows) + reachY,
+            rows - 1
+          );
+          for (let j = minJ; j <= maxJ; j++) {
+            const py = (j + 0.5) / rows;
+            for (let rawI = minI; rawI <= maxI; rawI++) {
+              const i = ((rawI % cols) + cols) % cols;
+              const px = (rawI + 0.5) / cellsPerUnitX;
+              const along = Math.min(
+                Math.max(
+                  ((px - stir.prevX) * segX + (py - stir.prevY) * segY) /
+                    segLen2,
+                  0
+                ),
+                1
+              );
+              const dxv = px - stir.prevX - segX * along;
+              const dyv = py - stir.prevY - segY * along;
+              const gaussian = Math.exp(-(dxv * dxv + dyv * dyv) / sigma2);
+              const curl =
+                (-2 / sigma2) * (forceY * dxv - forceX * dyv) * gaussian;
+              const index = j * cols + i;
+              omega[index] = Math.min(
+                Math.max(omega[index] + curl * delta, -OMEGA_MAX),
+                OMEGA_MAX
+              );
+            }
+          }
+        }
+      }
+      if (stir.active) {
+        stir.prevX = stir.x;
+        stir.prevY = stir.y;
+        stir.hasPrev = true;
+      } else {
+        stir.hasPrev = false;
+      }
+
+      // Poisson solve grad^2 psi = -w by Gauss-Seidel, warm-started from
+      // last frame's psi. Boundary rows stay psi = 0: free-slip walls.
+      const dx2 = dx * dx;
+      for (let sweep = 0; sweep < SOLVER_SWEEPS; sweep++) {
+        for (let j = 1; j < rows - 1; j++) {
+          const row = j * cols;
+          const rowUp = (j + 1) * cols;
+          const rowDown = (j - 1) * cols;
+          for (let i = 0; i < cols; i++) {
+            const il = row + ((i + cols - 1) % cols);
+            const ir = row + ((i + 1) % cols);
+            psi[row + i] =
+              (psi[il] +
+                psi[ir] +
+                psi[rowDown + i] +
+                psi[rowUp + i] +
+                omega[row + i] * dx2) *
+              0.25;
+          }
+        }
+      }
+
+      // Velocities from the streamfunction: u = dpsi/dy, v = -dpsi/dx,
+      // plus the uniform downstream drift.
+      const inv2dx = 1 / (2 * dx);
+      for (let j = 0; j < rows; j++) {
+        const jm = Math.max(j - 1, 0);
+        const jp = Math.min(j + 1, rows - 1);
+        const dyScale = 1 / ((jp - jm) * dx);
+        const row = j * cols;
+        for (let i = 0; i < cols; i++) {
+          const il = row + ((i + cols - 1) % cols);
+          const ir = row + ((i + 1) % cols);
+          gridVx[row + i] =
+            (psi[jp * cols + i] - psi[jm * cols + i]) * dyScale + DRIFT;
+          gridVy[row + i] = -(psi[ir] - psi[il]) * inv2dx;
+        }
+      }
+    }
+
+    // Powder look: grains are seeded in noise-weighted clumps, and the
+    // incompressible flow stretches the clumps into filaments and swirls -
+    // that density structure is what reads as sand in the water.
+    function clumpDensity(x: number, y: number, phase: number) {
+      const n =
+        Math.sin(x * 1.7 + phase) +
+        Math.sin(x * 0.9 - y * 2.6 + 1.3 + phase * 0.7) +
+        Math.sin(x * 2.6 + y * 3.4 + 4.1 - phase * 0.5) +
+        Math.sin(y * 5.1 + x * 0.6 + 2.2 + phase * 0.3);
+      const density = n * 0.125 + 0.5;
+      return density * density * density;
+    }
+
+    function spawnGrain(random: () => number, phase: number, base: number) {
+      let x = random() * aspect;
+      let y = Math.pow(random(), 1.15);
+      for (let tries = 0; tries < 8; tries++) {
+        if (random() < 0.06 + 0.94 * clumpDensity(x, y, phase)) break;
+        x = random() * aspect;
+        y = Math.pow(random(), 1.15);
+      }
+      particles[base] = x;
+      particles[base + 1] = y;
+      particles[base + 2] = 0;
+    }
+
+    function initParticles() {
+      const random = createSeededRandom(particleCount);
+      particles = new Float32Array(particleCount * 3);
+      randoms = new Float32Array(particleCount);
+      for (let i = 0; i < particleCount; i++) {
+        spawnGrain(random, 0, i * 3);
+        randoms[i] = random();
+      }
+      if (gl && particleBuffer && randomBuffer) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, particles, gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, randomBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, randoms, gl.STATIC_DRAW);
+        bindAttributes();
+      }
+    }
+
+    function stepParticles(delta: number) {
+      const rows = GRID_ROWS;
+      const cols = gridCols;
+      const cellsPerUnitX = cols / aspect;
+      const recycle = Math.ceil(particleCount * delta * 0.015);
+      for (let i = 0; i < particleCount; i++) {
+        const base = i * 3;
+        let x = particles[base];
+        let y = particles[base + 1];
+        // A constant per-grain drift bias stands in for Brownian wander so
+        // the powder shears instead of moving as one sheet.
+        const grain = randoms[i];
+        let vx = (grain - 0.5) * 0.014;
+        let vy = (((grain * 7.3) % 1) - 0.5) * 0.012;
+        // Bilinear sample of the solved velocity field; x wraps like the
+        // solver grid.
+        let gxf = (x * cellsPerUnitX - 0.5) % cols;
+        if (gxf < 0) gxf += cols;
+        if (gxf >= cols) gxf = 0;
+        const gyf = Math.min(Math.max(y * rows - 0.5, 0), rows - 1.001);
+        const x0 = gxf | 0;
+        const y0 = gyf | 0;
+        const fx = gxf - x0;
+        const fy = gyf - y0;
+        const x1 = (x0 + 1) % cols;
+        const y1 = Math.min(y0 + 1, rows - 1);
+        const r0 = y0 * cols;
+        const r1 = y1 * cols;
+        const w00 = (1 - fx) * (1 - fy);
+        const w10 = fx * (1 - fy);
+        const w01 = (1 - fx) * fy;
+        const w11 = fx * fy;
+        vx +=
+          gridVx[r0 + x0] * w00 +
+          gridVx[r0 + x1] * w10 +
+          gridVx[r1 + x0] * w01 +
+          gridVx[r1 + x1] * w11;
+        vy +=
+          gridVy[r0 + x0] * w00 +
+          gridVy[r0 + x1] * w10 +
+          gridVy[r1 + x0] * w01 +
+          gridVy[r1 + x1] * w11;
+        x += vx * delta;
+        y += vy * delta;
+        if (x > aspect + 0.04) x -= aspect + 0.08;
+        else if (x < -0.04) x += aspect + 0.08;
+        if (y > 1.04) y -= 1.08;
+        else if (y < -0.04) y += 1.08;
+        particles[base] = x;
+        particles[base + 1] = y;
+        particles[base + 2] = Math.sqrt(vx * vx + vy * vy);
+      }
+      // Recycle a trickle of grains into fresh (slowly drifting) clumps so
+      // the mixing never fully homogenizes the powder.
+      for (let r = 0; r < recycle; r++) {
+        const i = Math.floor(Math.random() * particleCount);
+        spawnGrain(Math.random, elapsed * 0.03, i * 3);
+      }
+    }
+
+    function bindAttributes() {
+      if (!gl) return;
+      gl.bindBuffer(gl.ARRAY_BUFFER, particleBuffer);
+      gl.enableVertexAttribArray(0);
+      gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, randomBuffer);
+      gl.enableVertexAttribArray(1);
+      gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 0, 0);
+    }
+
+    function resize() {
+      if (!gl) return;
+      const width = Math.max(1, Math.round(host.clientWidth * dpr));
+      const height = Math.max(1, Math.round(host.clientHeight * dpr));
+      aspect = host.clientWidth / Math.max(host.clientHeight, 1);
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+      gl.viewport(0, 0, width, height);
+      setupGrid();
+      initParticles();
+    }
+
+    function reveal() {
+      if (!revealed) {
+        revealed = true;
+        canvas.classList.add('is-visible');
+        host.classList.add('is-active');
+      }
+    }
+
+    function unreveal() {
+      revealed = false;
+      canvas.classList.remove('is-visible');
+      host.classList.remove('is-active');
+    }
+
+    function renderFrame(time: number) {
+      if (!gl || !program || contextLost) return;
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform1f(uniforms.uAspect, aspect);
+      gl.uniform1f(uniforms.uPointScale, dpr);
+      gl.uniform1f(uniforms.uTime, time);
+      gl.uniform3fv(uniforms.uInk, currentColors.ink);
+      gl.uniform3fv(uniforms.uAccent, currentColors.accent);
+      if (particleBuffer) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleBuffer);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, particles);
+      }
+      gl.drawArrays(gl.POINTS, 0, particleCount);
+      // One-time sanity check before revealing: privacy-hardened browsers
+      // can hand back a context that is lost at birth or silently broken;
+      // keep the CSS fallback rather than swapping to a blank canvas.
+      if (!revealed && (gl.isContextLost() || gl.getError() !== gl.NO_ERROR)) {
+        failed = true;
+        stopLoop();
+        return;
+      }
+      reveal();
+    }
+
+    function snapColors() {
+      currentColors.bg = [...targetColors.bg] as Rgb;
+      currentColors.ink = [...targetColors.ink] as Rgb;
+      currentColors.accent = [...targetColors.accent] as Rgb;
+    }
+
+    function easeColors() {
+      (['bg', 'ink', 'accent'] as const).forEach((key) => {
+        for (let channel = 0; channel < 3; channel++) {
+          currentColors[key][channel] +=
+            (targetColors[key][channel] - currentColors[key][channel]) * 0.08;
+        }
+      });
+    }
+
+    // Staged degrade before giving up: full DPR -> DPR 1 -> fewer particles
+    // -> stop and leave the CSS fallback.
+    function degrade() {
+      if (dpr > 1) {
+        dpr = 1;
+        resize();
+      } else if (particleCount > PARTICLES_REDUCED) {
+        particleCount = PARTICLES_REDUCED;
+        initParticles();
+      } else {
+        failed = true;
+        unreveal();
+        stopLoop();
+      }
+      guard.warmup = 0;
+      guard.elapsed = 0;
+      guard.frames = 0;
+      guard.slow = 0;
+    }
+
+    function trackFrameBudget(delta: number) {
+      if (guard.passed) return;
+      if (delta <= 0 || delta > 1) {
+        // Privacy browsers quantize rAF timestamps, which shows up as runs
+        // of zero deltas; performance can't be judged from those clocks.
+        guard.zeroes += 1;
+        if (guard.zeroes > 90) guard.passed = true;
+        return;
+      }
+      guard.warmup += delta;
+      if (guard.warmup < 0.75) return;
+      guard.elapsed += delta;
+      guard.frames += 1;
+      if (delta > 1 / 24) guard.slow += 1;
+      if (guard.elapsed < 2.5 || guard.frames < 30) return;
+      const fps = guard.frames / guard.elapsed;
+      const slowShare = guard.slow / guard.frames;
+      if (fps < 26 || slowShare > 0.45) {
+        degrade();
+      } else {
+        guard.passed = true;
+      }
+    }
+
+    function frame(now: number) {
+      frameId = requestAnimationFrame(frame);
+      const delta =
+        lastFrameAt === null ? 0 : Math.min((now - lastFrameAt) / 1000, 0.1);
+      lastFrameAt = now;
+      elapsed += delta;
+      hostRect = host.getBoundingClientRect();
+      trackFrameBudget(delta);
+      if (failed) return;
+      easeColors();
+      if (delta > 0) {
+        stepFlow(delta);
+        stepParticles(delta);
+      }
+      renderFrame(elapsed);
+    }
+
+    function stopLoop() {
+      cancelAnimationFrame(frameId);
+      frameId = 0;
+      lastFrameAt = null;
+    }
+
+    function updateRunState() {
+      const shouldRun =
+        initialized &&
+        !failed &&
+        !contextLost &&
+        inView &&
+        !document.hidden &&
+        !staticMode();
+      if (shouldRun && frameId === 0) {
+        frameId = requestAnimationFrame(frame);
+      } else if (!shouldRun && frameId !== 0) {
+        stopLoop();
+      }
+      if (
+        initialized &&
+        !failed &&
+        !contextLost &&
+        inView &&
+        staticMode() &&
+        !revealed
+      ) {
+        snapColors();
+        resize();
+        renderFrame(STATIC_FRAME_TIME);
+      }
+    }
+
+    function setupGl(): boolean {
+      const attributes: WebGLContextAttributes = {
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        powerPreference: 'low-power',
+        failIfMajorPerformanceCaveat: true,
+        preserveDrawingBuffer: false,
+      };
+      gl = (canvas.getContext('webgl2', attributes) ||
+        canvas.getContext('webgl', attributes)) as WebGLRenderingContext | null;
+      if (!gl) {
+        // Privacy-hardened browsers often only offer software WebGL, which
+        // the strict attributes refuse. The GPU work here is just point
+        // sprites (the physics runs on the CPU), so software rendering is
+        // fine - retry without the caveat and let the perf guard decide.
+        attributes.failIfMajorPerformanceCaveat = false;
+        gl = (canvas.getContext('webgl2', attributes) ||
+          canvas.getContext(
+            'webgl',
+            attributes
+          )) as WebGLRenderingContext | null;
+      }
+      if (!gl || gl.isContextLost()) return false;
+
+      program = compileProgram(gl);
+      if (!program) return false;
+      gl.useProgram(program);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+      particleBuffer = gl.createBuffer();
+      randomBuffer = gl.createBuffer();
+      if (!particleBuffer || !randomBuffer) return false;
+
+      uniforms = {};
+      for (const name of [
+        'uAspect',
+        'uPointScale',
+        'uTime',
+        'uInk',
+        'uAccent',
+      ]) {
+        uniforms[name] = gl.getUniformLocation(program, name);
+      }
+      resize();
+      return true;
+    }
+
+    function initialize() {
+      if (initialized || failed) return;
+      // Any quirk in a hardened or unusual browser lands on the CSS
+      // fallback instead of a half-initialized canvas.
+      try {
+        if (!setupGl()) {
+          failed = true;
+          return;
+        }
+        initialized = true;
+
+        canvas.addEventListener('webglcontextlost', (event) => {
+          event.preventDefault();
+          contextLost = true;
+          // Show the CSS fallback instead of a blank, frozen canvas while
+          // (or in case) the context never comes back.
+          unreveal();
+          stopLoop();
+        });
+        canvas.addEventListener('webglcontextrestored', () => {
+          contextLost = false;
+          if (setupGl()) {
+            unreveal();
+            updateRunState();
+          } else {
+            failed = true;
+          }
+        });
+
+        const resizeObserver = new ResizeObserver(() => {
+          resize();
+          if (
+            staticMode() &&
+            initialized &&
+            !failed &&
+            !contextLost &&
+            inView
+          ) {
+            renderFrame(STATIC_FRAME_TIME);
+          }
+        });
+        resizeObserver.observe(host);
+
+        new MutationObserver(() => {
+          targetColors = readThemeColors();
+          if (staticMode() && initialized && !failed && !contextLost) {
+            snapColors();
+            renderFrame(STATIC_FRAME_TIME);
+          }
+        }).observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['class'],
+        });
+
+        document.addEventListener('visibilitychange', updateRunState);
+        reducedMotionQuery.addEventListener('change', () => {
+          if (!staticMode()) {
+            unreveal();
+          }
+          updateRunState();
+        });
+
+        window.addEventListener(
+          'pointermove',
+          (event) => {
+            if (
+              !hoverQuery.matches ||
+              !hostRect ||
+              hostRect.height === 0 ||
+              frameId === 0
+            ) {
+              return;
+            }
+            const margin = 48;
+            const inside =
+              event.clientX >= hostRect.left - margin &&
+              event.clientX <= hostRect.right + margin &&
+              event.clientY >= hostRect.top - margin &&
+              event.clientY <= hostRect.bottom + margin;
+            if (!inside) {
+              stir.active = false;
+              return;
+            }
+            stir.x = (event.clientX - hostRect.left) / hostRect.height;
+            stir.y = (hostRect.bottom - event.clientY) / hostRect.height;
+            stir.active = true;
+          },
+          { passive: true }
+        );
+        window.addEventListener('blur', () => {
+          stir.active = false;
+        });
+        document.addEventListener('pointerleave', () => {
+          stir.active = false;
+        });
+
+        updateRunState();
+      } catch {
+        failed = true;
+        unreveal();
+        stopLoop();
+      }
+    }
+
+    // Lazy: the band lives below the fold, so skip all GPU work until the
+    // visitor approaches it.
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        inView = entries.some((entry) => entry.isIntersecting);
+        if (inView) initialize();
+        updateRunState();
+      },
+      { rootMargin: '240px 0px' }
+    );
+    intersectionObserver.observe(host);
+  }
+
+  start();
+</script>
