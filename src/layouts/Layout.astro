@@ -155,11 +155,32 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 			<div class="content-wrapper">
 				<slot />
 			</div>
-			<Footer />
 		</main>
+		<div class="footer-area">
+			<slot name="footer-background" />
+			<Footer />
+		</div>
 		<ScrollToTop />
 		<KeyboardShortcutsModal pageType={pageType} />
 		<SearchModal client:only="react" />
 		<script is:inline data-goatcounter="https://danielcorin.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 	</body>
 </html>
+
+<style>
+	/* Full-width stage for the footer so a page can slot a decorative
+	   background (e.g. the homepage's eddy shader) behind it. The footer
+	   itself keeps the same centered column it had inside <main>. */
+	.footer-area {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.footer-area :global(footer) {
+		position: relative;
+		z-index: 1;
+		max-width: 75ch;
+		margin-left: auto;
+		margin-right: auto;
+	}
+</style>
