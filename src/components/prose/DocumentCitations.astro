@@ -1,6 +1,6 @@
 ---
-import { markdown } from "@astropub/md";
 import { Icon } from "astro-icon/components";
+import { renderMarkdown } from "@utils/markdown";
 
 interface QAPair {
     question: string;
@@ -94,12 +94,12 @@ const renderedVersions = await Promise.all(
                 qa.citations,
                 rawMarkdown,
             );
-            return await markdown(highlightedMarkdown);
+            return await renderMarkdown(highlightedMarkdown);
         },
     ),
 );
 
-const initialContent = await markdown(rawMarkdown);
+const initialContent = await renderMarkdown(rawMarkdown);
 ---
 
 <div class="document-citations">

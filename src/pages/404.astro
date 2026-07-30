@@ -24,7 +24,7 @@ import Layout from "@layouts/Layout.astro";
 
 <script>
     import { loadFull } from "tsparticles";
-    import { tsParticles } from "tsparticles-engine";
+    import { tsParticles } from "@tsparticles/engine";
 
     const baseOptions = {
         background: {},
@@ -132,10 +132,10 @@ import Layout from "@layouts/Layout.astro";
 
     async function initializeParticles() {
         await loadFull(tsParticles);
-        particlesInstance = await tsParticles.load(
-            "tsparticles",
-            getParticlesConfig() as any,
-        );
+        particlesInstance = await tsParticles.load({
+            id: "tsparticles",
+            options: getParticlesConfig() as any,
+        });
     }
 
     // Initial load
@@ -155,10 +155,10 @@ import Layout from "@layouts/Layout.astro";
 
         // Recreate with new theme
         await loadFull(tsParticles);
-        particlesInstance = await tsParticles.load(
-            "tsparticles",
-            getParticlesConfig() as any,
-        );
+        particlesInstance = await tsParticles.load({
+            id: "tsparticles",
+            options: getParticlesConfig() as any,
+        });
     }
 
     // Listen for custom theme change event

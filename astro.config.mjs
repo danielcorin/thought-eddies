@@ -1,22 +1,21 @@
 // @ts-check
 import mdx from '@astrojs/mdx';
+import { unified } from '@astrojs/markdown-remark';
 import react from '@astrojs/react';
 import svelte from '@astrojs/svelte';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 import cloudflare from '@astrojs/cloudflare';
 import astroD2 from 'astro-d2';
 import icon from 'astro-icon';
 import { defineConfig } from 'astro/config';
-import markdownIntegration from '@astropub/md';
 
 import sitemap from '@astrojs/sitemap';
 
 import expressiveCode from 'astro-expressive-code';
-import remarkExternalLinks from './plugins/remark-external-links.mjs';
-import rehypeFormatFootnotes from './plugins/rehype-format-footnotes.mjs';
-import rehypeUltrathink from './plugins/rehype-ultrathink.mjs';
-import rehypeSlug from 'rehype-slug';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import {
+  markdownPlugins,
+  markdownSyntaxOptions,
+} from './plugins/markdown-options.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -29,6 +28,7 @@ export default defineConfig({
     concurrency: 5,
   },
   vite: {
+    plugins: [tailwindcss()],
     optimizeDeps: {
       include: ['@visx/responsive', '@visx/scale'],
     },
@@ -43,37 +43,17 @@ export default defineConfig({
     }),
     expressiveCode(),
     mdx(),
-    tailwind(),
     icon(),
     sitemap({
       filter: (page) => !page.includes('/rss/'),
     }),
-    markdownIntegration(),
   ],
   markdown: {
-    remarkPlugins: [remarkExternalLinks],
-    rehypePlugins: [
-      rehypeSlug,
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: 'wrap',
-          properties: {
-            className: ['heading-link-wrapper'],
-          },
-        },
-      ],
-      rehypeFormatFootnotes,
-      rehypeUltrathink,
-    ],
-    syntaxHighlight: {
-      type: 'shiki',
-      excludeLangs: ['d2'],
-    },
-    shikiConfig: {
-      theme: 'monokai',
-      wrap: true,
-    },
+    processor: unified(markdownPlugins),
+    ...markdownSyntaxOptions,
   },
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    imageService: 'compile',
+    prerenderEnvironment: 'node',
+  }),
 });
