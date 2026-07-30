@@ -45,7 +45,7 @@ feeds.sort((a, b) => {
     <div class="toc">
       {
         feeds.map((feed) => (
-          <article class="entry">
+          <article class="entry soft-list-entry">
             <div class="entry-content">
               <h2>
                 <a href={feed.url}>{feed.title}</a>
@@ -67,10 +67,8 @@ feeds.sort((a, b) => {
 <style>
   .entry {
     display: block;
-    padding: var(--spacing-lg) var(--spacing-xl);
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-xl) clamp(0rem, 1vw, var(--spacing-sm));
+    margin-bottom: 0;
   }
 
   .entry-content {
@@ -130,7 +128,7 @@ feeds.sort((a, b) => {
 
   @media (max-width: 640px) {
     .entry {
-      padding: var(--spacing-md);
+      padding: var(--spacing-lg) 0;
     }
 
     .entry-content h2 {

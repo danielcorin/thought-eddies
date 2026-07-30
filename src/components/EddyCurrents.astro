@@ -82,8 +82,8 @@
 
   // Grain counts; the perf guard can step down to the reduced count. High
   // counts at ~1px and low alpha read as powder rather than dots.
-  const PARTICLES_FULL = 26000;
-  const PARTICLES_REDUCED = 10000;
+  const PARTICLES_FULL = 40000;
+  const PARTICLES_REDUCED = 16000;
 
   // The water is simulated with the 2D incompressible Navier-Stokes
   // equations in vorticity-streamfunction form - the standard physics of
@@ -153,7 +153,7 @@
       vAlpha = min((alpha + energy * 0.5) * topFade, 0.8);
       vEnergy = energy;
 
-      gl_PointSize = (1.1 + 0.6 * aRandom + energy * 1.3) * uPointScale;
+      gl_PointSize = (0.88 + 0.48 * aRandom + energy * 1.04) * uPointScale;
       gl_Position = vec4(
         pos.x / uAspect * 2.0 - 1.0,
         pos.y * 2.0 - 1.0,

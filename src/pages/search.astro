@@ -248,10 +248,8 @@ const ogImage = `/search/og.png`;
   /* PostCard-style result items */
   :global(.result-item) {
     display: block;
-    padding: var(--spacing-lg) var(--spacing-xl);
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-    transition: all 0.2s;
+    padding: var(--spacing-xl) clamp(0rem, 1vw, var(--spacing-sm));
+    transition: outline-color 0.2s;
   }
 
   :global(.result-item.selected) {

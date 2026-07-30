@@ -124,14 +124,12 @@ const { title, feed_url: feedUrl } = feed.data;
   :global(.feed-list) {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md);
+    gap: 0;
   }
 
   :global(.feed-item) {
     display: block;
-    padding: var(--spacing-md);
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
+    padding: var(--spacing-lg) 0;
   }
 
   :global(.feed-header) {
@@ -232,7 +230,7 @@ const { title, feed_url: feedUrl } = feed.data;
 
   @media (max-width: 640px) {
     :global(.feed-item) {
-      padding: var(--spacing-sm);
+      padding: var(--spacing-md) 0;
     }
     :global(.feed-title),
     :global(.rss-feed-links h2) {

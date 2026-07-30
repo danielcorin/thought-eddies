@@ -55,36 +55,34 @@ const ogImage = `/logs/og.png`;
           const preview = getContentPreview(rawContent, 200);
 
           return (
-            <article class="entry">
-              <time class="entry-date">
-                <a href={`/logs/${log.id}`} class="date-day">
-                  {String(logDay).padStart(2, "0")}
-                </a>
-                <a
-                  href={`/logs/${logYear}/${String(logMonth).padStart(2, "0")}`}
-                  class="date-month"
-                >
-                  {SHORT_MONTH_NAMES[logMonth - 1]}
-                </a>
-                <a href={`/logs/${logYear}`} class="date-year">
-                  {logYear}
-                </a>
-              </time>
+            <article class="entry soft-list-entry">
               <div class="entry-content">
-                <p>{preview}</p>
-                <div class="entry-footer">
-                  <div class="tags">
-                    {log.data.tags && log.data.tags.length > 0 &&
-                      log.data.tags.map((tag: string) => (
-                        <Tag tag={tag} />
-                      ))
-                    }
-                  </div>
-                  <a href={`/logs/${log.id}`} class="read-more" aria-label="Read full log">
-                    <Icon name="ph:arrow-right" class="arrow-icon" />
+                <time class="entry-date">
+                  <a href={`/logs/${log.id}`} class="date-day">
+                    {String(logDay).padStart(2, "0")}
                   </a>
+                  <a
+                    href={`/logs/${logYear}/${String(logMonth).padStart(2, "0")}`}
+                    class="date-month"
+                  >
+                    {SHORT_MONTH_NAMES[logMonth - 1]}
+                  </a>
+                  <a href={`/logs/${logYear}`} class="date-year">
+                    {logYear}
+                  </a>
+                </time>
+                <p>{preview}</p>
+                <div class="tags">
+                  {log.data.tags && log.data.tags.length > 0 &&
+                    log.data.tags.map((tag: string) => (
+                      <Tag tag={tag} />
+                    ))
+                  }
                 </div>
               </div>
+              <a href={`/logs/${log.id}`} class="read-more" aria-label="Read full log">
+                <Icon name="ph:arrow-right" class="arrow-icon" />
+              </a>
             </article>
           );
         })
@@ -166,22 +164,16 @@ const ogImage = `/logs/og.png`;
 
   /* Override toc article grid to be simpler for logs */
   .toc article {
-    display: flex;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-    margin-bottom: var(--spacing-md);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg) clamp(0rem, 1vw, var(--spacing-sm));
+    margin-bottom: 0;
   }
 
   .entry-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .entry-content p {
-    flex: 1;
+    min-width: 0;
   }
 
   .toc time {
@@ -190,16 +182,15 @@ const ogImage = `/logs/og.png`;
 
   .entry-date {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    line-height: 1.2;
+    align-items: baseline;
+    gap: 0.4rem;
+    line-height: 1;
+    margin-bottom: var(--spacing-sm);
   }
 
   .entry-date a {
     color: var(--color-ink-light);
     text-decoration: none;
-    display: block;
   }
 
   .entry-date a:hover {
@@ -208,7 +199,7 @@ const ogImage = `/logs/og.png`;
   }
 
   .date-day {
-    font-size: var(--text-lg);
+    font-size: var(--text-sm);
     font-weight: 600;
     color: var(--color-ink);
   }
@@ -222,7 +213,7 @@ const ogImage = `/logs/og.png`;
   }
 
   .date-year {
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
   }
 
   .toc p {
@@ -232,17 +223,15 @@ const ogImage = `/logs/og.png`;
     color: var(--color-ink);
   }
 
-  .entry-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-md);
-  }
-
   .tags {
     display: flex;
     gap: var(--spacing-sm);
     flex-wrap: wrap;
+    margin-top: var(--spacing-sm);
+  }
+
+  .tags:empty {
+    display: none;
   }
 
   .read-more {
@@ -253,6 +242,7 @@ const ogImage = `/logs/og.png`;
     text-decoration: none;
     opacity: 0.5;
     transition: all 0.2s ease;
+    align-self: center;
   }
 
   .read-more:hover {
@@ -278,33 +268,13 @@ const ogImage = `/logs/og.png`;
     }
 
     .toc article {
-      /* Keep flex-direction: row to maintain date on the left */
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: var(--spacing-sm);
-      padding: var(--spacing-sm);
+      padding: var(--spacing-lg) 0;
     }
 
     .entry-date {
-      /* Change to horizontal layout on mobile */
-      flex-direction: row;
-      gap: 0.25rem;
-      min-width: auto;
-      align-items: baseline;
-    }
-
-    .date-day {
-      font-size: var(--text-base);
-    }
-
-    .date-month {
-      font-size: var(--text-sm);
-    }
-
-    .date-year {
-      font-size: var(--text-sm);
-    }
-
-    .entry-footer {
-      flex-wrap: wrap;
+      gap: 0.35rem;
     }
 
     .entry-content p {

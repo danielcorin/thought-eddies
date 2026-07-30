@@ -36,6 +36,14 @@
             --color-accent: var(--color-accent-light);
             --color-link: var(--color-link-light);
             --color-border: var(--color-border-light);
+            --soft-horizontal-divider: linear-gradient(
+              90deg,
+              transparent,
+              color-mix(in srgb, var(--color-border) 42%, transparent) 16%,
+              color-mix(in srgb, var(--color-border) 68%, transparent) 50%,
+              color-mix(in srgb, var(--color-border) 42%, transparent) 84%,
+              transparent
+            );
 
             /* Typography */
             --font-primary: 'Futura';
@@ -88,14 +96,14 @@
 
           .content-wrapper {
             width: 100%;
-            max-width: 1200px;
+            max-width: 75ch;
             margin: 0 auto;
             padding: 0 var(--spacing-lg);
             color: var(--color-ink-light);
           }
 
           .header {
-            padding: var(--spacing-xl) 0 var(--spacing-lg);
+            padding: calc(var(--spacing-xl) * 1.5) 0 var(--spacing-xl);
             text-align: center;
           }
 
@@ -115,10 +123,17 @@
           }
 
           .subscribe-info {
-            background: var(--color-bg-code);
-            border-radius: 4px;
-            padding: var(--spacing-lg);
+            position: relative;
+            padding: var(--spacing-xl) 0;
             margin-bottom: var(--spacing-xl);
+          }
+
+          .subscribe-info::after {
+            content: '';
+            position: absolute;
+            inset: auto 0 0;
+            height: 1px;
+            background: var(--soft-horizontal-divider);
           }
 
           .subscribe-info h2 {
@@ -130,26 +145,30 @@
           }
 
           .feed-url {
-            background: var(--color-bg);
-            padding: var(--spacing-md);
-            border-radius: 4px;
+            padding: var(--spacing-sm) 0;
             font-family: var(--font-mono);
-            font-size: var(--text-base);
+            font-size: var(--text-sm);
             word-break: break-all;
             margin: var(--spacing-md) 0;
             color: var(--color-ink);
           }
 
           .items {
-            max-width: 90ch;
+            max-width: 100%;
             margin: 0 auto;
           }
 
           .item {
-            background: var(--color-bg-code);
-            border-radius: 4px;
-            padding: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
+            position: relative;
+            padding: var(--spacing-lg) clamp(0rem, 1vw, var(--spacing-sm));
+          }
+
+          .item::after {
+            content: '';
+            position: absolute;
+            inset: auto 0 0;
+            height: 1px;
+            background: var(--soft-horizontal-divider);
           }
 
           .item-title {
@@ -172,8 +191,9 @@
 
           .item-meta {
             font-family: var(--font-mono);
-            font-size: var(--text-base);
+            font-size: var(--text-sm);
             color: var(--color-ink-light);
+            margin-bottom: var(--spacing-sm);
           }
 
           a {
@@ -206,12 +226,12 @@
               font-size: var(--text-3xl);
             }
 
-            .subscribe-info {
-              padding: var(--spacing-md);
-            }
-
             .subscribe-info h2 {
               font-size: var(--text-xl);
+            }
+
+            .item {
+              padding: var(--spacing-md) 0;
             }
 
             .item-title {
@@ -276,9 +296,6 @@
           <div class="items">
             <xsl:for-each select="/rss/channel/item">
               <article class="item">
-                <h2 class="item-title">
-                  <a href="{link}"><xsl:value-of select="title"/></a>
-                </h2>
                 <div class="item-meta">
                   <xsl:variable name="monthName" select="substring(pubDate, 9, 3)"/>
                   <xsl:variable name="day" select="substring(pubDate, 6, 2)"/>
@@ -301,6 +318,9 @@
                   </xsl:variable>
                   <xsl:value-of select="concat($year, '-', $month, '-', $day)"/>
                 </div>
+                <h2 class="item-title">
+                  <a href="{link}"><xsl:value-of select="title"/></a>
+                </h2>
               </article>
             </xsl:for-each>
           </div>

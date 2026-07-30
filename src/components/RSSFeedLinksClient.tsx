@@ -31,11 +31,15 @@ export default function RSSFeedLinksClient({
       setError(null);
 
       try {
-        // Proxy through our own origin: the feed host (raindrop.page) doesn't
-        // send CORS headers, so a direct browser fetch is blocked.
-        const response = await fetch(
-          `/api/feed?url=${encodeURIComponent(feedUrl)}`
-        );
+        const resolvedFeedUrl = new URL(feedUrl, window.location.origin);
+        const requestUrl =
+          resolvedFeedUrl.origin === window.location.origin
+            ? resolvedFeedUrl.href
+            : `/api/feed?url=${encodeURIComponent(resolvedFeedUrl.href)}`;
+
+        // Same-origin feeds can be fetched directly. External feeds go through
+        // our proxy because hosts such as raindrop.page don't send CORS headers.
+        const response = await fetch(requestUrl);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -131,7 +135,7 @@ export default function RSSFeedLinksClient({
       {title && <h2>{title}</h2>}
       <div className="feed-list">
         {items.map((item, index) => (
-          <article key={index} className="feed-item">
+          <article key={index} className="feed-item soft-list-entry">
             <div className="feed-header">
               {item.pubDate && (
                 <time className="feed-date" dateTime={item.pubDate}>

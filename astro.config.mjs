@@ -28,6 +28,11 @@ export default defineConfig({
   build: {
     concurrency: 5,
   },
+  vite: {
+    optimizeDeps: {
+      include: ['@visx/responsive', '@visx/scale'],
+    },
+  },
   integrations: [
     react(),
     svelte(),

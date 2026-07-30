@@ -1,15 +1,21 @@
 ---
 interface Props {
   year: number | string;
-  href: string;
+  href?: string;
 }
 
 const { year, href } = Astro.props;
 ---
 
-<a href={href} class="year-pill">
-  {year}
-</a>
+{
+  href ? (
+    <a href={href} class="year-pill">
+      {year}
+    </a>
+  ) : (
+    <span class="year-pill">{year}</span>
+  )
+}
 
 <style>
   .year-pill {
