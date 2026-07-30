@@ -9,7 +9,7 @@ interface Props {
 const { years, baseUrl } = Astro.props;
 ---
 
-<nav class="year-navigation">
+<nav class="year-navigation soft-divider-before">
   <h2>Browse by year</h2>
   <div class="year-links">
     {
@@ -24,7 +24,6 @@ const { years, baseUrl } = Astro.props;
   .year-navigation {
     margin-top: var(--spacing-xl);
     padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--color-border);
   }
 
   .year-navigation h2 {

@@ -31,7 +31,7 @@ const sortedSeries = Array.from(seriesCounts.entries())
 
     <div class="series-list">
       {sortedSeries.map(({ name, count }) => (
-        <a href={`/series/${slugify(name)}`} class="series-card">
+        <a href={`/series/${slugify(name)}`} class="series-card soft-list-entry">
           <div class="series-info">
             <Icon name="ph:books" class="series-icon" />
             <span class="series-name">{name}</span>
@@ -54,15 +54,14 @@ const sortedSeries = Array.from(seriesCounts.entries())
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-lg) var(--spacing-xl);
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
     text-decoration: none;
     color: var(--color-ink);
-    transition: background 0.2s;
+    transition: color 0.2s;
   }
 
-  .series-card:hover {
-    background: var(--color-bg-hover);
+  .series-card:hover .series-name,
+  .series-card:hover .series-icon {
+    color: var(--color-accent);
   }
 
   .series-info {
@@ -76,11 +75,13 @@ const sortedSeries = Array.from(seriesCounts.entries())
     height: 1.25rem;
     color: var(--color-accent);
     flex-shrink: 0;
+    transition: color 0.2s;
   }
 
   .series-name {
     font-size: var(--text-lg);
     font-weight: 500;
+    transition: color 0.2s;
   }
 
   .series-count {

@@ -449,7 +449,7 @@ export default function SearchPage() {
                     ref={(el) => {
                       resultRefs.current[index] = el;
                     }}
-                    className={`result-item ${isSelected ? 'selected' : ''}`}
+                    className={`result-item soft-list-entry ${isSelected ? 'selected' : ''}`}
                   >
                     <div className="result-header">
                       <time className="result-date">

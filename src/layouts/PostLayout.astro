@@ -301,17 +301,16 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
     padding: var(--spacing-md) var(--spacing-lg);
     padding-left: 3rem;
     padding-right: 3rem;
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
     text-decoration: none;
-    transition: background 0.2s;
     max-width: 320px;
     position: relative;
   }
 
-  .nav-prev:hover,
-  .nav-next:hover {
-    background: var(--color-bg-hover);
+  .nav-prev:hover .nav-title,
+  .nav-next:hover .nav-title,
+  .nav-prev:hover svg,
+  .nav-next:hover svg {
+    color: var(--color-accent);
   }
 
   .nav-prev svg,
@@ -323,6 +322,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    transition: color 0.2s;
   }
 
   .nav-prev svg {
@@ -355,6 +355,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    transition: color 0.2s;
   }
 
   @media (max-width: 768px) {
@@ -447,7 +448,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
   .commit-button:hover,
   .atproto-button:hover {
     background: var(--color-bg-hover);
-    color: var(--color-accent);
+    color: var(--color-ink);
   }
 
   .raw-button svg,

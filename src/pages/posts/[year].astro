@@ -49,22 +49,22 @@ const ogImage = `/posts/og.png`;
             <p class="entry-count">{yearPosts.length} {yearPosts.length === 1 ? 'post' : 'posts'}</p>
         </header>
 
-        <nav class="year-navigation">
-            <div class="nav-item nav-prev-wrapper">
+        <nav class="year-navigation adjacent-navigation">
+            <div class="adjacent-navigation__side adjacent-navigation__side--previous">
                 {prevYear && (
-                    <a href={`/posts/${prevYear}`} class="nav-prev">
+                    <a href={`/posts/${prevYear}`} class="nav-prev adjacent-navigation__link">
                         <Icon name="ph:arrow-left" />
-                        <YearPill year={prevYear} href={`/posts/${prevYear}`} />
+                        <YearPill year={prevYear} />
                     </a>
                 )}
             </div>
-            <div class="current-year">
-                <YearPill year={year} href={`/posts/${year}`} />
+            <div class="current-year adjacent-navigation__current">
+                <YearPill year={year} />
             </div>
-            <div class="nav-item nav-next-wrapper">
+            <div class="adjacent-navigation__side adjacent-navigation__side--next">
                 {nextYear && (
-                    <a href={`/posts/${nextYear}`} class="nav-next">
-                        <YearPill year={nextYear} href={`/posts/${nextYear}`} />
+                    <a href={`/posts/${nextYear}`} class="nav-next adjacent-navigation__link">
+                        <YearPill year={nextYear} />
                         <Icon name="ph:arrow-right" />
                     </a>
                 )}
@@ -98,40 +98,17 @@ const ogImage = `/posts/og.png`;
     }
 
     .year-navigation {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
         margin-bottom: var(--spacing-xl);
-        padding: var(--spacing-md);
-        background: var(--color-bg-code);
-        border-radius: 0.5rem;
-    }
-
-    .nav-item {
-        display: flex;
-    }
-
-    .nav-prev-wrapper {
-        justify-content: flex-start;
-    }
-
-    .nav-next-wrapper {
-        justify-content: flex-end;
     }
 
     .nav-prev,
     .nav-next {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
         text-decoration: none;
         color: inherit;
     }
 
     .nav-prev svg,
     .nav-next svg {
-        width: 1rem;
-        height: 1rem;
         color: var(--color-ink-light);
     }
 
@@ -140,18 +117,17 @@ const ogImage = `/posts/og.png`;
         color: var(--color-accent);
     }
     
-    .nav-prev:hover .year-pill,
-    .nav-next:hover .year-pill {
+    .nav-prev:hover :global(.year-pill),
+    .nav-next:hover :global(.year-pill) {
         background: var(--color-bg-hover);
         color: var(--color-accent);
     }
 
     .current-year {
-        text-align: center;
         pointer-events: none;
     }
 
-    .current-year .year-pill {
+    .current-year :global(.year-pill) {
         background: var(--color-accent);
         color: var(--color-bg);
         cursor: default;
