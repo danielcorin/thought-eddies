@@ -126,15 +126,17 @@ import { Icon } from "astro-icon/components";
     margin-top: 4rem;
   }
 
-  .footer-content,
+  .footer-info,
+  .footer-links,
   .footer-pages {
     position: relative;
     isolation: isolate;
   }
 
-  /* Soft local washes keep each footer row legible over decorative
-     backgrounds without turning either one into a hard-edged card. */
-  .footer-content::before,
+  /* Keep each content group on its own soft wash so the shader remains
+     visible in the space between the copyright and social links. */
+  .footer-info::before,
+  .footer-links::before,
   .footer-pages::before {
     content: "";
     position: absolute;
@@ -161,8 +163,9 @@ import { Icon } from "astro-icon/components";
     );
   }
 
-  .footer-content::before {
-    inset: 1.5rem clamp(0.5rem, 2vw, 1.5rem) 0.25rem;
+  .footer-info::before,
+  .footer-links::before {
+    inset: -0.75rem -1rem;
   }
 
   .footer-pages::before {
@@ -297,6 +300,11 @@ import { Icon } from "astro-icon/components";
     .footer-content {
       flex-direction: row;
       justify-content: space-between;
+    }
+
+    .footer-info::before,
+    .footer-links::before {
+      inset: -1.5rem 0;
     }
 
     .footer-info {
