@@ -5,7 +5,7 @@
 import rss from '@astrojs/rss';
 import { getCollection, render } from 'astro:content';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { getContainerRenderer as getMDXRenderer } from '@astrojs/mdx';
+import { getContainerRenderer as getMDXRenderer } from '@astrojs/mdx/container-renderer';
 import reactRenderer from '@astrojs/react/server.js';
 import svelteRenderer from '@astrojs/svelte/server.js';
 import { loadRenderers } from 'astro:container';

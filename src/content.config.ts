@@ -1,5 +1,6 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const posts = defineCollection({
   loader: glob({
@@ -17,8 +18,8 @@ const posts = defineCollection({
     image: z.string().optional(),
     draft: z.boolean().optional().default(true),
     aliases: z.array(z.string()).optional(),
-    githubUrl: z.string().url().optional(),
-    projectUrl: z.string().url().optional(),
+    githubUrl: z.url().optional(),
+    projectUrl: z.url().optional(),
     editor: z.string().optional(),
     zoomLevels: z
       .array(
@@ -37,7 +38,7 @@ const posts = defineCollection({
       .array(
         z.object({
           name: z.string(),
-          link: z.string().url(),
+          link: z.url(),
           icon: z.string().optional(),
         })
       )
@@ -81,7 +82,7 @@ const links = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/links' }),
   schema: z.object({
     title: z.string(),
-    target: z.string().url(),
+    target: z.url(),
     createdAt: z.date(),
     updatedAt: z.date().optional(),
     raindropId: z.number().int().positive(),
@@ -123,8 +124,8 @@ const til = defineCollection({
     image: z.string().optional(),
     draft: z.boolean().optional().default(false),
     aliases: z.array(z.string()).optional(),
-    githubUrl: z.string().url().optional(),
-    projectUrl: z.string().url().optional(),
+    githubUrl: z.url().optional(),
+    projectUrl: z.url().optional(),
     editor: z.string().optional(),
   }),
 });
@@ -145,8 +146,8 @@ const projects = defineCollection({
     image: z.string().optional(),
     draft: z.boolean().optional().default(false),
     aliases: z.array(z.string()).optional(),
-    githubUrl: z.string().url().optional(),
-    projectUrl: z.string().url().optional(),
+    githubUrl: z.url().optional(),
+    projectUrl: z.url().optional(),
     zoomLevels: z
       .array(
         z.object({
