@@ -339,7 +339,8 @@ const paths = generateSparklines([currentData, previousData], true, smoothingWin
 
   .stat-item:hover {
     border-color: var(--color-accent);
-    color: var(--color-accent);
+    background: var(--color-bg-hover);
+    color: var(--color-ink);
   }
 
   .stat-label {
@@ -361,7 +362,7 @@ const paths = generateSparklines([currentData, previousData], true, smoothingWin
   }
 
   .stat-item:hover .stat-count {
-    background: var(--color-accent);
+    background: var(--color-ink);
     color: var(--color-bg);
   }
 
