@@ -203,7 +203,7 @@ function pageWrapper(content: string): string {
     }
     .subscription-button:hover {
       background: var(--color-bg-hover);
-      color: var(--color-accent);
+      color: var(--color-ink);
     }
     @media (max-width: 640px) {
       .page-container {
