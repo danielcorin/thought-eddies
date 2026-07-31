@@ -20,11 +20,26 @@ scripts/         # Utility scripts (new_post.py, new_til.py, new_log.py)
 ```bash
 pnpm dev          # Dev server at localhost:4321
 pnpm build        # Production build
+pnpm deploy       # Build + deploy to Cloudflare Workers
 pnpm format       # Format with Prettier
 ```
 
 Local environment variables are loaded from `.env` by mise (configured in
 `mise.toml`). Do not add a direnv `.envrc`.
+
+## Deployment
+
+The site is a Cloudflare **Worker** (`thought-eddies`), deployed by
+`.github/workflows/deploy-site.yml` on push to `main`. `@astrojs/cloudflare` v14
+emits `dist/client` (static assets) + `dist/server` (SSR worker) and generates
+`dist/server/wrangler.json`, which the root `wrangler.jsonc` feeds into — so
+`wrangler deploy` must run _after_ `pnpm build`.
+
+Nearly every route is prerendered; `src/pages/api/feed.ts` is the one SSR route.
+
+Note: this used to be a Cloudflare **Pages** project. Pages expected a flat
+`dist/`, so don't point a build at `dist` and expect it to serve — that
+mismatch once buried the whole site under `/client/*`.
 
 ## Content Creation
 

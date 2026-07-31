@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "thought-eddies",
+  "compatibility_date": "2026-04-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+  },
+  // Astro's Cloudflare adapter enables sessions backed by KV. Nothing uses
+  // sessions today, but the binding has to resolve for `wrangler deploy`.
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "a419487b5d8644649304f9e47dc76641",
+    },
+  ],
+}
