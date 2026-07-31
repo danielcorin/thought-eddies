@@ -17,6 +17,10 @@ run = "pnpm dev"
 description = "Generate post embeddings"
 run = "pnpm embed"
 
+[tasks.deploy]
+description = "Build and deploy the site to Cloudflare Workers"
+run = "pnpm deploy"
+
 [tasks.post]
 description = "Create a new blog post"
 run = "python3 scripts/new_post.py"
