@@ -31,6 +31,9 @@ export const GET: APIRoute = async ({ url }) => {
 
   try {
     const upstream = await fetch(feedUrl, {
+      // Bypass Cloudflare's subrequest cache so each client load reaches the
+      // freshest feed Raindrop currently serves.
+      cache: 'no-store',
       headers: { Accept: 'application/rss+xml, application/xml, text/xml' },
     });
 
@@ -46,8 +49,9 @@ export const GET: APIRoute = async ({ url }) => {
       headers: {
         'Content-Type':
           upstream.headers.get('Content-Type') ?? 'application/rss+xml',
-        // Cache at the edge for an hour; matches Raindrop's own cache-control.
-        'Cache-Control': 'public, max-age=3600',
+        // The feed page loads this on the client and must not reuse a stale
+        // browser or intermediary response.
+        'Cache-Control': 'no-store',
       },
     });
   } catch (err) {
