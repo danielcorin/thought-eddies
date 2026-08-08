@@ -3,6 +3,15 @@
   "name": "thought-eddies",
   "compatibility_date": "2026-04-15",
   "compatibility_flags": ["nodejs_compat"],
+  // Keep the existing proxied www DNS record, but route the public site to
+  // this Worker. Without this, deploys only update the workers.dev hostname
+  // and www.danielcorin.com remains on the old Pages deployment.
+  "routes": [
+    {
+      "pattern": "www.danielcorin.com/*",
+      "zone_name": "danielcorin.com",
+    },
+  ],
   "observability": {
     "enabled": true,
   },
