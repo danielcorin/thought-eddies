@@ -39,7 +39,8 @@ export default function RSSFeedLinksClient({
 
         // Same-origin feeds can be fetched directly. External feeds go through
         // our proxy because hosts such as raindrop.page don't send CORS headers.
-        const response = await fetch(requestUrl);
+        // Always request the current feed instead of reusing a browser cache.
+        const response = await fetch(requestUrl, { cache: 'no-store' });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
