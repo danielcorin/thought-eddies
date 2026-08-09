@@ -3,6 +3,7 @@ import Navigation from '@components/layout/Navigation.astro';
 import Pagination from '@components/Pagination.astro';
 import PostCard from '@components/PostCard.astro';
 import CollapsibleCategoryGrid from '@components/CollapsibleCategoryGrid.astro';
+import RandomEntryButton from '@components/RandomEntryButton.astro';
 import Layout from '@layouts/Layout.astro';
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
@@ -42,7 +43,10 @@ const ogImage = `/til/og.png`;
 <Layout title="TIL (Today I Learned)" ogImage={ogImage} pageType="tilList">
   <Navigation selected="til" />
   <main>
-    <h1 class="page-title">Today I Learned</h1>
+    <h1 class="page-title">
+      Today I Learned
+      <RandomEntryButton collection="til" />
+    </h1>
 
     <CollapsibleCategoryGrid
       items={categoriesWithCounts}

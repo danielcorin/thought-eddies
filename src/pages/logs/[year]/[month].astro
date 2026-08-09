@@ -5,6 +5,7 @@ import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import Breadcrumbs from "@components/Breadcrumbs.astro";
+import RandomEntryButton from "@components/RandomEntryButton.astro";
 
 export async function getStaticPaths() {
   const logs = await getCollection("logs", ({ data }) => !data.draft);
@@ -114,7 +115,10 @@ const ogImage = `/logs/og.png`;
     ]} />
     
     <header class="page-header">
-      <h1 class="page-title">{monthName} {year}</h1>
+      <h1 class="page-title">
+        {monthName} {year}
+        <RandomEntryButton collection="logs" />
+      </h1>
       <p class="entry-count">{monthLogs.length} {monthLogs.length === 1 ? 'entry' : 'entries'}</p>
     </header>
     
