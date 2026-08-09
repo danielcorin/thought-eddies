@@ -6,6 +6,7 @@ import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import { shouldShowPost } from "@utils/posts";
+import RandomEntryButton from "@components/RandomEntryButton.astro";
 
 export async function getStaticPaths() {
     const posts = (await getCollection("posts")).filter(shouldShowPost);
@@ -45,7 +46,10 @@ const ogImage = `/posts/og.png`;
     <Navigation selected={collection} />
     <main>
         <header class="page-header">
-            <h1 class="page-title">{year}</h1>
+            <h1 class="page-title">
+                {year}
+                <RandomEntryButton collection="posts" />
+            </h1>
             <p class="entry-count">{yearPosts.length} {yearPosts.length === 1 ? 'post' : 'posts'}</p>
         </header>
 

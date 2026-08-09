@@ -436,6 +436,14 @@ h1.page-title {
   line-height: 1.5;
 }
 
+/* Titles that carry a random-entry dice sit their button beside the text */
+h1.page-title:has(.random-entry) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
 article p,
 .content {
   font-family: var(--font-prose);

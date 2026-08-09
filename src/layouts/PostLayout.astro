@@ -15,6 +15,7 @@ import ClickableImages from "@components/ClickableImages.astro";
 import BlueskyComments from "@components/BlueskyComments.tsx";
 import Webmentions from "@components/Webmentions.astro";
 import SubscribeForm from "@components/SubscribeForm.astro";
+import RandomEntryButton from "@components/RandomEntryButton.astro";
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getCommitUrl } from '@utils/git';
@@ -197,6 +198,9 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
           <Icon name="ph:at" />
           <span>atproto</span>
         </a>
+      )}
+      {(isTil || (!isProject && !isRss)) && (
+        <RandomEntryButton collection={isTil ? "til" : "posts"} variant="button" />
       )}
     </div>
 
