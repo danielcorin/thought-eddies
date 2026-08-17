@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 import cloudflare from '@astrojs/cloudflare';
 import astroD2 from 'astro-d2';
 import icon from 'astro-icon';
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 
 import sitemap from '@astrojs/sitemap';
 
@@ -16,6 +16,28 @@ import {
   markdownPlugins,
   markdownSyntaxOptions,
 } from './plugins/markdown-options.mjs';
+
+// `imageService: 'compile'` makes the Cloudflare adapter point /_image at its
+// image-transform endpoint, which imports `cloudflare:workers` and needs an
+// IMAGES binding we don't have. In dev that endpoint 500s every optimized
+// image with FailedToLoadModuleSSR. Sharp isn't an option either — dev runs
+// the app in workerd, which can't load its native binary — so serve images
+// untransformed locally. Production images are still pre-optimized at build.
+/** @type {import('astro').AstroIntegration} */
+const devImageService = {
+  name: 'dev-passthrough-image-service',
+  hooks: {
+    'astro:config:setup': ({ command, updateConfig }) => {
+      if (command !== 'dev') return;
+      updateConfig({
+        image: {
+          service: passthroughImageService(),
+          endpoint: { entrypoint: 'astro/assets/endpoint/generic' },
+        },
+      });
+    },
+  },
+};
 
 // https://astro.build/config
 export default defineConfig({
@@ -47,6 +69,7 @@ export default defineConfig({
     sitemap({
       filter: (page) => !page.includes('/rss/'),
     }),
+    devImageService,
   ],
   markdown: {
     processor: unified(markdownPlugins),

@@ -10,7 +10,7 @@ tags:
 draft: false
 ---
 
-I've starting playing around with [Fireworks.ai](fireworks.ai) to run inference using open source language models with an API.
+I've starting playing around with [Fireworks.ai](https://fireworks.ai/) to run inference using open source language models with an API.
 Fireworks' product is the best I've come across for this use case.
 While Fireworks has their [own client](https://pypi.org/project/fireworks-ai/), I wanted to try and use the OpenAI Python SDK compatibility approach, since I have a lot of code that uses the OpenAI SDK.
 It looks like Fireworks' [documented approach](https://readme.fireworks.ai/docs/openai-compatibility) no longer works since OpenAI published version `1.0.0`.
