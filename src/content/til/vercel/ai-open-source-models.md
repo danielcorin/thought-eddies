@@ -15,7 +15,7 @@ _Edit (2024-07-21): Vercel has updated the [`ai` package](https://github.com/ver
 Consider reading [their docs](https://sdk.vercel.ai/docs/introduction) first before using the example below, which is out of date._
 
 Vercel has a library called [`ai`](https://github.com/vercel/ai), that is useful for building language model chat applications.
-I used it to help build [Write Partner](/projects/write-partner)
+I used it to help build [Write Partner](https://github.com/danielcorin/write-partner)
 The library has two main components:
 
 - A backend API that is called by a frontend app that streams language model responses

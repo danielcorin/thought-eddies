@@ -10,7 +10,7 @@ draft: false
 ---
 
 I spent a bit of time configuring [WezTerm](https://wezfurlong.org/wezterm/index.html) to my liking.
-This exercise was similar to [rebuilding my iTerm setup in Alacritty](/til/wezterm/rebuilding-my-iterm-setup-in-alacritty).
+This exercise was similar to [rebuilding my iTerm setup in Alacritty](/til/alacritty/rebuilding-my-iterm-setup-in-alacritty/rebuilding-my-iterm-setup-in-alacritty).
 I found WezTerm to be more accessible and strongly appreciated the builtin terminal multiplexing because I don't like using tmux.
 
 I configured WezTerm to provide the following experience.
