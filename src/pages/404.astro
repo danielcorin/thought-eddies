@@ -106,8 +106,14 @@ import Layout from "@layouts/Layout.astro";
             ...baseOptions,
             particles: {
                 ...baseOptions.particles,
-                color: {
-                    value: inkColor,
+                paint: {
+                    // tsParticles v4 reads particle fill colors from `paint`.
+                    color: {
+                        value: inkColor,
+                    },
+                    fill: {
+                        enable: true,
+                    },
                 },
                 opacity: {
                     value: isDark ? 0.5 : 0.8,
@@ -145,26 +151,16 @@ import Layout from "@layouts/Layout.astro";
         window.addEventListener("DOMContentLoaded", initializeParticles);
     }
 
-    // Theme change handlers
-    async function recreateParticles() {
-        if (particlesInstance) {
-            // Completely destroy current instance
-            await particlesInstance.destroy();
-            particlesInstance = null;
-        }
-
-        // Recreate with new theme
-        await loadFull(tsParticles);
-        particlesInstance = await tsParticles.load({
-            id: "tsparticles",
-            options: getParticlesConfig() as any,
-        });
+    // Apply theme colors to the existing container. Loading the full bundle a
+    // second time is unsupported in tsParticles v4.
+    async function updateParticlesTheme() {
+        await particlesInstance?.reset(getParticlesConfig() as any);
     }
 
     // Listen for custom theme change event
-    window.addEventListener("themeChanged", recreateParticles);
+    window.addEventListener("themeChanged", updateParticlesTheme);
 
     // Also listen to system preference changes
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    mediaQuery.addEventListener("change", recreateParticles);
+    mediaQuery.addEventListener("change", updateParticlesTheme);
 </script>
