@@ -35,11 +35,7 @@ export default function ActivityPageClient({ allContent, initialDate }: Props) {
     const url = new URL(window.location.href);
     const dateParam = url.searchParams.get('date');
 
-    // If there's no date parameter, set to today
-    if (!dateParam) {
-      const today = formatDateForInput(new Date());
-      setSelectedDate(today);
-    }
+    setSelectedDate(dateParam || formatDateForInput(new Date()));
   }, []);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,7 +156,9 @@ export default function ActivityPageClient({ allContent, initialDate }: Props) {
     garden: allContent.filter((item) => item.collection === 'garden').length,
   };
 
-  const currentDate = new Date(selectedDate);
+  // Date-only strings otherwise inherit the runtime's local timezone, which
+  // can make Astro's server markup differ from the browser's first render.
+  const currentDate = new Date(`${selectedDate}T00:00:00.000Z`);
 
   // Calculate date ranges
   const sevenDaysAgo = new Date(
@@ -181,18 +179,19 @@ export default function ActivityPageClient({ allContent, initialDate }: Props) {
   const twoYearsAgo = new Date(
     currentDate.getTime() - 2 * 365 * 24 * 60 * 60 * 1000
   );
-  const yearStart = new Date(currentDate.getFullYear(), 0, 1);
-  const previousYearStart = new Date(currentDate.getFullYear() - 1, 0, 1);
+  const currentYear = currentDate.getUTCFullYear();
+  const currentMonth = currentDate.getUTCMonth();
+  const currentDay = currentDate.getUTCDate();
+  const yearStart = new Date(Date.UTC(currentYear, 0, 1));
+  const previousYearStart = new Date(Date.UTC(currentYear - 1, 0, 1));
+  const daysInPreviousYearMonth = new Date(
+    Date.UTC(currentYear - 1, currentMonth + 1, 0)
+  ).getUTCDate();
   const sameDayLastYear = new Date(
-    currentDate.getFullYear() - 1,
-    currentDate.getMonth(),
-    Math.min(
-      currentDate.getDate(),
-      new Date(
-        currentDate.getFullYear() - 1,
-        currentDate.getMonth() + 1,
-        0
-      ).getDate()
+    Date.UTC(
+      currentYear - 1,
+      currentMonth,
+      Math.min(currentDay, daysInPreviousYearMonth)
     )
   );
 

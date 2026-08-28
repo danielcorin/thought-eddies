@@ -30,6 +30,13 @@ const devImageService = {
     'astro:config:setup': ({ command, updateConfig }) => {
       if (command !== 'dev') return;
       updateConfig({
+        // Keep the dev optimizer graph separate from `astro check` and
+        // production builds. Sharing Vite's default cache while those run in
+        // parallel can leave React and React DOM pointing at different graph
+        // generations. That produces invalid-hook and hydration failures.
+        vite: {
+          cacheDir: 'node_modules/.vite-dev',
+        },
         image: {
           service: passthroughImageService(),
           endpoint: { entrypoint: 'astro/assets/endpoint/generic' },

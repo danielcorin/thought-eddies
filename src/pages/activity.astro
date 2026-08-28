@@ -43,6 +43,11 @@ const publishedLogs = logs.filter((log) => !log.data.draft);
 const publishedProjects = projects.filter((project) => !project.data.draft);
 const publishedGarden = garden.filter((item) => !item.data.draft);
 
+// Use a serialized date snapshot so the server and the first client render
+// produce identical activity markup. The client can update this after
+// hydration based on the URL or the visitor's local date.
+const initialDate = new Date().toISOString().slice(0, 10);
+
 // Prepare content data for client-side processing
 const allContentData = [
   ...publishedPosts.map(item => ({
@@ -91,7 +96,7 @@ const allContentData = [
     <ActivityPageClient 
       client:load
       allContent={allContentData}
-      initialDate=""
+      initialDate={initialDate}
     />
   </main>
 </Layout>
