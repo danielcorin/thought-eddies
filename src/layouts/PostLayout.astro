@@ -36,6 +36,7 @@ const bskyUrl = getBskyUrl(frontmatter.bsky);
 // Determine collection type
 const collectionType = frontmatter.collection || "posts";
 const isTil = collectionType === "til";
+const isBreadcrumb = collectionType === "breadcrumbs";
 const isProject = collectionType === "projects";
 const isRss = collectionType === "rss";
 
@@ -114,8 +115,8 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
   : undefined;
 ---
 
-<Layout title={frontmatter.title} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : isRss ? "rss" : "posts"}>
-  <Navigation selected={isProject ? "projects" : isTil ? "til" : isRss ? "rss" : "posts"} />
+<Layout title={frontmatter.title} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : isBreadcrumb ? "breadcrumbs" : isRss ? "rss" : "posts"}>
+  <Navigation selected={isProject ? "projects" : isTil ? "til" : isBreadcrumb ? undefined : isRss ? "rss" : "posts"} />
   <article>
     {frontmatter.draft && (
       <div class="draft-banner">
@@ -174,6 +175,8 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
       <a href={
         isTil
           ? `/til/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
+          : isBreadcrumb
+          ? `/breadcrumbs/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
           : isProject
           ? `/projects/${slug.replace(/\.(md|mdx)$/, '')}/index.md`
           : isRss
@@ -199,7 +202,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
           <span>atproto</span>
         </a>
       )}
-      {(isTil || (!isProject && !isRss)) && (
+      {(isTil || collectionType === "posts") && (
         <RandomEntryButton collection={isTil ? "til" : "posts"} variant="button" />
       )}
     </div>
@@ -222,6 +225,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
           prevEntry && (
             <a href={
               isTil ? `/til/${prevEntry.id.split('/')[0]}/${prevEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` :
+              isBreadcrumb ? `/breadcrumbs/${prevEntry.id.replace(/\.(md|mdx)$/, '')}` :
               isProject ? `/projects/${prevEntry.id}` :
               isRss ? `/rss/${prevEntry.id}` :
               `/posts/${prevEntry.id}`
@@ -240,6 +244,7 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
           nextEntry && (
             <a href={
               isTil ? `/til/${nextEntry.id.split('/')[0]}/${nextEntry.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '')}` :
+              isBreadcrumb ? `/breadcrumbs/${nextEntry.id.replace(/\.(md|mdx)$/, '')}` :
               isProject ? `/projects/${nextEntry.id}` :
               isRss ? `/rss/${nextEntry.id}` :
               `/posts/${nextEntry.id}`

@@ -1,0 +1,31 @@
+---
+import TableOfContents from "@components/layout/TableOfContents.astro";
+import PostLayout from "@layouts/PostLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const entries = await getCollection("breadcrumbs");
+  return entries.map((entry: CollectionEntry<"breadcrumbs">) => ({
+    params: { slug: entry.id.replace(/\.(md|mdx)$/, "") },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as {
+  entry: CollectionEntry<"breadcrumbs">;
+};
+const { Content, headings } = await render(entry);
+const slug = entry.id.replace(/\.(md|mdx)$/, "");
+const ogImage = `/breadcrumbs/${slug}/og.png`;
+const frontmatter = {
+  ...entry.data,
+  collection: "breadcrumbs",
+};
+---
+
+<PostLayout frontmatter={frontmatter} ogImage={ogImage} slug={entry.id}>
+  <TableOfContents title={entry.data.title} headings={headings} />
+  <Content />
+</PostLayout>

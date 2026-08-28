@@ -8,15 +8,16 @@ import { getCollection } from "astro:content";
 import { shouldShowPost } from "@utils/posts";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // Get all posts, logs, and tils
+  // Get all taggable content
   const posts = await getCollection("posts");
   const logs = await getCollection("logs");
   const tils = await getCollection("til");
+  const breadcrumbs = await getCollection("breadcrumbs");
   
   // Extract all unique tags
   const allTags = new Set<string>();
   
-  [...posts, ...logs, ...tils].forEach(item => {
+  [...posts, ...logs, ...tils, ...breadcrumbs].forEach(item => {
     if (item.data.tags && Array.isArray(item.data.tags)) {
       item.data.tags.forEach(tag => allTags.add(tag));
     }
@@ -37,6 +38,7 @@ const tagStr: string = tag;
 const posts = await getCollection("posts");
 const logs = await getCollection("logs");
 const tils = await getCollection("til");
+const breadcrumbs = await getCollection("breadcrumbs");
 
 // Filter and combine content
 const taggedPosts = posts
@@ -64,8 +66,17 @@ const taggedTils = tils
     collection: 'til' as const
   }));
 
+const taggedBreadcrumbs = breadcrumbs
+  .filter(breadcrumb => shouldShowPost(breadcrumb) && breadcrumb.data.tags?.includes(tagStr))
+  .map(breadcrumb => ({
+    ...breadcrumb,
+    type: 'breadcrumb' as const,
+    date: breadcrumb.data.createdAt,
+    collection: 'breadcrumbs' as const
+  }));
+
 // Combine and sort by date
-const allTaggedContent = [...taggedPosts, ...taggedLogs, ...taggedTils]
+const allTaggedContent = [...taggedPosts, ...taggedLogs, ...taggedTils, ...taggedBreadcrumbs]
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 const ogImage = `/tags/og.png`;

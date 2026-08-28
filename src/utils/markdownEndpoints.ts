@@ -62,7 +62,7 @@ export const createMarkdownWithFrontmatter = (
 };
 
 export const createContentEndpoint = <
-  T extends 'posts' | 'logs' | 'til' | 'rss' | 'projects',
+  T extends 'posts' | 'logs' | 'til' | 'breadcrumbs' | 'rss' | 'projects',
 >(
   collection: T,
   getSlugFromParams?: (

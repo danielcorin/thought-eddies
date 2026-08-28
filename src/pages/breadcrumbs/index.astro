@@ -1,0 +1,60 @@
+---
+import Navigation from "@components/layout/Navigation.astro";
+import PostCard from "@components/PostCard.astro";
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { shouldShowPost } from "@utils/posts";
+
+export const prerender = true;
+
+const breadcrumbs = (await getCollection("breadcrumbs"))
+  .filter(shouldShowPost)
+  .sort(
+    (a, b) =>
+      new Date(b.data.createdAt).getTime() -
+      new Date(a.data.createdAt).getTime(),
+  );
+---
+
+<Layout title="Breadcrumbs" pageType="breadcrumbs">
+  <Navigation />
+  <main>
+    <div class="page-header">
+      <h1>Breadcrumbs</h1>
+      <p>Resolutions published in the hope that others who run into the same issues can find them.</p>
+      <p class="page-note">The investigations and write-ups may be mostly agent-generated from problems I encounter, describe, and use an agent to help resolve.</p>
+    </div>
+    <div class="toc">
+      {
+        breadcrumbs.map((breadcrumb) => (
+          <PostCard post={breadcrumb} type="breadcrumb" variant="list" />
+        ))
+      }
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+  }
+
+  .page-header h1 {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .page-header p {
+    color: var(--color-ink-light);
+    margin: 0;
+  }
+
+  .page-header .page-note {
+    font-size: var(--text-sm);
+    margin-top: var(--spacing-sm);
+  }
+
+  .toc {
+    display: grid;
+  }
+</style>

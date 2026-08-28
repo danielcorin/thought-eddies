@@ -16,6 +16,8 @@ function getContentUrl(entry: any): string {
             const [category, ...slugParts] = id.split("/");
             return `/til/${category}/${slugParts.join("/")}`;
         }
+        case "breadcrumbs":
+            return `/breadcrumbs/${id}`;
         case "logs":
             return `/logs/${id}`;
         case "projects":

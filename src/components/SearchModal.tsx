@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 interface SearchItem {
-  type: 'post' | 'log' | 'til' | 'project' | 'garden';
+  type: 'post' | 'log' | 'til' | 'breadcrumb' | 'project' | 'garden';
   id: string;
   title: string;
   description: string;
@@ -13,7 +13,7 @@ interface SearchItem {
 }
 
 interface SearchResult {
-  type: 'post' | 'log' | 'til' | 'project' | 'garden';
+  type: 'post' | 'log' | 'til' | 'breadcrumb' | 'project' | 'garden';
   item: SearchItem;
   score: number;
 }
@@ -350,9 +350,11 @@ export default function SearchModal() {
                                 ? '/logs'
                                 : result.type === 'til'
                                   ? '/til'
-                                  : result.type === 'project'
-                                    ? '/projects'
-                                    : '/garden'
+                                  : result.type === 'breadcrumb'
+                                    ? '/breadcrumbs'
+                                    : result.type === 'project'
+                                      ? '/projects'
+                                      : '/garden'
                           }
                           className="inline-block px-3 py-1 text-xs rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900 text-blue-800 dark:text-blue-200 transition-all hover:bg-blue-100 hover:border-blue-300 dark:hover:bg-blue-800 no-underline font-medium"
                           onClick={(e) => e.stopPropagation()}
@@ -363,9 +365,11 @@ export default function SearchModal() {
                               ? 'Logs'
                               : result.type === 'til'
                                 ? 'TIL'
-                                : result.type === 'project'
-                                  ? 'Projects'
-                                  : 'Garden'}
+                                : result.type === 'breadcrumb'
+                                  ? 'Breadcrumbs'
+                                  : result.type === 'project'
+                                    ? 'Projects'
+                                    : 'Garden'}
                         </a>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-mono">
                           {formatDate(item.date)}

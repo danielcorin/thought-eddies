@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getContentPreview } from '@utils/text';
 
 interface SearchItem {
-  type: 'post' | 'log' | 'til' | 'project' | 'garden';
+  type: 'post' | 'log' | 'til' | 'breadcrumb' | 'project' | 'garden';
   id: string;
   title: string;
   description: string;
@@ -14,7 +14,7 @@ interface SearchItem {
 }
 
 interface SearchResult {
-  type: 'post' | 'log' | 'til' | 'project' | 'garden';
+  type: 'post' | 'log' | 'til' | 'breadcrumb' | 'project' | 'garden';
   item: SearchItem;
   score: number;
 }
@@ -33,7 +33,7 @@ export default function SearchPage() {
   const [searchData, setSearchData] = useState<SearchItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
-    types: new Set(['post', 'log', 'til', 'project', 'garden']),
+    types: new Set(['post', 'log', 'til', 'breadcrumb', 'project', 'garden']),
     dateRange: {
       start: '',
       end: '',
@@ -60,7 +60,9 @@ export default function SearchPage() {
     if (typesParam) {
       const types = typesParam
         .split(',')
-        .filter((t) => ['post', 'log', 'til', 'project', 'garden'].includes(t));
+        .filter((t) =>
+          ['post', 'log', 'til', 'breadcrumb', 'project', 'garden'].includes(t)
+        );
       if (types.length > 0) {
         setFilters((prev) => ({ ...prev, types: new Set(types) }));
       }
@@ -184,7 +186,7 @@ export default function SearchPage() {
     }
 
     // Add type filters if not all selected
-    if (filters.types.size > 0 && filters.types.size < 5) {
+    if (filters.types.size > 0 && filters.types.size < 6) {
       const typesArray = Array.from(filters.types).sort();
       urlParams.set('types', typesArray.join(','));
     }
@@ -212,7 +214,7 @@ export default function SearchPage() {
     let filteredData = searchData;
 
     // Apply type filter
-    if (filters.types.size < 5) {
+    if (filters.types.size < 6) {
       filteredData = filteredData.filter((item) =>
         filters.types.has(item.type)
       );
@@ -294,13 +296,13 @@ export default function SearchPage() {
 
   const clearFilters = () => {
     setFilters({
-      types: new Set(['post', 'log', 'til', 'project', 'garden']),
+      types: new Set(['post', 'log', 'til', 'breadcrumb', 'project', 'garden']),
       dateRange: { start: '', end: '' },
     });
   };
 
   const hasActiveFilters =
-    filters.types.size < 5 || filters.dateRange.start || filters.dateRange.end;
+    filters.types.size < 6 || filters.dateRange.start || filters.dateRange.end;
 
   return (
     <div className="search-page">
@@ -324,7 +326,7 @@ export default function SearchPage() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search posts, logs, TILs, projects..."
+            placeholder="Search the site..."
             className="search-input"
           />
         </div>
@@ -349,7 +351,7 @@ export default function SearchPage() {
           Filters
           {hasActiveFilters && (
             <span className="filter-count">
-              {filters.types.size < 5 && `${filters.types.size}`}
+              {filters.types.size < 6 && `${filters.types.size}`}
             </span>
           )}
         </button>
@@ -360,26 +362,30 @@ export default function SearchPage() {
           <div className="filter-section">
             <h3>Content Type</h3>
             <div className="filter-options">
-              {['post', 'log', 'til', 'project', 'garden'].map((type) => (
-                <label key={type} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={filters.types.has(type)}
-                    onChange={() => toggleType(type)}
-                  />
-                  <span>
-                    {type === 'post'
-                      ? 'Posts'
-                      : type === 'log'
-                        ? 'Logs'
-                        : type === 'til'
-                          ? 'TIL'
-                          : type === 'project'
-                            ? 'Projects'
-                            : 'Garden'}
-                  </span>
-                </label>
-              ))}
+              {['post', 'log', 'til', 'breadcrumb', 'project', 'garden'].map(
+                (type) => (
+                  <label key={type} className="filter-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={filters.types.has(type)}
+                      onChange={() => toggleType(type)}
+                    />
+                    <span>
+                      {type === 'post'
+                        ? 'Posts'
+                        : type === 'log'
+                          ? 'Logs'
+                          : type === 'til'
+                            ? 'TIL'
+                            : type === 'breadcrumb'
+                              ? 'Breadcrumbs'
+                              : type === 'project'
+                                ? 'Projects'
+                                : 'Garden'}
+                    </span>
+                  </label>
+                )
+              )}
             </div>
           </div>
 
@@ -465,9 +471,11 @@ export default function SearchPage() {
                               ? '/logs'
                               : result.type === 'til'
                                 ? '/til'
-                                : result.type === 'project'
-                                  ? '/projects'
-                                  : '/garden'
+                                : result.type === 'breadcrumb'
+                                  ? '/breadcrumbs'
+                                  : result.type === 'project'
+                                    ? '/projects'
+                                    : '/garden'
                         }
                         className="result-type"
                       >
@@ -477,9 +485,11 @@ export default function SearchPage() {
                             ? 'Logs'
                             : result.type === 'til'
                               ? 'TIL'
-                              : result.type === 'project'
-                                ? 'Projects'
-                                : 'Garden'}
+                              : result.type === 'breadcrumb'
+                                ? 'Breadcrumbs'
+                                : result.type === 'project'
+                                  ? 'Projects'
+                                  : 'Garden'}
                       </a>
                     </div>
                     <div className="result-content">

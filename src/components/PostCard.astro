@@ -6,8 +6,8 @@ import type { CollectionEntry } from "astro:content";
 import { Icon } from "astro-icon/components";
 
 export interface Props {
-    post: CollectionEntry<"posts"> | CollectionEntry<"logs"> | CollectionEntry<"til"> | CollectionEntry<"projects">;
-    type?: "post" | "log" | "til" | "project";
+    post: CollectionEntry<"posts"> | CollectionEntry<"logs"> | CollectionEntry<"til"> | CollectionEntry<"breadcrumbs"> | CollectionEntry<"projects">;
+    type?: "post" | "log" | "til" | "breadcrumb" | "project";
     variant?: "list" | "grid";
     showTypeLabel?: boolean;
     baseUrl?: string;
@@ -15,7 +15,7 @@ export interface Props {
 
 const {
     post,
-    type = post.collection === "til" ? "til" : post.collection === "logs" ? "log" : post.collection === "projects" ? "project" : "post",
+    type = post.collection === "til" ? "til" : post.collection === "breadcrumbs" ? "breadcrumb" : post.collection === "logs" ? "log" : post.collection === "projects" ? "project" : "post",
     variant = "list",
     showTypeLabel = false,
     baseUrl,
@@ -49,6 +49,8 @@ if (type === "log") {
     const category = post.id.split('/')[0];
     const slug = post.id.split('/').slice(1).join('/').replace(/\.(md|mdx)$/, '');
     url = `/til/${category}/${slug}`;
+} else if (post.collection === "breadcrumbs") {
+    url = `/breadcrumbs/${post.id.replace(/\.(md|mdx)$/, '')}`;
 } else if (post.collection === "projects") {
     url = `/projects/${post.id}`;
 } else if (baseUrl) {

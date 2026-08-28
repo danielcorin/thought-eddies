@@ -6,15 +6,16 @@ import { formatDate } from '@utils/markdownEndpoints';
 export const prerender = true;
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // Get all posts, logs, and tils
+  // Get all taggable content
   const posts = await getCollection('posts');
   const logs = await getCollection('logs');
   const tils = await getCollection('til');
+  const breadcrumbs = await getCollection('breadcrumbs');
 
   // Extract all unique tags
   const allTags = new Set<string>();
 
-  [...posts, ...logs, ...tils].forEach((item) => {
+  [...posts, ...logs, ...tils, ...breadcrumbs].forEach((item) => {
     if (item.data.tags && Array.isArray(item.data.tags)) {
       item.data.tags.forEach((tag) => allTags.add(tag));
     }
@@ -37,6 +38,7 @@ export const GET: APIRoute = async ({ params }) => {
     const posts = await getCollection('posts');
     const logs = await getCollection('logs');
     const tils = await getCollection('til');
+    const breadcrumbs = await getCollection('breadcrumbs');
 
     // Filter and combine content
     const taggedPosts = posts
@@ -63,11 +65,23 @@ export const GET: APIRoute = async ({ params }) => {
         date: til.data.createdAt,
       }));
 
+    const taggedBreadcrumbs = breadcrumbs
+      .filter(
+        (breadcrumb) =>
+          !breadcrumb.data.draft && breadcrumb.data.tags?.includes(tag)
+      )
+      .map((breadcrumb) => ({
+        ...breadcrumb,
+        type: 'breadcrumb' as const,
+        date: breadcrumb.data.createdAt,
+      }));
+
     // Combine and sort by date
     const allTaggedContent = [
       ...taggedPosts,
       ...taggedLogs,
       ...taggedTils,
+      ...taggedBreadcrumbs,
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     let content = `# Tag: ${tag}
@@ -82,6 +96,9 @@ ${allTaggedContent.length} ${allTaggedContent.length === 1 ? 'entry' : 'entries'
     const postContent = allTaggedContent.filter((item) => item.type === 'post');
     const logContent = allTaggedContent.filter((item) => item.type === 'log');
     const tilContent = allTaggedContent.filter((item) => item.type === 'til');
+    const breadcrumbContent = allTaggedContent.filter(
+      (item) => item.type === 'breadcrumb'
+    );
 
     if (postContent.length > 0) {
       content += `## Posts\n\n`;
@@ -109,6 +126,16 @@ ${allTaggedContent.length} ${allTaggedContent.length === 1 ? 'entry' : 'entries'
         const date = formatDate(til.date);
         const slug = til.id.replace(/\.mdx?$/, '');
         content += `- [${til.data.title}](/til/${slug}/index.md) - ${date}\n`;
+      });
+      content += '\n';
+    }
+
+    if (breadcrumbContent.length > 0) {
+      content += `## Breadcrumbs\n\n`;
+      breadcrumbContent.forEach((breadcrumb) => {
+        const date = formatDate(breadcrumb.date);
+        const slug = breadcrumb.id.replace(/\.mdx?$/, '');
+        content += `- [${breadcrumb.data.title}](/breadcrumbs/${slug}/index.md) - ${date}\n`;
       });
     }
 
