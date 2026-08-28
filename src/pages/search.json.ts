@@ -10,6 +10,10 @@ export const GET: APIRoute = async () => {
 
   const allLogs = await getCollection('logs');
   const allTils = await getCollection('til');
+  const allBreadcrumbs = await getCollection(
+    'breadcrumbs',
+    ({ data }) => data.draft !== true
+  );
   const allProjects = await getCollection('projects', ({ data }) => {
     return data.draft !== true;
   });
@@ -58,6 +62,17 @@ export const GET: APIRoute = async () => {
     };
   });
 
+  const breadcrumbs = allBreadcrumbs.map((breadcrumb) => ({
+    type: 'breadcrumb',
+    id: breadcrumb.id,
+    title: breadcrumb.data.title,
+    description: breadcrumb.data.description || '',
+    tags: breadcrumb.data.tags || [],
+    date: breadcrumb.data.publishedAt || breadcrumb.data.createdAt,
+    url: `/breadcrumbs/${breadcrumb.id.replace(/\.(md|mdx)$/, '')}`,
+    content: breadcrumb.body,
+  }));
+
   // Process projects
   const projects = allProjects.map((project) => ({
     type: 'project',
@@ -83,9 +98,14 @@ export const GET: APIRoute = async () => {
   }));
 
   // Combine and sort by date
-  const allContent = [...posts, ...logs, ...tils, ...projects, ...garden].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  const allContent = [
+    ...posts,
+    ...logs,
+    ...tils,
+    ...breadcrumbs,
+    ...projects,
+    ...garden,
+  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return new Response(JSON.stringify(allContent), {
     status: 200,

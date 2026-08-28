@@ -5,15 +5,16 @@ export const prerender = true;
 
 export const GET: APIRoute = async () => {
   try {
-    // Get all posts, logs, and tils
+    // Get all taggable content
     const posts = await getCollection('posts');
     const logs = await getCollection('logs');
     const tils = await getCollection('til');
+    const breadcrumbs = await getCollection('breadcrumbs');
 
     // Count tags across all collections
     const tagCounts = new Map<string, number>();
 
-    [...posts, ...logs, ...tils].forEach((item) => {
+    [...posts, ...logs, ...tils, ...breadcrumbs].forEach((item) => {
       if (!item.data.draft && item.data.tags && Array.isArray(item.data.tags)) {
         item.data.tags.forEach((tag) => {
           tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
@@ -29,7 +30,7 @@ export const GET: APIRoute = async () => {
 
     let content = `# Tags
 
-Explore content by topic across posts, logs, and TILs.
+Explore content by topic across the site.
 
 ## All Tags (${tagCounts.size} total)
 

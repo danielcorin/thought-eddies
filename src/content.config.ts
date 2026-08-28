@@ -130,6 +130,28 @@ const til = defineCollection({
   }),
 });
 
+const breadcrumbs = defineCollection({
+  loader: glob({
+    pattern: ['**/*.{md,mdx}', '!**/_*'],
+    base: './src/content/breadcrumbs',
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    location: z.string().optional(),
+    createdAt: z.date(),
+    updatedAt: z.date().optional(),
+    publishedAt: z.date().optional(),
+    tags: z.array(z.string()).nullable().optional(),
+    image: z.string().optional(),
+    draft: z.boolean().optional().default(false),
+    aliases: z.array(z.string()).optional(),
+    githubUrl: z.url().optional(),
+    projectUrl: z.url().optional(),
+    editor: z.string().optional(),
+  }),
+});
+
 const projects = defineCollection({
   loader: glob({
     pattern: ['**/index.{md,mdx}'],
@@ -195,6 +217,7 @@ export const collections = {
   uses,
   now,
   til,
+  breadcrumbs,
   projects,
   rss,
   garden,

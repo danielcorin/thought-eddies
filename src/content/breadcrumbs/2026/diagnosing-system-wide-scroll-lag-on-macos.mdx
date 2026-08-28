@@ -1,0 +1,117 @@
+---
+title: 'Diagnosing system-wide scroll lag on macOS'
+description: 'A Karabiner-Elements event tap leak caused delayed scrolling across every app after several days of uptime.'
+createdAt: 2026-08-27T20:11:41.721437
+updatedAt: 2026-08-27T21:23:26-04:00
+publishedAt: 2026-08-27T20:11:41.721437
+tags:
+  - macos
+  - karabiner
+draft: false
+---
+
+import ChatContainer from '@components/prose/ChatContainer.astro';
+import ChatMessage from '@components/prose/ChatMessage.astro';
+
+After my Mac had been running for a few days, scrolling developed a small but noticeable delay.
+This happened in every app: I would start a two-finger gesture, nothing would move for a moment, and then the content would catch up.
+
+I'd already done a restart last week when I ran into the same issue and it seemed to fix things.
+I assumed it had something to do with all the agent processes I was running all over the place.
+I stopped those but it didn't fix it so turned to Codex for help.
+This is what it found:
+
+## Root cause
+
+The machine was running the exact combination described in [this Karabiner-Elements issue](https://github.com/pqrs-org/Karabiner-Elements/issues/4498):
+
+- macOS 26.5.2, build 25F84
+- Karabiner-Elements 16.1.0
+- several days of uptime and sleep/wake cycles
+
+Karabiner uses Core Graphics event taps to inspect input. A bug in 16.1.0 could leave old taps registered with `WindowServer` after sleep and reconnection. Even though almost all of the taps were disabled, `WindowServer` still had to traverse them while dispatching input events. That produced the delay before scrolling began.
+
+## Diagnosis
+
+`CGGetEventTapList` was used to count taps by their owning process:
+
+```swift title="count-event-taps.swift"
+import CoreGraphics
+import Foundation
+
+var capacity: UInt32 = 0
+guard CGGetEventTapList(0, nil, &capacity) == .success else {
+    exit(1)
+}
+
+let taps = UnsafeMutablePointer<CGEventTapInformation>.allocate(
+    capacity: Int(capacity)
+)
+defer { taps.deallocate() }
+
+var actual = capacity
+guard CGGetEventTapList(capacity, taps, &actual) == .success else {
+    exit(2)
+}
+
+var grouped: [pid_t: (total: Int, enabled: Int)] = [:]
+
+for index in 0..<Int(actual) {
+    let tap = taps[index]
+    let current = grouped[tap.tappingProcess] ?? (0, 0)
+    grouped[tap.tappingProcess] = (
+        current.total + 1,
+        current.enabled + (tap.enabled ? 1 : 0)
+    )
+}
+
+print("all_taps=\(actual)")
+
+for (pid, counts) in grouped.sorted(by: {
+    $0.value.total > $1.value.total
+}) {
+    print(
+        "pid=\(pid) total=\(counts.total) " +
+        "enabled=\(counts.enabled) " +
+        "disabled=\(counts.total - counts.enabled)"
+    )
+}
+```
+
+The result was fairly conclusive:
+
+```text
+all_taps=803
+pid=851 total=782 enabled=1 disabled=781
+```
+
+PID 851 was the system `Karabiner-Core-Service` process: 782 of the machine's 803 event taps belonged to Karabiner, and 781 of those were disabled.
+
+## Remediation
+
+The immediate workaround is to restart only the affected service:
+
+```sh
+sudo launchctl kickstart -k \
+  system/org.pqrs.service.daemon.Karabiner-Core-Service
+```
+
+This avoids a full logout or reboot. The applied remediation was an update to the official Karabiner 16.1.93 beta, whose [changelog includes a fix for CGEventTap leaks](https://github.com/pqrs-org/Karabiner-Elements/blob/main/NEWS.md). The installer restarted the service, and the tap count immediately fell from 803 to 22. Scrolling became responsive again without restarting the Mac.
+
+## Takeaway
+
+The Karabiner configuration was keyboard-only, with a single Caps Lock remapping, but the affected event tap also covered scroll-wheel and pointing-device events. A keyboard customization could therefore degrade system-wide scrolling after enough sleep/wake cycles. [A second issue](https://github.com/pqrs-org/Karabiner-Elements/issues/4524) documents the same behavior with a keyboard-only configuration.
+
+---
+
+The bulk of this bug report and resolution was written by `codex`.
+I am publishing it in the hopes that others who run into this issue can find a resolution as I have.
+The agent was able to search the web, diagnose this problem, and resolve it giving the following prompt.
+
+<ChatContainer>
+  <ChatMessage role="user">
+    why after I run this computer for a while is there a slight laggy delay when
+    I scroll before the content actually starts moving? this happens for all
+    apps on the computer, generally
+  </ChatMessage>
+</ChatContainer>
