@@ -47,12 +47,12 @@ export default function ContributionGraph({
   const calculateContributions = (): Map<string, DayData> => {
     const contributions = new Map<string, DayData>();
     const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 365);
+    startDate.setUTCDate(startDate.getUTCDate() - 365);
 
     // Initialize all days in the last year
     for (let i = 0; i <= 365; i++) {
       const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
+      date.setUTCDate(date.getUTCDate() + i);
       const dateKey = formatDateKey(date);
       contributions.set(dateKey, {
         date,
@@ -79,9 +79,9 @@ export default function ContributionGraph({
 
   // Format date as YYYY-MM-DD
   const formatDateKey = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
 
@@ -92,6 +92,7 @@ export default function ContributionGraph({
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      timeZone: 'UTC',
     };
     return date.toLocaleDateString('en-US', options);
   };
@@ -139,10 +140,10 @@ export default function ContributionGraph({
 
     // Start from the first Sunday before or on the start date
     const startDate = new Date(endDate);
-    startDate.setDate(startDate.getDate() - 364); // Go back 364 days from end date
-    const startDayOfWeek = startDate.getDay();
+    startDate.setUTCDate(startDate.getUTCDate() - 364); // Go back 364 days from end date
+    const startDayOfWeek = startDate.getUTCDay();
     if (startDayOfWeek !== 0) {
-      startDate.setDate(startDate.getDate() - startDayOfWeek);
+      startDate.setUTCDate(startDate.getUTCDate() - startDayOfWeek);
     }
 
     const weeks: DayData[][] = [];
@@ -150,7 +151,7 @@ export default function ContributionGraph({
 
     for (let i = 0; i < WEEKS_IN_YEAR * DAYS_IN_WEEK; i++) {
       const currentDate = new Date(startDate);
-      currentDate.setDate(currentDate.getDate() + i);
+      currentDate.setUTCDate(currentDate.getUTCDate() + i);
 
       const dateKey = formatDateKey(currentDate);
       const dayData = contributions.get(dateKey) || {
@@ -178,11 +179,12 @@ export default function ContributionGraph({
 
     weeks.forEach((week, weekIndex) => {
       const firstDayOfWeek = week[0].date;
-      const month = firstDayOfWeek.getMonth();
+      const month = firstDayOfWeek.getUTCMonth();
 
       if (month !== lastMonth) {
         const monthName = firstDayOfWeek.toLocaleDateString('en-US', {
           month: 'short',
+          timeZone: 'UTC',
         });
         labels.push({
           month: monthName,
@@ -312,11 +314,11 @@ export default function ContributionGraph({
                   data-content-length={day.contentLength}
                   data-items={day.items.length}
                 >
-                  <title>
-                    {formatDateDisplay(day.date)}
-                    {day.items.length > 0 &&
-                      `: ${day.items.length} item${day.items.length > 1 ? 's' : ''} (${day.contentLength.toLocaleString()} chars)`}
-                  </title>
+                  <title>{`${formatDateDisplay(day.date)}${
+                    day.items.length > 0
+                      ? `: ${day.items.length} item${day.items.length > 1 ? 's' : ''} (${day.contentLength.toLocaleString()} chars)`
+                      : ''
+                  }`}</title>
                 </rect>
               );
             })
