@@ -1,0 +1,63 @@
+---
+title: 'Sliding Window Context'
+createdAt: 2026-07-15T09:36:42.137085
+updatedAt: 2026-07-15T09:36:42.137085
+location: 'Brooklyn'
+draft: true
+---
+
+import ContextWindowComparison from './components/ContextWindowComparison.svelte';
+
+Most tools that are called "agents" are built on top of a language model context window at their foundation.
+This context window is one of the more problematic edges when working with agents, particularly for human-in-the-loop work.
+As tokens fill the context window, each turn becomes slower and more expensive, since each newly generated token must consider all existing tokens in the window.
+Model providers have made strides in mitigating some of these issues with optimizations like context caching to reduce cost of repeatedly sending the existing conversation turns for inference, subagents which protect the orchestrator context window for tightly scoped tasks, and compaction for when the context window runs up against the model's maximum support size.
+Even still, experienced AI engineers know they need to focus on the context window and manage it and beginners often get worse results because they are unaware of the window or how it works.
+
+These features, as they stand today, remind me what it felt like to learn to drive a manual transmission vehicle.
+I learned to drive a manual transmission vehicle around the same time I was learning to drive.
+Driving itself was new and required a lot of my attention, to watch other cars, traffic lights, pedestrians, track my speed.
+Dealing with the clutch and gear box pushed me to and past the limit of what I was capable of dealing with as a new driver.
+
+## Today's agents are like manual transmission vehicles
+
+Most agents have so many knobs and levers that it can be overwhelming to learn and focus on while also trying to do the work of building complex software, or any type of complex knowledge work for that matter.
+Most people accept the defaults of the tool, as is commonly the case with most technology.
+
+Given that people accept the default, it makes sense to try and make the defaults produce better results for the average person, with less consideration and overhead.
+Sliding window context is the jump from manual transmission to automatic transmission for coding agents.
+At least, this is what I thought when embarking upon writing this article.
+
+The following is a rough visual of how an agent prototype I built called `slice` manages its context window compared to how a popular harness like `codex` does.
+
+<ContextWindowComparison client:visible />
+
+While `codex` by default fills its context window close to the allowable maximum before forcing a compaction, `slice` will intentionally only retain the N most recent tokens worth of turns in the context window.
+
+## Why?
+
+I've been running a personal [`threads.space`](https://threads.space/) instance to make it easy to work with my own agents on the go.
+When wiring up an agent to a "channel" that can have its messaging history grow infinitely, you have to make decisions about what goes in the agent's context window in response to each user message.
+This sliding window approach was born out of the limitations of where I was doing my work.
+As channels grow, including all prior message history becomes impossible given the model's window size limit, but also lengthy conversations are rarely focused enough that they're helpful for the agent's performance on a task.
+
+For anything non-trivial, I build up an external spec iteratively, then send the model to work.
+For anything trivial, a sliding window of recent events is almost always enough for the agent to have relevant context.
+If it isn't, I can link the message in the channel that has the context I am talking about which gives the agent sufficient breadcrumbs to figure things out.
+The agent has access to a CLI that allows it to search through context anywhere in the application if it deems it necessary or if prompted to do so.
+
+## Enter `slice` (and `slice2`)
+
+Not all work gets done in work-like chat though.
+I prototyped a harness for a sliding context window on top of [Pi](https://github.com/earendil-works/pi).
+This is a harness that handles its model's context window similarly to how my work-chat native agents, but with a CLI interface like `codex` or `claude`.
+To test the efficacy of this approach, I tried to find something that roughly mirrored multi-turn prompting use cases, since in practice this is both where the sliding window allows for it to feel like the context window grows forever, but does so by slowly dropping out the oldest context.
+I landed on (EvoCodeBench)[https://github.com/seketeam/EvoCodeBench], as a benchmark with tasks that seemed like they'd be interesting enough to cause context pressure on the agents.
+The results were mixed and I don't feel all that confident in what happened and they were surprisingly varied desipite using `gpt-5.6-sol` for all attempts.
+
+Additionally, testing harnesses is expensive.
+You run multiple trials of already expensive, multi-tool call inferences.
+It certainly pushes the limit of the consumer subscription plans provided by OpenAI.
+It's also quite time consuming.
+You're probably used to waiting minutes for an agent to perform a given task, but an agent performing N tasks M times obviously takes even longer.
+I'm sure a lot of this can be parallelized, but it's an inference-heavy undertaking regardless.
