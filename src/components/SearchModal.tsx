@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { isSearchShortcut } from '@utils/searchShortcut';
 
 interface SearchItem {
   type: 'post' | 'log' | 'til' | 'breadcrumb' | 'project' | 'garden';
@@ -28,7 +29,7 @@ export default function SearchModal() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
   // Load search data when overlay opens
@@ -63,7 +64,7 @@ export default function SearchModal() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Command+K or Ctrl+K
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if (isSearchShortcut(e)) {
         e.preventDefault();
         setIsOpen(true);
       }
@@ -100,11 +101,11 @@ export default function SearchModal() {
       setIsOpen(true);
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown, { capture: true });
     window.addEventListener('openSearch', handleOpenSearch);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown, { capture: true });
       window.removeEventListener('openSearch', handleOpenSearch);
     };
   }, [isOpen, results, selectedIndex]);
@@ -298,13 +299,19 @@ export default function SearchModal() {
                 const isSelected = index === selectedIndex;
 
                 return (
-                  <a
+                  // Tag and type links render inside each result, and anchors
+                  // can't nest, so the result itself is a div acting as a link.
+                  <div
                     key={index}
                     ref={(el) => {
                       itemRefs.current[index] = el;
                     }}
-                    href={item.url}
-                    className={`block px-4 py-3 transition-colors ${
+                    role="link"
+                    tabIndex={0}
+                    onClick={() => {
+                      window.location.href = item.url;
+                    }}
+                    className={`block cursor-pointer px-4 py-3 transition-colors ${
                       isSelected
                         ? 'bg-gray-100 dark:bg-gray-700'
                         : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
@@ -376,7 +383,7 @@ export default function SearchModal() {
                         </p>
                       </div>
                     </div>
-                  </a>
+                  </div>
                 );
               })}
             </div>
