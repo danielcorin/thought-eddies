@@ -2,12 +2,14 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Reset & Base Styles */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 /* Skip to content link for keyboard navigation */
@@ -211,10 +213,6 @@ hr {
   margin-left: 0.25rem;
 }
 
-.hidden {
-  display: none;
-}
-
 .content-wrapper {
   width: 100%;
   max-width: 1200px;
@@ -256,130 +254,134 @@ hr {
 }
 
 /* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-primary);
-  line-height: 1.4;
-  font-weight: 600;
-  margin-bottom: var(--spacing-sm);
-  color: var(--color-ink);
-}
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-primary);
+    line-height: 1.4;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-ink);
+  }
 
-/* Ensure code elements in headings inherit the heading font size */
-.content h1 code,
-.content h2 code,
-.content h3 code,
-.content h4 code,
-.content h5 code,
-.content h6 code {
-  font-size: inherit;
-}
+  /* Ensure code elements in headings inherit the heading font size */
+  .content h1 code,
+  .content h2 code,
+  .content h3 code,
+  .content h4 code,
+  .content h5 code,
+  .content h6 code {
+    font-size: inherit;
+  }
 
-h1 {
-  font-size: var(--text-4xl);
-}
-h2 {
-  font-size: var(--text-3xl);
-}
-h3 {
-  font-size: var(--text-2xl);
-}
-h4 {
-  font-size: var(--text-xl);
-}
-h5 {
-  font-size: var(--text-lg);
-}
-h6 {
-  font-size: var(--text-base);
-}
+  h1 {
+    font-size: var(--text-4xl);
+  }
+  h2 {
+    font-size: var(--text-3xl);
+  }
+  h3 {
+    font-size: var(--text-2xl);
+  }
+  h4 {
+    font-size: var(--text-xl);
+  }
+  h5 {
+    font-size: var(--text-lg);
+  }
+  h6 {
+    font-size: var(--text-base);
+  }
 
-p,
-ul,
-ol {
-  font-size: var(--text-base);
-}
+  p,
+  ul,
+  ol {
+    font-size: var(--text-base);
+  }
 
-ul,
-ol {
-  padding-left: var(--spacing-lg);
-}
+  ul,
+  ol {
+    padding-left: var(--spacing-lg);
+  }
 
-li {
-  color: var(--color-ink);
-  font-size: var(--text-base);
-}
+  li {
+    color: var(--color-ink);
+    font-size: var(--text-base);
+  }
 
-ul {
-  list-style-type: disc;
-}
-ul ul {
-  list-style-type: circle;
-}
-ol {
-  list-style-type: decimal;
-}
+  ul {
+    list-style-type: disc;
+  }
+  ul ul {
+    list-style-type: circle;
+  }
+  ol {
+    list-style-type: decimal;
+  }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: var(--spacing-md) 0;
-}
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-md) 0;
+  }
 
-th {
-  font-weight: 600;
-  text-align: left;
-  border-bottom: 2px solid var(--color-border);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  color: var(--color-ink);
-}
+  th {
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 2px solid var(--color-border);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    color: var(--color-ink);
+  }
 
-td {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-ink);
-}
+  td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-ink);
+  }
 
-tr:last-child td {
-  border-bottom: none;
-}
+  tr:last-child td {
+    border-bottom: none;
+  }
 
-code {
-  font-family: var(--font-mono);
-  font-size: calc(var(--text-lg) * 0.9);
-}
+  code {
+    font-family: var(--font-mono);
+    font-size: calc(var(--text-lg) * 0.9);
+  }
 
-code.inline-code {
-  background: var(--color-bg-code);
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
+  code.inline-code {
+    background: var(--color-bg-code);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+  }
 }
 
 /* Links */
-a {
-  color: var(--color-ink);
-  text-decoration: none;
-  transition: opacity 0.2s;
-}
+@layer base {
+  a {
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
 
-a:hover {
-  opacity: 0.8;
-  color: var(--color-link);
-}
+  a:hover {
+    opacity: 0.8;
+    color: var(--color-link);
+  }
 
-/* Focus Indicators for Accessibility */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
-[tabindex]:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  /* Focus Indicators for Accessibility */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 }
 
 /* Better contrast in dark mode */
@@ -530,22 +532,24 @@ footer {
   margin-bottom: 0;
 }
 
-kbd {
-  font-family: var(--font-mono);
-  font-size: calc(var(--text-base) * 0.9);
-  background: var(--color-bg-code);
-  color: var(--color-ink);
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  border: 1px solid var(--color-border);
-  box-shadow: 0 1px 0 var(--color-border);
-  display: inline-block;
-  line-height: 1;
-  margin: 0 0.2em;
-  min-width: 1.6em;
-  text-align: center;
-  white-space: nowrap;
-  overflow: visible;
+@layer base {
+  kbd {
+    font-family: var(--font-mono);
+    font-size: calc(var(--text-base) * 0.9);
+    background: var(--color-bg-code);
+    color: var(--color-ink);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 0 var(--color-border);
+    display: inline-block;
+    line-height: 1;
+    margin: 0 0.2em;
+    min-width: 1.6em;
+    text-align: center;
+    white-space: nowrap;
+    overflow: visible;
+  }
 }
 
 .expressive-code {
@@ -589,25 +593,11 @@ kbd {
     font-size: var(--text-base);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    line-height: 1.3;
-  }
-
   .content h2 {
     font-size: var(--text-xl);
   }
   .content h3 {
     font-size: var(--text-lg);
-  }
-
-  p,
-  pre {
-    font-size: var(--text-base);
   }
 
   .content code {
@@ -742,4 +732,22 @@ sup a[data-footnote-ref]:hover {
 /* Ultrathink rainbow text */
 .ultrathink {
   font-weight: 600;
+}
+
+@layer base {
+  @media (max-width: 640px) {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      line-height: 1.3;
+    }
+
+    p,
+    pre {
+      font-size: var(--text-base);
+    }
+  }
 }
