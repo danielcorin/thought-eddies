@@ -30,12 +30,12 @@ const devImageService = {
     'astro:config:setup': ({ command, updateConfig }) => {
       if (command !== 'dev') return;
       updateConfig({
-        // Keep the dev optimizer graph separate from `astro check` and
-        // production builds. Sharing Vite's default cache while those run in
-        // parallel can leave React and React DOM pointing at different graph
-        // generations. That produces invalid-hook and hydration failures.
+        // Keep dev on Vite's standard cache path so existing browser module
+        // URLs remain valid when the server restarts. Builds and checks use a
+        // separate cache below, preventing their optimizer graph from
+        // replacing React modules while the dev server is running.
         vite: {
-          cacheDir: 'node_modules/.vite-dev',
+          cacheDir: 'node_modules/.vite',
         },
         image: {
           service: passthroughImageService(),
@@ -57,9 +57,20 @@ export default defineConfig({
     concurrency: 5,
   },
   vite: {
+    cacheDir: 'node_modules/.vite-build',
     plugins: [tailwindcss()],
     optimizeDeps: {
-      include: ['@visx/responsive', '@visx/scale'],
+      // The Cloudflare adapter does not predeclare these entries, so Vite can
+      // discover them during a request and rebuild the worker's dependency
+      // graph while it is still running. Pre-bundle them up front to keep
+      // workerd and the browser on the same optimizer generation.
+      include: [
+        '@visx/responsive',
+        '@visx/scale',
+        'astro/assets/services/noop',
+        'astro/logger/json',
+        '@astrojs/svelte/server.js',
+      ],
     },
   },
   integrations: [
