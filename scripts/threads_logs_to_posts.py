@@ -1,4 +1,4 @@
-#!/Users/danielcorin/dev/thought-eddies/.venv/bin/python
+#!/usr/bin/env python3
 
 """
 Fetch recent messages from Threads #logs channel and create log posts.
@@ -23,9 +23,8 @@ import sys
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
+from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
-
-import requests
 
 API_URL = os.environ.get("THREADS_API_URL")
 BOT_TOKEN = os.environ.get("THREADS_BOT_TOKEN")
@@ -35,16 +34,16 @@ LOCAL_TZ = ZoneInfo("America/New_York")
 
 
 def api_request(method: str, path: str) -> dict | list | None:
-    resp = requests.request(
-        method,
+    request = Request(
         f"{API_URL}{path}",
         headers={
             "Content-Type": "application/json",
             "Authorization": f"Bearer {BOT_TOKEN}",
         },
+        method=method,
     )
-    resp.raise_for_status()
-    return resp.json()
+    with urlopen(request) as response:
+        return json.load(response)
 
 
 def find_logs_channel() -> str:
@@ -111,17 +110,14 @@ def is_image(content_type: str | None, filename: str) -> bool:
 
 
 def download_attachment(url_path: str, dest: Path) -> None:
-    resp = requests.get(
+    request = Request(
         f"{API_URL}{url_path}",
         headers={"Authorization": f"Bearer {BOT_TOKEN}"},
-        stream=True,
     )
-    resp.raise_for_status()
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    with dest.open("wb") as f:
-        for chunk in resp.iter_content(chunk_size=64 * 1024):
-            if chunk:
-                f.write(chunk)
+    with urlopen(request) as response:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with dest.open("wb") as f:
+            shutil.copyfileobj(response, f, length=64 * 1024)
 
 
 def optimize_png(path: Path) -> None:
