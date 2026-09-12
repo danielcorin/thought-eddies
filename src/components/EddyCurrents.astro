@@ -1,11 +1,28 @@
 ---
-// Decorative WebGL band: fine sediment swirling in eddying water at the
-// bottom of the page. The water is a 2D Navier-Stokes simulation in
-// vorticity-streamfunction form (see the constants in the script);
-// dragging the pointer injects vorticity that stirs the powder, and the
-// resulting eddies advect, spread, and slowly relax back into the ambient
-// current. Renders nothing but a soft CSS gradient when WebGL is missing,
-// the device is constrained, or the user prefers reduced data.
+// Decorative WebGL band: suminagashi - ink floated on still water - behind
+// the footer. The water is an incompressible 2D fluid (Jos Stam's "stable
+// fluids": semi-Lagrangian advection, vorticity confinement, warm-started
+// Jacobi pressure projection) simulated entirely on the GPU in ping-pong
+// half-float framebuffer textures; a separate, higher-resolution ink
+// concentration field rides on that velocity with limited MacCormack
+// advection so stretched filaments stay thin. Dragging the pointer pulls a
+// smooth stylus through the tray: the liquid under it is relaxed toward the
+// stylus velocity (Brinkman-style penalisation along the frame's path
+// segment, never an impulse), so ink ahead bows aside and a counter-rotating
+// pair rolls up behind and coasts for a few seconds. The pointer never
+// paints ink; it only displaces what is there. Without input, weak curl
+// noise and three wandering gyres keep the tray folding slowly, and the ink
+// relaxes toward a domain-warped resting pattern so it never homogenises.
+// The display shades the concentration as pigment in water: Beer-Lambert
+// coverage over the page background, a soft wet relief from the blurred
+// concentration gradient plus the live pressure field (so a moving stylus
+// raises a bow wave before the ink has moved), and a faint cool tint where
+// the liquid spins so the shed pair reads even in uniform ink. Renders
+// nothing but a soft CSS gradient when WebGL (or a renderable half-float
+// format) is missing, when the user prefers reduced data, or when the
+// runtime perf guard has walked the whole quality ladder and still cannot
+// keep up; constrained devices start lower on that ladder.
+// prefers-reduced-motion gets a single still frame.
 ---
 
 <div class="eddy-current" data-eddy-current aria-hidden="true">
@@ -48,7 +65,7 @@
       );
   }
 
-  /* While the particle canvas is live, the band sits on the plain page
+  /* While the fluid canvas is live, the band sits on the plain page
      background; the gradient wash only shows as the no-WebGL fallback. */
   .eddy-current.is-active .eddy-current-fallback {
     background: var(--color-bg);
@@ -60,7 +77,7 @@
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: opacity 600ms ease-out;
+    transition: opacity 900ms ease-out;
     pointer-events: none;
   }
 
@@ -78,110 +95,730 @@
 <script>
   type Rgb = [number, number, number];
 
+  // Simulation time (s) used for the single reduced-motion frame: far enough
+  // into the noise fields that the resting ink pattern looks settled.
   const STATIC_FRAME_TIME = 34;
 
-  // Grain counts; the perf guard can step down to the reduced count. High
-  // counts at ~1px and low alpha read as powder rather than dots.
-  const PARTICLES_FULL = 40000;
-  const PARTICLES_REDUCED = 16000;
+  // ---------------------------------------------------------------------
+  // Units. Length: band heights H (band height = 1; x spans [0, aspect],
+  // y in [0, 1] with y = 0 at the BOTTOM). Time: seconds. Velocity: H/s.
+  // Vorticity: 1/s. Pressure: kinematic, H^2/s^2. At a 1280x800 viewport
+  // the band is 1280x213 CSS px, so 1 H = 213 px.
+  // ---------------------------------------------------------------------
 
-  // The water is simulated with the 2D incompressible Navier-Stokes
-  // equations in vorticity-streamfunction form - the standard physics of
-  // fluid eddies:
-  //
-  //   dw/dt + (u . grad)w = nu grad^2 w - lambda (w - w_ambient)
-  //   grad^2 psi = -w,   u = (dpsi/dy, -dpsi/dx) + U_drift
-  //
-  // Vorticity w is advected by its own flow (eddies carry and distort each
-  // other), diffuses viscously, and relaxes toward the ambient eddies;
-  // solving the Poisson equation for the streamfunction psi each frame
-  // recovers a divergence-free velocity field, so the flow genuinely swirls
-  // instead of compressing. Dragging applies a localized force F g(r),
-  // which enters the vorticity equation as its curl: dw = curl(F g) dt.
-  // Units: band-heights and seconds; w is 1/s. The grid wraps in x and has
-  // free-slip walls (psi = 0) at the top and bottom of the band.
-  const GRID_ROWS = 28;
-  const FLOW_VISCOSITY = 0.0015; // nu
-  const FLOW_RELAX = 0.35; // lambda: stirred vorticity fades toward ambient
-  const OMEGA_MAX = 14; // safety clamp on vorticity
-  const SOLVER_SWEEPS = 12; // Gauss-Seidel sweeps for the Poisson solve
-  const STIR_FORCE = 4; // force per unit pointer speed
-  const STIR_MAX_SPEED = 2.2; // clamp on stirring speed
-  const STIR_RADIUS = 0.14; // gaussian radius of the stirring force
-  const DRIFT = 0.012; // uniform downstream current (zero vorticity)
+  // Velocity dissipation: linear bottom friction of a thin film,
+  // v *= exp(-dt / TAU_V). 37% of a drag's momentum is left after 3 s,
+  // 9% after 7 s - visible coasting for 2-4 s, gone by ~9 s. (There is no
+  // explicit viscosity solve; first-order semi-Lagrangian advection on the
+  // 128-row grid contributes ~U h / 2 of numerical viscosity, which puts
+  // the stylus at Re ~ 60, the regime that sheds a clean vortex pair.)
+  const TAU_V = 3.0;
+  // Soft speed fuse, v -> U_MAX tanh(|v| / U_MAX), applied every frame. It
+  // has no knee, so it acts as a quadratic drag that only matters near the
+  // stylus: the entrained liquid (V_SAT * ENTRAIN = 1.35 H/s) is trimmed
+  // to ~1.15 H/s, and anything the projection amplifies beyond that is
+  // held near U_MAX (~380 px/s) instead of running away.
+  const U_MAX = 1.8;
 
-  // Ambient eddies: gaussian vorticity blobs with slowly wandering centers
-  // and breathing strength. omega is peak vorticity, sign via spin.
-  const EDDIES = [
-    { cx: 0.22, cy: 0.55, radius: 0.38, omega: 2.2, spin: 1 },
-    { cx: 0.52, cy: 0.38, radius: 0.34, omega: 2.5, spin: -1 },
-    { cx: 0.8, cy: 0.58, radius: 0.42, omega: 2.0, spin: 1 },
+  // Ambient forcing (H/s^2). Three wandering gyres give the tray a slow,
+  // visible circulation - the left one is the dominant background eddy,
+  // winding the ink into a spiral over ~35 s per turn (~0.07 H/s at its
+  // rim); the curl noise on top keeps the folding filament-scale so the
+  // spiral never becomes a clean disc. Gyre rim speed is roughly
+  // 0.43 * A_GYRE * weight * TAU_V.
+  const A_CURL = 0.035;
+  const A_GYRE = 0.05;
+
+  // Resting ink pattern the concentration relaxes toward.
+  const TAU_INK = 14; // s, relaxation of concentration toward the target
+  const TAU_TOP = 5; // s, faster sink above the visible waterline
+  const TAU_ACCENT = 20; // s, relaxation of the accent share
+  // The relaxation is applied in slices of at least this long rather than
+  // every frame: the ink lives in half-float texels, and at 120 Hz a
+  // per-frame increment toward the target is smaller than half an ULP for
+  // dense ink, so round-to-nearest would discard it and the tray would
+  // slowly wash out. A 12 Hz relaxation is indistinguishable from a
+  // continuous one at these time constants.
+  const RELAX_INTERVAL = 1 / 12; // s
+  const V_TOP = 0.7; // pigment density at the top relative to the bottom
+  const WARP = 0.12; // H, domain warp amplitude of the target
+  const ACCENT_BASE = 0.6; // peak accent share in the resting pattern
+  // First-frame seed only: share of an anisotropic streak noise blended
+  // into the target so the tray starts as folded laminae (ink poured into
+  // water settles in flattened sheets) rather than raw clouds.
+  const SEED_LAMINA = 0.3;
+
+  // Pointer coupling: a smooth stylus pulled through the tray.
+  const POINTER_RADIUS = 0.16; // H (~34 px); Gaussian sigma = R / 2
+  const POINTER_TAIL = 0.5; // fraction of the frame segment kept as a tail
+  const GATE_LO = 0.02; // H/s, below this a resting cursor does nothing
+  const GATE_HI = 0.12; // H/s, full coupling above this
+  const V_SAT = 1.5; // H/s, tanh saturation of pointer speed
+  const ENTRAIN = 0.9; // liquid under the stylus reaches this share of it
+  const TAU_C = 0.035; // s, relaxation time of the liquid toward the stylus
+  const TAU_E = 0.03; // s, EMA of the raw pointer velocity (kills jitter)
+  // Longest stylus segment per frame (H). A flick that crosses more than
+  // this in one frame is clamped to its last SEG_MAX, not dropped; genuine
+  // teleports (refocus, re-entry) release the pointer before they get here.
+  const SEG_MAX = 1.0;
+  const ACCENT_STIR = 0.24; // accent share added to disturbed ink (per s)
+  // Suminagashi parting: a stylus drawn through the floating ink film
+  // pushes it aside, so the stroke leaves a clear path that the relaxation
+  // slowly refills. Fraction of the ink under the stylus cleared per unit
+  // coupling; the pushed ink is not conserved, only the look of it.
+  const PART = 0.2;
+
+  // MacCormack correction weight (1 = full second-order correction). The
+  // min/max limiter keeps it from overshooting regardless.
+  const MACCORMACK_STRENGTH = 0.7;
+
+  // Display.
+  const SLOPE = 0.075; // relief slope scale of the surface height gradient
+  // Live pressure contribution to the surface height, so a moving stylus
+  // raises a bow wave ahead of it and a trough behind before the ink has
+  // travelled. The solver stores kinematic pressure in H^2/s^2 (~0.3 under
+  // the stylus at full speed); the clamp bounds any transient the Jacobi
+  // solve has not yet converged. Kept deliberately mild: water, not cream.
+  const PRESS_RELIEF = 2.0; // height units per H^2/s^2
+  const PRESS_CLAMP = 0.5; // H^2/s^2
+  // Beer-Lambert coverage: alpha = 1 - exp(-EXTINCTION * concentration),
+  // capped so the footer stays readable. Both numbers set how dark the ink
+  // reads; light mode needs a thinner wash over the pale paper so it does
+  // not become a dark band behind the footer.
+  const EXTINCTION_LIGHT = 0.65;
+  const EXTINCTION_DARK = 0.9;
+  const ALPHA_CAP_LIGHT = 0.34;
+  const ALPHA_CAP_DARK = 0.46;
+  // Emergent vorticity tint: ink caught in a shed vortex takes a slightly
+  // cooler cast (accent share added in the display only; never in the
+  // dye), so the counter-rotating pair behind a stroke reads even where
+  // the ink is uniform. |omega| in 1/s where the tint starts and peaks.
+  const CURL_TINT = 0.32;
+  const CURL_TINT_LO = 1.5;
+  const CURL_TINT_HI = 7.0;
+
+  // Idle power throttle: with no pointer near the band for IDLE_AFTER
+  // seconds the loop settles to about IDLE_FPS (the ambient motion is slow
+  // enough that the halved rate is invisible) and snaps back to the display
+  // rate on the next pointer move. Only engages once the perf guard has
+  // passed, so it never skews the measurement.
+  const IDLE_AFTER = 4; // s
+  const IDLE_FPS = 30;
+
+  // Entry gesture: whenever the loop starts (the band scrolled into view,
+  // the tab came back) the gyres are briefly driven harder and ease back,
+  // so the visitor catches the tray mid-swirl rather than at rest.
+  const ENTRY_BOOST = 3; // extra gyre drive at the moment the loop starts
+  const ENTRY_TAU = 1.6; // s, decay of that boost
+
+  // Reduced motion still frame: the seed is run through this much
+  // simulation once, offline, so the still frame shows the same folded
+  // laminae as the live tray. No animation is ever displayed.
+  const SETTLE_SECONDS = 2.5;
+
+  // Quality ladder walked by the runtime perf guard. Stage 4 = give up.
+  type Stage = {
+    dprCap: number;
+    simRows: number;
+    simColsCap: number;
+    dyeWidthCap: number;
+    pressureIters: number;
+    confEps: number;
+    maccormack: boolean;
+  };
+  const STAGES: Stage[] = [
+    {
+      dprCap: 2,
+      simRows: 128,
+      simColsCap: 1024,
+      dyeWidthCap: 2048,
+      pressureIters: 28,
+      confEps: 0.006,
+      maccormack: true,
+    },
+    {
+      dprCap: 1,
+      simRows: 128,
+      simColsCap: 1024,
+      dyeWidthCap: 1536,
+      pressureIters: 28,
+      confEps: 0.006,
+      maccormack: true,
+    },
+    {
+      dprCap: 1,
+      simRows: 128,
+      simColsCap: 1024,
+      dyeWidthCap: 1024,
+      pressureIters: 28,
+      confEps: 0.006,
+      maccormack: false,
+    },
+    {
+      dprCap: 1,
+      simRows: 96,
+      simColsCap: 768,
+      dyeWidthCap: 1024,
+      pressureIters: 18,
+      confEps: 0.004,
+      maccormack: false,
+    },
   ];
+  const LOW_POWER_STAGE = 2;
+  const LOW_POWER_PRESSURE_ITERS = 20;
+
+  // ---------------------------------------------------------------------
+  // Shaders. All GLSL ES 1.00 so the same sources run under webgl and
+  // webgl2 contexts. Every fragment shader gets a header with the precision
+  // qualifier, tunable #defines and, when the half-float textures cannot be
+  // filtered linearly, MANUAL_BILINEAR.
+  // ---------------------------------------------------------------------
 
   const VERTEX_SHADER = `
-    attribute vec3 aParticle;
-    attribute float aRandom;
-
-    uniform float uAspect;
-    uniform float uPointScale;
-    uniform float uTime;
-
-    varying float vAlpha;
-    varying float vEnergy;
-
+    attribute vec2 aPos;
+    varying vec2 vUv;
     void main() {
-      vec2 pos = aParticle.xy;
-      // Total flow speed at the grain: ambient current plus stir. Fast
-      // water carries visibly denser, accent-tinted sediment; the small
-      // offset keeps the slow background drift plain ink.
-      float speed = aParticle.z;
-      float energy = clamp(speed * 3.0 - 0.03, 0.0, 1.0);
-      float shimmer =
-        0.85 + 0.15 * sin(uTime * (0.5 + aRandom) + aRandom * 41.0);
-
-      float alpha = (0.14 + 0.2 * aRandom) * shimmer;
-      // End the powder at a gently uneven height, with a broad fade that is
-      // fully transparent before the canvas clips it. Applying the top fade
-      // after the energy boost also prevents fast-moving grains from
-      // revealing the rectangular boundary. The other edges remain unfaded.
-      float topBoundary =
-        0.88 +
-        0.035 * sin(pos.x * 2.1 + 0.7) +
-        0.025 * sin(pos.x * 5.3 + 2.4);
-      float topFade =
-        1.0 - smoothstep(topBoundary - 0.28, topBoundary, pos.y);
-      vAlpha = min((alpha + energy * 0.5) * topFade, 0.8);
-      vEnergy = energy;
-
-      gl_PointSize = (0.88 + 0.48 * aRandom + energy * 1.04) * uPointScale;
-      gl_Position = vec4(
-        pos.x / uAspect * 2.0 - 1.0,
-        pos.y * 2.0 - 1.0,
-        0.0,
-        1.0
-      );
+      vUv = aPos * 0.5 + 0.5;
+      gl_Position = vec4(aPos, 0.0, 1.0);
     }
   `;
 
-  // Premultiplied alpha: the canvas is transparent and composites over the
-  // CSS fallback gradient, which supplies the water's tonal background.
-  const FRAGMENT_SHADER = `
-    precision mediump float;
+  // Field sampling between texels: hardware LINEAR when the format allows
+  // it, otherwise a 4-tap bilinear on NEAREST textures.
+  const SAMPLE_GLSL = `
+    #ifdef MANUAL_BILINEAR
+    vec4 sampleField(sampler2D s, vec2 uv, vec2 texel) {
+      vec2 st = uv / texel - 0.5;
+      vec2 i = floor(st);
+      vec2 f = st - i;
+      vec2 base = (i + 0.5) * texel;
+      vec4 a = texture2D(s, base);
+      vec4 b = texture2D(s, base + vec2(texel.x, 0.0));
+      vec4 c = texture2D(s, base + vec2(0.0, texel.y));
+      vec4 d = texture2D(s, base + texel);
+      return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+    }
+    #else
+    vec4 sampleField(sampler2D s, vec2 uv, vec2 texel) {
+      return texture2D(s, uv);
+    }
+    #endif
+  `;
 
-    uniform vec3 uInk;
-    uniform vec3 uAccent;
+  // Value noise / fBm with time on the z axis so fields morph continuously
+  // and never loop. Integer-free hash (compiles under ES 1.00).
+  const NOISE_GLSL = `
+    float hash3(vec3 p3) {
+      p3 = fract(p3 * vec3(0.1031, 0.1030, 0.0973));
+      p3 += dot(p3, p3.yxz + 33.33);
+      return fract((p3.x + p3.y) * p3.z);
+    }
+    float vnoise3(vec3 q) {
+      vec3 i = floor(q);
+      vec3 f = fract(q);
+      vec3 u = f * f * (3.0 - 2.0 * f);
+      float n000 = hash3(i);
+      float n100 = hash3(i + vec3(1.0, 0.0, 0.0));
+      float n010 = hash3(i + vec3(0.0, 1.0, 0.0));
+      float n110 = hash3(i + vec3(1.0, 1.0, 0.0));
+      float n001 = hash3(i + vec3(0.0, 0.0, 1.0));
+      float n101 = hash3(i + vec3(1.0, 0.0, 1.0));
+      float n011 = hash3(i + vec3(0.0, 1.0, 1.0));
+      float n111 = hash3(i + vec3(1.0, 1.0, 1.0));
+      float x00 = mix(n000, n100, u.x);
+      float x10 = mix(n010, n110, u.x);
+      float x01 = mix(n001, n101, u.x);
+      float x11 = mix(n011, n111, u.x);
+      return mix(mix(x00, x10, u.y), mix(x01, x11, u.y), u.z);
+    }
+    float fbm2(vec3 q) {
+      return (vnoise3(q) + 0.5 * vnoise3(q * 2.0 + 17.0)) / 1.5;
+    }
+    float fbm3(vec3 q) {
+      return (vnoise3(q) + 0.5 * vnoise3(q * 2.0 + 17.0) +
+              0.25 * vnoise3(q * 4.0 + 43.0)) / 1.75;
+    }
+    // Waterline (H) below which ink is visible; the display fade and the
+    // ink source share it. Two incommensurate sines plus a slowly drifting
+    // low-frequency noise so the top edge is never a straight line and
+    // never repeats across the band.
+    float waterline(float x, float t) {
+      float base = 0.87 + 0.035 * sin(2.1 * x + 0.7) + 0.025 * sin(5.3 * x + 2.4);
+      return base + 0.1 * (fbm2(vec3(x * 0.8 + 11.0, 0.01 * t, 0.0)) - 0.5);
+    }
+  `;
 
-    varying float vAlpha;
-    varying float vEnergy;
+  // RK2 (midpoint) semi-Lagrangian backtrace in H units. Requires
+  // uVelocity, uSimTexel and uAspect to be declared by the including shader.
+  const ADVECT_GLSL = `
+    vec2 velocityAt(vec2 p) {
+      return sampleField(uVelocity, p / vec2(uAspect, 1.0), uSimTexel).xy;
+    }
+    vec2 backtrace(vec2 p, float dt) {
+      vec2 v0 = velocityAt(p);
+      vec2 pm = p - 0.5 * dt * v0;
+      vec2 vm = velocityAt(pm);
+      return p - dt * vm;
+    }
+  `;
+
+  // Stylus capsule weight at p: Gaussian around the segment uSegA -> uSegB.
+  const CAPSULE_GLSL = `
+    float capsuleWeight(vec2 p) {
+      vec2 seg = uSegB - uSegA;
+      float tt = clamp(dot(p - uSegA, seg) / max(dot(seg, seg), 1e-6), 0.0, 1.0);
+      vec2 rel = p - (uSegA + tt * seg);
+      float d2 = dot(rel, rel);
+      return exp(-d2 / (2.0 * POINTER_SIGMA * POINTER_SIGMA));
+    }
+  `;
+
+  // Resting ink target T(p, t) = (concentration c, accent share a), plus
+  // the relaxation applied after advection. Requires uAspect, uDyeTexel,
+  // uTime, uDt, uRelaxDt and the pointer uniforms.
+  const INK_TARGET_GLSL = `
+    vec2 inkTarget(vec2 p, float t, bool seed) {
+      vec2 pw = p + WARP * (vec2(
+        fbm2(vec3(p * 2.0 + 3.1, 0.01 * t)),
+        fbm2(vec3(p * 2.0 + 9.7, 0.01 * t))) - 0.5) * 2.0;
+      float n = fbm3(vec3(pw.x * 1.3 + 0.006 * t, pw.y * 2.2 - 0.004 * t, 0.02 * t));
+      if (seed) {
+        // Laminae: ink poured into a tray settles in flattened sheets, so
+        // the seed blends in a strongly anisotropic streak noise that the
+        // domain warp then folds. It relaxes toward the plain target over
+        // TAU_INK, by which time the flow has folded it further.
+        float lam = vnoise3(vec3(pw.x * 0.9 + 5.0, pw.y * 6.0, 0.02 * t + 3.0));
+        n = mix(n, lam, SEED_LAMINA);
+      }
+      float settle = mix(1.0, V_TOP, smoothstep(0.0, 0.9, p.y));
+      float bnd = waterline(p.x, t);
+      float topMask = 1.0 - smoothstep(bnd - 0.42, bnd - 0.08, p.y);
+      float dx = (p.x - uAspect * 0.5) / 0.9;
+      float centreBias = 1.0 - 0.18 * exp(-dx * dx);
+      // Clouds with clear water between them: a steeper response than
+      // raw fBm so the ink reads as distinct washes, plus a fine-scale
+      // mottle so each cloud has some internal grain (mean ~0.3).
+      float mottle = 0.85 + 0.3 * vnoise3(vec3(pw * 5.0 + 1.7, 0.015 * t));
+      float c = (0.16 + 0.84 * smoothstep(0.30, 0.68, n)) * mottle * settle * topMask * centreBias;
+      float a = ACCENT_BASE * smoothstep(0.45, 0.80,
+        fbm3(vec3(p.x * 0.9 + 7.3 - 0.005 * t, p.y * 1.6 + 0.003 * t, 0.015 * t)));
+      // No source within two texels of the walls: no bright wall line.
+      vec2 wallTexel = 2.0 * uDyeTexel * vec2(uAspect, 1.0);
+      float wall = smoothstep(0.0, wallTexel.x, p.x) *
+        smoothstep(0.0, wallTexel.x, uAspect - p.x) *
+        smoothstep(0.0, wallTexel.y, p.y);
+      return vec2(c * wall, a);
+    }
+    vec2 relaxInk(vec2 d, vec2 p) {
+      vec2 target = inkTarget(p, uTime, false);
+      float tauInk = mix(TAU_INK, TAU_TOP, smoothstep(0.78, 0.92, p.y));
+      // uRelaxDt is the accumulated slice (0 on frames between slices).
+      d.x = mix(d.x, target.x, 1.0 - exp(-uRelaxDt / tauInk));
+      d.y = mix(d.y, target.y, 1.0 - exp(-uRelaxDt / TAU_ACCENT));
+      // Under the stylus the film parts (concentration pushed down toward
+      // clear water, refilled later by the relaxation above) and the
+      // disturbed ink takes on a cool cast.
+      float w = capsuleWeight(p) * uPointerOn * uGate * uCouple;
+      d.x *= 1.0 - PART * w * uStir / ACCENT_STIR;
+      d.y = min(1.0, d.y + w * uStir);
+      return vec2(clamp(d.x, 0.0, 1.5), clamp(d.y, 0.0, 1.0));
+    }
+  `;
+
+  const POINTER_UNIFORMS_GLSL = `
+    uniform vec2 uSegA;
+    uniform vec2 uSegB;
+    uniform vec2 uObjVel;
+    uniform float uPointerOn;
+    uniform float uGate;
+    uniform float uCouple;
+    uniform float uStir;
+  `;
+
+  // Solid fill used only to probe render-to-texture support.
+  const FILL_FRAGMENT = `
+    void main() { gl_FragColor = vec4(0.25, 0.5, 0.75, 1.0); }
+  `;
+
+  // Resampling copy (carries the dye between resolutions on resize and
+  // degrade).
+  const COPY_FRAGMENT = `
+    uniform sampler2D uTex;
+    uniform vec2 uTexel;
+    varying vec2 vUv;
+    ${SAMPLE_GLSL}
+    void main() { gl_FragColor = sampleField(uTex, vUv, uTexel); }
+  `;
+
+  // Advect velocity by itself and apply the film drag.
+  const ADVECT_VELOCITY_FRAGMENT = `
+    uniform sampler2D uVelocity;
+    uniform vec2 uSimTexel;
+    uniform float uAspect;
+    uniform float uDt;
+    uniform float uDecay;
+    varying vec2 vUv;
+    ${SAMPLE_GLSL}
+    ${ADVECT_GLSL}
+    void main() {
+      vec2 p = vUv * vec2(uAspect, 1.0);
+      vec2 v = velocityAt(backtrace(p, uDt)) * uDecay;
+      gl_FragColor = vec4(v, 0.0, 1.0);
+    }
+  `;
+
+  // Vorticity omega = dv/dx - du/dy (1/s), central differences.
+  const CURL_FRAGMENT = `
+    uniform sampler2D uVelocity;
+    uniform vec2 uSimTexel;
+    uniform float uH;
+    varying vec2 vUv;
+    void main() {
+      float vL = texture2D(uVelocity, vUv - vec2(uSimTexel.x, 0.0)).y;
+      float vR = texture2D(uVelocity, vUv + vec2(uSimTexel.x, 0.0)).y;
+      float uB = texture2D(uVelocity, vUv - vec2(0.0, uSimTexel.y)).x;
+      float uT = texture2D(uVelocity, vUv + vec2(0.0, uSimTexel.y)).x;
+      float omega = ((vR - vL) - (uT - uB)) / (2.0 * uH);
+      gl_FragColor = vec4(omega, 0.0, 0.0, 1.0);
+    }
+  `;
+
+  // Forces: vorticity confinement, ambient curl noise + gyres, stylus
+  // penalisation, speed fuse, free-slip walls.
+  const FORCES_FRAGMENT = `
+    uniform sampler2D uVelocity;
+    uniform sampler2D uCurl;
+    uniform vec2 uSimTexel;
+    uniform float uH;
+    uniform float uAspect;
+    uniform float uDt;
+    uniform float uTime;
+    uniform float uConfEps;
+    uniform float uGyreDrive;
+    ${POINTER_UNIFORMS_GLSL}
+    varying vec2 vUv;
+    ${NOISE_GLSL}
+    ${CAPSULE_GLSL}
+
+    // GLSL ES 1.00 has no tanh.
+    float softTanh(float x) {
+      float e = exp(2.0 * min(x, 20.0));
+      return (e - 1.0) / (e + 1.0);
+    }
+    float streamNoise(vec2 q) {
+      return fbm2(vec3(q * 1.1 + vec2(0.0, 0.015 * uTime), 0.03 * uTime));
+    }
+    vec2 gyre(vec2 p, vec2 rest, float sigma, float spin, float phi, float period) {
+      float t = uTime;
+      vec2 c = rest + vec2(
+        0.05 * uAspect * sin(6.2831853 * t / 70.0 + phi),
+        0.12 * cos(6.2831853 * t / 95.0 + 2.0 * phi));
+      float amp = spin * A_GYRE * (0.7 + 0.3 * sin(6.2831853 * t / period + phi));
+      vec2 r = p - c;
+      return amp * exp(-dot(r, r) / (sigma * sigma)) * vec2(-r.y, r.x) / sigma;
+    }
 
     void main() {
-      vec2 offset = gl_PointCoord - 0.5;
-      float dist = length(offset);
-      if (dist > 0.5) discard;
-      float mask = smoothstep(0.5, 0.15, dist);
-      vec3 color = mix(uInk, uAccent, vEnergy * 0.85);
-      float alpha = mask * vAlpha;
-      gl_FragColor = vec4(color * alpha, alpha);
+      vec2 p = vUv * vec2(uAspect, 1.0);
+      vec2 v = texture2D(uVelocity, vUv).xy;
+
+      // a. Vorticity confinement: nudge toward the local |omega| peak.
+      float wC = texture2D(uCurl, vUv).x;
+      float wL = texture2D(uCurl, vUv - vec2(uSimTexel.x, 0.0)).x;
+      float wR = texture2D(uCurl, vUv + vec2(uSimTexel.x, 0.0)).x;
+      float wB = texture2D(uCurl, vUv - vec2(0.0, uSimTexel.y)).x;
+      float wT = texture2D(uCurl, vUv + vec2(0.0, uSimTexel.y)).x;
+      vec2 gradAbs = vec2(abs(wR) - abs(wL), abs(wT) - abs(wB)) / (2.0 * uH);
+      vec2 N = gradAbs / (length(gradAbs) + 1e-5);
+      v += uDt * uConfEps * wC * vec2(N.y, -N.x);
+
+      // b. Ambient: curl of a slowly morphing stream function (divergence
+      // free) plus three wandering gyres meshing like gears.
+      float e = 2.0 * uH;
+      float dpx = (streamNoise(p + vec2(e, 0.0)) - streamNoise(p - vec2(e, 0.0))) / (2.0 * e);
+      float dpy = (streamNoise(p + vec2(0.0, e)) - streamNoise(p - vec2(0.0, e))) / (2.0 * e);
+      vec2 f = A_CURL * vec2(dpy, -dpx);
+      // (centre, radius, signed weight, phase, breathing period). The
+      // centres sit clear of the footer text: the dominant eddy left of
+      // the copyright line, the weakest under the icon row. uGyreDrive is
+      // 1 at rest and briefly higher right after the loop starts.
+      vec2 g = gyre(p, vec2(0.20 * uAspect, 0.50), 0.46, 1.0, 0.0, 38.0);
+      g += gyre(p, vec2(0.52 * uAspect, 0.36), 0.36, -0.45, 2.1, 46.0);
+      g += gyre(p, vec2(0.82 * uAspect, 0.56), 0.44, 0.8, 4.2, 52.0);
+      v += uDt * (f + g * uGyreDrive);
+
+      // c. Stylus: relax the liquid toward the body velocity (bounded,
+      // direction aware; the projection does the rest of the work).
+      float w = capsuleWeight(p) * uPointerOn;
+      v = mix(v, uObjVel, w * uGate * uCouple);
+
+      // d. Soft speed fuse.
+      float s = length(v);
+      v *= (s > 1e-6) ? (U_MAX * softTanh(s / U_MAX)) / s : 1.0;
+
+      // e. Free-slip walls: only the wall-normal component is removed.
+      v.x *= smoothstep(0.0, 2.0 * uH, p.x) * smoothstep(0.0, 2.0 * uH, uAspect - p.x);
+      v.y *= smoothstep(0.0, 2.0 * uH, p.y) * smoothstep(0.0, 2.0 * uH, 1.0 - p.y);
+      gl_FragColor = vec4(v, 0.0, 1.0);
+    }
+  `;
+
+  // Divergence of the advanced velocity, divided by dt so the pressure
+  // solved below is kinematic (H^2/s^2) and its warm start stays valid when
+  // the frame time changes. Zero normal flux through the walls.
+  const DIVERGENCE_FRAGMENT = `
+    uniform sampler2D uVelocity;
+    uniform vec2 uSimTexel;
+    uniform float uH;
+    uniform float uDt;
+    varying vec2 vUv;
+    void main() {
+      vec2 C = texture2D(uVelocity, vUv).xy;
+      vec2 L = texture2D(uVelocity, vUv - vec2(uSimTexel.x, 0.0)).xy;
+      vec2 R = texture2D(uVelocity, vUv + vec2(uSimTexel.x, 0.0)).xy;
+      vec2 B = texture2D(uVelocity, vUv - vec2(0.0, uSimTexel.y)).xy;
+      vec2 T = texture2D(uVelocity, vUv + vec2(0.0, uSimTexel.y)).xy;
+      if (vUv.x - uSimTexel.x < 0.0) L.x = -C.x;
+      if (vUv.x + uSimTexel.x > 1.0) R.x = -C.x;
+      if (vUv.y - uSimTexel.y < 0.0) B.y = -C.y;
+      if (vUv.y + uSimTexel.y > 1.0) T.y = -C.y;
+      float div = ((R.x - L.x) + (T.y - B.y)) / (2.0 * uH * uDt);
+      gl_FragColor = vec4(div, 0.0, 0.0, 1.0);
+    }
+  `;
+
+  // One Jacobi iteration of grad^2 p = div (clamp-to-edge gives the
+  // Neumann wall condition for free).
+  const PRESSURE_FRAGMENT = `
+    uniform sampler2D uPressure;
+    uniform sampler2D uDivergence;
+    uniform vec2 uSimTexel;
+    uniform float uH;
+    varying vec2 vUv;
+    void main() {
+      float L = texture2D(uPressure, vUv - vec2(uSimTexel.x, 0.0)).x;
+      float R = texture2D(uPressure, vUv + vec2(uSimTexel.x, 0.0)).x;
+      float B = texture2D(uPressure, vUv - vec2(0.0, uSimTexel.y)).x;
+      float T = texture2D(uPressure, vUv + vec2(0.0, uSimTexel.y)).x;
+      float div = texture2D(uDivergence, vUv).x;
+      float p = (L + R + B + T - div * uH * uH) * 0.25;
+      gl_FragColor = vec4(p, 0.0, 0.0, 1.0);
+    }
+  `;
+
+  // Subtract dt times the pressure gradient; re-apply the wall ramp.
+  const GRADIENT_FRAGMENT = `
+    uniform sampler2D uVelocity;
+    uniform sampler2D uPressure;
+    uniform vec2 uSimTexel;
+    uniform float uH;
+    uniform float uAspect;
+    uniform float uDt;
+    varying vec2 vUv;
+    void main() {
+      vec2 p = vUv * vec2(uAspect, 1.0);
+      float L = texture2D(uPressure, vUv - vec2(uSimTexel.x, 0.0)).x;
+      float R = texture2D(uPressure, vUv + vec2(uSimTexel.x, 0.0)).x;
+      float B = texture2D(uPressure, vUv - vec2(0.0, uSimTexel.y)).x;
+      float T = texture2D(uPressure, vUv + vec2(0.0, uSimTexel.y)).x;
+      vec2 v = texture2D(uVelocity, vUv).xy - uDt * vec2(R - L, T - B) / (2.0 * uH);
+      v.x *= smoothstep(0.0, 2.0 * uH, p.x) * smoothstep(0.0, 2.0 * uH, uAspect - p.x);
+      v.y *= smoothstep(0.0, 2.0 * uH, p.y) * smoothstep(0.0, 2.0 * uH, 1.0 - p.y);
+      gl_FragColor = vec4(v, 0.0, 1.0);
+    }
+  `;
+
+  // Dye advection (semi-Lagrangian) with three modes:
+  //   uSeed = 1            -> write the resting target directly
+  //   uRelax = 1           -> advect, then relax toward the target (plain)
+  //   uRelax = 0           -> advect only (MacCormack forward step)
+  const ADVECT_DYE_FRAGMENT = `
+    uniform sampler2D uDye;
+    uniform sampler2D uVelocity;
+    uniform vec2 uDyeTexel;
+    uniform vec2 uSimTexel;
+    uniform float uAspect;
+    uniform float uDt;
+    uniform float uTime;
+    uniform float uRelaxDt;
+    uniform float uSeed;
+    uniform float uRelax;
+    ${POINTER_UNIFORMS_GLSL}
+    varying vec2 vUv;
+    ${SAMPLE_GLSL}
+    ${NOISE_GLSL}
+    ${ADVECT_GLSL}
+    ${CAPSULE_GLSL}
+    ${INK_TARGET_GLSL}
+    void main() {
+      vec2 scale = vec2(uAspect, 1.0);
+      vec2 p = vUv * scale;
+      vec2 d;
+      if (uSeed > 0.5) {
+        d = inkTarget(p, uTime, true);
+      } else {
+        d = sampleField(uDye, backtrace(p, uDt) / scale, uDyeTexel).xy;
+        if (uRelax > 0.5) d = relaxInk(d, p);
+      }
+      gl_FragColor = vec4(d, 0.0, 1.0);
+    }
+  `;
+
+  // MacCormack correction: d = fwd + k/2 (orig - back), limited to the
+  // min/max of the four texels around the backtraced point so stretched
+  // filaments stay thin without ringing. Then the same relaxation.
+  const MACCORMACK_FRAGMENT = `
+    uniform sampler2D uDye;
+    uniform sampler2D uScratch;
+    uniform sampler2D uVelocity;
+    uniform vec2 uDyeTexel;
+    uniform vec2 uSimTexel;
+    uniform float uAspect;
+    uniform float uDt;
+    uniform float uTime;
+    uniform float uRelaxDt;
+    ${POINTER_UNIFORMS_GLSL}
+    varying vec2 vUv;
+    ${SAMPLE_GLSL}
+    ${NOISE_GLSL}
+    ${ADVECT_GLSL}
+    ${CAPSULE_GLSL}
+    ${INK_TARGET_GLSL}
+    void main() {
+      vec2 scale = vec2(uAspect, 1.0);
+      vec2 p = vUv * scale;
+      vec2 uv0 = backtrace(p, uDt) / scale;
+      vec2 uv1 = backtrace(p, -uDt) / scale;
+      vec2 fwd = texture2D(uScratch, vUv).xy;
+      vec2 back = sampleField(uScratch, uv1, uDyeTexel).xy;
+      vec2 orig = texture2D(uDye, vUv).xy;
+      vec2 d = fwd + (0.5 * MACCORMACK_STRENGTH) * (orig - back);
+      // Limiter: the four bilinear neighbours of the backtraced point.
+      vec2 st = uv0 / uDyeTexel - 0.5;
+      vec2 base = (floor(st) + 0.5) * uDyeTexel;
+      vec2 n00 = texture2D(uDye, base).xy;
+      vec2 n10 = texture2D(uDye, base + vec2(uDyeTexel.x, 0.0)).xy;
+      vec2 n01 = texture2D(uDye, base + vec2(0.0, uDyeTexel.y)).xy;
+      vec2 n11 = texture2D(uDye, base + uDyeTexel).xy;
+      vec2 lo = min(min(n00, n10), min(n01, n11));
+      vec2 hi = max(max(n00, n10), max(n01, n11));
+      d = clamp(d, lo, hi);
+      d = relaxInk(d, p);
+      gl_FragColor = vec4(d, 0.0, 1.0);
+    }
+  `;
+
+  // Display: ink concentration shaded as pigment in water. Reads the
+  // dye, the curl field (display-only vorticity tint) and the pressure
+  // field (bow-wave relief); theme changes never touch the simulation.
+  const DISPLAY_FRAGMENT = `
+    uniform sampler2D uDye;
+    uniform sampler2D uCurl;
+    uniform sampler2D uPressure;
+    uniform float uPressScale;
+    uniform vec2 uDyeTexel;
+    uniform vec2 uSimTexel;
+    uniform float uAspect;
+    uniform float uTime;
+    uniform vec3 uBg;
+    uniform vec3 uInk;
+    uniform vec3 uAccent;
+    varying vec2 vUv;
+    ${SAMPLE_GLSL}
+    ${NOISE_GLSL}
+
+    float conc(vec2 uv) {
+      return sampleField(uDye, uv, uDyeTexel).x;
+    }
+    // Lightly blurred concentration: four diagonal taps at +-1.5 texels,
+    // so a sheared one-texel filament reads as a rounded meniscus rather
+    // than a wire.
+    float concBlur(vec2 uv) {
+      vec2 o = 2.0 * uDyeTexel;
+      return 0.25 * (conc(uv + o) + conc(uv - o) +
+        conc(uv + vec2(o.x, -o.y)) + conc(uv + vec2(-o.x, o.y)));
+    }
+    // Live kinematic pressure, clamped: raises a crest ahead of a moving
+    // stylus and a trough behind it, which is what makes a drag legible the
+    // moment it starts. uPressScale is 1 while the solver runs and 0 for a
+    // still frame.
+    float press(vec2 uv) {
+      float pr = sampleField(uPressure, uv, uSimTexel).x * uPressScale;
+      return PRESS_RELIEF * clamp(pr, -PRESS_CLAMP, PRESS_CLAMP);
+    }
+
+    void main() {
+      vec2 uv = vUv;
+      vec2 scale = vec2(uAspect, 1.0);
+      vec2 p = uv * scale;
+      vec2 dye = sampleField(uDye, uv, uDyeTexel).xy;
+
+      // Organic waterline; the fade shapes the concentration itself so the
+      // relief fades with it, and the final colour is faded again. Alpha
+      // reaches exactly zero well inside the canvas, so no rectangle.
+      float boundary = waterline(p.x, uTime);
+      float fade = 1.0 - smoothstep(boundary - 0.38, boundary, p.y);
+      float c = dye.x * fade;
+      // Vorticity tint (display only): ink inside a rolling wake cools.
+      float omega = abs(sampleField(uCurl, uv, uSimTexel).x);
+      float a = min(1.0, dye.y + CURL_TINT * smoothstep(CURL_TINT_LO, CURL_TINT_HI, omega));
+
+      float lum = dot(uBg, vec3(0.2126, 0.7152, 0.0722));
+      float dark = 1.0 - smoothstep(0.35, 0.55, lum);
+
+      // Beer-Lambert coverage, capped so the footer stays readable. A mild
+      // tone curve on the concentration keeps thin washes airy while dense
+      // clouds gain depth, so the ink has a tonal range instead of one grey.
+      float tone = c * mix(0.85, 1.2, smoothstep(0.15, 0.9, c));
+      float alpha = min(1.0 - exp(-mix(EXTINCTION_LIGHT, EXTINCTION_DARK, dark) * tone),
+        mix(ALPHA_CAP_LIGHT, ALPHA_CAP_DARK, dark));
+
+      // Light: dilute slate-blue pigment with the paper colour so the
+      // currents read as a translucent wash and keep the footer legible.
+      vec3 pigLight = mix(uBg, mix(uInk, uAccent, 0.40 * a), 0.75);
+      // Dark: pigment sits between the water and the (light) ink so it
+      // reads as a lit liquid rather than smoke; relief carries the form.
+      vec3 pigDark = mix(mix(uBg, uInk, 0.8), uAccent, 0.4 * a);
+      vec3 pig = mix(pigLight, pigDark, dark);
+      // Dilution warmth: thin washes shift toward the paper.
+      pig = mix(pig, mix(pig, uBg, 0.35), 1.0 - smoothstep(0.0, 0.5, c));
+
+      // Wet relief from the surface height gradient, in 1/H on both axes
+      // so the aspect does not skew it. The ink term is a 2-texel central
+      // difference (3 texels each way, over the 2-texel blurred field, so
+      // texel-scale advection noise never reads as hatching) of the
+      // concentration at dye resolution; the
+      // pressure term is differenced across a whole simulation cell, so
+      // the derivative of the bilinear low-resolution field stays
+      // continuous instead of showing the grid as facets.
+      vec2 ox = vec2(3.0 * uDyeTexel.x, 0.0);
+      vec2 oy = vec2(0.0, 3.0 * uDyeTexel.y);
+      vec2 sx = vec2(uSimTexel.x, 0.0);
+      vec2 sy = vec2(0.0, uSimTexel.y);
+      vec2 g = fade * (vec2(
+        (concBlur(uv + ox) - concBlur(uv - ox)) / (2.0 * ox.x * uAspect),
+        (concBlur(uv + oy) - concBlur(uv - oy)) / (2.0 * oy.y)) + vec2(
+        (press(uv + sx) - press(uv - sx)) / (2.0 * sx.x * uAspect),
+        (press(uv + sy) - press(uv - sy)) / (2.0 * sy.y)));
+      vec3 n = normalize(vec3(-g * SLOPE, 1.0));
+      vec3 L = normalize(vec3(-0.45, 0.7, 0.55));
+      float thickness = smoothstep(0.05, 0.4, c);
+      pig *= 1.0 + mix(0.14, 0.28, dark) * thickness * (dot(n, L) - L.z);
+      // Narrow sheen (the lamp on a wet surface) plus, in the dark theme, a
+      // broad low one so the liquid reads as lit rather than as smoke.
+      vec3 Hv = normalize(L + vec3(0.0, 0.0, 1.0));
+      float ndh = max(dot(n, Hv), 0.0);
+      float spec = (pow(ndh, 32.0) - pow(Hv.z, 32.0)) * mix(0.06, 0.22, dark) +
+        (pow(ndh, 6.0) - pow(Hv.z, 6.0)) * 0.07 * dark;
+      spec = max(spec, 0.0) * thickness;
+
+      // Faint water tint, deeper toward the bottom.
+      float aw = mix(0.035, 0.03, dark) * (1.0 - uv.y) * fade;
+
+      vec3 colour = pig * alpha + vec3(spec * alpha) + uInk * aw * (1.0 - alpha);
+      float alphaOut = alpha + aw * (1.0 - alpha);
+      colour += (hash3(vec3(gl_FragCoord.xy, 0.0)) - 0.5) / 255.0;
+      gl_FragColor = vec4(colour, alphaOut) * fade;
     }
   `;
 
@@ -254,47 +891,77 @@
     };
   }
 
-  function createSeededRandom(seedValue: number) {
-    let seed = seedValue;
-    return () => {
-      seed = Math.imul(seed, 1664525) + 1013904223;
-      return (seed >>> 0) / 4294967296;
-    };
+  // GLSL float literal for a JS number (ES 1.00 has no int -> float
+  // promotion, so every constant needs a decimal point).
+  function glslFloat(value: number) {
+    const text = String(value);
+    return /[.e]/i.test(text) ? text : `${text}.0`;
   }
 
-  function compileProgram(gl: WebGLRenderingContext) {
-    const compile = (type: number, source: string) => {
-      if (!source) return null;
-      const shader = gl.createShader(type);
-      if (!shader) return null;
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        gl.deleteShader(shader);
-        return null;
-      }
-      return shader;
-    };
+  const SHADER_DEFINES: Record<string, number> = {
+    U_MAX,
+    A_CURL,
+    A_GYRE,
+    TAU_INK,
+    TAU_TOP,
+    TAU_ACCENT,
+    V_TOP,
+    WARP,
+    ACCENT_BASE,
+    POINTER_SIGMA: POINTER_RADIUS / 2,
+    SEED_LAMINA,
+    MACCORMACK_STRENGTH,
+    SLOPE,
+    PRESS_RELIEF,
+    PRESS_CLAMP,
+    EXTINCTION_LIGHT,
+    EXTINCTION_DARK,
+    ALPHA_CAP_LIGHT,
+    ALPHA_CAP_DARK,
+    CURL_TINT,
+    CURL_TINT_LO,
+    CURL_TINT_HI,
+    ACCENT_STIR,
+    PART,
+  };
 
-    const vertex = compile(gl.VERTEX_SHADER, VERTEX_SHADER);
-    const fragment = compile(gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
-    if (!vertex || !fragment) return null;
+  // GL constants absent from the WebGL1 typings; numeric so the same code
+  // compiles against WebGLRenderingContext for both context kinds.
+  const GL_RG16F = 0x822f;
+  const GL_RG = 0x8227;
+  const GL_R16F = 0x822d;
+  const GL_RED = 0x1903;
+  const GL_RGBA16F = 0x881a;
+  const GL_HALF_FLOAT = 0x140b;
+  const GL_HALF_FLOAT_OES = 0x8d61;
 
-    const program = gl.createProgram();
-    if (!program) return null;
-    gl.attachShader(program, vertex);
-    gl.attachShader(program, fragment);
-    gl.bindAttribLocation(program, 0, 'aParticle');
-    gl.bindAttribLocation(program, 1, 'aRandom');
-    gl.linkProgram(program);
-    gl.deleteShader(vertex);
-    gl.deleteShader(fragment);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      gl.deleteProgram(program);
-      return null;
-    }
-    return program;
-  }
+  type TexFormat = { internal: number; format: number; type: number };
+  type Target = {
+    texture: WebGLTexture;
+    fbo: WebGLFramebuffer;
+    width: number;
+    height: number;
+    texel: [number, number];
+  };
+  type DoubleTarget = { read: Target; write: Target; swap: () => void };
+  type Program = {
+    program: WebGLProgram;
+    u: Record<string, WebGLUniformLocation | null>;
+  };
+  const PROGRAM_SOURCES = {
+    copy: COPY_FRAGMENT,
+    advectVelocity: ADVECT_VELOCITY_FRAGMENT,
+    curl: CURL_FRAGMENT,
+    forces: FORCES_FRAGMENT,
+    divergence: DIVERGENCE_FRAGMENT,
+    pressure: PRESSURE_FRAGMENT,
+    gradient: GRADIENT_FRAGMENT,
+    advectDye: ADVECT_DYE_FRAGMENT,
+    maccormack: MACCORMACK_FRAGMENT,
+    display: DISPLAY_FRAGMENT,
+  } as const;
+  type ProgramKey = keyof typeof PROGRAM_SOURCES;
+  type Programs = Record<ProgramKey, Program>;
 
   function start() {
     const hostCandidate = document.querySelector('[data-eddy-current]');
@@ -318,10 +985,6 @@
     const hoverQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
 
     let gl: WebGLRenderingContext | null = null;
-    let program: WebGLProgram | null = null;
-    let uniforms: Record<string, WebGLUniformLocation | null> = {};
-    let particleBuffer: WebGLBuffer | null = null;
-    let randomBuffer: WebGLBuffer | null = null;
     let initialized = false;
     let failed = false;
     let contextLost = false;
@@ -331,9 +994,22 @@
     let elapsed = 0;
     let revealed = false;
     let hostRect: DOMRect | null = null;
+    // performance.now() of the last pointer event over the band, and the
+    // simulation time at which the loop last started (entry gesture).
+    let lastPointerAt = -Infinity;
+    let loopStartedAt = 0;
+    // Simulation time accumulated since the last ink relaxation slice.
+    let relaxAccum = 0;
 
-    let dpr = lowPower ? 1 : Math.min(window.devicePixelRatio || 1, 2);
-    let particleCount = lowPower ? PARTICLES_REDUCED : PARTICLES_FULL;
+    // Quality state.
+    let stageIndex = lowPower ? LOW_POWER_STAGE : 0;
+    let pressureIters = lowPower
+      ? LOW_POWER_PRESSURE_ITERS
+      : STAGES[stageIndex].pressureIters;
+    let dpr = 1;
+    // Unclamped window.devicePixelRatio at the last resize, to notice
+    // DPR-only changes from the frame loop.
+    let rawDpr = 1;
 
     const colors = readThemeColors();
     const currentColors = {
@@ -343,26 +1019,58 @@
     };
     let targetColors = colors;
 
-    // Particle state: [x, y, stirredSpeed] interleaved for the dynamic
-    // attribute upload, plus one static random per particle.
-    let particles = new Float32Array(0);
-    let randoms = new Float32Array(0);
+    // GL resources (rebuilt on context restore).
+    let fmt: {
+      vec2: TexFormat;
+      scalar: TexFormat;
+      filter: number;
+      manualBilinear: boolean;
+    } | null = null;
+    let quadBuffer: WebGLBuffer | null = null;
+    // All-or-nothing: setupGl() only assigns this once every program has
+    // linked, so a non-null table always has every pass.
+    let programs: Programs | null = null;
+    let fields: {
+      velocity: DoubleTarget;
+      pressure: DoubleTarget;
+      dye: DoubleTarget;
+      scratch: Target | null;
+      curl: Target;
+      divergence: Target;
+      simCols: number;
+      simRows: number;
+      aspect: number;
+    } | null = null;
+    // Largest texture edge the context allows (read once per context).
+    let maxTextureSize = 2048;
 
-    // Vorticity-streamfunction solver state.
-    let gridCols = 0;
-    let omega = new Float32Array(0);
-    let omegaTmp = new Float32Array(0);
-    let psi = new Float32Array(0);
-    let gridVx = new Float32Array(0);
-    let gridVy = new Float32Array(0);
+    // Cached once per resize: layout reads stay out of the frame loop.
+    let aspect = 1;
 
-    const stir = {
+    // Pointer state in H units and H/s, plus the last client position so
+    // only real pointer motion (never the band scrolling under a resting
+    // cursor) becomes stylus velocity.
+    const ptr = {
       active: false,
       x: 0,
       y: 0,
       prevX: 0,
       prevY: 0,
       hasPrev: false,
+      clientX: 0,
+      clientY: 0,
+      vx: 0,
+      vy: 0,
+    };
+    // Per-frame stylus uniforms derived from ptr.
+    const stylus = {
+      on: 0,
+      gate: 0,
+      couple: 0,
+      stir: 0,
+      segA: [0, 0] as [number, number],
+      segB: [0, 0] as [number, number],
+      vel: [0, 0] as [number, number],
     };
 
     const guard = {
@@ -375,354 +1083,810 @@
     };
 
     const staticMode = () => reducedMotionQuery.matches;
-    // Cached once per resize: clientWidth/clientHeight are layout reads and
-    // the particle loop would otherwise hit the DOM thousands of times a
-    // frame.
-    let aspect = 1;
-    // Per-frame snapshot of the ambient eddies so the grid loop does pure
-    // arithmetic.
-    const eddyCache = EDDIES.map(() => ({
-      cx: 0,
-      cy: 0,
-      strength: 0,
-      invR2: 0,
-    }));
 
-    function setupGrid() {
-      gridCols = Math.max(8, Math.ceil(GRID_ROWS * aspect));
-      const size = gridCols * GRID_ROWS;
-      omega = new Float32Array(size);
-      omegaTmp = new Float32Array(size);
-      psi = new Float32Array(size);
-      gridVx = new Float32Array(size);
-      gridVy = new Float32Array(size);
+    function currentStage(): Stage {
+      return STAGES[Math.min(stageIndex, STAGES.length - 1)];
     }
 
-    // Snapshot the ambient eddies' centers and spin for this frame.
-    function prepareAmbient(time: number) {
-      const t = time * 0.1;
-      for (let e = 0; e < EDDIES.length; e++) {
-        const eddy = EDDIES[e];
-        const cache = eddyCache[e];
-        cache.cx =
-          aspect * (eddy.cx + 0.04 * Math.sin(t * (0.6 + e * 0.11) + e * 2.1));
-        cache.cy = eddy.cy + 0.12 * Math.cos(t * (0.45 + e * 0.07) + e);
-        cache.strength =
-          eddy.omega *
-          eddy.spin *
-          (0.8 + 0.25 * Math.sin(t * (0.8 + e * 0.13)));
-        cache.invR2 = 1 / (eddy.radius * eddy.radius);
+    function useMacCormack() {
+      // The stage table already disables it from LOW_POWER_STAGE on; the
+      // extra clause keeps that true if the low-power entry point is ever
+      // moved up the ladder.
+      return currentStage().maccormack && !lowPower;
+    }
+
+    // ------------------------------------------------------------------
+    // GL helpers
+    // ------------------------------------------------------------------
+
+    function drainErrors() {
+      if (!gl) return;
+      for (let i = 0; i < 16 && gl.getError() !== gl.NO_ERROR; i++) {
+        // Probing deliberately provokes errors; clear them so the
+        // first-frame sanity check only sees real failures.
       }
     }
 
-    function ambientOmegaAt(x: number, y: number): number {
-      let sum = 0;
-      for (let e = 0; e < eddyCache.length; e++) {
-        const eddy = eddyCache[e];
-        const dx = x - eddy.cx;
-        const dy = y - eddy.cy;
-        const r2 = (dx * dx + dy * dy) * eddy.invR2;
-        if (r2 < 4) sum += eddy.strength * Math.exp(-r2);
+    function compileShader(type: number, source: string) {
+      if (!gl) return null;
+      const shader = gl.createShader(type);
+      if (!shader) return null;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.warn(
+          '[eddy] shader compile failed',
+          gl.getShaderInfoLog(shader)
+        );
+        gl.deleteShader(shader);
+        return null;
       }
-      return sum;
+      return shader;
     }
 
-    // One timestep of the vorticity equation, then the Poisson solve for
-    // the streamfunction, then velocities. See the constant block for the
-    // equations.
-    function stepFlow(delta: number) {
-      const rows = GRID_ROWS;
-      const cols = gridCols;
-      const dx = 1 / rows;
-      const cellsPerUnitX = cols / aspect;
-      const diffusion = Math.min((FLOW_VISCOSITY * delta) / (dx * dx), 0.2);
-      const relax = 1 - Math.exp(-FLOW_RELAX * delta);
-
-      prepareAmbient(elapsed);
-
-      // Advection: dw/dt = -(u . grad)w, semi-Lagrangian (trace the parcel
-      // back along the flow). x wraps, y clamps at the walls.
-      for (let j = 0; j < rows; j++) {
-        for (let i = 0; i < cols; i++) {
-          const index = j * cols + i;
-          const backX = (i + 0.5) / cellsPerUnitX - gridVx[index] * delta;
-          const backY = (j + 0.5) / rows - gridVy[index] * delta;
-          let gxf = (backX * cellsPerUnitX - 0.5) % cols;
-          if (gxf < 0) gxf += cols;
-          // A negative sub-ULP value can round to exactly cols when wrapped.
-          if (gxf >= cols) gxf = 0;
-          const gyf = Math.min(Math.max(backY * rows - 0.5, 0), rows - 1.001);
-          const x0 = gxf | 0;
-          const y0 = gyf | 0;
-          const fx = gxf - x0;
-          const fy = gyf - y0;
-          const x1 = (x0 + 1) % cols;
-          const y1 = Math.min(y0 + 1, rows - 1);
-          const r0 = y0 * cols;
-          const r1 = y1 * cols;
-          omegaTmp[index] =
-            omega[r0 + x0] * (1 - fx) * (1 - fy) +
-            omega[r0 + x1] * fx * (1 - fy) +
-            omega[r1 + x0] * (1 - fx) * fy +
-            omega[r1 + x1] * fx * fy;
-        }
+    function createProgram(fragmentSource: string): Program | null {
+      if (!gl) return null;
+      const vertex = compileShader(gl.VERTEX_SHADER, VERTEX_SHADER);
+      const fragment = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
+      if (!vertex || !fragment) return null;
+      const program = gl.createProgram();
+      if (!program) return null;
+      gl.attachShader(program, vertex);
+      gl.attachShader(program, fragment);
+      gl.bindAttribLocation(program, 0, 'aPos');
+      gl.linkProgram(program);
+      gl.deleteShader(vertex);
+      gl.deleteShader(fragment);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.warn(
+          '[eddy] program link failed',
+          gl.getProgramInfoLog(program)
+        );
+        gl.deleteProgram(program);
+        return null;
       }
-
-      // Viscous diffusion (nu grad^2 w) plus relaxation toward the ambient
-      // eddies (-lambda (w - w_ambient)), which both decays stirred
-      // vorticity and maintains the resting current.
-      for (let j = 0; j < rows; j++) {
-        const jm = Math.max(j - 1, 0) * cols;
-        const jp = Math.min(j + 1, rows - 1) * cols;
-        const row = j * cols;
-        const py = (j + 0.5) / rows;
-        for (let i = 0; i < cols; i++) {
-          const index = row + i;
-          const il = row + ((i + cols - 1) % cols);
-          const ir = row + ((i + 1) % cols);
-          const lap =
-            omegaTmp[il] +
-            omegaTmp[ir] +
-            omegaTmp[jm + i] +
-            omegaTmp[jp + i] -
-            4 * omegaTmp[index];
-          let w = omegaTmp[index] + lap * diffusion;
-          const ambient = ambientOmegaAt((i + 0.5) / cellsPerUnitX, py);
-          w += (ambient - w) * relax;
-          omega[index] = Math.min(Math.max(w, -OMEGA_MAX), OMEGA_MAX);
-        }
+      const u: Record<string, WebGLUniformLocation | null> = {};
+      const count = gl.getProgramParameter(
+        program,
+        gl.ACTIVE_UNIFORMS
+      ) as number;
+      for (let i = 0; i < count; i++) {
+        const info = gl.getActiveUniform(program, i);
+        if (info) u[info.name] = gl.getUniformLocation(program, info.name);
       }
+      return { program, u };
+    }
 
-      // Stirring: the drag applies a force F g(r) along its segment; its
-      // curl is the vorticity source, which lands as a +/- dipole across
-      // the path (curl(F g) = grad(g) x F).
-      if (stir.active && stir.hasPrev && delta > 0) {
-        let velocityX = (stir.x - stir.prevX) / delta;
-        let velocityY = (stir.y - stir.prevY) / delta;
-        const speed = Math.hypot(velocityX, velocityY);
-        if (speed > 0.02) {
-          const scale = speed > STIR_MAX_SPEED ? STIR_MAX_SPEED / speed : 1;
-          const forceX = velocityX * scale * STIR_FORCE;
-          const forceY = velocityY * scale * STIR_FORCE;
-          const segX = stir.x - stir.prevX;
-          const segY = stir.y - stir.prevY;
-          const segLen2 = Math.max(segX * segX + segY * segY, 1e-6);
-          const sigma2 = STIR_RADIUS * STIR_RADIUS;
-          const reachX = Math.ceil(STIR_RADIUS * 2 * cellsPerUnitX) + 1;
-          const reachY = Math.ceil(STIR_RADIUS * 2 * rows) + 1;
-          const minI =
-            Math.floor(Math.min(stir.prevX, stir.x) * cellsPerUnitX) - reachX;
-          const maxI =
-            Math.ceil(Math.max(stir.prevX, stir.x) * cellsPerUnitX) + reachX;
-          const minJ = Math.max(
-            Math.floor(Math.min(stir.prevY, stir.y) * rows) - reachY,
-            0
-          );
-          const maxJ = Math.min(
-            Math.ceil(Math.max(stir.prevY, stir.y) * rows) + reachY,
-            rows - 1
-          );
-          for (let j = minJ; j <= maxJ; j++) {
-            const py = (j + 0.5) / rows;
-            for (let rawI = minI; rawI <= maxI; rawI++) {
-              const i = ((rawI % cols) + cols) % cols;
-              const px = (rawI + 0.5) / cellsPerUnitX;
-              const along = Math.min(
-                Math.max(
-                  ((px - stir.prevX) * segX + (py - stir.prevY) * segY) /
-                    segLen2,
-                  0
-                ),
-                1
-              );
-              const dxv = px - stir.prevX - segX * along;
-              const dyv = py - stir.prevY - segY * along;
-              const gaussian = Math.exp(-(dxv * dxv + dyv * dyv) / sigma2);
-              const curl =
-                (-2 / sigma2) * (forceY * dxv - forceX * dyv) * gaussian;
-              const index = j * cols + i;
-              omega[index] = Math.min(
-                Math.max(omega[index] + curl * delta, -OMEGA_MAX),
-                OMEGA_MAX
-              );
-            }
-          }
-        }
+    function createTexture(
+      width: number,
+      height: number,
+      format: TexFormat,
+      filter: number
+    ) {
+      if (!gl) return null;
+      const texture = gl.createTexture();
+      if (!texture) return null;
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        format.internal,
+        width,
+        height,
+        0,
+        format.format,
+        format.type,
+        null
+      );
+      return texture;
+    }
+
+    function createTarget(
+      width: number,
+      height: number,
+      format: TexFormat,
+      filter: number
+    ): Target | null {
+      if (!gl) return null;
+      const texture = createTexture(width, height, format, filter);
+      const fbo = gl.createFramebuffer();
+      if (!texture || !fbo) return null;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+      gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.COLOR_ATTACHMENT0,
+        gl.TEXTURE_2D,
+        texture,
+        0
+      );
+      if (
+        gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE
+      ) {
+        gl.deleteTexture(texture);
+        gl.deleteFramebuffer(fbo);
+        return null;
       }
-      if (stir.active) {
-        stir.prevX = stir.x;
-        stir.prevY = stir.y;
-        stir.hasPrev = true;
+      gl.viewport(0, 0, width, height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      return { texture, fbo, width, height, texel: [1 / width, 1 / height] };
+    }
+
+    function deleteTarget(target: Target | null) {
+      if (!gl || !target) return;
+      gl.deleteFramebuffer(target.fbo);
+      gl.deleteTexture(target.texture);
+    }
+
+    function createDouble(
+      width: number,
+      height: number,
+      format: TexFormat,
+      filter: number
+    ): DoubleTarget | null {
+      const a = createTarget(width, height, format, filter);
+      const b = createTarget(width, height, format, filter);
+      if (!a || !b) {
+        deleteTarget(a);
+        deleteTarget(b);
+        return null;
+      }
+      const pair = {
+        read: a,
+        write: b,
+        swap() {
+          const t = pair.read;
+          pair.read = pair.write;
+          pair.write = t;
+        },
+      };
+      return pair;
+    }
+
+    function clearTarget(target: Target) {
+      if (!gl) return;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+      gl.viewport(0, 0, target.width, target.height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+
+    function bindTarget(target: Target | null) {
+      if (!gl) return;
+      if (target) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+        gl.viewport(0, 0, target.width, target.height);
       } else {
-        stir.hasPrev = false;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, canvas.width, canvas.height);
       }
+    }
 
-      // Poisson solve grad^2 psi = -w by Gauss-Seidel, warm-started from
-      // last frame's psi. Boundary rows stay psi = 0: free-slip walls.
-      const dx2 = dx * dx;
-      for (let sweep = 0; sweep < SOLVER_SWEEPS; sweep++) {
-        for (let j = 1; j < rows - 1; j++) {
-          const row = j * cols;
-          const rowUp = (j + 1) * cols;
-          const rowDown = (j - 1) * cols;
-          for (let i = 0; i < cols; i++) {
-            const il = row + ((i + cols - 1) % cols);
-            const ir = row + ((i + 1) % cols);
-            psi[row + i] =
-              (psi[il] +
-                psi[ir] +
-                psi[rowDown + i] +
-                psi[rowUp + i] +
-                omega[row + i] * dx2) *
-              0.25;
-          }
+    function bindTex(
+      unit: number,
+      texture: WebGLTexture,
+      location: WebGLUniformLocation | null | undefined
+    ) {
+      if (!gl) return;
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      if (location) gl.uniform1i(location, unit);
+    }
+
+    function draw() {
+      if (!gl) return;
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+
+    // ------------------------------------------------------------------
+    // Format probing
+    // ------------------------------------------------------------------
+
+    function probeFormats(): typeof fmt {
+      if (!gl) return null;
+      const isWebGL2 =
+        typeof WebGL2RenderingContext !== 'undefined' &&
+        gl instanceof WebGL2RenderingContext;
+
+      let vec2Candidates: TexFormat[] = [];
+      let scalarCandidates: TexFormat[] = [];
+      let filter: number = gl.LINEAR;
+
+      if (isWebGL2) {
+        // Core 16F formats are only colour-renderable behind one of these
+        // extensions; the probe below is what actually decides.
+        gl.getExtension('EXT_color_buffer_float') ||
+          gl.getExtension('EXT_color_buffer_half_float');
+        const rg: TexFormat = {
+          internal: GL_RG16F,
+          format: GL_RG,
+          type: GL_HALF_FLOAT,
+        };
+        const r: TexFormat = {
+          internal: GL_R16F,
+          format: GL_RED,
+          type: GL_HALF_FLOAT,
+        };
+        const rgba: TexFormat = {
+          internal: GL_RGBA16F,
+          format: gl.RGBA,
+          type: GL_HALF_FLOAT,
+        };
+        vec2Candidates = [rg, rgba];
+        scalarCandidates = [r, rgba];
+      } else {
+        if (!gl.getExtension('OES_texture_half_float')) return null;
+        gl.getExtension('EXT_color_buffer_half_float'); // advisory only
+        const rgba: TexFormat = {
+          internal: gl.RGBA,
+          format: gl.RGBA,
+          type: GL_HALF_FLOAT_OES,
+        };
+        vec2Candidates = [rgba];
+        scalarCandidates = [rgba];
+        // Filterability is exactly what the extension advertises (an
+        // unfilterable texture samples as black without raising an error,
+        // so it cannot be probed); fall back to manual bilinear taps.
+        if (!gl.getExtension('OES_texture_half_float_linear')) {
+          filter = gl.NEAREST;
         }
       }
 
-      // Velocities from the streamfunction: u = dpsi/dy, v = -dpsi/dx,
-      // plus the uniform downstream drift.
-      const inv2dx = 1 / (2 * dx);
-      for (let j = 0; j < rows; j++) {
-        const jm = Math.max(j - 1, 0);
-        const jp = Math.min(j + 1, rows - 1);
-        const dyScale = 1 / ((jp - jm) * dx);
-        const row = j * cols;
-        for (let i = 0; i < cols; i++) {
-          const il = row + ((i + cols - 1) % cols);
-          const ir = row + ((i + 1) % cols);
-          gridVx[row + i] =
-            (psi[jp * cols + i] - psi[jm * cols + i]) * dyScale + DRIFT;
-          gridVy[row + i] = -(psi[ir] - psi[il]) * inv2dx;
+      const fill = createProgram('precision mediump float;\n' + FILL_FRAGMENT);
+      if (!fill) return null;
+
+      // Render-to-texture is the one thing the extensions do not settle:
+      // allocate a tiny target in the candidate format, check completeness
+      // and draw into it.
+      const probe = (format: TexFormat) => {
+        if (!gl) return false;
+        drainErrors();
+        const target = createTarget(4, 4, format, filter);
+        if (!target) {
+          drainErrors();
+          return false;
+        }
+        bindTarget(target);
+        gl.useProgram(fill.program);
+        draw();
+        const ok = gl.getError() === gl.NO_ERROR;
+        deleteTarget(target);
+        drainErrors();
+        return ok;
+      };
+
+      const pick = (candidates: TexFormat[]) => {
+        for (const candidate of candidates) {
+          if (probe(candidate)) return candidate;
+        }
+        return null;
+      };
+
+      const vec2Format = pick(vec2Candidates);
+      const scalarFormat = pick(scalarCandidates);
+
+      gl.deleteProgram(fill.program);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      drainErrors();
+      if (!vec2Format || !scalarFormat) return null;
+      return {
+        vec2: vec2Format,
+        scalar: scalarFormat,
+        filter,
+        manualBilinear: filter === gl.NEAREST,
+      };
+    }
+
+    // ------------------------------------------------------------------
+    // Targets lifecycle
+    // ------------------------------------------------------------------
+
+    function computeSizes() {
+      const stage = currentStage();
+      // Every finite-difference stencil assumes square cells (one spacing
+      // uH = 1 / simRows on both axes), so when a wide band would exceed
+      // the column cap the rows shrink to match rather than the cells
+      // stretching; a stretched grid would leave real divergence behind
+      // every horizontal stroke.
+      const colCap = Math.min(stage.simColsCap, maxTextureSize);
+      const simRows = Math.max(
+        16,
+        Math.min(stage.simRows, Math.round(colCap / aspect))
+      );
+      const simCols = Math.max(
+        16,
+        Math.min(Math.round(simRows * aspect), colCap)
+      );
+      // The dye follows the canvas up to the stage cap; a very tall band
+      // (narrow viewport) is bounded by the texture limit on both axes.
+      let dyeWidth = Math.max(
+        32,
+        Math.min(canvas.width, stage.dyeWidthCap, maxTextureSize)
+      );
+      let dyeHeight = Math.max(8, Math.round(dyeWidth / aspect));
+      if (dyeHeight > maxTextureSize) {
+        dyeHeight = maxTextureSize;
+        dyeWidth = Math.max(32, Math.round(dyeHeight * aspect));
+      }
+      return { simCols, simRows, dyeWidth, dyeHeight };
+    }
+
+    // True when the existing targets already match the planned sizes, so
+    // a no-op resize notification neither reallocates nor reseeds.
+    function targetsMatch(sizes: ReturnType<typeof computeSizes>) {
+      return Boolean(
+        fields &&
+        fields.aspect === aspect &&
+        fields.simCols === sizes.simCols &&
+        fields.simRows === sizes.simRows &&
+        fields.dye.read.width === sizes.dyeWidth &&
+        fields.dye.read.height === sizes.dyeHeight &&
+        Boolean(fields.scratch) === useMacCormack()
+      );
+    }
+
+    function createTargets(): typeof fields {
+      if (!gl || !fmt) return null;
+      const { simCols, simRows, dyeWidth, dyeHeight } = computeSizes();
+      const velocity = createDouble(simCols, simRows, fmt.vec2, fmt.filter);
+      const pressure = createDouble(simCols, simRows, fmt.scalar, fmt.filter);
+      const curl = createTarget(simCols, simRows, fmt.scalar, fmt.filter);
+      const divergence = createTarget(simCols, simRows, fmt.scalar, fmt.filter);
+      const dye = createDouble(dyeWidth, dyeHeight, fmt.vec2, fmt.filter);
+      const scratch = useMacCormack()
+        ? createTarget(dyeWidth, dyeHeight, fmt.vec2, fmt.filter)
+        : null;
+      if (!velocity || !pressure || !curl || !divergence || !dye) {
+        destroyTargets({
+          velocity,
+          pressure,
+          curl,
+          divergence,
+          dye,
+          scratch,
+        });
+        return null;
+      }
+      return {
+        velocity,
+        pressure,
+        dye,
+        scratch,
+        curl,
+        divergence,
+        simCols,
+        simRows,
+        aspect,
+      };
+    }
+
+    function destroyTargets(
+      set: {
+        velocity: DoubleTarget | null;
+        pressure: DoubleTarget | null;
+        dye: DoubleTarget | null;
+        scratch: Target | null;
+        curl: Target | null;
+        divergence: Target | null;
+      } | null
+    ) {
+      if (!set) return;
+      for (const pair of [set.velocity, set.pressure, set.dye]) {
+        if (pair) {
+          deleteTarget(pair.read);
+          deleteTarget(pair.write);
         }
       }
+      deleteTarget(set.scratch);
+      deleteTarget(set.curl);
+      deleteTarget(set.divergence);
     }
 
-    // Powder look: grains are seeded in noise-weighted clumps, and the
-    // incompressible flow stretches the clumps into filaments and swirls -
-    // that density structure is what reads as sand in the water.
-    function clumpDensity(x: number, y: number, phase: number) {
-      const n =
-        Math.sin(x * 1.7 + phase) +
-        Math.sin(x * 0.9 - y * 2.6 + 1.3 + phase * 0.7) +
-        Math.sin(x * 2.6 + y * 3.4 + 4.1 - phase * 0.5) +
-        Math.sin(y * 5.1 + x * 0.6 + 2.2 + phase * 0.3);
-      const density = n * 0.125 + 0.5;
-      return density * density * density;
+    function clearFlowFields() {
+      if (!fields) return;
+      clearTarget(fields.velocity.read);
+      clearTarget(fields.velocity.write);
+      clearTarget(fields.pressure.read);
+      clearTarget(fields.pressure.write);
+      clearTarget(fields.curl);
+      clearTarget(fields.divergence);
     }
 
-    function spawnGrain(random: () => number, phase: number, base: number) {
-      let x = random() * aspect;
-      let y = Math.pow(random(), 1.15);
-      for (let tries = 0; tries < 8; tries++) {
-        if (random() < 0.06 + 0.94 * clumpDensity(x, y, phase)) break;
-        x = random() * aspect;
-        y = Math.pow(random(), 1.15);
-      }
-      particles[base] = x;
-      particles[base + 1] = y;
-      particles[base + 2] = 0;
-    }
-
-    function initParticles() {
-      const random = createSeededRandom(particleCount);
-      particles = new Float32Array(particleCount * 3);
-      randoms = new Float32Array(particleCount);
-      for (let i = 0; i < particleCount; i++) {
-        spawnGrain(random, 0, i * 3);
-        randoms[i] = random();
-      }
-      if (gl && particleBuffer && randomBuffer) {
-        gl.bindBuffer(gl.ARRAY_BUFFER, particleBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, particles, gl.DYNAMIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, randomBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, randoms, gl.STATIC_DRAW);
-        bindAttributes();
-      }
-    }
-
-    function stepParticles(delta: number) {
-      const rows = GRID_ROWS;
-      const cols = gridCols;
-      const cellsPerUnitX = cols / aspect;
-      const recycle = Math.ceil(particleCount * delta * 0.015);
-      for (let i = 0; i < particleCount; i++) {
-        const base = i * 3;
-        let x = particles[base];
-        let y = particles[base + 1];
-        // A constant per-grain drift bias stands in for Brownian wander so
-        // the powder shears instead of moving as one sheet.
-        const grain = randoms[i];
-        let vx = (grain - 0.5) * 0.014;
-        let vy = (((grain * 7.3) % 1) - 0.5) * 0.012;
-        // Bilinear sample of the solved velocity field; x wraps like the
-        // solver grid.
-        let gxf = (x * cellsPerUnitX - 0.5) % cols;
-        if (gxf < 0) gxf += cols;
-        if (gxf >= cols) gxf = 0;
-        const gyf = Math.min(Math.max(y * rows - 0.5, 0), rows - 1.001);
-        const x0 = gxf | 0;
-        const y0 = gyf | 0;
-        const fx = gxf - x0;
-        const fy = gyf - y0;
-        const x1 = (x0 + 1) % cols;
-        const y1 = Math.min(y0 + 1, rows - 1);
-        const r0 = y0 * cols;
-        const r1 = y1 * cols;
-        const w00 = (1 - fx) * (1 - fy);
-        const w10 = fx * (1 - fy);
-        const w01 = (1 - fx) * fy;
-        const w11 = fx * fy;
-        vx +=
-          gridVx[r0 + x0] * w00 +
-          gridVx[r0 + x1] * w10 +
-          gridVx[r1 + x0] * w01 +
-          gridVx[r1 + x1] * w11;
-        vy +=
-          gridVy[r0 + x0] * w00 +
-          gridVy[r0 + x1] * w10 +
-          gridVy[r1 + x0] * w01 +
-          gridVy[r1 + x1] * w11;
-        x += vx * delta;
-        y += vy * delta;
-        if (x > aspect + 0.04) x -= aspect + 0.08;
-        else if (x < -0.04) x += aspect + 0.08;
-        if (y > 1.04) y -= 1.08;
-        else if (y < -0.04) y += 1.08;
-        particles[base] = x;
-        particles[base + 1] = y;
-        particles[base + 2] = Math.sqrt(vx * vx + vy * vy);
-      }
-      // Recycle a trickle of grains into fresh (slowly drifting) clumps so
-      // the mixing never fully homogenizes the powder.
-      for (let r = 0; r < recycle; r++) {
-        const i = Math.floor(Math.random() * particleCount);
-        spawnGrain(Math.random, elapsed * 0.03, i * 3);
-      }
-    }
-
-    function bindAttributes() {
+    function setPointerUniforms(p: Program) {
       if (!gl) return;
-      gl.bindBuffer(gl.ARRAY_BUFFER, particleBuffer);
-      gl.enableVertexAttribArray(0);
-      gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ARRAY_BUFFER, randomBuffer);
-      gl.enableVertexAttribArray(1);
-      gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 0, 0);
+      gl.uniform2f(p.u.uSegA, stylus.segA[0], stylus.segA[1]);
+      gl.uniform2f(p.u.uSegB, stylus.segB[0], stylus.segB[1]);
+      gl.uniform2f(p.u.uObjVel, stylus.vel[0], stylus.vel[1]);
+      gl.uniform1f(p.u.uPointerOn, stylus.on);
+      gl.uniform1f(p.u.uGate, stylus.gate);
+      gl.uniform1f(p.u.uCouple, stylus.couple);
+      gl.uniform1f(p.u.uStir, stylus.stir);
     }
 
-    function resize() {
-      if (!gl) return;
+    // Writes the resting ink target straight into the dye (first targets,
+    // and the reduced-motion frame).
+    function seedDye(time: number) {
+      if (!gl || !fields || !programs) return;
+      const p = programs.advectDye;
+      gl.disable(gl.BLEND);
+      bindTarget(fields.dye.write);
+      gl.useProgram(p.program);
+      gl.uniform2f(
+        p.u.uDyeTexel,
+        fields.dye.write.texel[0],
+        fields.dye.write.texel[1]
+      );
+      gl.uniform2f(p.u.uSimTexel, 1 / fields.simCols, 1 / fields.simRows);
+      gl.uniform1f(p.u.uAspect, aspect);
+      gl.uniform1f(p.u.uDt, 0);
+      gl.uniform1f(p.u.uTime, time);
+      gl.uniform1f(p.u.uSeed, 1);
+      gl.uniform1f(p.u.uRelax, 0);
+      setPointerUniforms(p);
+      bindTex(0, fields.dye.read.texture, p.u.uDye);
+      bindTex(1, fields.velocity.read.texture, p.u.uVelocity);
+      draw();
+      fields.dye.swap();
+    }
+
+    // Canvas backing store for the current stage's DPR cap; also caches the
+    // aspect so the frame loop never reads layout.
+    function syncCanvasSize() {
+      rawDpr = window.devicePixelRatio || 1;
+      dpr = Math.min(rawDpr, currentStage().dprCap);
       const width = Math.max(1, Math.round(host.clientWidth * dpr));
       const height = Math.max(1, Math.round(host.clientHeight * dpr));
-      aspect = host.clientWidth / Math.max(host.clientHeight, 1);
+      aspect = Math.max(host.clientWidth, 1) / Math.max(host.clientHeight, 1);
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
         canvas.height = height;
       }
-      gl.viewport(0, 0, width, height);
-      setupGrid();
-      initParticles();
     }
+
+    // Swaps in freshly sized targets. The dye picture is resampled from the
+    // old set so a resize or degrade never pops back to the seed; the flow
+    // fields restart from rest. Without an old set (or in reduced motion,
+    // where the still frame is always the seed) the resting target is
+    // written directly. Returns false when the allocation failed.
+    function rebuildTargets(): boolean {
+      if (!gl) return false;
+      const old = fields;
+      const next = createTargets();
+      if (!next) {
+        destroyTargets(old);
+        fields = null;
+        return false;
+      }
+      fields = next;
+      clearFlowFields();
+      if (old && !staticMode() && programs) {
+        const p = programs.copy;
+        gl.disable(gl.BLEND);
+        bindTarget(next.dye.read);
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uTexel, old.dye.read.texel[0], old.dye.read.texel[1]);
+        bindTex(0, old.dye.read.texture, p.u.uTex);
+        draw();
+      } else if (staticMode()) {
+        seedDye(STATIC_FRAME_TIME - SETTLE_SECONDS);
+        settleStatic();
+      } else {
+        seedDye(elapsed);
+      }
+      destroyTargets(old);
+      return true;
+    }
+
+    // Runs the freshly seeded tray forward to STATIC_FRAME_TIME in one go
+    // (no frame is shown in between) so the reduced-motion still frame has
+    // the live tray's folded laminae instead of the raw seed. The gyres run
+    // at their resting drive and the pointer is off.
+    function settleStatic() {
+      const dt = 1 / 60;
+      const steps = Math.round(SETTLE_SECONDS / dt);
+      const savedElapsed = elapsed;
+      elapsed = STATIC_FRAME_TIME - SETTLE_SECONDS;
+      stylus.on = 0;
+      for (let i = 0; i < steps; i++) {
+        elapsed += dt;
+        step(dt, 1);
+      }
+      elapsed = savedElapsed;
+    }
+
+    function resize() {
+      if (!gl || !fmt) return;
+      syncCanvasSize();
+      // The initial ResizeObserver callback (and any no-op notification)
+      // lands here with nothing changed: keep the targets and the ink.
+      if (targetsMatch(computeSizes())) return;
+      if (!rebuildTargets()) giveUp();
+    }
+
+    // Staged degrade before giving up: resolution and solver work shrink
+    // while the dye picture is carried over so nothing pops.
+    function degrade() {
+      stageIndex += 1;
+      if (stageIndex >= STAGES.length || !gl || !fmt) {
+        giveUp();
+      } else {
+        pressureIters = Math.min(pressureIters, currentStage().pressureIters);
+        syncCanvasSize();
+        if (!rebuildTargets()) giveUp();
+      }
+      guard.warmup = 0;
+      guard.elapsed = 0;
+      guard.frames = 0;
+      guard.slow = 0;
+    }
+
+    // ------------------------------------------------------------------
+    // Simulation step
+    // ------------------------------------------------------------------
+
+    function step(dt: number, gyreDrive: number) {
+      if (!gl || !fields || !programs) return;
+      const f = fields;
+      const pr = programs;
+      relaxAccum += dt;
+      const relaxDt = relaxAccum >= RELAX_INTERVAL ? relaxAccum : 0;
+      if (relaxDt > 0) relaxAccum = 0;
+      const simTexel: [number, number] = [1 / f.simCols, 1 / f.simRows];
+      const h = 1 / f.simRows;
+      gl.disable(gl.BLEND);
+
+      // advect velocity
+      {
+        const p = pr.advectVelocity;
+        bindTarget(f.velocity.write);
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uSimTexel, simTexel[0], simTexel[1]);
+        gl.uniform1f(p.u.uAspect, aspect);
+        gl.uniform1f(p.u.uDt, dt);
+        gl.uniform1f(p.u.uDecay, Math.exp(-dt / TAU_V));
+        bindTex(0, f.velocity.read.texture, p.u.uVelocity);
+        draw();
+        f.velocity.swap();
+      }
+      // curl
+      {
+        const p = pr.curl;
+        bindTarget(f.curl);
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uSimTexel, simTexel[0], simTexel[1]);
+        gl.uniform1f(p.u.uH, h);
+        bindTex(0, f.velocity.read.texture, p.u.uVelocity);
+        draw();
+      }
+      // forces
+      {
+        const p = pr.forces;
+        bindTarget(f.velocity.write);
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uSimTexel, simTexel[0], simTexel[1]);
+        gl.uniform1f(p.u.uH, h);
+        gl.uniform1f(p.u.uAspect, aspect);
+        gl.uniform1f(p.u.uDt, dt);
+        gl.uniform1f(p.u.uTime, elapsed);
+        gl.uniform1f(p.u.uConfEps, currentStage().confEps);
+        gl.uniform1f(p.u.uGyreDrive, gyreDrive);
+        setPointerUniforms(p);
+        bindTex(0, f.velocity.read.texture, p.u.uVelocity);
+        bindTex(1, f.curl.texture, p.u.uCurl);
+        draw();
+        f.velocity.swap();
+      }
+      // divergence (of the advanced velocity, per unit dt)
+      {
+        const p = pr.divergence;
+        bindTarget(f.divergence);
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uSimTexel, simTexel[0], simTexel[1]);
+        gl.uniform1f(p.u.uH, h);
+        gl.uniform1f(p.u.uDt, dt);
+        bindTex(0, f.velocity.read.texture, p.u.uVelocity);
+        draw();
+      }
+      // pressure (Jacobi, warm-started from last frame)
+      {
+        const p = pr.pressure;
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uSimTexel, simTexel[0], simTexel[1]);
+        gl.uniform1f(p.u.uH, h);
+        bindTex(1, f.divergence.texture, p.u.uDivergence);
+        for (let i = 0; i < pressureIters; i++) {
+          bindTarget(f.pressure.write);
+          bindTex(0, f.pressure.read.texture, p.u.uPressure);
+          draw();
+          f.pressure.swap();
+        }
+      }
+      // gradient subtract
+      {
+        const p = pr.gradient;
+        bindTarget(f.velocity.write);
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uSimTexel, simTexel[0], simTexel[1]);
+        gl.uniform1f(p.u.uH, h);
+        gl.uniform1f(p.u.uAspect, aspect);
+        gl.uniform1f(p.u.uDt, dt);
+        bindTex(0, f.velocity.read.texture, p.u.uVelocity);
+        bindTex(1, f.pressure.read.texture, p.u.uPressure);
+        draw();
+        f.velocity.swap();
+      }
+      // advect dye
+      const dyeTexel = f.dye.read.texel;
+      const scratch = useMacCormack() ? f.scratch : null;
+      {
+        const p = pr.advectDye;
+        bindTarget(scratch ?? f.dye.write);
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uDyeTexel, dyeTexel[0], dyeTexel[1]);
+        gl.uniform2f(p.u.uSimTexel, simTexel[0], simTexel[1]);
+        gl.uniform1f(p.u.uAspect, aspect);
+        gl.uniform1f(p.u.uDt, dt);
+        gl.uniform1f(p.u.uTime, elapsed);
+        gl.uniform1f(p.u.uSeed, 0);
+        gl.uniform1f(p.u.uRelaxDt, relaxDt);
+        gl.uniform1f(p.u.uRelax, scratch ? 0 : 1);
+        setPointerUniforms(p);
+        bindTex(0, f.dye.read.texture, p.u.uDye);
+        bindTex(1, f.velocity.read.texture, p.u.uVelocity);
+        draw();
+      }
+      if (scratch) {
+        const p = pr.maccormack;
+        bindTarget(f.dye.write);
+        gl.useProgram(p.program);
+        gl.uniform2f(p.u.uDyeTexel, dyeTexel[0], dyeTexel[1]);
+        gl.uniform2f(p.u.uSimTexel, simTexel[0], simTexel[1]);
+        gl.uniform1f(p.u.uAspect, aspect);
+        gl.uniform1f(p.u.uDt, dt);
+        gl.uniform1f(p.u.uTime, elapsed);
+        gl.uniform1f(p.u.uRelaxDt, relaxDt);
+        setPointerUniforms(p);
+        bindTex(0, f.dye.read.texture, p.u.uDye);
+        bindTex(1, scratch.texture, p.u.uScratch);
+        bindTex(2, f.velocity.read.texture, p.u.uVelocity);
+        draw();
+      }
+      f.dye.swap();
+    }
+
+    // pressScale = 1 after a solver step, 0 when no step ran (long stall,
+    // static frame) so a stale pressure field never shows as relief.
+    function drawDisplay(time: number, pressScale: number) {
+      if (!gl || !fields || !programs) return;
+      const p = programs.display;
+      bindTarget(null);
+      gl.enable(gl.BLEND);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(p.program);
+      gl.uniform2f(
+        p.u.uDyeTexel,
+        fields.dye.read.texel[0],
+        fields.dye.read.texel[1]
+      );
+      gl.uniform1f(p.u.uAspect, aspect);
+      gl.uniform1f(p.u.uTime, time);
+      gl.uniform3fv(p.u.uBg, currentColors.bg);
+      gl.uniform3fv(p.u.uInk, currentColors.ink);
+      gl.uniform3fv(p.u.uAccent, currentColors.accent);
+      gl.uniform2f(p.u.uSimTexel, 1 / fields.simCols, 1 / fields.simRows);
+      gl.uniform1f(p.u.uPressScale, pressScale);
+      bindTex(0, fields.dye.read.texture, p.u.uDye);
+      bindTex(1, fields.curl.texture, p.u.uCurl);
+      bindTex(2, fields.pressure.read.texture, p.u.uPressure);
+      draw();
+      gl.disable(gl.BLEND);
+    }
+
+    // One-time sanity check before revealing: privacy-hardened browsers can
+    // hand back a context that is lost at birth or silently broken; keep
+    // the CSS fallback rather than swapping to a blank canvas.
+    function checkFirstFrame(): boolean {
+      if (!gl) return false;
+      if (gl.isContextLost() || gl.getError() !== gl.NO_ERROR) {
+        giveUp();
+        return false;
+      }
+      return true;
+    }
+
+    // Reduced motion: one still frame of the seeded and settled ink
+    // (resize() writes and settles it whenever it builds targets in static
+    // mode) with a flat surface, in the exact theme colours, never a
+    // half-eased mix.
+    function renderStatic() {
+      if (!gl || !fields || contextLost) return;
+      snapColors();
+      drawDisplay(STATIC_FRAME_TIME, 0);
+      if (!revealed && !checkFirstFrame()) return;
+      reveal();
+    }
+
+    // ------------------------------------------------------------------
+    // Pointer
+    // ------------------------------------------------------------------
+
+    function updatePointer(dt: number, skipStep: boolean) {
+      const kE = 1 - Math.exp(-dt / TAU_E);
+      const dx = ptr.x - ptr.prevX;
+      const dy = ptr.y - ptr.prevY;
+      const dist = Math.hypot(dx, dy);
+      let vRawX = 0;
+      let vRawY = 0;
+      let inject = false;
+      if (ptr.active && !skipStep) {
+        vRawX = dx / dt;
+        vRawY = dy / dt;
+        inject = ptr.hasPrev;
+      }
+      ptr.vx += (vRawX - ptr.vx) * kE;
+      ptr.vy += (vRawY - ptr.vy) * kE;
+
+      const s = Math.hypot(ptr.vx, ptr.vy);
+      const gateT = Math.min(
+        Math.max((s - GATE_LO) / (GATE_HI - GATE_LO), 0),
+        1
+      );
+      const gate = gateT * gateT * (3 - 2 * gateT);
+      const sEff = V_SAT * Math.tanh(s / V_SAT);
+      const inv = 1 / Math.max(s, 1e-4);
+      stylus.gate = gate;
+      stylus.couple = 1 - Math.exp(-dt / TAU_C);
+      stylus.stir = ACCENT_STIR * (sEff / V_SAT);
+      stylus.vel[0] = ptr.vx * inv * sEff * ENTRAIN;
+      stylus.vel[1] = ptr.vy * inv * sEff * ENTRAIN;
+      stylus.on = inject && gate > 0.001 ? 1 : 0;
+
+      if (stylus.on) {
+        const minTail = 0.5 * POINTER_RADIUS;
+        stylus.segB[0] = ptr.x;
+        stylus.segB[1] = ptr.y;
+        if (dist > SEG_MAX) {
+          // A flick crossed more than SEG_MAX this frame: keep the last
+          // SEG_MAX of the path (the speed is already saturated above).
+          stylus.segA[0] = ptr.x - (dx / dist) * SEG_MAX;
+          stylus.segA[1] = ptr.y - (dy / dist) * SEG_MAX;
+        } else if (dist * (1 + POINTER_TAIL) >= minTail) {
+          stylus.segA[0] = ptr.prevX - POINTER_TAIL * dx;
+          stylus.segA[1] = ptr.prevY - POINTER_TAIL * dy;
+        } else {
+          // Short segment: a minimum tail along the smoothed velocity so
+          // the wake never starts abruptly.
+          stylus.segA[0] = ptr.x - ptr.vx * inv * minTail;
+          stylus.segA[1] = ptr.y - ptr.vy * inv * minTail;
+        }
+      }
+    }
+
+    function finishPointer() {
+      if (ptr.active) {
+        ptr.prevX = ptr.x;
+        ptr.prevY = ptr.y;
+        ptr.hasPrev = true;
+      } else {
+        ptr.hasPrev = false;
+      }
+    }
+
+    function releasePointer() {
+      ptr.active = false;
+      ptr.hasPrev = false;
+      ptr.vx = 0;
+      ptr.vy = 0;
+    }
+
+    // ------------------------------------------------------------------
+    // Reveal, colours, perf guard, loop
+    // ------------------------------------------------------------------
 
     function reveal() {
       if (!revealed) {
@@ -738,64 +1902,20 @@
       host.classList.remove('is-active');
     }
 
-    function renderFrame(time: number) {
-      if (!gl || !program || contextLost) return;
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.uniform1f(uniforms.uAspect, aspect);
-      gl.uniform1f(uniforms.uPointScale, dpr);
-      gl.uniform1f(uniforms.uTime, time);
-      gl.uniform3fv(uniforms.uInk, currentColors.ink);
-      gl.uniform3fv(uniforms.uAccent, currentColors.accent);
-      if (particleBuffer) {
-        gl.bindBuffer(gl.ARRAY_BUFFER, particleBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, particles);
-      }
-      gl.drawArrays(gl.POINTS, 0, particleCount);
-      // One-time sanity check before revealing: privacy-hardened browsers
-      // can hand back a context that is lost at birth or silently broken;
-      // keep the CSS fallback rather than swapping to a blank canvas.
-      if (!revealed && (gl.isContextLost() || gl.getError() !== gl.NO_ERROR)) {
-        failed = true;
-        stopLoop();
-        return;
-      }
-      reveal();
+    // Permanent fallback to the CSS gradient: every give-up path (failed
+    // allocation, broken first frame, exhausted quality ladder, exception)
+    // goes through here so none of them leaves the canvas showing or the
+    // loop running.
+    function giveUp() {
+      failed = true;
+      unreveal();
+      stopLoop();
     }
 
     function snapColors() {
       currentColors.bg = [...targetColors.bg] as Rgb;
       currentColors.ink = [...targetColors.ink] as Rgb;
       currentColors.accent = [...targetColors.accent] as Rgb;
-    }
-
-    function easeColors() {
-      (['bg', 'ink', 'accent'] as const).forEach((key) => {
-        for (let channel = 0; channel < 3; channel++) {
-          currentColors[key][channel] +=
-            (targetColors[key][channel] - currentColors[key][channel]) * 0.08;
-        }
-      });
-    }
-
-    // Staged degrade before giving up: full DPR -> DPR 1 -> fewer particles
-    // -> stop and leave the CSS fallback.
-    function degrade() {
-      if (dpr > 1) {
-        dpr = 1;
-        resize();
-      } else if (particleCount > PARTICLES_REDUCED) {
-        particleCount = PARTICLES_REDUCED;
-        initParticles();
-      } else {
-        failed = true;
-        unreveal();
-        stopLoop();
-      }
-      guard.warmup = 0;
-      guard.elapsed = 0;
-      guard.frames = 0;
-      guard.slow = 0;
     }
 
     function trackFrameBudget(delta: number) {
@@ -824,25 +1944,59 @@
 
     function frame(now: number) {
       frameId = requestAnimationFrame(frame);
-      const delta =
-        lastFrameAt === null ? 0 : Math.min((now - lastFrameAt) / 1000, 0.1);
-      lastFrameAt = now;
-      elapsed += delta;
-      hostRect = host.getBoundingClientRect();
-      trackFrameBudget(delta);
-      if (failed) return;
-      easeColors();
-      if (delta > 0) {
-        stepFlow(delta);
-        stepParticles(delta);
+      // Idle throttle: nobody near the band, guard passed -> let frames
+      // through at about IDLE_FPS. The 2 ms slack lands on a whole number
+      // of display frames (every 2nd at 60 Hz, every 4th at 120 Hz).
+      if (
+        guard.passed &&
+        !ptr.active &&
+        lastFrameAt !== null &&
+        now - lastPointerAt > IDLE_AFTER * 1000 &&
+        now - lastFrameAt < 1000 / IDLE_FPS - 2
+      ) {
+        return;
       }
-      renderFrame(elapsed);
+      const rawDelta = lastFrameAt === null ? 0 : (now - lastFrameAt) / 1000;
+      lastFrameAt = now;
+      elapsed += Math.min(Math.max(rawDelta, 0), 0.1);
+      hostRect = host.getBoundingClientRect();
+      trackFrameBudget(rawDelta);
+      if (failed || contextLost || !gl) return;
+      // Anything thrown mid-frame (a driver refusing an allocation during
+      // a degrade, an extension vanishing) lands on the CSS fallback
+      // rather than a frozen canvas and an unbounded error stream.
+      try {
+        // A DPR-only change (window dragged to another display) does not
+        // move the host's CSS box, so the ResizeObserver never sees it.
+        if ((window.devicePixelRatio || 1) !== rawDpr) resize();
+        // A long stall (tab return) skips the step rather than integrating
+        // a giant dt; zero deltas (quantized rAF clocks) step a nominal
+        // frame so the liquid never freezes.
+        const skipStep = rawDelta > 0.25;
+        const dt =
+          rawDelta > 0 ? Math.min(Math.max(rawDelta, 1 / 240), 1 / 30) : 1 / 60;
+        updatePointer(dt, skipStep);
+        const gyreDrive =
+          1 + ENTRY_BOOST * Math.exp(-(elapsed - loopStartedAt) / ENTRY_TAU);
+        if (!skipStep) step(dt, gyreDrive);
+        drawDisplay(elapsed, skipStep ? 0 : 1);
+        if (!revealed) {
+          if (!checkFirstFrame()) return;
+          reveal();
+        }
+        finishPointer();
+      } catch {
+        giveUp();
+      }
     }
 
     function stopLoop() {
       cancelAnimationFrame(frameId);
       frameId = 0;
       lastFrameAt = null;
+      // The pointer handler ignores events while the loop is stopped, so a
+      // restart must not pair a stale previous position with a fresh one.
+      releasePointer();
     }
 
     function updateRunState() {
@@ -854,6 +2008,7 @@
         !document.hidden &&
         !staticMode();
       if (shouldRun && frameId === 0) {
+        loopStartedAt = elapsed;
         frameId = requestAnimationFrame(frame);
       } else if (!shouldRun && frameId !== 0) {
         stopLoop();
@@ -866,9 +2021,8 @@
         staticMode() &&
         !revealed
       ) {
-        snapColors();
         resize();
-        renderFrame(STATIC_FRAME_TIME);
+        renderStatic();
       }
     }
 
@@ -887,9 +2041,8 @@
         canvas.getContext('webgl', attributes)) as WebGLRenderingContext | null;
       if (!gl) {
         // Privacy-hardened browsers often only offer software WebGL, which
-        // the strict attributes refuse. The GPU work here is just point
-        // sprites (the physics runs on the CPU), so software rendering is
-        // fine - retry without the caveat and let the perf guard decide.
+        // the strict attributes refuse. Retry without the caveat and let
+        // the perf guard decide whether it can keep up.
         attributes.failIfMajorPerformanceCaveat = false;
         gl = (canvas.getContext('webgl2', attributes) ||
           canvas.getContext(
@@ -898,38 +2051,66 @@
           )) as WebGLRenderingContext | null;
       }
       if (!gl || gl.isContextLost()) return false;
+      maxTextureSize = Math.max(
+        256,
+        (gl.getParameter(gl.MAX_TEXTURE_SIZE) as number) || 2048
+      );
 
-      program = compileProgram(gl);
-      if (!program) return false;
-      gl.useProgram(program);
-      gl.enable(gl.BLEND);
+      // Fullscreen triangle shared by every pass.
+      quadBuffer = gl.createBuffer();
+      if (!quadBuffer) return false;
+      gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, 3, -1, -1, 3]),
+        gl.STATIC_DRAW
+      );
+      gl.enableVertexAttribArray(0);
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      gl.disable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-      particleBuffer = gl.createBuffer();
-      randomBuffer = gl.createBuffer();
-      if (!particleBuffer || !randomBuffer) return false;
+      fmt = probeFormats();
+      if (!fmt) return false;
 
-      uniforms = {};
-      for (const name of [
-        'uAspect',
-        'uPointScale',
-        'uTime',
-        'uInk',
-        'uAccent',
-      ]) {
-        uniforms[name] = gl.getUniformLocation(program, name);
+      const highp =
+        (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT)
+          ?.precision ?? 0) > 0;
+      const header =
+        (highp ? 'precision highp float;\n' : 'precision mediump float;\n') +
+        (fmt.manualBilinear ? '#define MANUAL_BILINEAR 1\n' : '') +
+        Object.entries(SHADER_DEFINES)
+          .map(([name, value]) => `#define ${name} ${glslFloat(value)}`)
+          .join('\n') +
+        '\n';
+
+      const built: Partial<Programs> = {};
+      for (const key of Object.keys(PROGRAM_SOURCES) as ProgramKey[]) {
+        const program = createProgram(header + PROGRAM_SOURCES[key]);
+        if (!program) return false;
+        built[key] = program;
       }
+      programs = built as Programs;
+
+      fields = null;
       resize();
+      if (!fields) return false;
+      drainErrors();
       return true;
     }
 
     function initialize() {
       if (initialized || failed) return;
+      // The theme may have been switched between page load (when the
+      // colours were first read) and the band scrolling into view; the
+      // class observer below only starts now, so re-read and snap.
+      targetColors = readThemeColors();
+      snapColors();
       // Any quirk in a hardened or unusual browser lands on the CSS
       // fallback instead of a half-initialized canvas.
       try {
         if (!setupGl()) {
-          failed = true;
+          giveUp();
           return;
         }
         initialized = true;
@@ -944,33 +2125,39 @@
         });
         canvas.addEventListener('webglcontextrestored', () => {
           contextLost = false;
-          if (setupGl()) {
-            unreveal();
-            updateRunState();
-          } else {
-            failed = true;
+          fields = null;
+          try {
+            if (setupGl()) {
+              unreveal();
+              updateRunState();
+            } else {
+              giveUp();
+            }
+          } catch {
+            giveUp();
           }
         });
 
         const resizeObserver = new ResizeObserver(() => {
+          if (failed || contextLost) return;
           resize();
-          if (
-            staticMode() &&
-            initialized &&
-            !failed &&
-            !contextLost &&
-            inView
-          ) {
-            renderFrame(STATIC_FRAME_TIME);
+          if (staticMode() && initialized && !failed && inView) {
+            renderStatic();
           }
         });
         resizeObserver.observe(host);
 
         new MutationObserver(() => {
           targetColors = readThemeColors();
-          if (staticMode() && initialized && !failed && !contextLost) {
-            snapColors();
-            renderFrame(STATIC_FRAME_TIME);
+          snapColors();
+          if (!initialized || failed || contextLost) return;
+          // The CSS background changes immediately. Repaint with the same
+          // palette even when the loop is paused or throttled, without
+          // resetting the fluid or animating a reduced-motion still frame.
+          if (staticMode()) {
+            renderStatic();
+          } else {
+            drawDisplay(elapsed, frameId === 0 ? 0 : 1);
           }
         }).observe(document.documentElement, {
           attributes: true,
@@ -1003,27 +2190,41 @@
               event.clientY >= hostRect.top - margin &&
               event.clientY <= hostRect.bottom + margin;
             if (!inside) {
-              stir.active = false;
+              releasePointer();
               return;
             }
-            stir.x = (event.clientX - hostRect.left) / hostRect.height;
-            stir.y = (hostRect.bottom - event.clientY) / hostRect.height;
-            stir.active = true;
+            lastPointerAt = performance.now();
+            const x = (event.clientX - hostRect.left) / hostRect.height;
+            const y = (hostRect.bottom - event.clientY) / hostRect.height;
+            if (!ptr.active) {
+              ptr.prevX = x;
+              ptr.prevY = y;
+              ptr.hasPrev = false;
+            } else {
+              // If the band moved under the cursor since the last event
+              // (wheel scroll), carry the previous position along with it
+              // so only the pointer's own displacement becomes velocity.
+              const bandDx =
+                x - ptr.x - (event.clientX - ptr.clientX) / hostRect.height;
+              const bandDy =
+                y - ptr.y + (event.clientY - ptr.clientY) / hostRect.height;
+              ptr.prevX += bandDx;
+              ptr.prevY += bandDy;
+            }
+            ptr.clientX = event.clientX;
+            ptr.clientY = event.clientY;
+            ptr.x = x;
+            ptr.y = y;
+            ptr.active = true;
           },
           { passive: true }
         );
-        window.addEventListener('blur', () => {
-          stir.active = false;
-        });
-        document.addEventListener('pointerleave', () => {
-          stir.active = false;
-        });
+        window.addEventListener('blur', releasePointer);
+        document.addEventListener('pointerleave', releasePointer);
 
         updateRunState();
       } catch {
-        failed = true;
-        unreveal();
-        stopLoop();
+        giveUp();
       }
     }
 
