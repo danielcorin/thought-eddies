@@ -65,9 +65,9 @@ run = "npx wrangler deploy --config newsletter/wrangler.toml"
 description = "Open the newsletter subscriber admin UI"
 run = "node newsletter/admin.js"
 
-[tasks.tl]
-description = "Convert Threads logs to posts"
-run = "./scripts/threads_logs_to_posts.py"
+[tasks.sync-logs]
+description = "Pull log entries from Threads and the Logs journal into log posts"
+run = "./scripts/sync_logs.py"
 
 [tasks.links]
 description = "Convert a Raindrop collection to link posts"
