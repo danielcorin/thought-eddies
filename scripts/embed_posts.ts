@@ -11,9 +11,9 @@ import {
   forceSimulation,
 } from 'd3-force';
 import matter from 'gray-matter';
+import { OLLAMA_MODEL, OLLAMA_ORIGIN } from './map-config.mjs';
 
-const OLLAMA_URL = 'http://localhost:11434/api/embeddings';
-const OLLAMA_MODEL = 'qwen3-embedding:8b';
+const OLLAMA_URL = `${OLLAMA_ORIGIN}/api/embeddings`;
 const MAX_WORDS = 6000;
 const NUM_CTX = 8192;
 
@@ -24,13 +24,7 @@ const CACHE_PATH = join(DATA_DIR, 'embeddings.cache.json');
 const OUTPUT_PATH = join(DATA_DIR, 'embeddings.json');
 
 type Collection =
-  | 'posts'
-  | 'logs'
-  | 'til'
-  | 'garden'
-  | 'projects'
-  | 'now'
-  | 'uses';
+  'posts' | 'logs' | 'til' | 'garden' | 'projects' | 'now' | 'uses';
 
 const COLLECTIONS: Collection[] = [
   'posts',

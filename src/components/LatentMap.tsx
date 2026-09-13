@@ -1,6 +1,20 @@
 import { ParentSize } from '@visx/responsive';
 import { scaleLinear } from '@visx/scale';
-import { History, Pause, Play, SkipBack, SkipForward, X } from 'lucide-react';
+import {
+  History,
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+  X,
+  Search,
+  SlidersHorizontal,
+  Compass,
+  Plus,
+  Minus,
+  RotateCcw,
+  ArrowRight,
+} from 'lucide-react';
 import {
   useCallback,
   useEffect,
@@ -8,10 +22,10 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
 import embeddingsData from '../data/embeddings.json';
+import '../styles/map.css';
 
 type Point = {
   slug: string;
@@ -115,7 +129,6 @@ const HOVER_COMMIT_DELAY_MS = 45;
 const HOVER_CLEAR_DELAY_MS = 90;
 const PINNED_CARD_OFFSET = 12;
 const PINNED_CARD_MARGIN = 12;
-const MOBILE_CONTROL_INSET = 12;
 
 const TYPE_COLORS: Record<string, string> = {
   posts: '#3b6fb5',
@@ -508,9 +521,13 @@ function MapInner({ width, height, data }: InnerProps) {
     y: number;
   } | null>(null);
   const [topicIdx, setTopicIdx] = useState<number | null>(null);
-  const [topicsExpanded, setTopicsExpanded] = useState(false);
+  const [explorePanel, setExplorePanel] = useState<
+    'search' | 'topics' | 'filters' | null
+  >(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [zoomPercent, setZoomPercent] = useState(100);
+  const exploreTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [legendExpanded, setLegendExpanded] = useState(false);
   const [hiddenTypes, setHiddenTypes] = useState<Set<string>>(() => new Set());
   const [hiddenYears, setHiddenYears] = useState<Set<string>>(() => new Set());
   const [timelineActive, setTimelineActive] = useState(false);
@@ -531,7 +548,13 @@ function MapInner({ width, height, data }: InnerProps) {
       });
       const yScale = scaleLinear<number>({
         domain: [Math.min(...ys), Math.max(...ys)],
-        range: [PADDING, height - PADDING],
+        range: [
+          PADDING,
+          Math.max(
+            PADDING + 1,
+            height - (width < MOBILE_BREAKPOINT_PX ? 160 : PADDING)
+          ),
+        ],
       });
       const isMobile = width < MOBILE_BREAKPOINT_PX;
       const sizeScale = scaleLinear<number>({
@@ -540,22 +563,18 @@ function MapInner({ width, height, data }: InnerProps) {
           ? [MOBILE_MIN_RADIUS, MOBILE_MAX_RADIUS]
           : [MIN_RADIUS, MAX_RADIUS],
       });
-      const nodes = points.map(
-        (point, idx): RenderNode => ({
-          ...point,
-          idx,
-          cx: xScale(point.x),
-          cy: yScale(point.y),
-          r: sizeScale(Math.log(point.wordCount + 1)),
-          fill: TYPE_COLORS[point.type] ?? '#555',
-        })
-      );
-      const renderEdges = edges.map(
-        (edge, idx): RenderEdge => ({
-          ...edge,
-          idx,
-        })
-      );
+      const nodes = points.map((point, idx): RenderNode => ({
+        ...point,
+        idx,
+        cx: xScale(point.x),
+        cy: yScale(point.y),
+        r: sizeScale(Math.log(point.wordCount + 1)),
+        fill: TYPE_COLORS[point.type] ?? '#555',
+      }));
+      const renderEdges = edges.map((edge, idx): RenderEdge => ({
+        ...edge,
+        idx,
+      }));
       const presentTypes = Array.from(
         new Set(points.map((point) => point.type))
       ).sort((a, b) =>
@@ -591,7 +610,8 @@ function MapInner({ width, height, data }: InnerProps) {
         const point = points[i];
         if (!point.date || point.date.startsWith('1970-01-01')) continue;
         const t = new Date(point.date).getTime();
-        if (Number.isFinite(t)) dated.push({ idx: i, time: t });
+        if (Number.isFinite(t))
+          dated.push({ idx: i, time: Math.floor(t / DAY_MS) * DAY_MS });
       }
       dated.sort((a, b) => a.time - b.time);
       const sortedTimes = dated.map((d) => d.time);
@@ -601,7 +621,7 @@ function MapInner({ width, height, data }: InnerProps) {
       const now = Date.now();
       return {
         timelineStart: sortedTimes[0] ?? now,
-        timelineEnd: lastPost != null ? Math.max(lastPost, now) : now,
+        timelineEnd: lastPost ?? now,
         sortedPostTimes: sortedTimes,
         nodeTimes: map,
       };
@@ -619,12 +639,11 @@ function MapInner({ width, height, data }: InnerProps) {
 
     const useTimelineFilter = timelineActive && cursorTime != null;
     for (const node of nodes) {
+      if (hiddenTypes.has(node.type)) continue;
+      if (hiddenYears.has(getPointYear(node))) continue;
       if (useTimelineFilter) {
         const t = nodeTimes.get(node.idx);
         if (t == null || t > cursorTime) continue;
-      } else {
-        if (hiddenTypes.has(node.type)) continue;
-        if (hiddenYears.has(getPointYear(node))) continue;
       }
       visibleNodeIdxs.add(node.idx);
       visibleNodes.push(node);
@@ -661,6 +680,21 @@ function MapInner({ width, height, data }: InnerProps) {
     cursorTime,
     nodeTimes,
   ]);
+
+  const filteredPostTimes = useMemo(
+    () =>
+      points
+        .flatMap((point, idx) => {
+          const time = nodeTimes.get(idx);
+          return time != null &&
+            !hiddenTypes.has(point.type) &&
+            !hiddenYears.has(getPointYear(point))
+            ? [time]
+            : [];
+        })
+        .sort((a, b) => a - b),
+    [points, nodeTimes, hiddenTypes, hiddenYears]
+  );
 
   const nodeOpacityById = useMemo(() => {
     if (!timelineActive || cursorTime == null) return null;
@@ -776,6 +810,7 @@ function MapInner({ width, height, data }: InnerProps) {
       yScale,
       nodeOpacityById,
     });
+    setZoomPercent(Math.round(transformRef.current.k * 100));
   }, [
     height,
     highlightState,
@@ -789,14 +824,19 @@ function MapInner({ width, height, data }: InnerProps) {
     yScale,
   ]);
 
+  const drawRef = useRef(draw);
+  useLayoutEffect(() => {
+    drawRef.current = draw;
+  }, [draw]);
+
   const scheduleDraw = useCallback(() => {
     if (drawFrameRef.current != null) return;
 
     drawFrameRef.current = window.requestAnimationFrame(() => {
       drawFrameRef.current = null;
-      draw();
+      drawRef.current();
     });
-  }, [draw]);
+  }, []);
 
   const moveTooltip = useCallback((screenX: number, screenY: number) => {
     tooltipPositionRef.current = { x: screenX + 12, y: screenY + 12 };
@@ -945,6 +985,7 @@ function MapInner({ width, height, data }: InnerProps) {
   }, [clearHover]);
 
   const toggleHiddenType = useCallback((type: string) => {
+    setPlaying(false);
     setHiddenTypes((current) => {
       const next = new Set(current);
       if (next.has(type)) {
@@ -957,6 +998,7 @@ function MapInner({ width, height, data }: InnerProps) {
   }, []);
 
   const toggleHiddenYear = useCallback((year: string) => {
+    setPlaying(false);
     setHiddenYears((current) => {
       const next = new Set(current);
       if (next.has(year)) {
@@ -969,18 +1011,22 @@ function MapInner({ width, height, data }: InnerProps) {
   }, []);
 
   const showAllTypes = useCallback(() => {
+    setPlaying(false);
     setHiddenTypes(new Set());
   }, []);
 
   const showAllYears = useCallback(() => {
+    setPlaying(false);
     setHiddenYears(new Set());
   }, []);
 
   const hideAllTypes = useCallback(() => {
+    setPlaying(false);
     setHiddenTypes(new Set(presentTypes));
   }, [presentTypes]);
 
   const hideAllYears = useCallback(() => {
+    setPlaying(false);
     setHiddenYears(new Set(presentYears));
   }, [presentYears]);
 
@@ -995,10 +1041,7 @@ function MapInner({ width, height, data }: InnerProps) {
         hitPadding,
       });
 
-      if (timelineActive) {
-        setTimelineActive(false);
-        setPlaying(false);
-      }
+      if (timelineActive) setPlaying(false);
 
       if (hit) {
         setSelectedIdx(hit.idx);
@@ -1409,13 +1452,13 @@ function MapInner({ width, height, data }: InnerProps) {
   }, [clearHover, scheduleDraw, selectAt, startPinch]);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
 
-      const rect = container.getBoundingClientRect();
+      const rect = canvas.getBoundingClientRect();
       const current = transformRef.current;
       const nextK = clamp(
         current.k * Math.exp(-event.deltaY * 0.001),
@@ -1437,13 +1480,13 @@ function MapInner({ width, height, data }: InnerProps) {
       updateHover(event.clientX, event.clientY);
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: false });
-    return () => container.removeEventListener('wheel', handleWheel);
+    canvas.addEventListener('wheel', handleWheel, { passive: false });
+    return () => canvas.removeEventListener('wheel', handleWheel);
   }, [scheduleDraw, updateHover]);
 
   useEffect(() => {
     scheduleDraw();
-  }, [scheduleDraw]);
+  }, [draw, scheduleDraw]);
 
   useEffect(() => {
     const observer = new MutationObserver(scheduleDraw);
@@ -1475,13 +1518,13 @@ function MapInner({ width, height, data }: InnerProps) {
         let next = cur + advanceMs;
 
         let lo = 0;
-        let hi = sortedPostTimes.length;
+        let hi = filteredPostTimes.length;
         while (lo < hi) {
           const mid = (lo + hi) >>> 1;
-          if (sortedPostTimes[mid] <= cur) lo = mid + 1;
+          if (filteredPostTimes[mid] <= cur) lo = mid + 1;
           else hi = mid;
         }
-        const nextPost = sortedPostTimes[lo];
+        const nextPost = filteredPostTimes[lo];
         if (nextPost != null) {
           const gap = nextPost - cur;
           if (gap > PLAY_GAP_THRESHOLD_DAYS * DAY_MS) {
@@ -1514,7 +1557,7 @@ function MapInner({ width, height, data }: InnerProps) {
     playSpeed,
     timelineStart,
     timelineEnd,
-    sortedPostTimes,
+    filteredPostTimes,
   ]);
 
   const openTimeline = useCallback(() => {
@@ -1546,43 +1589,53 @@ function MapInner({ width, height, data }: InnerProps) {
   }, [timelineEnd, timelineStart]);
 
   const stepPrev = useCallback(() => {
-    if (sortedPostTimes.length === 0) return;
+    if (filteredPostTimes.length === 0) return;
     setPlaying(false);
     setCursorTime((curr) => {
       const cur = curr ?? timelineStart;
       let lo = 0;
-      let hi = sortedPostTimes.length;
+      let hi = filteredPostTimes.length;
       while (lo < hi) {
         const mid = (lo + hi) >>> 1;
-        if (sortedPostTimes[mid] < cur) lo = mid + 1;
+        if (filteredPostTimes[mid] < cur) lo = mid + 1;
         else hi = mid;
       }
       const idx = lo - 1;
       if (idx < 0) return timelineStart;
-      return sortedPostTimes[idx];
+      return filteredPostTimes[idx];
     });
-  }, [sortedPostTimes, timelineStart]);
+  }, [filteredPostTimes, timelineStart]);
 
   const stepNext = useCallback(() => {
-    if (sortedPostTimes.length === 0) return;
+    if (filteredPostTimes.length === 0) return;
     setPlaying(false);
     setCursorTime((curr) => {
       const cur = curr ?? timelineStart;
       let lo = 0;
-      let hi = sortedPostTimes.length;
+      let hi = filteredPostTimes.length;
       while (lo < hi) {
         const mid = (lo + hi) >>> 1;
-        if (sortedPostTimes[mid] <= cur) lo = mid + 1;
+        if (filteredPostTimes[mid] <= cur) lo = mid + 1;
         else hi = mid;
       }
-      if (lo >= sortedPostTimes.length) return timelineEnd;
-      return sortedPostTimes[lo];
+      if (lo >= filteredPostTimes.length) return timelineEnd;
+      return filteredPostTimes[lo];
     });
-  }, [sortedPostTimes, timelineEnd, timelineStart]);
+  }, [filteredPostTimes, timelineEnd, timelineStart]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        if (selectedIdx != null) {
+          clearSelection();
+          canvasRef.current?.focus({ preventScroll: true });
+          return;
+        }
+        if (explorePanel) {
+          setExplorePanel(null);
+          exploreTriggerRef.current?.focus();
+          return;
+        }
         if (timelineActive) {
           setTimelineActive(false);
           setPlaying(false);
@@ -1617,7 +1670,15 @@ function MapInner({ width, height, data }: InnerProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [clearHighlight, stepNext, stepPrev, timelineActive]);
+  }, [
+    clearHighlight,
+    clearSelection,
+    selectedIdx,
+    explorePanel,
+    stepNext,
+    stepPrev,
+    timelineActive,
+  ]);
 
   const updateSelectedCardPosition = useCallback(() => {
     if (!selectedAt || !selectedCardRef.current) return;
@@ -1642,6 +1703,7 @@ function MapInner({ width, height, data }: InnerProps) {
 
   useLayoutEffect(() => {
     updateSelectedCardPosition();
+    selectedCardRef.current?.focus({ preventScroll: true });
   }, [selectedIdx, updateSelectedCardPosition]);
 
   useEffect(() => {
@@ -1688,141 +1750,397 @@ function MapInner({ width, height, data }: InnerProps) {
   }, []);
 
   const isMobile = width < MOBILE_BREAKPOINT_PX;
-  const mobileBottomInset = `calc(${MOBILE_CONTROL_INSET}px + env(safe-area-inset-bottom))`;
-  const mobileLeftInset = `calc(${MOBILE_CONTROL_INSET}px + env(safe-area-inset-left))`;
-  const mobileRightInset = `calc(${MOBILE_CONTROL_INSET}px + env(safe-area-inset-right))`;
-  const mobileCornerMaxWidth = `calc(50% - ${MOBILE_CONTROL_INSET + 6}px)`;
+  const selectedPoint = selectedIdx != null ? points[selectedIdx] : null;
+  const filterCount = hiddenTypes.size + hiddenYears.size;
+  const searchResults = useMemo(() => {
+    const query = searchQuery.trim().toLocaleLowerCase('en-US');
+    return query
+      ? visibleNodes
+          .filter((node) =>
+            node.title.toLocaleLowerCase('en-US').includes(query)
+          )
+          .sort((a, b) => b.date.localeCompare(a.date))
+      : [];
+  }, [searchQuery, visibleNodes]);
 
-  const legendActionStyle: CSSProperties = {
-    border: '1px solid var(--color-border, #ccc)',
-    background: 'transparent',
-    color: 'var(--color-ink, #1c1c1c)',
-    borderRadius: 4,
-    padding: isMobile ? '4px 8px' : '2px 6px',
-    fontSize: 11,
-    fontFamily: 'inherit',
-    cursor: 'pointer',
-    touchAction: 'manipulation',
+  const zoomBy = (factor: number) => {
+    const current = transformRef.current;
+    const k = clamp(current.k * factor, MIN_ZOOM, MAX_ZOOM);
+    transformRef.current = {
+      x: width / 2 - ((width / 2 - current.x) / current.k) * k,
+      y: height / 2 - ((height / 2 - current.y) / current.k) * k,
+      k,
+    };
+    clearHover();
+    scheduleDraw();
   };
 
-  const toggleLabelStyle = (active: boolean): CSSProperties => ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-    minWidth: 0,
-    color: 'var(--color-ink, #1c1c1c)',
-    cursor: 'pointer',
-    opacity: active ? 1 : 0.45,
-  });
-
-  const sectionHeaderStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: isMobile ? 6 : 8,
-    flexWrap: isMobile ? 'wrap' : 'nowrap',
-    marginBottom: 6,
+  const resetView = () => {
+    transformRef.current = { x: 0, y: 0, k: 1 };
+    clearHighlight();
+    scheduleDraw();
   };
 
-  const legendToggleStyle: CSSProperties = {
-    ...legendActionStyle,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: 600,
-    minHeight: isMobile ? 36 : 32,
+  const resetFilters = () => {
+    showAllTypes();
+    showAllYears();
   };
 
-  const panelToggleStyle: CSSProperties = {
-    ...legendActionStyle,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: 600,
-    minHeight: isMobile ? 36 : 32,
+  const focusNode = (node: RenderNode) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const k = Math.max(transformRef.current.k, isMobile ? 2 : 1.5);
+    transformRef.current = {
+      x: width / 2 - node.cx * k,
+      y: height / 2 - node.cy * k,
+      k,
+    };
+    const at = { x: rect.left + width / 2, y: rect.top + height / 2 };
+    setSelectedIdx(node.idx);
+    setSelectedAt(at);
+    setSelectedCardPosition({
+      x: at.x + PINNED_CARD_OFFSET,
+      y: at.y + PINNED_CARD_OFFSET,
+    });
+    setPlaying(false);
+    setExplorePanel(null);
+    clearHover();
+    scheduleDraw();
   };
 
   return (
     <div
       ref={containerRef}
+      className={`map-view${timelineActive ? ' has-history' : ''}`}
       onMouseLeave={handlePointerLeave}
-      style={{
-        position: 'relative',
-        width,
-        height,
-        overflow: 'hidden',
-        overscrollBehavior: 'contain',
-        touchAction: 'none',
-        userSelect: 'none',
-        WebkitUserSelect: 'none',
-      }}
+      style={{ width, height }}
     >
       <canvas
         ref={canvasRef}
         width={width}
         height={height}
+        className="map-canvas"
+        tabIndex={0}
+        aria-label={`Map showing ${visibleNodes.length} entries. Use Find to search titles and open an entry.`}
+        aria-describedby="map-gesture-help"
+        onKeyDown={(event) => {
+          if (event.key === '+' || event.key === '=') {
+            event.preventDefault();
+            zoomBy(1.3);
+          }
+          if (event.key === '-') {
+            event.preventDefault();
+            zoomBy(1 / 1.3);
+          }
+          if (event.key === '0') {
+            event.preventDefault();
+            resetView();
+          }
+        }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
         onPointerLeave={handlePointerLeave}
         style={{
-          display: 'block',
           width,
           height,
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          WebkitTouchCallout: 'none',
           cursor: isDragging
             ? 'grabbing'
             : hoverIdx != null
               ? 'pointer'
               : 'grab',
-          touchAction: 'none',
         }}
       />
 
-      {selectedIdx != null && selectedAt && (
+      <div className="map-toolbar">
+        <div
+          className="map-explore-actions"
+          role="group"
+          aria-label="Explore the map"
+        >
+          {(
+            [
+              { key: 'search', label: 'Find', icon: Search },
+              { key: 'topics', label: 'Topics', icon: Compass },
+              { key: 'filters', label: 'Filters', icon: SlidersHorizontal },
+            ] as const
+          ).map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              type="button"
+              aria-expanded={explorePanel === key}
+              aria-controls="map-explore-panel"
+              onClick={(event) => {
+                exploreTriggerRef.current = event.currentTarget;
+                setExplorePanel(explorePanel === key ? null : key);
+              }}
+            >
+              <Icon size={15} aria-hidden="true" />
+              {label}
+              {key === 'filters' && filterCount > 0 && (
+                <span className="map-filter-count">{filterCount}</span>
+              )}
+            </button>
+          ))}
+        </div>
+        <div className="map-zoom-controls" role="group" aria-label="Map zoom">
+          <button
+            type="button"
+            onClick={() => zoomBy(1 / 1.3)}
+            disabled={zoomPercent <= MIN_ZOOM * 100}
+            aria-label="Zoom out"
+            title="Zoom out"
+          >
+            <Minus size={17} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={resetView}
+            aria-label="Reset map view"
+            title="Reset map view"
+          >
+            <RotateCcw size={17} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => zoomBy(1.3)}
+            disabled={zoomPercent >= MAX_ZOOM * 100}
+            aria-label="Zoom in"
+            title="Zoom in"
+          >
+            <Plus size={17} aria-hidden="true" />
+          </button>
+          <span className="map-zoom-value">{zoomPercent}%</span>
+        </div>
+      </div>
+
+      {explorePanel && (
+        <section
+          className="map-explore-panel map-panel"
+          id="map-explore-panel"
+          aria-labelledby="map-panel-heading"
+        >
+          <div className="map-panel-heading">
+            <h2 id="map-panel-heading">
+              {explorePanel === 'search'
+                ? 'Find an entry'
+                : explorePanel === 'topics'
+                  ? 'Explore a topic'
+                  : 'Filter the map'}
+            </h2>
+            <button
+              type="button"
+              className="map-icon-button"
+              aria-label="Close explore panel"
+              onClick={() => {
+                setExplorePanel(null);
+                exploreTriggerRef.current?.focus();
+              }}
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
+          </div>
+          {explorePanel === 'search' && (
+            <>
+              <label className="map-sr-only" htmlFor="map-search">
+                Search entry titles
+              </label>
+              <input
+                id="map-search"
+                type="search"
+                placeholder="Search entry titles…"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                autoFocus
+              />
+              {searchQuery.trim() ? (
+                <>
+                  <p className="map-panel-note" role="status">
+                    {searchResults.length}{' '}
+                    {searchResults.length === 1 ? 'match' : 'matches'}
+                    {searchResults.length > 8 ? ' · Showing the first 8' : ''}
+                  </p>
+                  <ul className="map-search-results">
+                    {searchResults.slice(0, 8).map((node) => (
+                      <li key={node.idx}>
+                        <button type="button" onClick={() => focusNode(node)}>
+                          <span>{node.title}</span>
+                          <small>{formatPointMetadata(node)}</small>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  {searchResults.length === 0 && (
+                    <p className="map-panel-note">
+                      Try another title
+                      {filterCount > 0 ? ' or reset the filters' : ''}.
+                      {timelineActive
+                        ? ' Search includes entries visible at this point in history.'
+                        : ''}
+                    </p>
+                  )}
+                  {searchResults.length === 0 && filterCount > 0 && (
+                    <button
+                      type="button"
+                      className="map-text-button"
+                      onClick={resetFilters}
+                    >
+                      Reset filters
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p className="map-panel-note">
+                  Find a piece of writing and see what connects to it.
+                </p>
+              )}
+            </>
+          )}
+          {explorePanel === 'topics' && (
+            <>
+              <p className="map-panel-note">
+                Choose a topic to highlight related entries.
+              </p>
+              <div className="map-topic-list">
+                {topics.map((topic, index) => (
+                  <button
+                    type="button"
+                    key={topic.label}
+                    aria-pressed={topicIdx === index}
+                    onClick={() => {
+                      const active = topicIdx === index;
+                      clearSelection();
+                      clearHover();
+                      setTopicIdx(active ? null : index);
+                      if (isMobile) setExplorePanel(null);
+                    }}
+                  >
+                    {topic.label}
+                    <span aria-hidden="true">
+                      {topicIdx === index ? '−' : '+'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          {explorePanel === 'filters' && (
+            <>
+              <div className="map-filter-summary">
+                <span>
+                  {visibleNodes.length} of {nodes.length} entries shown
+                </span>
+                {filterCount > 0 && (
+                  <button
+                    className="map-text-button"
+                    type="button"
+                    onClick={resetFilters}
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+              <fieldset>
+                <legend>Content type</legend>
+                <div className="map-filter-bulk">
+                  <button type="button" onClick={showAllTypes}>
+                    All types
+                  </button>
+                  <button type="button" onClick={hideAllTypes}>
+                    No types
+                  </button>
+                </div>
+                <div className="map-type-options">
+                  {presentTypes.map((type) => (
+                    <label key={type}>
+                      <input
+                        type="checkbox"
+                        checked={!hiddenTypes.has(type)}
+                        onChange={() => toggleHiddenType(type)}
+                      />
+                      <i
+                        style={{ background: TYPE_COLORS[type] }}
+                        aria-hidden="true"
+                      />
+                      <span>{TYPE_LABELS[type] ?? type}</span>
+                      <small>
+                        {points.filter((point) => point.type === type).length}
+                      </small>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Year published</legend>
+                <div className="map-filter-bulk">
+                  <button type="button" onClick={showAllYears}>
+                    All years
+                  </button>
+                  <button type="button" onClick={hideAllYears}>
+                    No years
+                  </button>
+                </div>
+                <div className="map-year-options">
+                  {presentYears.map((year) => (
+                    <label key={year}>
+                      <input
+                        type="checkbox"
+                        checked={!hiddenYears.has(year)}
+                        onChange={() => toggleHiddenYear(year)}
+                      />
+                      <span>{formatYear(year)}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </>
+          )}
+        </section>
+      )}
+
+      {selectedPoint && selectedAt && (
         <div
           ref={selectedCardRef}
-          onClick={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          style={{
-            position: 'fixed',
-            left: selectedCardPosition?.x ?? selectedAt.x + PINNED_CARD_OFFSET,
-            top: selectedCardPosition?.y ?? selectedAt.y + PINNED_CARD_OFFSET,
-            background: 'var(--color-bg, #fff)',
-            border: '1px solid var(--color-border, #ccc)',
-            borderRadius: 4,
-            padding: '8px 12px',
-            fontSize: 13,
-            lineHeight: 1.35,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            maxWidth: 'min(320px, calc(100vw - 24px))',
-            maxHeight: 'calc(100dvh - 24px)',
-            overflowY: 'auto',
-            zIndex: 11,
-          }}
+          className={`map-selected-card map-panel${isMobile ? ' is-mobile' : ''}`}
+          tabIndex={-1}
+          aria-labelledby="map-selected-title"
+          style={
+            isMobile
+              ? undefined
+              : {
+                  left:
+                    selectedCardPosition?.x ??
+                    selectedAt.x + PINNED_CARD_OFFSET,
+                  top:
+                    selectedCardPosition?.y ??
+                    selectedAt.y + PINNED_CARD_OFFSET,
+                }
+          }
         >
-          <div style={{ fontWeight: 600, marginBottom: 2 }}>
-            {points[selectedIdx].title}
+          <div className="map-panel-heading">
+            <span className="map-panel-note">
+              {formatPointMetadata(selectedPoint)}
+            </span>
+            <button
+              type="button"
+              className="map-icon-button"
+              aria-label="Close entry details"
+              onClick={() => {
+                clearSelection();
+                canvasRef.current?.focus({ preventScroll: true });
+              }}
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
           </div>
-          {formatPointMetadata(points[selectedIdx]) && (
-            <div style={{ opacity: 0.7, fontSize: 12, marginBottom: 6 }}>
-              {formatPointMetadata(points[selectedIdx])}
-            </div>
-          )}
-          <a
-            href={points[selectedIdx].url}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              fontSize: 12,
-              color: 'var(--color-accent, #3b6fb5)',
-              textDecoration: 'none',
-            }}
-          >
-            Open →
+          <h2 id="map-selected-title">{selectedPoint.title}</h2>
+          <p className="map-panel-note">
+            {selectedPoint.wordCount.toLocaleString('en-US')} words ·{' '}
+            {visibleIncidentEdges[selectedIdx!]?.length ?? 0} connections
+          </p>
+          <a className="map-read-link" href={selectedPoint.url}>
+            Read entry <ArrowRight size={15} aria-hidden="true" />
           </a>
         </div>
       )}
@@ -1830,521 +2148,177 @@ function MapInner({ width, height, data }: InnerProps) {
       {tooltip && hoverIdx != null && hoverIdx !== selectedIdx && (
         <div
           ref={tooltipRef}
+          className="map-tooltip map-panel"
           style={{
-            position: 'fixed',
-            left: 0,
-            top: 0,
-            transform: `translate3d(${tooltip.screenX + 12}px, ${
-              tooltip.screenY + 12
-            }px, 0)`,
-            willChange: 'transform',
-            pointerEvents: 'none',
-            background: 'var(--color-bg, #fff)',
-            border: '1px solid var(--color-border, #ccc)',
-            borderRadius: 4,
-            padding: '6px 10px',
-            fontSize: 13,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            maxWidth: 'min(320px, calc(100vw - 24px))',
-            maxHeight: 'calc(100dvh - 24px)',
-            overflowY: 'auto',
-            zIndex: 12,
+            transform: `translate3d(${tooltip.screenX + 12}px, ${tooltip.screenY + 12}px, 0)`,
           }}
         >
-          <div style={{ fontWeight: 600 }}>{tooltip.point.title}</div>
-          {formatPointMetadata(tooltip.point) && (
-            <div style={{ opacity: 0.7, fontSize: 12 }}>
-              {formatPointMetadata(tooltip.point)}
-            </div>
-          )}
+          <strong>{tooltip.point.title}</strong>
+          <span>{formatPointMetadata(tooltip.point)}</span>
         </div>
       )}
 
-      {topics.length > 0 && (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          onWheel={(e) => e.stopPropagation()}
-          style={{
-            position: 'absolute',
-            right: 16,
-            top: 16,
-            background: 'var(--color-bg, rgba(255,255,255,0.92))',
-            border: '1px solid var(--color-border, #ccc)',
-            borderRadius: 6,
-            padding: topicsExpanded ? '10px 12px' : '8px 10px',
-            fontSize: 12,
-            lineHeight: 1.5,
-            maxWidth: 'min(260px, calc(100% - 32px))',
-            maxHeight: 'calc(100% - 32px)',
-            overflowY: 'auto',
-            zIndex: 10,
-          }}
-        >
-          <div
-            style={{
-              ...sectionHeaderStyle,
-              alignItems: 'center',
-              marginBottom: topicsExpanded ? 6 : 0,
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                minWidth: 0,
-                minHeight: 32,
-              }}
-            >
-              <div style={{ fontWeight: 600 }}>Topics</div>
-              <div style={{ opacity: 0.7, fontSize: 11, whiteSpace: 'nowrap' }}>
-                {topics.length}
-              </div>
-            </div>
+      {visibleNodes.length === 0 && !explorePanel && (
+        <div className="map-empty-state map-panel" role="status">
+          <h2>No entries in view</h2>
+          <p>
+            {filterCount > 0
+              ? 'Try a different type or year.'
+              : 'Move forward in history to see more entries.'}
+          </p>
+          {filterCount > 0 && (
             <button
               type="button"
-              aria-expanded={topicsExpanded}
-              onClick={() => setTopicsExpanded((expanded) => !expanded)}
-              style={panelToggleStyle}
+              className="map-text-button"
+              onClick={resetFilters}
             >
-              {topicsExpanded ? 'Hide' : 'Show'}
+              Reset filters
             </button>
-          </div>
-
-          {topicsExpanded && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {topics.map((t, i) => {
-                const active = topicIdx === i;
-                return (
-                  <button
-                    key={t.label}
-                    onClick={() => {
-                      setTopicIdx(active ? null : i);
-                      setSelectedIdx(null);
-                      setSelectedAt(null);
-                      setSelectedCardPosition(null);
-                    }}
-                    style={{
-                      textAlign: 'left',
-                      border: 'none',
-                      background: active
-                        ? 'var(--color-accent, #3b6fb5)'
-                        : 'transparent',
-                      color: active
-                        ? 'var(--color-bg, #fff)'
-                        : 'var(--color-ink, #1c1c1c)',
-                      cursor: 'pointer',
-                      padding: '4px 8px',
-                      borderRadius: 4,
-                      fontSize: 12,
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    {t.label}
-                  </button>
-                );
-              })}
-            </div>
           )}
         </div>
       )}
 
-      <div
-        onClick={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-        onWheel={(e) => e.stopPropagation()}
-        style={{
-          position: 'absolute',
-          left: isMobile ? mobileLeftInset : 16,
-          bottom: isMobile ? mobileBottomInset : 16,
-          background: 'var(--color-bg, rgba(255,255,255,0.92))',
-          border: '1px solid var(--color-border, #ccc)',
-          borderRadius: 6,
-          padding: legendExpanded ? '10px 12px' : '8px 10px',
-          fontSize: 12,
-          lineHeight: 1.5,
-          maxWidth: isMobile
-            ? mobileCornerMaxWidth
-            : 'min(300px, calc(100% - 32px))',
-          maxHeight: isMobile
-            ? 'min(58dvh, calc(100% - 24px))'
-            : 'calc(100% - 32px)',
-          overflowY: 'auto',
-          boxSizing: 'border-box',
-          zIndex: 10,
-        }}
-      >
-        <div
-          style={{
-            ...sectionHeaderStyle,
-            alignItems: 'center',
-            marginBottom: legendExpanded ? 6 : 0,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              minWidth: 0,
-              minHeight: 32,
-            }}
-          >
-            <div style={{ fontWeight: 600 }}>Legend</div>
-            <div
-              style={{
-                opacity: 0.7,
-                fontSize: 11,
-                whiteSpace: 'nowrap',
-                display: isMobile && !legendExpanded ? 'none' : undefined,
-              }}
-            >
-              {visibleNodes.length}/{nodes.length}
-            </div>
+      {!timelineActive && (
+        <div className="map-status">
+          <p>
+            <strong>{visibleNodes.length}</strong> of {nodes.length} entries
+            {topicIdx != null && (
+              <>
+                {' '}
+                ·{' '}
+                <button
+                  type="button"
+                  onClick={() => setTopicIdx(null)}
+                  aria-label="Clear topic highlight"
+                >
+                  {topics[topicIdx]?.label} <X size={12} aria-hidden="true" />
+                </button>
+              </>
+            )}
+          </p>
+          <div className="map-color-legend" aria-label="Content type colors">
+            {presentTypes
+              .filter((type) => !hiddenTypes.has(type))
+              .map((type) => (
+                <span key={type}>
+                  <i
+                    style={{ background: TYPE_COLORS[type] }}
+                    aria-hidden="true"
+                  />
+                  {TYPE_LABELS[type]}
+                </span>
+              ))}
           </div>
-          <button
-            type="button"
-            aria-expanded={legendExpanded}
-            onClick={() => setLegendExpanded((expanded) => !expanded)}
-            style={legendToggleStyle}
-          >
-            {legendExpanded ? 'Hide' : 'Show'}
-          </button>
         </div>
-
-        {legendExpanded && (
-          <>
-            <div style={sectionHeaderStyle}>
-              <div style={{ fontWeight: 600 }}>Type</div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                <button onClick={showAllTypes} style={legendActionStyle}>
-                  All
-                </button>
-                <button onClick={hideAllTypes} style={legendActionStyle}>
-                  None
-                </button>
-              </div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {presentTypes.map((t) => {
-                const active = !hiddenTypes.has(t);
-                return (
-                  <label key={t} style={toggleLabelStyle(active)}>
-                    <input
-                      type="checkbox"
-                      checked={active}
-                      onChange={() => toggleHiddenType(t)}
-                      style={{ margin: 0 }}
-                    />
-                    <span
-                      style={{
-                        flex: '0 0 auto',
-                        display: 'inline-block',
-                        width: 10,
-                        height: 10,
-                        borderRadius: '50%',
-                        background: TYPE_COLORS[t] ?? '#555',
-                      }}
-                    />
-                    <span
-                      style={{
-                        minWidth: 0,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {TYPE_LABELS[t] ?? t}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-
-            <div
-              style={{
-                ...sectionHeaderStyle,
-                marginTop: 10,
-                paddingTop: 8,
-                borderTop: '1px solid var(--color-border, #ddd)',
-              }}
-            >
-              <div style={{ fontWeight: 600 }}>Year</div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                <button onClick={showAllYears} style={legendActionStyle}>
-                  All
-                </button>
-                <button onClick={hideAllYears} style={legendActionStyle}>
-                  None
-                </button>
-              </div>
-            </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: isMobile
-                  ? '1fr'
-                  : 'repeat(3, minmax(0, 1fr))',
-                gap: 4,
-              }}
-            >
-              {presentYears.map((year) => {
-                const active = !hiddenYears.has(year);
-                return (
-                  <label key={year} style={toggleLabelStyle(active)}>
-                    <input
-                      type="checkbox"
-                      checked={active}
-                      onChange={() => toggleHiddenYear(year)}
-                      style={{ margin: 0 }}
-                    />
-                    <span
-                      style={{
-                        minWidth: 0,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {formatYear(year)}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-
-            <div
-              style={{
-                marginTop: 8,
-                paddingTop: 8,
-                borderTop: '1px solid var(--color-border, #ddd)',
-                opacity: 0.75,
-              }}
-            >
-              edges = nearest neighbors · size = length
-            </div>
-          </>
-        )}
-      </div>
+      )}
 
       {sortedPostTimes.length > 0 && (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
-          onWheel={(e) => e.stopPropagation()}
-          style={{
-            position: 'absolute',
-            left: isMobile ? 'auto' : '50%',
-            right: isMobile ? mobileRightInset : 'auto',
-            bottom: isMobile ? mobileBottomInset : 16,
-            transform: isMobile ? 'none' : 'translateX(-50%)',
-            background: 'var(--color-bg, rgba(255,255,255,0.92))',
-            border: '1px solid var(--color-border, #ccc)',
-            borderRadius: 6,
-            padding: timelineActive
-              ? isMobile
-                ? '8px'
-                : '8px 12px'
-              : '6px 10px',
-            fontSize: 12,
-            lineHeight: 1.5,
-            width: timelineActive
-              ? isMobile
-                ? mobileCornerMaxWidth
-                : 'min(640px, calc(100% - 32px))'
-              : 'auto',
-            maxWidth: isMobile ? mobileCornerMaxWidth : 'calc(100% - 32px)',
-            maxHeight: isMobile ? 'min(58dvh, calc(100% - 24px))' : undefined,
-            overflowY: isMobile && timelineActive ? 'auto' : undefined,
-            boxSizing: 'border-box',
-            zIndex: 10,
-          }}
-        >
+        <div className={`map-history${timelineActive ? ' is-active' : ''}`}>
           {!timelineActive ? (
             <button
               type="button"
+              className="map-history-open"
               onClick={openTimeline}
-              style={{
-                ...legendActionStyle,
-                padding: '4px 10px',
-                fontSize: 12,
-                fontWeight: 600,
-                minHeight: 32,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
             >
-              <History size={14} aria-hidden />
-              Play History
+              <History size={16} aria-hidden="true" />
+              Explore history
             </button>
           ) : (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: isMobile ? 8 : 6,
-              }}
+            <section
+              className="map-timeline map-panel"
+              aria-label="Publishing history"
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: isMobile ? 'flex-end' : 'flex-start',
-                  gap: isMobile ? 4 : 8,
-                  flexWrap: 'wrap',
+              <div className="map-timeline-top">
+                <div>
+                  <span className="map-panel-note">Publishing history</span>
+                  <strong>
+                    {cursorTime != null ? formatTimestamp(cursorTime) : ''}
+                  </strong>
+                </div>
+                <span className="map-panel-note">
+                  {visibleNodes.length}{' '}
+                  {visibleNodes.length === 1 ? 'entry' : 'entries'}
+                </span>
+                <button
+                  type="button"
+                  className="map-icon-button"
+                  onClick={closeTimeline}
+                  aria-label="Close timeline"
+                >
+                  <X size={16} aria-hidden="true" />
+                </button>
+              </div>
+              <input
+                type="range"
+                min={timelineStart}
+                max={timelineEnd}
+                step={DAY_MS}
+                value={cursorTime ?? timelineStart}
+                onChange={(event) => {
+                  setPlaying(false);
+                  setCursorTime(Number(event.currentTarget.value));
                 }}
-              >
-                <div style={{ display: 'flex', gap: 2 }}>
+                aria-label="Timeline date"
+                aria-valuetext={formatTimestamp(cursorTime ?? timelineStart)}
+              />
+              <div className="map-timeline-controls">
+                <div className="map-play-controls">
                   <button
                     type="button"
                     onClick={stepPrev}
-                    disabled={cursorTime != null && cursorTime <= timelineStart}
-                    style={{
-                      ...legendActionStyle,
-                      padding: '4px 6px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    aria-label="Previous post"
+                    disabled={
+                      filteredPostTimes.length === 0 ||
+                      (cursorTime != null && cursorTime <= filteredPostTimes[0])
+                    }
+                    aria-label="Previous publishing day"
                   >
-                    <SkipBack size={14} aria-hidden />
+                    <SkipBack size={16} aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={togglePlay}
-                    style={{
-                      ...legendActionStyle,
-                      minWidth: 36,
-                      padding: '4px 8px',
-                      fontWeight: 600,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    aria-label={playing ? 'Pause' : 'Play'}
+                    disabled={filteredPostTimes.length === 0}
+                    aria-label={playing ? 'Pause history' : 'Play history'}
                   >
                     {playing ? (
-                      <Pause size={14} aria-hidden />
+                      <Pause size={16} aria-hidden="true" />
                     ) : (
-                      <Play size={14} aria-hidden />
+                      <Play size={16} aria-hidden="true" />
                     )}
                   </button>
                   <button
                     type="button"
                     onClick={stepNext}
-                    disabled={cursorTime != null && cursorTime >= timelineEnd}
-                    style={{
-                      ...legendActionStyle,
-                      padding: '4px 6px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    aria-label="Next post"
+                    disabled={
+                      filteredPostTimes.length === 0 ||
+                      (cursorTime != null && cursorTime >= timelineEnd)
+                    }
+                    aria-label="Next publishing day"
                   >
-                    <SkipForward size={14} aria-hidden />
+                    <SkipForward size={16} aria-hidden="true" />
                   </button>
                 </div>
-                <div style={{ display: 'flex', gap: 2 }}>
-                  {([1, 2, 4] as const).map((s) => {
-                    const active = playSpeed === s;
-                    return (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setPlaySpeed(s)}
-                        style={{
-                          ...legendActionStyle,
-                          padding: '2px 6px',
-                          fontWeight: active ? 600 : 400,
-                          background: active
-                            ? 'var(--color-accent, #3b6fb5)'
-                            : 'transparent',
-                          color: active
-                            ? 'var(--color-bg, #fff)'
-                            : 'var(--color-ink, #1c1c1c)',
-                        }}
-                      >
-                        {s}x
-                      </button>
-                    );
-                  })}
-                </div>
                 <div
-                  style={{
-                    flex: 1,
-                    flexBasis: isMobile ? '100%' : undefined,
-                    order: isMobile ? 3 : undefined,
-                    textAlign: isMobile ? 'right' : 'center',
-                    fontVariantNumeric: 'tabular-nums',
-                    fontWeight: 600,
-                    minWidth: 80,
-                  }}
+                  className="map-speed-controls"
+                  role="group"
+                  aria-label="Playback speed"
                 >
-                  {cursorTime != null ? formatTimestamp(cursorTime) : ''}
+                  {([1, 2, 4] as const).map((speed) => (
+                    <button
+                      type="button"
+                      key={speed}
+                      aria-pressed={playSpeed === speed}
+                      onClick={() => setPlaySpeed(speed)}
+                    >
+                      {speed}×
+                    </button>
+                  ))}
                 </div>
-                <button
-                  type="button"
-                  onClick={closeTimeline}
-                  style={{
-                    ...legendActionStyle,
-                    padding: '4px 6px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                  aria-label="Close timeline"
-                >
-                  <X size={14} aria-hidden />
-                </button>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
-                <span
-                  style={{
-                    opacity: 0.7,
-                    fontVariantNumeric: 'tabular-nums',
-                    fontSize: 11,
-                    whiteSpace: 'nowrap',
-                    display: isMobile ? 'none' : undefined,
-                  }}
-                >
-                  {formatTimestamp(timelineStart)}
-                </span>
-                <input
-                  type="range"
-                  min={timelineStart}
-                  max={timelineEnd}
-                  step={DAY_MS}
-                  value={cursorTime ?? timelineStart}
-                  onChange={(e) => {
-                    setCursorTime(Number(e.currentTarget.value));
-                  }}
-                  onPointerDown={() => setPlaying(false)}
-                  style={{ flex: 1, minWidth: 0 }}
-                  aria-label="Timeline scrubber"
-                />
-                <span
-                  style={{
-                    opacity: 0.7,
-                    fontVariantNumeric: 'tabular-nums',
-                    fontSize: 11,
-                    whiteSpace: 'nowrap',
-                    display: isMobile ? 'none' : undefined,
-                  }}
-                >
+                <span className="map-timeline-end">
                   {formatTimestamp(timelineEnd)}
                 </span>
               </div>
-            </div>
+            </section>
           )}
         </div>
       )}
@@ -2358,24 +2332,55 @@ export default function LatentMap() {
 
   if (points.length === 0) {
     return (
-      <div style={{ padding: 24 }}>
+      <div className="map-unavailable">
+        <h1>Map of ideas</h1>
         <p>
-          No embeddings available yet. Run <code>mise run embed</code> to
-          generate them.
+          The map is not available yet.{' '}
+          <a href="/">Explore the writing instead.</a>
         </p>
       </div>
     );
   }
 
   return (
-    <div style={{ width: '100%', height: '100%', minHeight: 0 }}>
-      <ParentSize>
-        {({ width, height }) =>
-          width > 0 && height > 0 ? (
-            <MapInner width={width} height={height} data={data} />
-          ) : null
-        }
-      </ParentSize>
+    <div className="latent-map">
+      <header className="map-intro">
+        <div>
+          <h1>Map of ideas</h1>
+          <p>
+            Each dot is an entry. Lines connect similar writing; larger dots are
+            longer pieces.
+          </p>
+        </div>
+        <div className="map-intro-meta">
+          <span>
+            {points.length.toLocaleString('en-US')} entries ·{' '}
+            {data.topics?.length ?? 0} topics
+          </span>
+          <span>
+            Mapped{' '}
+            {new Date(data.generatedAt).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              timeZone: 'UTC',
+            })}
+          </span>
+        </div>
+      </header>
+      <div className="map-stage">
+        <ParentSize debounceTime={50}>
+          {({ width, height }) =>
+            width > 0 && height > 0 ? (
+              <MapInner width={width} height={height} data={data} />
+            ) : null
+          }
+        </ParentSize>
+      </div>
+      <p className="map-gesture-help" id="map-gesture-help">
+        Drag to move · Scroll or pinch to zoom · Select a dot to read
+        <span> · Keyboard: + / − to zoom, 0 to reset</span>
+      </p>
     </div>
   );
 }

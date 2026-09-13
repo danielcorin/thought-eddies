@@ -3,9 +3,8 @@ import Navigation from '@components/layout/Navigation.astro';
 import Layout from '@layouts/Layout.astro';
 import ActivityPageClient from '@components/ActivityPageClient';
 import { getCollection } from 'astro:content';
-import { shouldShowPost } from '@utils/posts';
-
-// The client component will handle date initialization
+import type { ActivityItem } from '@utils/activity';
+import '@styles/activity.css';
 
 // Get all collections
 const posts = await getCollection('posts');
@@ -15,29 +14,19 @@ const projects = await getCollection('projects');
 const garden = await getCollection('garden');
 
 // Helper function to get date from various content types
-function getContentDate(item: any): Date | null {
+function getContentDate(item: {
+  data: { publishedAt?: Date; createdAt?: Date; date?: Date };
+}): Date | null {
   if (item.data.publishedAt) return item.data.publishedAt;
   if (item.data.createdAt) return item.data.createdAt;
   if (item.data.date) return item.data.date;
   return null;
 }
 
-// Get content length (estimated by body length)
-function getContentLength(item: any): number {
-  try {
-    // For items with body property
-    if (item.body) {
-      return item.body.length;
-    }
-    // Default estimate for items without accessible content
-    return 1000;
-  } catch {
-    return 1000; // Default estimate on error
-  }
-}
-
-// Filter out drafts and get all published content
-const publishedPosts = posts.filter((post) => shouldShowPost(post) && !post.id.includes('level'));
+// Activity always reflects published content, including during development.
+const publishedPosts = posts.filter(
+  (post) => !post.data.draft && !post.id.includes('level')
+);
 const publishedTils = tils.filter((til) => !til.data.draft);
 const publishedLogs = logs.filter((log) => !log.data.draft);
 const publishedProjects = projects.filter((project) => !project.data.draft);
@@ -45,610 +34,61 @@ const publishedGarden = garden.filter((item) => !item.data.draft);
 
 // Use a serialized date snapshot so the server and the first client render
 // produce identical activity markup. The client can update this after
-// hydration based on the URL or the visitor's local date.
+// hydration based on the URL or the current UTC date.
 const initialDate = new Date().toISOString().slice(0, 10);
 
 // Prepare content data for client-side processing
 const allContentData = [
-  ...publishedPosts.map(item => ({
+  ...publishedPosts.map((item) => ({
     id: item.id,
-    collection: 'posts',
+    collection: 'posts' as const,
     publishedAt: getContentDate(item)?.toISOString(),
-    contentLength: getContentLength(item),
+    contentLength: item.body?.length ?? 0,
     title: item.data.title || item.id,
   })),
-  ...publishedTils.map(item => ({
+  ...publishedTils.map((item) => ({
     id: item.id,
-    collection: 'til',
+    collection: 'til' as const,
     publishedAt: getContentDate(item)?.toISOString(),
-    contentLength: getContentLength(item),
+    contentLength: item.body?.length ?? 0,
     title: item.data.title || item.id,
   })),
-  ...publishedLogs.map(item => ({
+  ...publishedLogs.map((item) => ({
     id: item.id,
-    collection: 'logs',
+    collection: 'logs' as const,
     publishedAt: getContentDate(item)?.toISOString(),
-    contentLength: getContentLength(item),
+    contentLength: item.body?.length ?? 0,
     title: item.data.title || item.id,
   })),
-  ...publishedProjects.map(item => ({
+  ...publishedProjects.map((item) => ({
     id: item.id,
-    collection: 'projects',
+    collection: 'projects' as const,
     publishedAt: getContentDate(item)?.toISOString(),
-    contentLength: getContentLength(item),
+    contentLength: item.body?.length ?? 0,
     title: item.data.title || item.id,
   })),
-  ...publishedGarden.map(item => ({
+  ...publishedGarden.map((item) => ({
     id: item.id,
-    collection: 'garden',
+    collection: 'garden' as const,
     publishedAt: getContentDate(item)?.toISOString(),
-    contentLength: getContentLength(item),
+    contentLength: item.body?.length ?? 0,
     title: item.data.title || item.id,
   })),
-].filter(item => item.publishedAt);
+].filter((item): item is ActivityItem => Boolean(item.publishedAt));
 ---
 
 <Layout title="Site Activity">
   <Navigation />
-  <main>
-    <h1 class="page-title">Site Activity</h1>
-    
-    <ActivityPageClient 
+  <div class="activity-page">
+    <header class="activity-page-header">
+      <h1 class="page-title">Site Activity</h1>
+      <p>A look at what I’ve been writing, learning, and building.</p>
+    </header>
+
+    <ActivityPageClient
       client:load
       allContent={allContentData}
       initialDate={initialDate}
     />
-  </main>
+  </div>
 </Layout>
-
-<style>
-  :global(.date-picker-container) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
-    padding: var(--spacing-md);
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-  }
-
-  :global(.date-picker-container label) {
-    color: var(--color-ink);
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-  }
-
-  :global(.date-picker) {
-    background: var(--color-bg);
-    color: var(--color-ink);
-    border: 1px solid var(--color-border);
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    font-size: var(--font-size-sm);
-    font-family: var(--font-mono);
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-
-  :global(.date-picker:hover) {
-    border-color: var(--color-accent);
-    background: var(--color-bg-code);
-  }
-
-  :global(.date-picker:focus) {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px var(--color-accent-alpha);
-  }
-
-  /* Style the calendar icon */
-  :global(.date-picker::-webkit-calendar-picker-indicator) {
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s;
-  }
-
-  :global(.date-picker::-webkit-calendar-picker-indicator:hover) {
-    opacity: 1;
-  }
-
-  /* Dark mode support for date picker */
-  @media (prefers-color-scheme: dark) {
-    :global(.date-picker::-webkit-calendar-picker-indicator) {
-      filter: invert(1);
-    }
-  }
-
-  :global(.today-button) {
-    background: var(--color-bg);
-    color: var(--color-ink);
-    border: 1px solid var(--color-border);
-    border-radius: 0.25rem;
-    padding: 0.375rem 0.75rem;
-    font-size: var(--font-size-sm);
-    font-family: var(--font-mono);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  :global(.today-button:hover) {
-    border-color: var(--color-accent);
-    color: var(--color-ink);
-    background: var(--color-bg-hover);
-  }
-
-  :global(.today-button:focus) {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px var(--color-accent-alpha);
-  }
-
-
-  :global(.stats-grid) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
-    margin-top: var(--spacing-lg);
-  }
-
-  :global(.stat-card) {
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-    padding: var(--spacing-lg);
-    text-align: center;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  :global(.stat-card h2) {
-    margin: 0 0 var(--spacing-sm) 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-ink-light);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  :global(.sparkline-container) {
-    position: relative;
-    margin-bottom: var(--spacing-sm);
-  }
-
-  :global(.sparkline) {
-    width: 100%;
-    height: 80px;
-  }
-
-  :global(.sparkline-legend) {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-xs);
-    font-size: var(--text-xs);
-  }
-
-  :global(.legend-item) {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--color-ink-light);
-  }
-
-  :global(.legend-line) {
-    display: inline-block;
-    width: 20px;
-    height: 2px;
-    border-radius: 1px;
-  }
-
-  :global(.legend-line.current) {
-    background-color: var(--color-accent);
-  }
-
-  :global(.legend-line.previous) {
-    background-color: var(--color-ink-light);
-    opacity: 0.5;
-  }
-
-  :global(.legend-label) {
-    font-size: var(--text-xs);
-  }
-
-  :global(.stat-header) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-xs);
-    margin-bottom: var(--spacing-sm);
-  }
-
-  :global(.stat-values) {
-    display: flex;
-    align-items: baseline;
-    gap: var(--spacing-md);
-  }
-
-  :global(.stat-comparison) {
-    display: flex;
-    align-items: baseline;
-    gap: var(--spacing-xs);
-  }
-
-  :global(.stat-previous) {
-    font-size: var(--font-size-lg);
-    color: var(--color-ink-light);
-    opacity: 0.8;
-  }
-  
-  :global(.stat-delta) {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-  }
-
-  :global(.stat-value) {
-    font-size: var(--font-size-3xl);
-    font-weight: 600;
-    color: var(--color-accent);
-  }
-
-  :global(.stat-change) {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    padding: 0.125rem 0.375rem;
-    border-radius: var(--radius-sm);
-  }
-
-  :global(.stat-change.positive) {
-    color: var(--color-success, #10b981);
-    background: var(--color-success-bg, #10b98120);
-  }
-
-  :global(.stat-change.negative) {
-    color: var(--color-error, #ef4444);
-    background: var(--color-error-bg, #ef444420);
-  }
-  
-  :global(.stat-delta.positive) {
-    color: var(--color-ink-light);
-  }
-
-  :global(.stat-delta.negative) {
-    color: var(--color-ink-light);
-  }
-
-  :global(.stat-breakdown) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-    justify-content: center;
-  }
-
-  :global(.stat-item) {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.25rem 0.75rem;
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 0.25rem;
-    text-decoration: none;
-    color: var(--color-ink);
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    transition: all 0.2s;
-  }
-
-  :global(.stat-item:hover) {
-    border-color: var(--color-accent);
-    background: var(--color-bg-hover);
-    color: var(--color-ink);
-  }
-
-  :global(.stat-label) {
-    color: inherit;
-  }
-
-  :global(.stat-count) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.5rem;
-    height: 1.5rem;
-    padding: 0 0.375rem;
-    background: var(--color-bg-code);
-    border-radius: 9999px;
-    font-size: var(--text-xs);
-    font-weight: 500;
-    color: var(--color-ink-light);
-  }
-
-  :global(.stat-item:hover .stat-count) {
-    background: var(--color-ink);
-    color: var(--color-bg);
-  }
-
-  :global(.all-time-section) {
-    margin-top: var(--spacing-2xl);
-  }
-
-  :global(.all-time-section h2) {
-    font-size: var(--font-size-xl);
-    margin-bottom: var(--spacing-lg);
-    text-align: center;
-  }
-
-  :global(.all-time-stats) {
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-    padding: var(--spacing-xl);
-    text-align: center;
-  }
-
-  :global(.all-time-total) {
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
-  }
-
-  :global(.all-time-total .label) {
-    font-size: var(--font-size-lg);
-    color: var(--color-ink-light);
-  }
-
-  :global(.all-time-total .value) {
-    font-size: var(--font-size-4xl);
-    font-weight: 600;
-    color: var(--color-ink);
-  }
-
-  :global(.all-time-breakdown) {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--spacing-md);
-  }
-
-  :global(.all-time-item) {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.25rem 0.75rem;
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 0.25rem;
-    text-decoration: none;
-    color: var(--color-ink);
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    transition: all 0.2s;
-  }
-
-  :global(.all-time-item:hover) {
-    border-color: var(--color-accent);
-    background: var(--color-bg-hover);
-    color: var(--color-ink);
-  }
-
-  :global(.all-time-label) {
-    color: inherit;
-  }
-
-  :global(.all-time-count) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.5rem;
-    height: 1.5rem;
-    padding: 0 0.375rem;
-    background: var(--color-bg-code);
-    border-radius: 9999px;
-    font-size: var(--text-xs);
-    font-weight: 500;
-    color: var(--color-ink-light);
-  }
-
-  :global(.all-time-item:hover .all-time-count) {
-    background: var(--color-ink);
-    color: var(--color-bg);
-  }
-
-  /* Contribution Graph Styles */
-  :global(.contribution-graph-container) {
-    margin: var(--spacing-xl) 0;
-    background: var(--color-bg-code);
-    border-radius: 0.5rem;
-    padding: var(--spacing-lg);
-  }
-
-  :global(.contribution-header) {
-    margin-bottom: var(--spacing-lg);
-  }
-
-  :global(.contribution-header h2) {
-    font-size: var(--font-size-xl);
-    margin: 0 0 var(--spacing-xs) 0;
-  }
-
-  :global(.contribution-count) {
-    color: var(--color-ink-light);
-    font-size: var(--font-size-sm);
-  }
-
-  :global(.contribution-wrapper) {
-    padding-bottom: var(--spacing-md);
-  }
-
-  :global(.contribution-graph) {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  :global(.month-label) {
-    font-size: 10px;
-    fill: var(--color-ink-light);
-  }
-
-  :global(.day-label) {
-    font-size: 10px;
-    fill: var(--color-ink-light);
-  }
-
-  :global(.contribution-cell) {
-    stroke: var(--color-bg);
-    stroke-width: 1px;
-    rx: 2;
-    cursor: default;
-    transition: stroke-width 0.1s ease-in-out;
-  }
-
-  :global(.contribution-cell.has-content) {
-    cursor: pointer;
-  }
-
-  :global(.contribution-cell.has-content:hover) {
-    stroke-width: 2px;
-    stroke: var(--color-ink);
-  }
-
-  :global(.contribution-cell.selected) {
-    stroke-width: 2px;
-    stroke: var(--color-ink);
-  }
-
-  /* Contribution levels - using site theme colors */
-  :global(:root) {
-    --contribution-level-0: var(--color-bg-code);
-    --contribution-level-1: color-mix(in srgb, var(--color-accent) 20%, var(--color-bg-code));
-    --contribution-level-2: color-mix(in srgb, var(--color-accent) 40%, var(--color-bg-code));
-    --contribution-level-3: color-mix(in srgb, var(--color-accent) 60%, var(--color-bg-code));
-    --contribution-level-4: color-mix(in srgb, var(--color-accent) 80%, var(--color-bg-code));
-  }
-
-  :global(.dark) {
-    --contribution-level-0: var(--color-bg-code);
-    --contribution-level-1: color-mix(in srgb, var(--color-accent) 20%, var(--color-bg-code));
-    --contribution-level-2: color-mix(in srgb, var(--color-accent) 40%, var(--color-bg-code));
-    --contribution-level-3: color-mix(in srgb, var(--color-accent) 60%, var(--color-bg-code));
-    --contribution-level-4: color-mix(in srgb, var(--color-accent) 80%, var(--color-bg-code));
-  }
-
-  :global(.contribution-legend) {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    font-size: var(--font-size-xs);
-    color: var(--color-ink-light);
-    margin-top: var(--spacing-sm);
-    justify-content: flex-end;
-  }
-
-  :global(.legend-cells) {
-    display: flex;
-    gap: 2px;
-  }
-
-  :global(.legend-cell) {
-    width: 11px;
-    height: 11px;
-    border-radius: 2px;
-  }
-
-  :global(.legend-text) {
-    font-size: 11px;
-  }
-
-  :global(.selected-day-content) {
-    margin-top: var(--spacing-lg);
-    padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--color-border);
-  }
-
-  :global(.selected-day-content h3) {
-    font-size: var(--font-size-lg);
-    margin: 0 0 var(--spacing-xs) 0;
-  }
-
-  :global(.selected-day-summary) {
-    color: var(--color-ink-light);
-    font-size: var(--font-size-sm);
-    margin: 0 0 var(--spacing-md) 0;
-  }
-
-  :global(.content-links) {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  :global(.content-link) {
-    display: flex;
-    align-items: baseline;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    text-decoration: none;
-    color: var(--color-ink);
-    transition: all 0.2s;
-  }
-
-  :global(.content-link:hover) {
-    border-color: var(--color-accent);
-    background: var(--color-bg-code);
-  }
-
-  :global(.content-type) {
-    font-size: var(--font-size-xs);
-    color: var(--color-ink-light);
-    font-weight: 500;
-    min-width: 60px;
-    font-family: var(--font-mono);
-  }
-
-  :global(.content-title) {
-    flex: 1;
-    font-size: var(--font-size-sm);
-  }
-
-  @media (max-width: 768px) {
-    :global(.stats-grid) {
-      grid-template-columns: 1fr;
-    }
-
-    :global(.stat-card) {
-      padding: var(--spacing-md);
-    }
-
-    :global(.stat-value) {
-      font-size: var(--font-size-2xl);
-    }
-
-    :global(.all-time-total .value) {
-      font-size: var(--font-size-3xl);
-    }
-
-    :global(.date-picker-container) {
-      flex-direction: column;
-      gap: var(--spacing-sm);
-      padding: var(--spacing-sm);
-    }
-
-    :global(.date-picker) {
-      width: 100%;
-      max-width: 200px;
-    }
-
-    :global(.contribution-graph-container) {
-      padding: var(--spacing-md);
-    }
-  }
-</style>

@@ -1,381 +1,309 @@
-import { useState } from 'react';
-
-interface ContentItem {
-  id: string;
-  collection: string;
-  publishedAt?: string | Date;
-  createdAt?: string | Date;
-  date?: string | Date;
-  contentLength?: number;
-  title?: string;
-}
-
-interface DayData {
-  date: Date;
-  contentLength: number;
-  items: ContentItem[];
-}
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
+import ActivityTooltip, { type ActivityTooltipAnchor } from './ActivityTooltip';
+import {
+  activityCollections,
+  DAY_MS,
+  formatActivityDate,
+  type ActivityItem,
+} from '../utils/activity';
 
 interface Props {
-  allContent: ContentItem[];
-  endDate?: Date;
+  allContent: ActivityItem[];
+  endDate: string;
 }
 
-export default function ContributionGraph({
-  allContent,
-  endDate = new Date(),
-}: Props) {
-  const [selectedDay, setSelectedDay] = useState<DayData | null>(null);
-
-  // Constants for layout
-  const DAYS_IN_WEEK = 7;
-  const WEEKS_IN_YEAR = 53;
-  const CELL_SIZE = 11;
-  const CELL_GAP = 2;
-  const MONTH_LABEL_HEIGHT = 20;
-  const DAY_LABEL_WIDTH = 30;
-
-  // Get date from content item
-  const getContentDate = (item: ContentItem): Date | null => {
-    if (item.publishedAt) return new Date(item.publishedAt);
-    if (item.createdAt) return new Date(item.createdAt);
-    if (item.date) return new Date(item.date);
-    return null;
-  };
-
-  // Calculate contribution data for the last year
-  const calculateContributions = (): Map<string, DayData> => {
-    const contributions = new Map<string, DayData>();
-    const startDate = new Date(endDate);
-    startDate.setUTCDate(startDate.getUTCDate() - 365);
-
-    // Initialize all days in the last year
-    for (let i = 0; i <= 365; i++) {
-      const date = new Date(startDate);
-      date.setUTCDate(date.getUTCDate() + i);
-      const dateKey = formatDateKey(date);
-      contributions.set(dateKey, {
-        date,
-        contentLength: 0,
-        items: [],
-      });
-    }
-
-    // Aggregate content by date
-    allContent.forEach((item) => {
-      const date = getContentDate(item);
-      if (date && date >= startDate && date <= endDate) {
-        const dateKey = formatDateKey(date);
-        const dayData = contributions.get(dateKey);
-        if (dayData) {
-          dayData.contentLength += item.contentLength || 1000;
-          dayData.items.push(item);
-        }
-      }
-    });
-
-    return contributions;
-  };
-
-  // Format date as YYYY-MM-DD
-  const formatDateKey = (date: Date): string => {
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  // Format date for display
-  const formatDateDisplay = (date: Date): string => {
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      timeZone: 'UTC',
+export default function ContributionGraph({ allContent, endDate }: Props) {
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [focusedDate, setFocusedDate] = useState(endDate);
+  const tooltipId = useId();
+  const [hovered, setHovered] = useState<{
+    date: string;
+    anchor: ActivityTooltipAnchor;
+  } | null>(null);
+  const wrapper = useRef<HTMLDivElement>(null);
+  const end = new Date(`${endDate}T00:00:00Z`);
+  const start = new Date(end.getTime() - 364 * DAY_MS);
+  const gridStart = new Date(start.getTime() - start.getUTCDay() * DAY_MS);
+  const days = Array.from({ length: 371 }, (_, index) => {
+    const date = new Date(gridStart.getTime() + index * DAY_MS);
+    return {
+      date,
+      key: date.toISOString().slice(0, 10),
+      items: [] as ActivityItem[],
+      volume: 0,
     };
-    return date.toLocaleDateString('en-US', options);
-  };
-
-  // Get color intensity based on content length with outlier handling
-  const getColorIntensity = (
-    contentLength: number,
-    percentile95: number
-  ): string => {
-    if (contentLength === 0) return 'var(--contribution-level-0)';
-
-    // Clamp to 95th percentile to handle outliers
-    const clampedLength = Math.min(contentLength, percentile95);
-    const ratio = clampedLength / percentile95;
-
-    if (ratio > 0.75) return 'var(--contribution-level-4)';
-    if (ratio > 0.5) return 'var(--contribution-level-3)';
-    if (ratio > 0.25) return 'var(--contribution-level-2)';
-    return 'var(--contribution-level-1)';
-  };
-
-  // Calculate percentile
-  const calculatePercentile = (
-    values: number[],
-    percentile: number
-  ): number => {
-    if (values.length === 0) return 0;
-
-    const sorted = [...values].sort((a, b) => a - b);
-    const index = Math.ceil((percentile / 100) * sorted.length) - 1;
-    return sorted[Math.max(0, index)];
-  };
-
-  // Get all days for the grid
-  const getDaysGrid = () => {
-    const contributions = calculateContributions();
-
-    // Get all non-zero content lengths for percentile calculation
-    const contentLengths = Array.from(contributions.values())
-      .map((d) => d.contentLength)
-      .filter((length) => length > 0);
-
-    // Calculate 95th percentile to handle outliers
-    const percentile95 = calculatePercentile(contentLengths, 95) || 1;
-
-    // Start from the first Sunday before or on the start date
-    const startDate = new Date(endDate);
-    startDate.setUTCDate(startDate.getUTCDate() - 364); // Go back 364 days from end date
-    const startDayOfWeek = startDate.getUTCDay();
-    if (startDayOfWeek !== 0) {
-      startDate.setUTCDate(startDate.getUTCDate() - startDayOfWeek);
+  });
+  const dayMap = new Map(days.map((day) => [day.key, day]));
+  for (const item of allContent) {
+    const day = dayMap.get(item.publishedAt.slice(0, 10));
+    if (day && day.date >= start && day.date <= end) {
+      day.items.push(item);
+      day.volume += item.contentLength;
     }
-
-    const weeks: DayData[][] = [];
-    let currentWeek: DayData[] = [];
-
-    for (let i = 0; i < WEEKS_IN_YEAR * DAYS_IN_WEEK; i++) {
-      const currentDate = new Date(startDate);
-      currentDate.setUTCDate(currentDate.getUTCDate() + i);
-
-      const dateKey = formatDateKey(currentDate);
-      const dayData = contributions.get(dateKey) || {
-        date: currentDate,
-        contentLength: 0,
-        items: [],
-      };
-
-      currentWeek.push(dayData);
-
-      if (currentWeek.length === DAYS_IN_WEEK) {
-        weeks.push(currentWeek);
-        currentWeek = [];
-      }
-    }
-
-    return { weeks, percentile95 };
+  }
+  const activeDays = days.filter((day) => day.items.length > 0);
+  const total = activeDays.reduce((sum, day) => sum + day.items.length, 0);
+  const volumes = activeDays.map((day) => day.volume).sort((a, b) => a - b);
+  const ceiling =
+    volumes[Math.max(0, Math.ceil(volumes.length * 0.95) - 1)] || 1;
+  const selectedDay = selectedDate ? dayMap.get(selectedDate) : undefined;
+  const hoveredDay = hovered ? dayMap.get(hovered.date) : undefined;
+  const showTooltip = (date: string, element: SVGRectElement) => {
+    setHovered({ date, anchor: element.getBoundingClientRect() });
   };
-
-  // Get month labels
-  const getMonthLabels = () => {
-    const labels: { month: string; x: number }[] = [];
-    const { weeks } = getDaysGrid();
-    let lastMonth = -1;
-
-    weeks.forEach((week, weekIndex) => {
-      const firstDayOfWeek = week[0].date;
-      const month = firstDayOfWeek.getUTCMonth();
-
-      if (month !== lastMonth) {
-        const monthName = firstDayOfWeek.toLocaleDateString('en-US', {
+  const monthLabels = days.flatMap((day, index) => {
+    if (index % 7 !== 0) return [];
+    const previousWeek = days[index - 7];
+    if (
+      previousWeek &&
+      previousWeek.date.getUTCMonth() === day.date.getUTCMonth()
+    )
+      return [];
+    return [
+      {
+        label: day.date.toLocaleDateString('en-US', {
           month: 'short',
           timeZone: 'UTC',
-        });
-        labels.push({
-          month: monthName,
-          x: weekIndex * (CELL_SIZE + CELL_GAP),
-        });
-        lastMonth = month;
-      }
+        }),
+        week: index / 7,
+      },
+    ];
+  });
+
+  useEffect(() => {
+    const element = wrapper.current;
+    if (!element) return;
+    const observer = new ResizeObserver(() => {
+      element.scrollLeft = element.scrollWidth;
     });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [endDate]);
 
-    return labels;
-  };
-
-  const { weeks, percentile95 } = getDaysGrid();
-  const monthLabels = getMonthLabels();
-  const totalContributions = allContent.filter((item) => {
-    const date = getContentDate(item);
-    return (
-      date &&
-      date >= new Date(endDate.getTime() - 365 * 24 * 60 * 60 * 1000) &&
-      date <= endDate
-    );
-  }).length;
-
-  // Get collection route
-  const getCollectionRoute = (collection: string): string => {
-    switch (collection) {
-      case 'posts':
-        return '/posts';
-      case 'til':
-        return '/til';
-      case 'logs':
-        return '/logs';
-      case 'projects':
-        return '/projects';
-      case 'garden':
-        return '/garden';
-      default:
-        return '#';
+  const navigateDay = (event: KeyboardEvent<SVGRectElement>, date: Date) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setHovered(null);
+      setSelectedDate(date.toISOString().slice(0, 10));
+      return;
     }
-  };
-
-  // Get item link
-  const getItemLink = (item: ContentItem): string => {
-    const route = getCollectionRoute(item.collection);
-    if (item.collection === 'posts') {
-      return `${route}/${item.id}`;
-    }
-    if (item.collection === 'til') {
-      const [category, ...rest] = item.id.split('/');
-      return `${route}/${category}/${rest.join('/')}`;
-    }
-    if (item.collection === 'logs') {
-      return `${route}/${item.id}`;
-    }
-    return `${route}/${item.id}`;
+    const offsets: Record<string, number> = {
+      ArrowLeft: -7,
+      ArrowRight: 7,
+      ArrowUp: -1,
+      ArrowDown: 1,
+    };
+    if (!(event.key in offsets) && event.key !== 'Home' && event.key !== 'End')
+      return;
+    event.preventDefault();
+    const next =
+      event.key === 'Home'
+        ? start.getTime()
+        : event.key === 'End'
+          ? end.getTime()
+          : date.getTime() + offsets[event.key] * DAY_MS;
+    const nextKey = new Date(
+      Math.max(start.getTime(), Math.min(end.getTime(), next))
+    )
+      .toISOString()
+      .slice(0, 10);
+    setFocusedDate(nextKey);
+    event.currentTarget.ownerSVGElement
+      ?.querySelector<SVGRectElement>(`[data-date="${nextKey}"]`)
+      ?.focus();
   };
 
   return (
-    <div className="contribution-graph-container">
-      <div className="contribution-header">
-        <h2>Contribution Activity</h2>
-        <p className="contribution-count">
-          {totalContributions.toLocaleString()} contributions in the last year
-        </p>
+    <section
+      className="activity-calendar"
+      aria-labelledby="activity-calendar-heading"
+    >
+      <div className="activity-section-heading">
+        <h2 id="activity-calendar-heading">A year of activity</h2>
+        <span className="activity-calendar-period">Last 365 days</span>
       </div>
+      <p className="activity-calendar-summary">
+        <strong>{total.toLocaleString('en-US')}</strong>{' '}
+        {total === 1 ? 'entry' : 'entries'} across{' '}
+        <strong>{activeDays.length}</strong> active{' '}
+        {activeDays.length === 1 ? 'day' : 'days'}
+      </p>
+      <p className="activity-calendar-range">
+        {formatActivityDate(start)} – {formatActivityDate(end)}
+      </p>
 
-      <div className="contribution-wrapper">
+      <div className="activity-calendar-scroll" ref={wrapper}>
         <svg
-          viewBox={`0 0 ${WEEKS_IN_YEAR * (CELL_SIZE + CELL_GAP) + DAY_LABEL_WIDTH} ${DAYS_IN_WEEK * (CELL_SIZE + CELL_GAP) + MONTH_LABEL_HEIGHT}`}
-          preserveAspectRatio="xMidYMid meet"
-          className="contribution-graph"
+          viewBox="0 0 723 116"
+          className="activity-calendar-grid"
+          role="group"
+          aria-label="Daily publishing activity"
+          aria-describedby="activity-calendar-help"
         >
-          {/* Month labels */}
-          {monthLabels.map((label, i) => (
+          {monthLabels.map(({ label, week }) => (
             <text
-              key={i}
-              x={label.x + DAY_LABEL_WIDTH}
-              y={MONTH_LABEL_HEIGHT - 5}
-              className="month-label"
+              key={week}
+              x={week > 50 ? 719 : 32 + week * 13}
+              y={12}
+              textAnchor={week > 50 ? 'end' : 'start'}
+              className="activity-calendar-label"
             >
-              {label.month}
+              {label}
             </text>
           ))}
-
-          {/* Day labels */}
-          <text
-            x={0}
-            y={MONTH_LABEL_HEIGHT + CELL_SIZE + 14}
-            className="day-label"
-          >
-            Mon
-          </text>
-          <text
-            x={0}
-            y={MONTH_LABEL_HEIGHT + CELL_SIZE + 14 + 2 * (CELL_SIZE + CELL_GAP)}
-            className="day-label"
-          >
-            Wed
-          </text>
-          <text
-            x={0}
-            y={MONTH_LABEL_HEIGHT + CELL_SIZE + 14 + 4 * (CELL_SIZE + CELL_GAP)}
-            className="day-label"
-          >
-            Fri
-          </text>
-
-          {/* Contribution cells */}
-          {weeks.map((week, weekIndex) =>
-            week.map((day, dayIndex) => {
-              const x = weekIndex * (CELL_SIZE + CELL_GAP) + DAY_LABEL_WIDTH;
-              const y = dayIndex * (CELL_SIZE + CELL_GAP) + MONTH_LABEL_HEIGHT;
-              const color = getColorIntensity(day.contentLength, percentile95);
-              const hasContent = day.items.length > 0;
-
-              return (
-                <rect
-                  key={`${weekIndex}-${dayIndex}`}
-                  x={x}
-                  y={y}
-                  width={CELL_SIZE}
-                  height={CELL_SIZE}
-                  fill={color}
-                  className={`contribution-cell ${hasContent ? 'has-content' : ''} ${selectedDay?.date.getTime() === day.date.getTime() ? 'selected' : ''}`}
-                  onClick={() => hasContent && setSelectedDay(day)}
-                  data-date={formatDateKey(day.date)}
-                  data-content-length={day.contentLength}
-                  data-items={day.items.length}
-                >
-                  <title>{`${formatDateDisplay(day.date)}${
-                    day.items.length > 0
-                      ? `: ${day.items.length} item${day.items.length > 1 ? 's' : ''} (${day.contentLength.toLocaleString()} chars)`
-                      : ''
-                  }`}</title>
-                </rect>
-              );
-            })
-          )}
+          {[
+            { label: 'Mon', day: 1 },
+            { label: 'Wed', day: 3 },
+            { label: 'Fri', day: 5 },
+          ].map(({ label, day }) => (
+            <text
+              key={label}
+              x={0}
+              y={32 + day * 13}
+              className="activity-calendar-label"
+            >
+              {label}
+            </text>
+          ))}
+          {days.map((day, index) => {
+            if (day.date < start || day.date > end) return null;
+            const level =
+              day.items.length === 0
+                ? 0
+                : Math.max(
+                    1,
+                    Math.min(4, Math.ceil((day.volume / ceiling) * 4))
+                  );
+            const description = `${formatActivityDate(day.date)}: ${day.items.length} ${day.items.length === 1 ? 'entry' : 'entries'}`;
+            return (
+              <rect
+                key={day.key}
+                x={32 + Math.floor(index / 7) * 13}
+                y={23 + (index % 7) * 13}
+                width={11}
+                height={11}
+                rx={2}
+                fill={`var(--activity-level-${level})`}
+                className={`activity-calendar-day${selectedDate === day.key ? ' is-selected' : ''}${hovered?.date === day.key ? ' is-hovered' : ''}`}
+                role="button"
+                tabIndex={focusedDate === day.key ? 0 : -1}
+                aria-label={`${description} · ${day.volume.toLocaleString('en-US')} characters`}
+                aria-describedby={
+                  hovered?.date === day.key ? tooltipId : undefined
+                }
+                aria-pressed={selectedDate === day.key}
+                data-date={day.key}
+                data-items={day.items.length}
+                onFocus={(event) => {
+                  setFocusedDate(day.key);
+                  showTooltip(day.key, event.currentTarget);
+                }}
+                onBlur={() => setHovered(null)}
+                onPointerEnter={(event) => {
+                  if (event.pointerType !== 'touch')
+                    showTooltip(day.key, event.currentTarget);
+                }}
+                onPointerLeave={() => setHovered(null)}
+                onClick={() => {
+                  setHovered(null);
+                  setSelectedDate(day.key);
+                }}
+                onKeyDown={(event) => navigateDay(event, day.date)}
+              />
+            );
+          })}
         </svg>
-
-        {/* Legend */}
-        <div className="contribution-legend">
-          <span className="legend-text">Less</span>
-          <div className="legend-cells">
-            <div
-              className="legend-cell"
-              style={{ backgroundColor: 'var(--contribution-level-0)' }}
-            ></div>
-            <div
-              className="legend-cell"
-              style={{ backgroundColor: 'var(--contribution-level-1)' }}
-            ></div>
-            <div
-              className="legend-cell"
-              style={{ backgroundColor: 'var(--contribution-level-2)' }}
-            ></div>
-            <div
-              className="legend-cell"
-              style={{ backgroundColor: 'var(--contribution-level-3)' }}
-            ></div>
-            <div
-              className="legend-cell"
-              style={{ backgroundColor: 'var(--contribution-level-4)' }}
-            ></div>
-          </div>
-          <span className="legend-text">More</span>
+      </div>
+      {hovered && hoveredDay && (
+        <ActivityTooltip
+          id={tooltipId}
+          anchor={hovered.anchor}
+          onDismiss={() => setHovered(null)}
+        >
+          <p className="activity-tooltip-heading">
+            {formatActivityDate(hoveredDay.date)}
+          </p>
+          <p>
+            <strong>{hoveredDay.items.length}</strong>{' '}
+            {hoveredDay.items.length === 1 ? 'entry' : 'entries'} ·{' '}
+            {hoveredDay.volume.toLocaleString('en-US')} characters
+          </p>
+          {hoveredDay.items.length > 0 ? (
+            <p className="activity-tooltip-muted">
+              Select this day to explore.
+            </p>
+          ) : (
+            <p className="activity-tooltip-muted">
+              No entries published on this day.
+            </p>
+          )}
+        </ActivityTooltip>
+      )}
+      <p className="activity-calendar-scroll-hint">
+        <span aria-hidden="true">← </span>Scroll to explore the full year
+        <span aria-hidden="true"> →</span>
+      </p>
+      <div className="activity-calendar-footer">
+        <p id="activity-calendar-help">
+          Select a day to explore.
+          <span className="activity-sr-only">
+            {' '}
+            Use arrow keys to move between days, then Enter to select. Home and
+            End jump to the first and last day.
+          </span>
+        </p>
+        <div
+          className="activity-volume-legend"
+          aria-label="Shading shows writing volume, from less to more"
+        >
+          <span>Less</span>
+          <span className="activity-legend-cells" aria-hidden="true">
+            {[0, 1, 2, 3, 4].map((level) => (
+              <i
+                key={level}
+                style={{ background: `var(--activity-level-${level})` }}
+              />
+            ))}
+          </span>
+          <span>More</span>
         </div>
       </div>
-
-      {/* Selected day content */}
-      {selectedDay && selectedDay.items.length > 0 && (
-        <div className="selected-day-content">
-          <h3>{formatDateDisplay(selectedDay.date)}</h3>
-          <p className="selected-day-summary">
-            {selectedDay.items.length} item
-            {selectedDay.items.length > 1 ? 's' : ''} •{' '}
-            {selectedDay.contentLength.toLocaleString()} characters
-          </p>
-          <div className="content-links">
-            {selectedDay.items.map((item, index) => (
-              <a key={index} href={getItemLink(item)} className="content-link">
-                <span className="content-type">
-                  {item.collection.charAt(0).toUpperCase() +
-                    item.collection.slice(1)}
-                </span>
-                <span className="content-title">{item.title || item.id}</span>
-              </a>
-            ))}
+      <div aria-live="polite" aria-atomic="true">
+        {selectedDay && (
+          <div className="activity-day-detail">
+            <div className="activity-section-heading">
+              <h3>{formatActivityDate(selectedDay.date)}</h3>
+              <span>
+                {selectedDay.items.length}{' '}
+                {selectedDay.items.length === 1 ? 'entry' : 'entries'}
+              </span>
+            </div>
+            {selectedDay.items.length > 0 ? (
+              <ul className="activity-day-links">
+                {selectedDay.items.map((item) => (
+                  <li key={`${item.collection}/${item.id}`}>
+                    <a href={`/${item.collection}/${item.id}`}>
+                      <span className="activity-content-type">
+                        {
+                          activityCollections.find(
+                            ({ key }) => key === item.collection
+                          )?.singular
+                        }
+                      </span>
+                      <span>{item.title}</span>
+                      <span aria-hidden="true">→</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="activity-empty">
+                No entries published on this day.
+              </p>
+            )}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </section>
   );
 }
