@@ -17,6 +17,10 @@ run = "pnpm dev"
 description = "Generate post embeddings"
 run = "pnpm embed"
 
+[tasks.rebuild-map]
+description = "Rebuild the content map, starting Ollama and fetching its model if needed"
+run = "node scripts/rebuild_map.mjs"
+
 [tasks.deploy]
 description = "Build and deploy the site to Cloudflare Workers"
 run = "pnpm deploy"

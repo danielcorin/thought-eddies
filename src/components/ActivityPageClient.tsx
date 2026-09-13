@@ -1,382 +1,270 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ActivityGraphClient from './ActivityGraphClient';
 import ContributionGraph from './ContributionGraph';
-
-interface ContentItem {
-  id: string;
-  collection: string;
-  publishedAt?: string | Date;
-  createdAt?: string | Date;
-  date?: string | Date;
-  draft?: boolean;
-  body?: string;
-  contentLength?: number;
-  title?: string;
-}
+import {
+  activityCollections,
+  formatActivityDate,
+  getActivityPeriods,
+  getActivityStats,
+  isActivityDate,
+  type ActivityCollection,
+  type ActivityItem,
+} from '../utils/activity';
 
 interface Props {
-  allContent: ContentItem[];
+  allContent: ActivityItem[];
   initialDate: string;
 }
 
 export default function ActivityPageClient({ allContent, initialDate }: Props) {
-  // Format date as YYYY-MM-DD for input
-  const formatDateForInput = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   const [selectedDate, setSelectedDate] = useState(initialDate);
+  const [selectedCollection, setSelectedCollection] = useState<
+    ActivityCollection | 'all'
+  >('all');
+  const [today, setToday] = useState(initialDate);
 
-  // Ensure we use today's date if no date parameter is in the URL
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const dateParam = url.searchParams.get('date');
-
-    setSelectedDate(dateParam || formatDateForInput(new Date()));
+    const currentDay = new Date().toISOString().slice(0, 10);
+    setToday(currentDay);
+    const readView = () => {
+      const params = new URL(window.location.href).searchParams;
+      const date = params.get('date');
+      setSelectedDate(
+        isActivityDate(date) && date <= currentDay ? date : currentDay
+      );
+      const collection = activityCollections.find(
+        ({ key }) => key === params.get('type')
+      );
+      setSelectedCollection(collection?.key ?? 'all');
+    };
+    readView();
+    window.addEventListener('popstate', readView);
+    return () => window.removeEventListener('popstate', readView);
   }, []);
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newDate = e.target.value;
-    if (newDate) {
-      setSelectedDate(newDate);
-
-      // Update URL without page reload
-      const url = new URL(window.location.href);
-      url.searchParams.set('date', newDate);
-      window.history.pushState({}, '', url.toString());
-    }
-  };
-
-  const handleTodayClick = () => {
-    const today = formatDateForInput(new Date());
-    setSelectedDate(today);
-
-    // Update URL to remove date parameter (default is today)
+  const changeDate = (date: string) => {
+    if (!isActivityDate(date) || date > today) return;
+    setSelectedDate(date);
     const url = new URL(window.location.href);
-    url.searchParams.delete('date');
-    window.history.pushState({}, '', url.toString());
+    if (date === today) url.searchParams.delete('date');
+    else url.searchParams.set('date', date);
+    if (url.href !== window.location.href)
+      window.history.pushState({}, '', url);
   };
 
-  // Helper function to get date from content item
-  const getContentDate = (item: ContentItem): Date | null => {
-    if (item.publishedAt) return new Date(item.publishedAt);
-    if (item.createdAt) return new Date(item.createdAt);
-    if (item.date) return new Date(item.date);
-    return null;
+  const changeCollection = (collection: ActivityCollection | 'all') => {
+    setSelectedCollection(collection);
+    const url = new URL(window.location.href);
+    if (collection === 'all') url.searchParams.delete('type');
+    else url.searchParams.set('type', collection);
+    if (url.href !== window.location.href)
+      window.history.pushState({}, '', url);
   };
 
-  // Get content length
-  const getContentLength = (item: ContentItem): number => {
-    return item.contentLength || item.body?.length || 1000;
-  };
-
-  // Generate daily content lengths for a period
-  const getDailyContentLengths = (startDate: Date, endDate: Date): number[] => {
-    if (
-      !startDate ||
-      !endDate ||
-      isNaN(startDate.getTime()) ||
-      isNaN(endDate.getTime())
-    ) {
-      return [];
-    }
-
-    const days = Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)
-    );
-    if (days <= 0 || days > 1000) return [];
-
-    const lengths = new Array(days).fill(0);
-
-    allContent.forEach((item) => {
-      const date = getContentDate(item);
-      if (date && date >= startDate && date <= endDate) {
-        const dayIndex = Math.floor(
-          (date.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)
-        );
-        if (dayIndex >= 0 && dayIndex < days) {
-          lengths[dayIndex] += getContentLength(item);
-        }
-      }
-    });
-
-    return lengths;
-  };
-
-  // Calculate stats for a period
-  const getStatsForPeriod = (startDate: Date, endDate: Date) => {
-    const contentInPeriod = allContent.filter((item) => {
-      const date = getContentDate(item);
-      return date && date >= startDate && date <= endDate;
-    });
-
-    const stats = {
-      total: contentInPeriod.length,
-      posts: 0,
-      tils: 0,
-      logs: 0,
-      projects: 0,
-      garden: 0,
-    };
-
-    contentInPeriod.forEach((item) => {
-      switch (item.collection) {
-        case 'posts':
-          stats.posts++;
-          break;
-        case 'til':
-          stats.tils++;
-          break;
-        case 'logs':
-          stats.logs++;
-          break;
-        case 'projects':
-          stats.projects++;
-          break;
-        case 'garden':
-          stats.garden++;
-          break;
-      }
-    });
-
-    return stats;
-  };
-
-  // Calculate all time stats
-  const allTimeStats = {
-    total: allContent.length,
-    posts: allContent.filter((item) => item.collection === 'posts').length,
-    tils: allContent.filter((item) => item.collection === 'til').length,
-    logs: allContent.filter((item) => item.collection === 'logs').length,
-    projects: allContent.filter((item) => item.collection === 'projects')
-      .length,
-    garden: allContent.filter((item) => item.collection === 'garden').length,
-  };
-
-  // Date-only strings otherwise inherit the runtime's local timezone, which
-  // can make Astro's server markup differ from the browser's first render.
-  const currentDate = new Date(`${selectedDate}T00:00:00.000Z`);
-
-  // Calculate date ranges
-  const sevenDaysAgo = new Date(
-    currentDate.getTime() - 7 * 24 * 60 * 60 * 1000
+  const periods = getActivityPeriods(selectedDate);
+  const matchingContent =
+    selectedCollection === 'all'
+      ? allContent
+      : allContent.filter((item) => item.collection === selectedCollection);
+  const archive = matchingContent.filter(
+    (item) => new Date(item.publishedAt) < periods[0].end
   );
-  const fourteenDaysAgo = new Date(
-    currentDate.getTime() - 14 * 24 * 60 * 60 * 1000
-  );
-  const thirtyDaysAgo = new Date(
-    currentDate.getTime() - 30 * 24 * 60 * 60 * 1000
-  );
-  const sixtyDaysAgo = new Date(
-    currentDate.getTime() - 60 * 24 * 60 * 60 * 1000
-  );
-  const oneYearAgo = new Date(
-    currentDate.getTime() - 365 * 24 * 60 * 60 * 1000
-  );
-  const twoYearsAgo = new Date(
-    currentDate.getTime() - 2 * 365 * 24 * 60 * 60 * 1000
-  );
-  const currentYear = currentDate.getUTCFullYear();
-  const currentMonth = currentDate.getUTCMonth();
-  const currentDay = currentDate.getUTCDate();
-  const yearStart = new Date(Date.UTC(currentYear, 0, 1));
-  const previousYearStart = new Date(Date.UTC(currentYear - 1, 0, 1));
-  const daysInPreviousYearMonth = new Date(
-    Date.UTC(currentYear - 1, currentMonth + 1, 0)
-  ).getUTCDate();
-  const sameDayLastYear = new Date(
-    Date.UTC(
-      currentYear - 1,
-      currentMonth,
-      Math.min(currentDay, daysInPreviousYearMonth)
+  const recentEntries = [...archive]
+    .sort(
+      (a, b) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     )
+    .slice(0, 5);
+  const visibleCollections = activityCollections.filter(
+    ({ key }) => selectedCollection === 'all' || key === selectedCollection
   );
-
-  // Calculate data for each period
-  const last7DaysData = getDailyContentLengths(sevenDaysAgo, currentDate);
-  const previous7DaysData = getDailyContentLengths(
-    fourteenDaysAgo,
-    sevenDaysAgo
+  const firstDate = archive.reduce(
+    (earliest, item) =>
+      item.publishedAt < earliest ? item.publishedAt : earliest,
+    `${selectedDate}T23:59:59.999Z`
   );
-  const last7DaysStats = getStatsForPeriod(sevenDaysAgo, currentDate);
-  const previous7DaysStats = getStatsForPeriod(fourteenDaysAgo, sevenDaysAgo);
-  const last7DaysChange =
-    previous7DaysStats.total === 0
-      ? last7DaysStats.total > 0
-        ? 100
-        : 0
-      : Math.round(
-          ((last7DaysStats.total - previous7DaysStats.total) /
-            previous7DaysStats.total) *
-            100
-        );
-
-  const last30DaysData = getDailyContentLengths(thirtyDaysAgo, currentDate);
-  const previous30DaysData = getDailyContentLengths(
-    sixtyDaysAgo,
-    thirtyDaysAgo
-  );
-  const last30DaysStats = getStatsForPeriod(thirtyDaysAgo, currentDate);
-  const previous30DaysStats = getStatsForPeriod(sixtyDaysAgo, thirtyDaysAgo);
-  const last30DaysChange =
-    previous30DaysStats.total === 0
-      ? last30DaysStats.total > 0
-        ? 100
-        : 0
-      : Math.round(
-          ((last30DaysStats.total - previous30DaysStats.total) /
-            previous30DaysStats.total) *
-            100
-        );
-
-  const lastYearData = getDailyContentLengths(oneYearAgo, currentDate);
-  const previousYearData = getDailyContentLengths(twoYearsAgo, oneYearAgo);
-  const lastYearStats = getStatsForPeriod(oneYearAgo, currentDate);
-  const previousYearStats = getStatsForPeriod(twoYearsAgo, oneYearAgo);
-  const lastYearChange =
-    previousYearStats.total === 0
-      ? lastYearStats.total > 0
-        ? 100
-        : 0
-      : Math.round(
-          ((lastYearStats.total - previousYearStats.total) /
-            previousYearStats.total) *
-            100
-        );
-
-  const yearToDateData = getDailyContentLengths(yearStart, currentDate);
-  const previousYearToDateData = getDailyContentLengths(
-    previousYearStart,
-    sameDayLastYear
-  );
-  const yearToDateStats = getStatsForPeriod(yearStart, currentDate);
-  const previousYearToDateStats = getStatsForPeriod(
-    previousYearStart,
-    sameDayLastYear
-  );
-  const yearToDateChange =
-    previousYearToDateStats.total === 0
-      ? yearToDateStats.total > 0
-        ? 100
-        : 0
-      : Math.round(
-          ((yearToDateStats.total - previousYearToDateStats.total) /
-            previousYearToDateStats.total) *
-            100
-        );
 
   return (
-    <>
-      <div className="date-picker-container">
-        <label htmlFor="activity-date">View activity for</label>
-        <input
-          type="date"
-          id="activity-date"
-          value={selectedDate}
-          onChange={handleDateChange}
-          className="date-picker"
-        />
-        <button
-          onClick={handleTodayClick}
-          className="today-button"
-          aria-label="Jump to today"
-        >
-          Today
-        </button>
-      </div>
-
-      <ContributionGraph allContent={allContent} endDate={currentDate} />
-
-      <div className="stats-grid">
-        <ActivityGraphClient
-          title="Last 7 Days"
-          currentData={last7DaysData}
-          previousData={previous7DaysData}
-          currentTotal={last7DaysStats.total}
-          previousTotal={previous7DaysStats.total}
-          percentageChange={last7DaysChange}
-          breakdown={last7DaysStats}
-          smoothingWindow={3}
-        />
-
-        <ActivityGraphClient
-          title="Last 30 Days"
-          currentData={last30DaysData}
-          previousData={previous30DaysData}
-          currentTotal={last30DaysStats.total}
-          previousTotal={previous30DaysStats.total}
-          percentageChange={last30DaysChange}
-          breakdown={last30DaysStats}
-          smoothingWindow={5}
-        />
-
-        <ActivityGraphClient
-          title="Last Year"
-          currentData={lastYearData}
-          previousData={previousYearData}
-          currentTotal={lastYearStats.total}
-          previousTotal={previousYearStats.total}
-          percentageChange={lastYearChange}
-          breakdown={lastYearStats}
-          smoothingWindow={15}
-        />
-
-        <ActivityGraphClient
-          title="Year to Date"
-          currentData={yearToDateData}
-          previousData={previousYearToDateData}
-          currentTotal={yearToDateStats.total}
-          previousTotal={previousYearToDateStats.total}
-          percentageChange={yearToDateChange}
-          breakdown={yearToDateStats}
-          smoothingWindow={10}
-        />
-      </div>
-
-      <div className="all-time-section">
-        <h2>All Time</h2>
-        <div className="all-time-stats">
-          <div className="all-time-total">
-            <span className="label">Total Content:</span>
-            <span className="value">{allTimeStats.total.toLocaleString()}</span>
-          </div>
-          <div className="all-time-breakdown">
-            <a href="/posts" className="all-time-item">
-              <span className="all-time-label">Posts</span>
-              <span className="all-time-count">
-                {allTimeStats.posts.toLocaleString()}
-              </span>
-            </a>
-            <a href="/til" className="all-time-item">
-              <span className="all-time-label">TILs</span>
-              <span className="all-time-count">
-                {allTimeStats.tils.toLocaleString()}
-              </span>
-            </a>
-            <a href="/logs" className="all-time-item">
-              <span className="all-time-label">Logs</span>
-              <span className="all-time-count">
-                {allTimeStats.logs.toLocaleString()}
-              </span>
-            </a>
-            <a href="/projects" className="all-time-item">
-              <span className="all-time-label">Projects</span>
-              <span className="all-time-count">
-                {allTimeStats.projects.toLocaleString()}
-              </span>
-            </a>
-            <a href="/garden" className="all-time-item">
-              <span className="all-time-label">Garden</span>
-              <span className="all-time-count">
-                {allTimeStats.garden.toLocaleString()}
-              </span>
-            </a>
-          </div>
+    <div className="activity-dashboard">
+      <div className="activity-toolbar">
+        <label htmlFor="activity-date">Activity through</label>
+        <div className="activity-date-controls">
+          <input
+            type="date"
+            id="activity-date"
+            value={selectedDate}
+            max={today}
+            onChange={(event) => changeDate(event.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => changeDate(today)}
+            disabled={selectedDate === today}
+          >
+            Today
+          </button>
         </div>
       </div>
-    </>
+
+      <fieldset className="activity-filters">
+        <legend>Content type</legend>
+        <div className="activity-filter-options">
+          {[{ key: 'all' as const, label: 'All' }, ...activityCollections].map(
+            ({ key, label }) => (
+              <button
+                type="button"
+                key={key}
+                aria-pressed={selectedCollection === key}
+                onClick={() => changeCollection(key)}
+              >
+                {label}
+              </button>
+            )
+          )}
+        </div>
+      </fieldset>
+      <p className="activity-sr-only" role="status">
+        {selectedCollection === 'all'
+          ? 'All content types'
+          : visibleCollections[0].label}
+        : {archive.length} entries through{' '}
+        {formatActivityDate(new Date(`${selectedDate}T00:00:00Z`))}.
+      </p>
+
+      <ContributionGraph
+        key={`${selectedDate}:${selectedCollection}`}
+        allContent={matchingContent}
+        endDate={selectedDate}
+      />
+
+      <section
+        className="activity-recent"
+        aria-labelledby="activity-recent-heading"
+      >
+        <div className="activity-section-heading">
+          <h2 id="activity-recent-heading">Recent entries</h2>
+        </div>
+        <p className="activity-section-description">
+          Latest published through{' '}
+          {formatActivityDate(new Date(`${selectedDate}T00:00:00Z`))}.
+        </p>
+        {recentEntries.length > 0 ? (
+          <ul className="activity-recent-list">
+            {recentEntries.map((item) => (
+              <li key={`${item.collection}/${item.id}`}>
+                <a href={`/${item.collection}/${item.id}`}>
+                  <span className="activity-recent-entry">
+                    <span className="activity-recent-meta">
+                      <time dateTime={item.publishedAt}>
+                        {formatActivityDate(new Date(item.publishedAt))}
+                      </time>
+                      <span>
+                        {
+                          activityCollections.find(
+                            ({ key }) => key === item.collection
+                          )?.singular
+                        }
+                      </span>
+                    </span>
+                    <span className="activity-recent-title">{item.title}</span>
+                  </span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="activity-recent-empty">
+            <p className="activity-empty">
+              {selectedCollection === 'all'
+                ? 'No entries published by this date.'
+                : 'No entries of this type published by this date.'}
+            </p>
+            {selectedCollection !== 'all' && (
+              <button type="button" onClick={() => changeCollection('all')}>
+                Show all types
+              </button>
+            )}
+          </div>
+        )}
+      </section>
+
+      <section
+        className="activity-comparisons"
+        aria-labelledby="activity-periods-heading"
+      >
+        <div className="activity-section-heading">
+          <h2 id="activity-periods-heading">By the numbers</h2>
+          <div className="activity-chart-legend" aria-label="Chart legend">
+            <span>
+              <i className="current" aria-hidden="true" />
+              Current
+            </span>
+            <span>
+              <i className="previous" aria-hidden="true" />
+              Previous
+            </span>
+          </div>
+        </div>
+        <p className="activity-section-description">
+          Entries published, with daily writing volume. Hover or tap a graph to
+          inspect a day.
+        </p>
+        <div className="activity-stats-grid">
+          {periods.map((period) => (
+            <ActivityGraphClient
+              key={`${period.title}:${selectedDate}:${selectedCollection}`}
+              period={period}
+              current={getActivityStats(
+                matchingContent,
+                period.start,
+                period.end
+              )}
+              previous={getActivityStats(
+                matchingContent,
+                period.previousStart,
+                period.previousEnd
+              )}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section
+        className="activity-archive"
+        aria-labelledby="activity-archive-heading"
+      >
+        <div className="activity-section-heading">
+          <h2 id="activity-archive-heading">The archive</h2>
+          <span className="activity-archive-total">
+            {archive.length.toLocaleString('en-US')} entries
+          </span>
+        </div>
+        <p className="activity-section-description">
+          {archive.length > 0
+            ? `${formatActivityDate(new Date(firstDate))} – ${formatActivityDate(new Date(`${selectedDate}T00:00:00Z`))}`
+            : 'No entries published by this date.'}
+        </p>
+        <div className="activity-archive-links">
+          {visibleCollections.map(({ key, label, href }) => (
+            <a href={href} key={key}>
+              <span className="activity-archive-count">
+                {archive
+                  .filter((item) => item.collection === key)
+                  .length.toLocaleString('en-US')}
+              </span>
+              <span>
+                {label}
+                <span aria-hidden="true"> →</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+      <p className="activity-method-note">
+        Dates use UTC. Writing volume is measured in characters. Includes posts,
+        TILs, logs, projects, and garden entries.
+      </p>
+    </div>
   );
 }

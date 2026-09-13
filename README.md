@@ -66,6 +66,31 @@ mise run til "category" "TIL Title"
 
 ## Content Management
 
+### Rebuilding the map
+
+With Ollama installed and `pnpm install` completed, run:
+
+```sh
+mise run rebuild-map
+```
+
+This starts a temporary local Ollama server when needed, downloads
+`qwen3-embedding:8b` if missing, and rebuilds `src/data/embeddings.json`.
+It reuses cached embeddings for unchanged content. A server started by the
+script is stopped afterward; an existing server stays running.
+
+Drafts are excluded. Blog posts must explicitly set `draft: false`; other
+included collections are logs, TILs, garden, projects, now, and uses.
+Refresh `/map` locally to see the result. Commit the generated JSON to include
+the refreshed map in the next deployment; a regular site build does not
+regenerate it.
+
+The script can also be run directly with `node scripts/rebuild_map.mjs`.
+`mise run embed` remains the generator-only command for an already configured
+Ollama server. The server address and model are shared in `scripts/map-config.mjs`.
+
+### Collections
+
 Content is organized in `src/content/` with the following collections:
 
 - `posts/`: Long-form blog posts

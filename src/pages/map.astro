@@ -7,7 +7,9 @@ import LatentMap from '@components/LatentMap';
 <Layout title="Map">
   <Navigation />
   <div class="map-container">
-    <LatentMap client:only="react" />
+    <LatentMap client:only="react">
+      <p slot="fallback" class="map-loading" role="status">Loading the map…</p>
+    </LatentMap>
   </div>
 </Layout>
 
@@ -57,5 +59,11 @@ import LatentMap from '@components/LatentMap';
     margin: 0;
     padding: 0;
     overflow: hidden;
+  }
+
+  .map-loading {
+    padding: 2rem;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
   }
 </style>
