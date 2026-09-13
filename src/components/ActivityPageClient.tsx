@@ -62,22 +62,19 @@ export default function ActivityPageClient({ allContent, initialDate }: Props) {
   };
 
   const periods = getActivityPeriods(selectedDate);
-  const matchingContent =
-    selectedCollection === 'all'
-      ? allContent
-      : allContent.filter((item) => item.collection === selectedCollection);
-  const archive = matchingContent.filter(
+  const archive = allContent.filter(
     (item) => new Date(item.publishedAt) < periods[0].end
   );
-  const recentEntries = [...archive]
+  const matchingContent =
+    selectedCollection === 'all'
+      ? archive
+      : archive.filter((item) => item.collection === selectedCollection);
+  const recentEntries = [...matchingContent]
     .sort(
       (a, b) =>
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     )
     .slice(0, 5);
-  const visibleCollections = activityCollections.filter(
-    ({ key }) => selectedCollection === 'all' || key === selectedCollection
-  );
   const firstDate = archive.reduce(
     (earliest, item) =>
       item.publishedAt < earliest ? item.publishedAt : earliest,
@@ -126,8 +123,9 @@ export default function ActivityPageClient({ allContent, initialDate }: Props) {
       <p className="activity-sr-only" role="status">
         {selectedCollection === 'all'
           ? 'All content types'
-          : visibleCollections[0].label}
-        : {archive.length} entries through{' '}
+          : activityCollections.find(({ key }) => key === selectedCollection)
+              ?.label}
+        : {matchingContent.length} entries through{' '}
         {formatActivityDate(new Date(`${selectedDate}T00:00:00Z`))}.
       </p>
 
@@ -241,12 +239,13 @@ export default function ActivityPageClient({ allContent, initialDate }: Props) {
           </span>
         </div>
         <p className="activity-section-description">
+          All content types.{' '}
           {archive.length > 0
             ? `${formatActivityDate(new Date(firstDate))} – ${formatActivityDate(new Date(`${selectedDate}T00:00:00Z`))}`
             : 'No entries published by this date.'}
         </p>
         <div className="activity-archive-links">
-          {visibleCollections.map(({ key, label, href }) => (
+          {activityCollections.map(({ key, label, href }) => (
             <a href={href} key={key}>
               <span className="activity-archive-count">
                 {archive
