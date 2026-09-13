@@ -26,7 +26,7 @@ Production build and Astro diagnostics pass. The full build emits existing remot
 
 ## Content filters and recent entries
 
-The follow-up adds single-select All, Posts, TILs, Logs, Projects, and Garden filters above the calendar. The selected type applies to the calendar, both sides of each period comparison, recent entries, and archive totals. Its `type` URL parameter survives date changes and Today; Back/Forward and reload restore both controls. Invalid types fall back to All. Changing type clears the selected calendar day.
+The follow-up adds single-select All, Posts, TILs, Logs, Projects, and Garden filters above the calendar. The selected type applies to the calendar, both sides of each period comparison, and recent entries. The archive always shows every content type and its count through the selected date, with an explicit All content types label. The `type` URL parameter survives date changes and Today; Back/Forward and reload restore both controls. Invalid types fall back to All. Changing type clears the selected calendar day.
 
 The recent-entries section sits directly below the calendar and links to the five newest matching entries through the selected date. Each row includes its publication date, content type, and full title. Empty results offer a Show all types action that preserves the date. Mobile filters use three columns and two rows; recent titles wrap naturally.
 
