@@ -2,8 +2,7 @@
 title: 'Sliding Window Context'
 createdAt: 2026-07-15T09:36:42.137085
 updatedAt: 2026-07-15T09:36:42.137085
-location: 'Brooklyn'
-draft: true
+draft: false
 ---
 
 import ContextWindowComparison from './components/ContextWindowComparison.svelte';
@@ -11,13 +10,13 @@ import ContextWindowComparison from './components/ContextWindowComparison.svelte
 Most tools that are called "agents" are built on top of a language model context window at their foundation.
 This context window is one of the more problematic edges when working with agents, particularly for human-in-the-loop work.
 As tokens fill the context window, each turn becomes slower and more expensive, since each newly generated token must consider all existing tokens in the window.
-Model providers have made strides in mitigating some of these issues with optimizations like context caching to reduce cost of repeatedly sending the existing conversation turns for inference, subagents which protect the orchestrator context window for tightly scoped tasks, and compaction for when the context window runs up against the model's maximum support size.
-Even still, experienced AI engineers know they need to focus on the context window and manage it and beginners often get worse results because they are unaware of the window or how it works.
+Model providers have made strides in mitigating some of these issues with optimizations like context caching to reduce the cost of repeatedly sending the existing conversation turns for inference, subagents which protect the orchestrator context window for tightly scoped tasks, and compaction for when the context window runs up against the model's maximum support size.
+Even still, experienced AI engineers know they need to focus on the context window and manage it, and beginners often get worse results because they are unaware of the window or how it works.
 
-These features, as they stand today, remind me what it felt like to learn to drive a manual transmission vehicle.
+These features, as they stand today, remind me of what it felt like to learn to drive a manual transmission vehicle.
 I learned to drive a manual transmission vehicle around the same time I was learning to drive.
 Driving itself was new and required a lot of my attention, to watch other cars, traffic lights, pedestrians, track my speed.
-Dealing with the clutch and gear box pushed me to and past the limit of what I was capable of dealing with as a new driver.
+Dealing with the clutch and gearbox pushed me to and past the limit of what I was capable of dealing with as a new driver.
 
 ## Today's agents are like manual transmission vehicles
 
@@ -50,14 +49,14 @@ The agent has access to a CLI that allows it to search through context anywhere 
 
 Not all work gets done in work-like chat though.
 I prototyped a harness for a sliding context window on top of [Pi](https://github.com/earendil-works/pi).
-This is a harness that handles its model's context window similarly to how my work-chat native agents, but with a CLI interface like `codex` or `claude`.
+This is a harness that handles its model's context window similarly to how my work-chat native agents do, but with a CLI interface like `codex` or `claude`.
 To test the efficacy of this approach, I tried to find something that roughly mirrored multi-turn prompting use cases, since in practice this is both where the sliding window allows for it to feel like the context window grows forever, but does so by slowly dropping out the oldest context.
-I landed on (EvoCodeBench)[https://github.com/seketeam/EvoCodeBench], as a benchmark with tasks that seemed like they'd be interesting enough to cause context pressure on the agents.
-The results were mixed and I don't feel all that confident in what happened and they were surprisingly varied desipite using `gpt-5.6-sol` for all attempts.
+I landed on [EvoCodeBench](https://github.com/seketeam/EvoCodeBench), as a benchmark with tasks that seemed like they'd be interesting enough to cause context pressure on the agents.
+The results were mixed, and I don't feel all that confident in what happened, and they were surprisingly varied despite using `gpt-5.6-sol` for all attempts.
 
 Additionally, testing harnesses is expensive.
 You run multiple trials of already expensive, multi-tool call inferences.
 It certainly pushes the limit of the consumer subscription plans provided by OpenAI.
-It's also quite time consuming.
+It's also quite time-consuming.
 You're probably used to waiting minutes for an agent to perform a given task, but an agent performing N tasks M times obviously takes even longer.
 I'm sure a lot of this can be parallelized, but it's an inference-heavy undertaking regardless.
