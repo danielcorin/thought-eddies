@@ -12,6 +12,7 @@ import { defineConfig, passthroughImageService } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 import expressiveCode from 'astro-expressive-code';
+import devContentHmr from './plugins/dev-content-hmr.mjs';
 import {
   markdownPlugins,
   markdownSyntaxOptions,
@@ -58,7 +59,7 @@ export default defineConfig({
   },
   vite: {
     cacheDir: 'node_modules/.vite-build',
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), devContentHmr()],
     optimizeDeps: {
       // The Cloudflare adapter does not predeclare these entries, so Vite can
       // discover them during a request and rebuild the worker's dependency
