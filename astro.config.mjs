@@ -13,6 +13,7 @@ import sitemap from '@astrojs/sitemap';
 
 import expressiveCode from 'astro-expressive-code';
 import devContentHmr from './plugins/dev-content-hmr.mjs';
+import devDependencyCache from './plugins/dev-dependency-cache.mjs';
 import {
   markdownPlugins,
   markdownSyntaxOptions,
@@ -31,12 +32,10 @@ const devImageService = {
     'astro:config:setup': ({ command, updateConfig }) => {
       if (command !== 'dev') return;
       updateConfig({
-        // Keep dev on Vite's standard cache path so existing browser module
-        // URLs remain valid when the server restarts. Builds and checks use a
-        // separate cache below, preventing their optimizer graph from
-        // replacing React modules while the dev server is running.
+        // Separate dev from build/check caches. The new path also retires
+        // browser-cached bundles served under stale version URLs in .vite.
         vite: {
-          cacheDir: 'node_modules/.vite',
+          cacheDir: 'node_modules/.vite-dev',
         },
         image: {
           service: passthroughImageService(),
@@ -59,7 +58,7 @@ export default defineConfig({
   },
   vite: {
     cacheDir: 'node_modules/.vite-build',
-    plugins: [tailwindcss(), devContentHmr()],
+    plugins: [tailwindcss(), devContentHmr(), devDependencyCache()],
     optimizeDeps: {
       // The Cloudflare adapter does not predeclare these entries, so Vite can
       // discover them during a request and rebuild the worker's dependency
