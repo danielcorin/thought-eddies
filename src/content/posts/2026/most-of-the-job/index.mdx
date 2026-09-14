@@ -1,0 +1,46 @@
+---
+title: 'Most of the Job'
+createdAt: 2026-09-13T20:57:17-04:00
+updatedAt: 2026-09-13T20:57:17-04:00
+description: ''
+location: ''
+draft: false
+atUri: "at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mvgwjdixok2p"
+---
+
+A friend and I realized we've both been following a similar process since LLMs got good at writing code, without intentionally coordinating.
+We use agents to explore idea space and write software at the same time.
+Often this starts as a (sometimes) ambitious project the agent can't fully complete independently.
+And that's what we've come to expect.
+From this attempt we learn what the agent can and can't easily do given the model and harness we are using.
+Then we modify our course, separating out the parts the agent can do or build, and plugging the gaps with bespoke tools that allow a human to apply specific intelligence or judgement where the agent falls short.
+
+That's a pretty abstract process.
+Let me give a specific example.
+Months back, I wanted to build a tool that showed the flight call sign for whatever plane was currently visible in my window.
+The agent was able to find lots of available data feeds for me, showing realtime plane locations on a map, mapping regional call signs to marketing call signs, and helping me distinguish helicopters from planes.
+However, the agent couldn't figure out what "in my window" meant.
+I could have given an exact location pin and taken lots of pictures from different angles, trying to coerce the model to just get it correct, but intuitively, it didn't seem like the type of thing the model was best positioned to solve (at the time at least, by my judgement; these things change quickly).
+
+I know when the plane is in the window and when it leaves because I can see it from my couch with my eyes.
+I have an incredibly accurate view of what "correct" looks like.
+Instead of relentlessly providing more data points or connecting a camera to the agent and letting it figure out how to make it work (this second option _could have_ worked and likely would have used 10-100x the tokens),
+I had the agent build me a quick tool where I could press space when I saw a plane and space again when it left the view.
+Using that data, collected over ten or so planes, plus my geolocation, I used the agent to calculate the subtended angle viewable from my couch and then used that to determine when a plane was in the field of view.
+This worked basically perfectly.
+
+It was straightforward and uncomplicated.
+I did the parts I had a competitive advantage at.
+I used the agent to do the parts it had a competitive advantage at.
+The agent helped me implement my vision, and it worked.
+It didn't do everything, but it helped me do most of the job.
+
+That last sentence is what I see most consistently missed by people who claim "AI doesn't work".
+If an agent isn't solving your problem, reframing the problem or solving part of the problem yourself is often all it takes to unblock the project.
+To do work in this manner, you have to have a strong mental model of the agent and a sense of what it is possible to make a computer do.
+This sense comes from experience and curiosity, and it can be taught.
+
+Taking this approach requires you to change what you expect from an agent.
+It requires you to respond to a real outcome you get from using the agent rather than try to coerce it to behave in the way you thought it should work.
+This approach is how I'm seeing people consistently find ways to make AI useful to them: by experimenting with agents, understanding their limitations, and plugging the gaps.
+The result is of higher quality than what would have been built by the human or agent alone.
