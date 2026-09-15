@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
 
 """
-Pull log entries from external sources and create/update daily log posts.
+Pull entries from the "Thought Eddies" journal in the Logs app and create or
+update daily log posts. Entries are read with the `logs` companion CLI, and
+processed entry IDs are tracked in scripts/.sync_logs_state.json.
 
-Sources:
-  - threads: messages in the Threads #logs channel (THREADS_BOT_TOKEN,
-    THREADS_API_URL). Tracks the last processed message ID.
-  - journal: entries in the "Thought Eddies" journal of the Logs app, read via
-    the `logs` companion CLI. Tracks processed entry IDs. The entry's location
-    is reduced to a city and written to the log's `location` frontmatter.
-    Attachments are pulled from a one-off `logs export` when needed.
+An entry's location is reduced to a city and written to the log's `location`
+frontmatter. Attachments are pulled from a one-off `logs export` when needed.
+Multiple entries on the same day go in one file separated by `---`.
 
-Entries are grouped by date. Multiple entries on the same day go in one file
-separated by `---`. State lives in scripts/.sync_logs_state.json.
-
-After creating/updating log files, runs `/fix-typos` via `claude` on each.
+After creating or updating log files, runs `/fix-typos` via `claude` on each.
 
 Usage:
-    python scripts/sync_logs.py [--dry-run] [--limit N] [--sources threads,journal]
+    python scripts/sync_logs.py [--dry-run] [--limit N]
 """
 
 import argparse
@@ -32,17 +27,11 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
-API_URL = os.environ.get("THREADS_API_URL")
-BOT_TOKEN = os.environ.get("THREADS_BOT_TOKEN")
 STATE_FILE = Path(__file__).parent / ".sync_logs_state.json"
-LEGACY_STATE_FILE = Path(__file__).parent / ".threads_logs_state.json"
 LOGS_DIR = Path(__file__).parent.parent / "src" / "content" / "logs"
 LOCAL_TZ = ZoneInfo("America/New_York")
-
-ALL_SOURCES = ("threads", "journal")
 JOURNAL_NAME = "Thought Eddies"
 LOGS_CLI_FALLBACK = "/Applications/Logs.app/Contents/Helpers/logs"
 
@@ -62,61 +51,6 @@ class Entry:
     text: str
     attachments: list[dict] = field(default_factory=list)
     city: str | None = None
-
-
-# --- Threads ---------------------------------------------------------------
-
-
-def api_request(method: str, path: str) -> dict | list | None:
-    request = Request(
-        f"{API_URL}{path}",
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {BOT_TOKEN}",
-        },
-        method=method,
-    )
-    with urlopen(request) as response:
-        return json.load(response)
-
-
-def find_logs_channel() -> str:
-    channels = api_request("GET", "/channels")
-    for ch in channels:
-        if ch["name"] == "logs":
-            return ch["id"]
-    raise RuntimeError("Channel #logs not found")
-
-
-def fetch_messages(channel_id: str, limit: int = 50) -> list[dict]:
-    data = api_request("GET", f"/channels/{channel_id}/messages?limit={limit}")
-    if isinstance(data, dict) and "messages" in data:
-        return data["messages"]
-    return data if isinstance(data, list) else []
-
-
-def new_threads_messages(messages: list[dict], last_processed_id: str | None) -> list[dict]:
-    """Messages after the last processed ID; all of them if it isn't in the batch."""
-    if not last_processed_id:
-        return messages
-    for i, msg in enumerate(messages):
-        if msg["id"] == last_processed_id:
-            return messages[i + 1 :]
-    print(
-        f"Warning: last processed ID {last_processed_id} not found in batch, processing all",
-        file=sys.stderr,
-    )
-    return messages
-
-
-def threads_entry(msg: dict) -> Entry:
-    return Entry(
-        dt=parse_timestamp(msg["created_at"]),
-        source="threads",
-        id=msg["id"],
-        text=clean_text(msg.get("content") or ""),
-        attachments=msg.get("attachments") or [],
-    )
 
 
 # --- Logs journal ------------------------------------------------------------
@@ -200,9 +134,6 @@ def journal_entry(raw: dict) -> Entry:
 def load_state() -> dict:
     if STATE_FILE.exists():
         return json.loads(STATE_FILE.read_text())
-    if LEGACY_STATE_FILE.exists():
-        legacy = json.loads(LEGACY_STATE_FILE.read_text())
-        return {"threads": {"last_processed_id": legacy.get("last_processed_id")}}
     return {}
 
 
@@ -211,14 +142,6 @@ def save_state(state: dict):
 
 
 # --- Text helpers ------------------------------------------------------------
-
-
-def parse_timestamp(ts: int | str) -> datetime:
-    if isinstance(ts, (int, float)):
-        dt = datetime.fromtimestamp(ts, tz=ZoneInfo("UTC"))
-    else:
-        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-    return dt.astimezone(LOCAL_TZ)
 
 
 def normalize_quotes(text: str) -> str:
@@ -274,17 +197,6 @@ def is_image(content_type: str | None, filename: str) -> bool:
 
 
 # --- Attachments -------------------------------------------------------------------
-
-
-def download_attachment(url_path: str, dest: Path) -> None:
-    request = Request(
-        f"{API_URL}{url_path}",
-        headers={"Authorization": f"Bearer {BOT_TOKEN}"},
-    )
-    with urlopen(request) as response:
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        with dest.open("wb") as f:
-            shutil.copyfileobj(response, f, length=64 * 1024)
 
 
 def optimize_png(path: Path) -> None:
@@ -392,36 +304,6 @@ def finish_attachment(dest: Path) -> None:
         optimize_png(dest)
 
 
-def process_threads_attachments(
-    date_str: str,
-    msg_id: str,
-    attachments: list[dict],
-    dry_run: bool,
-) -> list[str]:
-    """Download attachments to DD/images/, optimize PNGs, return markdown lines."""
-    if not attachments:
-        return []
-    _, _, _, images_dir = resolve_log_paths(date_str)
-    lines: list[str] = []
-    for att in attachments:
-        url_path = att.get("url")
-        filename = att.get("filename") or att.get("id") or "file"
-        if not url_path:
-            continue
-        # Prefix with short id slice to avoid collisions across messages
-        short_id = (att.get("id") or msg_id)[:8]
-        local_name = f"{short_id}-{safe_filename(filename)}"
-        dest = images_dir / local_name
-
-        if dry_run:
-            print(f"[dry-run] Would download {url_path} -> {dest}")
-        else:
-            download_attachment(url_path, dest)
-            finish_attachment(dest)
-        lines.append(attachment_markdown(local_name, filename, att.get("contentType")))
-    return lines
-
-
 class JournalExport:
     """Lazily exports the journal once so attachment bytes can be copied.
 
@@ -518,28 +400,6 @@ def fix_typos(file_path: Path):
 # --- Main ----------------------------------------------------------------------------
 
 
-def collect_threads(state: dict, limit: int, debug: bool) -> tuple[list[Entry], str | None]:
-    """Return new Threads entries and the newest message ID in the batch."""
-    if not BOT_TOKEN:
-        raise RuntimeError("THREADS_BOT_TOKEN environment variable required for the threads source")
-
-    channel_id = find_logs_channel()
-    print(f"Found #logs channel: {channel_id}")
-
-    messages = fetch_messages(channel_id, limit=limit)
-    new_messages = new_threads_messages(messages, state.get("last_processed_id"))
-    print(f"Threads: {len(new_messages)} new message(s)")
-
-    if debug and new_messages:
-        print("=== RAW THREADS MESSAGES ===")
-        for msg in new_messages:
-            print(json.dumps(msg, indent=2, default=str))
-        print("=== END ===")
-
-    last_id = new_messages[-1]["id"] if new_messages else None
-    return [threads_entry(m) for m in new_messages], last_id
-
-
 def collect_journal(state: dict, journal: str, limit: int, debug: bool) -> list[Entry]:
     """Return journal entries not yet processed, oldest first."""
     processed = set(state.get("processed_ids", []))
@@ -556,52 +416,28 @@ def collect_journal(state: dict, journal: str, limit: int, debug: bool) -> list[
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Pull log entries from external sources into log posts")
+    parser = argparse.ArgumentParser(description="Pull Logs journal entries into log posts")
     parser.add_argument("--dry-run", action="store_true", help="Preview without writing files")
-    parser.add_argument("--limit", type=int, default=50, help="Number of items to fetch per source")
-    parser.add_argument(
-        "--sources",
-        default=",".join(ALL_SOURCES),
-        help=f"Comma-separated sources to pull from (default: {','.join(ALL_SOURCES)})",
-    )
+    parser.add_argument("--limit", type=int, default=50, help="Number of entries to fetch")
     parser.add_argument("--journal", default=JOURNAL_NAME, help="Logs journal name to pull from")
     parser.add_argument("--skip-fix-typos", action="store_true", help="Skip running fix-typos")
-    parser.add_argument("--debug", action="store_true", help="Print raw source JSON for inspection")
+    parser.add_argument("--debug", action="store_true", help="Print raw journal JSON for inspection")
     args = parser.parse_args()
 
-    sources = [s.strip() for s in args.sources.split(",") if s.strip()]
-    unknown = [s for s in sources if s not in ALL_SOURCES]
-    if unknown:
-        print(f"Error: unknown source(s): {', '.join(unknown)}", file=sys.stderr)
-        sys.exit(1)
-
     state = load_state()
-    threads_state = state.setdefault("threads", {})
     journal_state = state.setdefault("journal", {})
 
-    # A failing source is reported and skipped so the others still sync.
-    entries: list[Entry] = []
-    threads_last_id: str | None = None
-    failed_sources: list[str] = []
-    if "threads" in sources:
-        try:
-            threads_entries, threads_last_id = collect_threads(threads_state, args.limit, args.debug)
-            entries.extend(threads_entries)
-        except (RuntimeError, OSError, ValueError) as exc:
-            print(f"Error: threads source failed: {exc}", file=sys.stderr)
-            failed_sources.append("threads")
-    if "journal" in sources:
-        try:
-            entries.extend(collect_journal(journal_state, args.journal, args.limit, args.debug))
-        except (RuntimeError, OSError, ValueError) as exc:
-            print(f"Error: journal source failed: {exc}", file=sys.stderr)
-            failed_sources.append("journal")
+    try:
+        entries = collect_journal(journal_state, args.journal, args.limit, args.debug)
+    except (RuntimeError, OSError, ValueError) as exc:
+        print(f"Error: journal source failed: {exc}", file=sys.stderr)
+        sys.exit(1)
 
-    fetched_journal_ids = [e.id for e in entries if e.source == "journal"]
+    fetched_journal_ids = [e.id for e in entries]
     entries = [e for e in entries if e.text or e.attachments]
     if not entries and not fetched_journal_ids:
         print("No new entries to process")
-        sys.exit(1 if failed_sources else 0)
+        return
 
     # Group by local date, oldest first within each day
     by_date: dict[str, list[Entry]] = defaultdict(list)
@@ -617,14 +453,9 @@ def main():
 
         rendered: list[str] = []
         for entry in rows:
-            if entry.source == "threads":
-                attachment_md = process_threads_attachments(
-                    date_str, entry.id, entry.attachments, dry_run=args.dry_run
-                )
-            else:
-                attachment_md = process_journal_attachments(
-                    date_str, entry.attachments, export, dry_run=args.dry_run
-                )
+            attachment_md = process_journal_attachments(
+                date_str, entry.attachments, export, dry_run=args.dry_run
+            )
             rendered.append(render_entry(entry.text, attachment_md))
 
         log_file = create_or_update_log(
@@ -644,17 +475,11 @@ def main():
 
     if not args.dry_run:
         now = datetime.now(LOCAL_TZ).isoformat()
-        if threads_last_id:
-            threads_state["last_processed_id"] = threads_last_id
-            threads_state["last_run"] = now
         if fetched_journal_ids:
             journal_state["processed_ids"] = journal_state.get("processed_ids", []) + fetched_journal_ids
             journal_state["last_run"] = now
         save_state(state)
         print(f"State updated: {STATE_FILE}")
-
-    if failed_sources:
-        sys.exit(1)
 
 
 if __name__ == "__main__":
