@@ -70,7 +70,7 @@ description = "Open the newsletter subscriber admin UI"
 run = "node newsletter/admin.js"
 
 [tasks.sync-logs]
-description = "Pull log entries from Threads and the Logs journal into log posts"
+description = "Pull entries from the Logs journal into log posts"
 run = "./scripts/sync_logs.py"
 
 [tasks.links]

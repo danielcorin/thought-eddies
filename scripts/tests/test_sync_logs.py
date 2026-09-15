@@ -155,13 +155,5 @@ class JournalAttachmentTests(unittest.TestCase):
         self.assertEqual(lines, ["![a](images/572b876e-a.png)"])
 
 
-class ThreadsFilterTests(unittest.TestCase):
-    def test_returns_messages_after_last_id(self):
-        messages = [{"id": "a"}, {"id": "b"}, {"id": "c"}]
-        self.assertEqual(sync.new_threads_messages(messages, "b"), [{"id": "c"}])
-        self.assertEqual(sync.new_threads_messages(messages, None), messages)
-        self.assertEqual(sync.new_threads_messages(messages, "zzz"), messages)
-
-
 if __name__ == "__main__":
     unittest.main()
