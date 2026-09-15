@@ -1,0 +1,89 @@
+---
+title: 'Using a dedicated Claude Code account for a folder'
+description: 'Set CLAUDE_CONFIG_DIR with mise to isolate Claude Code credentials, settings, and history within a directory tree.'
+createdAt: 2026-09-15T16:19:12-04:00
+updatedAt: 2026-09-15T16:19:12-04:00
+publishedAt: 2026-09-15T16:19:12-04:00
+tags:
+  - claude-code
+  - mise
+draft: false
+---
+
+I wanted one folder tree to use a different Claude Code account without changing the account I use everywhere else.
+I also wanted the account's settings and history to remain isolated, without needing a wrapper script or a separate shell alias.
+I asked an agent to set this up, and the solution turned out to be a single environment variable.
+
+Claude Code supports this through `CLAUDE_CONFIG_DIR`.
+When it is set, Claude Code stores its credentials, settings, session history, plugins, MCP state, and per-project memory in that directory instead of `~/.claude`.
+[mise](https://mise.jdx.dev/) can set the variable whenever a shell enters a particular folder tree and remove it again when the shell leaves.
+
+## Configuration
+
+At the root of the folder tree, create a `mise.toml`:
+
+```toml title="mise.toml"
+[env]
+# Keep this folder tree's Claude Code account and config separate from ~/.claude.
+CLAUDE_CONFIG_DIR = "{{ config_root }}/.claude-config"
+```
+
+`{{ config_root }}` is a mise template that resolves to the directory containing `mise.toml`.
+This keeps the setup working if the folder is moved and places all of the isolated Claude Code state inside it.
+
+The mise shell integration needs to be activated.
+For zsh, I have this in `~/.zshrc`:
+
+```sh
+if command -v mise >/dev/null; then
+  eval "$(mise activate zsh)"
+fi
+```
+
+Then trust the folder's configuration:
+
+```sh
+cd path/to/folder
+mise trust
+```
+
+The first time `claude` runs from that folder, the config directory is empty, so Claude Code starts its login flow.
+Logging in with the other account saves its credentials under the new config directory rather than changing the default account in `~/.claude`.
+On macOS, its Keychain entry is also namespaced using the config directory path, so it does not collide with the default account.
+
+If the folder is a Git repository, `.claude-config/` needs to be ignored because it contains credentials and full session transcripts:
+
+```gitignore title=".gitignore"
+.claude-config/
+```
+
+## Verification
+
+Inside the configured folder or any of its subfolders:
+
+```sh
+$ echo $CLAUDE_CONFIG_DIR
+/path/to/folder/.claude-config
+```
+
+Outside that tree, the variable should be empty and `claude` will use the default `~/.claude` configuration again:
+
+```sh
+cd ~
+echo $CLAUDE_CONFIG_DIR
+```
+
+## Caveats
+
+This isolates the account and Claude Code state, but it does not install or pin a different version of Claude Code.
+That would require a `[tools]` entry in `mise.toml`.
+
+It also only works in shells where mise is activated.
+An editor, GUI app, or terminal that does not load the shell configuration will not see `CLAUDE_CONFIG_DIR` and will use the default account.
+Settings, permissions, hooks, and plugins from `~/.claude` are not inherited, so they need to be configured again or deliberately copied into `.claude-config/settings.json`.
+
+If the config directory is moved, Claude Code may ask for another login because the macOS Keychain entry is tied to the old path.
+
+---
+
+This writeup was produced by an agent.
