@@ -7,7 +7,9 @@ processed entry IDs are tracked in scripts/.sync_logs_state.json.
 
 An entry's location is reduced to a city and written to the log's `location`
 frontmatter. Attachments are pulled from a one-off `logs export` when needed.
-Multiple entries on the same day go in one file separated by `---`.
+Standalone x.com/twitter.com links become `<Tweet />` embeds, with the
+`astro-embed` import added to the file. Multiple entries on the same day go in
+one file separated by `---`.
 
 After creating or updating log files, runs `/fix-typos` via `claude` on each.
 
@@ -155,8 +157,31 @@ def one_sentence_per_line(text: str) -> str:
     return result
 
 
+TWEET_URL_PATTERN = r"https?://(?:www\.)?(?:twitter|x)\.com/[A-Za-z0-9_]+/status/\d+[^\s>)\]]*"
+STANDALONE_TWEET_RE = re.compile(rf"^\s*<?(?P<url>{TWEET_URL_PATTERN})>?\s*$", re.I)
+
+
+def tweet_embed_url(url: str) -> str:
+    """Drop tracking params and trailing slashes from a tweet URL."""
+    return re.sub(r"[?#].*$", "", url).rstrip("/")
+
+
+def embed_tweets(text: str) -> str:
+    """Turn links to a tweet that sit on their own line into <Tweet /> embeds."""
+    out: list[str] = []
+    for line in text.split("\n"):
+        match = STANDALONE_TWEET_RE.match(line)
+        rendered = f'<Tweet id="{tweet_embed_url(match.group("url"))}" />' if match else line
+        # MDX only treats the component as a block if blank lines fence it off
+        neighbors_embed = bool(match) or (bool(out) and out[-1].startswith("<Tweet id="))
+        if neighbors_embed and out and out[-1].strip() and rendered.strip():
+            out.append("")
+        out.append(rendered)
+    return "\n".join(out)
+
+
 def clean_text(text: str) -> str:
-    return one_sentence_per_line(normalize_quotes(text.strip()))
+    return embed_tweets(one_sentence_per_line(normalize_quotes(text.strip())))
 
 
 def format_frontmatter_ts(dt: datetime) -> str:
@@ -180,6 +205,26 @@ def add_location(content: str, city: str | None) -> str:
         return content
     frontmatter = match.group(1) + f"\nlocation: {yaml_single_quoted(city)}"
     return content[: match.start(1)] + frontmatter + content[match.end(1) :]
+
+
+EMBED_IMPORTS = {"Tweet": "import { Tweet } from 'astro-embed';"}
+
+
+def add_embed_imports(content: str) -> str:
+    """Import any astro-embed component the body uses but doesn't import yet."""
+    match = FRONTMATTER_RE.match(content)
+    if not match:
+        return content
+    body = content[match.end() :]
+    missing = [
+        statement
+        for name, statement in EMBED_IMPORTS.items()
+        if f"<{name} " in body
+        and not re.search(rf"import\s*\{{[^}}]*\b{name}\b[^}}]*\}}\s*from\s*['\"]astro-embed['\"]", body)
+    ]
+    if not missing:
+        return content
+    return content[: match.end()] + "\n" + "\n".join(missing) + "\n\n" + body.lstrip("\n")
 
 
 SAFE_CHARS_RE = re.compile(r"[^a-zA-Z0-9._-]+")
@@ -277,6 +322,8 @@ tags: []
 
 """
         new_content = frontmatter + "\n\n---\n\n".join(entries) + "\n"
+
+    new_content = add_embed_imports(new_content)
 
     if dry_run:
         print(f"[dry-run] Would write to {log_file}:")
