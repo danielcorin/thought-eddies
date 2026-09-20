@@ -85,6 +85,59 @@ class AddLocationTests(unittest.TestCase):
         self.assertEqual(sync.add_location(self.content, None), self.content)
 
 
+class EmbedTweetsTests(unittest.TestCase):
+    def test_standalone_link_becomes_embed(self):
+        self.assertEqual(
+            sync.embed_tweets("https://x.com/trq212/status/2101009392611278961"),
+            '<Tweet id="https://x.com/trq212/status/2101009392611278961" />',
+        )
+
+    def test_twitter_com_and_tracking_params(self):
+        self.assertEqual(
+            sync.embed_tweets("https://twitter.com/paulg/status/1655926747404050432?s=20"),
+            '<Tweet id="https://twitter.com/paulg/status/1655926747404050432" />',
+        )
+
+    def test_fences_embed_with_blank_lines(self):
+        text = "Before.\nhttps://x.com/a/status/1\nAfter."
+        self.assertEqual(
+            sync.embed_tweets(text),
+            'Before.\n\n<Tweet id="https://x.com/a/status/1" />\n\nAfter.',
+        )
+
+    def test_leaves_inline_links_alone(self):
+        text = "See https://x.com/a/status/1 for context."
+        self.assertEqual(sync.embed_tweets(text), text)
+
+    def test_leaves_non_tweet_links_alone(self):
+        text = "https://x.com/trq212"
+        self.assertEqual(sync.embed_tweets(text), text)
+
+
+class AddEmbedImportsTests(unittest.TestCase):
+    frontmatter = "---\ndate: '2026-09-11T13:29:37-04:00'\ntitle: '2026-09-11'\n---\n\n"
+
+    def test_adds_import_when_embed_used(self):
+        content = self.frontmatter + '<Tweet id="https://x.com/a/status/1" />\n'
+        self.assertEqual(
+            sync.add_embed_imports(content),
+            self.frontmatter.rstrip("\n")
+            + "\n\nimport { Tweet } from 'astro-embed';\n\n"
+            + '<Tweet id="https://x.com/a/status/1" />\n',
+        )
+
+    def test_skips_when_already_imported(self):
+        content = (
+            self.frontmatter
+            + "import { Tweet } from 'astro-embed';\n\n<Tweet id=\"https://x.com/a/status/1\" />\n"
+        )
+        self.assertEqual(sync.add_embed_imports(content), content)
+
+    def test_no_embed_is_noop(self):
+        content = self.frontmatter + "Just words.\n"
+        self.assertEqual(sync.add_embed_imports(content), content)
+
+
 class CreateOrUpdateLogTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
