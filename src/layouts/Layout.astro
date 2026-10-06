@@ -163,6 +163,12 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 		<ScrollToTop />
 		<KeyboardShortcutsModal pageType={pageType} />
 		<SearchModal client:only="react" />
+		{pageType === "404" && (
+			<script is:inline>
+				// The prerendered 404 canonical URL hides the missing path.
+				window.goatcounter = { path: window.location.pathname };
+			</script>
+		)}
 		<script is:inline data-goatcounter="https://danielcorin.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 	</body>
 </html>
