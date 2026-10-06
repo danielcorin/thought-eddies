@@ -48,7 +48,7 @@ Use mise tasks for new content (`just` is a project-local alias for `mise`):
 - `mise run post "Title"` - new blog post
 - `mise run til category "Title"` - new TIL entry
 - `mise run log` - new daily log
-- `mise run sync-logs` - pull entries from the Logs journal (`--dry-run` to preview)
+- `mise run sync-logs` - pull entries from the Logs journal, then commit and push `src/content/logs` (`--dry-run` to preview without committing)
 
 Content schemas are defined in `src/content/config.ts`. Key fields:
 

@@ -71,7 +71,19 @@ run = "node newsletter/admin.js"
 
 [tasks.sync-logs]
 description = "Pull entries from the Logs journal into log posts"
-run = "./scripts/sync_logs.py"
+run = '''
+bash -c '
+set -e
+./scripts/sync_logs.py "$@"
+case " $* " in *" --dry-run "*) exit 0 ;; esac
+git add src/content/logs
+if git diff --cached --quiet -- src/content/logs; then
+  echo "No new log changes to commit"
+  exit 0
+fi
+git commit -m "Logs" -- src/content/logs
+git push
+' sync-logs'''
 
 [tasks.links]
 description = "Convert a Raindrop collection to link posts"
