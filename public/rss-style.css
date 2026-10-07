@@ -1,0 +1,151 @@
+/*
+ * Styles RSS feeds when opened directly in a browser, mirroring the
+ * /feeds/[id] pages. Feed readers ignore this. CSS can't make XML links
+ * clickable, so each item's URL is shown as text and the description points
+ * people to /feeds. Values are copied from src/styles/theme.css and base.css.
+ */
+
+:root {
+  --color-bg: #f4f1e4;
+  --color-ink: #2d3436;
+  --color-ink-light: #636e72;
+  --color-accent: #0984e3;
+  --color-border: #b4b4b4;
+
+  --font-primary: 'Futura';
+  --font-prose: 'Inter', 'Helvetica Neue', 'Arial', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-3xl: 1.875rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1b17;
+    --color-ink: #cccccc;
+    --color-ink-light: #a8a8a8;
+    --color-accent: #4dabf7;
+    --color-border: #4a4a4a;
+  }
+}
+
+:root {
+  --soft-horizontal-divider: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-border) 42%, transparent) 16%,
+    color-mix(in srgb, var(--color-border) 68%, transparent) 50%,
+    color-mix(in srgb, var(--color-border) 42%, transparent) 84%,
+    transparent
+  );
+}
+
+rss {
+  display: block;
+  min-height: 100vh;
+  margin: 0;
+  padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xl);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+channel {
+  display: block;
+  max-width: 75ch;
+  margin: 0 auto;
+}
+
+channel > *,
+item > * {
+  display: none;
+}
+
+/* Header: centered title with a mono "RSS Feed" label, like article headers */
+channel > title {
+  display: block;
+  margin: var(--spacing-lg) 0 var(--spacing-xl);
+  padding-bottom: var(--spacing-md);
+  font-family: var(--font-primary), sans-serif;
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+channel > title::after {
+  content: 'RSS Feed';
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--color-ink-light);
+}
+
+channel > description {
+  display: block;
+  margin-bottom: var(--spacing-xl);
+  font-family: var(--font-prose);
+  font-size: var(--text-lg);
+}
+
+channel > description::after {
+  content: "Copy this page's URL into your feed reader to subscribe, or find every feed at danielcorin.com/feeds.";
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--text-base);
+  color: var(--color-ink-light);
+}
+
+/* Entries: date above title, separated by soft fading dividers */
+channel > item {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-lg) 0;
+  background: var(--soft-horizontal-divider) bottom / 100% 1px no-repeat;
+}
+
+item > pubDate {
+  display: block;
+  order: -1;
+  margin-bottom: var(--spacing-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-ink-light);
+}
+
+item > title {
+  display: block;
+  font-family: var(--font-primary), sans-serif;
+  font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+item > link {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-accent);
+  word-break: break-all;
+}
+
+@media (max-width: 640px) {
+  channel > item {
+    padding: var(--spacing-md) 0;
+  }
+}

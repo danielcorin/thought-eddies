@@ -123,7 +123,7 @@ export async function generateSectionRSSFeed(
     xmlns: {
       content: 'http://purl.org/rss/1.0/modules/content/',
     },
-    stylesheet: '/rss-section-style.xsl',
+    stylesheet: '/rss-style.css',
   });
 
   response.headers.set('Access-Control-Allow-Origin', '*');
