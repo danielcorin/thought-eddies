@@ -1,14 +1,17 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { generateOGImage } from '@utils/og';
+import { shouldShowPost } from '@utils/posts';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
   const entries = await getCollection('breadcrumbs');
-  return entries.map((entry: CollectionEntry<'breadcrumbs'>) => ({
-    params: { slug: entry.id.replace(/\.(md|mdx)$/, '') },
-    props: { entry },
-  }));
+  return entries
+    .filter(shouldShowPost)
+    .map((entry: CollectionEntry<'breadcrumbs'>) => ({
+      params: { slug: entry.id.replace(/\.(md|mdx)$/, '') },
+      props: { entry },
+    }));
 }
 
 interface Props {
