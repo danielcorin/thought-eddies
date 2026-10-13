@@ -10,5 +10,6 @@
     "draft": "draft"
   },
   "ignore": ["**/_*"],
-  "publishContent": true
+  "publishContent": true,
+  "contentTransform": "scripts/sequoia-content.mjs"
 }

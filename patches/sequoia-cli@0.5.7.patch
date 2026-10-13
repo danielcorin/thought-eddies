@@ -1,0 +1,84 @@
+diff --git a/dist/index.js b/dist/index.js
+index 056af9c792530676cf23f9789a5618381c77b5d7..2c49dbfaad6ed50216be166a995405024d9a68b8 100755
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -103029,8 +103029,10 @@ async function scanContentDirectory(contentDir, frontmatterMappingOrOptions, ign
+     ignorePatterns: ignore = [],
+     slugField,
+     removeIndexFromSlug,
+-    stripDatePrefix
++    stripDatePrefix,
++    contentTransform
+   } = options;
++  const transform = contentTransform ? (await import((await import("node:url")).pathToFileURL(contentTransform).href)).default : undefined;
+   const patterns = ["**/*.md", "**/*.mdx"];
+   const posts = [];
+   for (const pattern of patterns) {
+@@ -103051,13 +103053,15 @@ async function scanContentDirectory(contentDir, frontmatterMappingOrOptions, ign
+           removeIndexFromSlug,
+           stripDatePrefix
+         });
++        const transformed = transform ? await transform({ filePath, body, frontmatter: rawFrontmatter }) : undefined;
+         posts.push({
+           filePath,
+           slug,
+           frontmatter,
+-          content: body,
++          content: transformed ?? body,
+           rawContent,
+-          rawFrontmatter
++          rawFrontmatter,
++          hashSuffix: transformed ?? ""
+         });
+       } catch (error) {
+         console.error(`Error parsing ${relativePath}:`, error);
+@@ -104798,7 +104802,8 @@ async function syncStateFromPDS(agent, config, configDir, options = {}) {
+     ignorePatterns: config.ignore,
+     slugField: config.frontmatter?.slugField,
+     removeIndexFromSlug: config.removeIndexFromSlug,
+-    stripDatePrefix: config.stripDatePrefix
++    stripDatePrefix: config.stripDatePrefix,
++    contentTransform: config.contentTransform && path11.resolve(configDir, config.contentTransform)
+   });
+   const postsByPath = new Map;
+   for (const post of localPosts) {
+@@ -104844,9 +104849,9 @@ Matching documents to local files:
+       let contentHash;
+       if (needsFrontmatterUpdate) {
+         const updatedContent = updateFrontmatterWithAtUri(localPost.rawContent, doc.uri);
+-        contentHash = await getContentHash(updatedContent);
++        contentHash = await getContentHash(updatedContent + localPost.hashSuffix);
+       } else {
+-        contentHash = await getContentHash(localPost.rawContent);
++        contentHash = await getContentHash(localPost.rawContent + localPost.hashSuffix);
+       }
+       const existing = state.posts[relativeFilePath];
+       state.posts[relativeFilePath] = {
+@@ -105029,7 +105034,8 @@ var publishCommand = import_cmd_ts6.command({
+       ignorePatterns: config.ignore,
+       slugField: config.frontmatter?.slugField,
+       removeIndexFromSlug: config.removeIndexFromSlug,
+-      stripDatePrefix: config.stripDatePrefix
++      stripDatePrefix: config.stripDatePrefix,
++      contentTransform: config.contentTransform && path12.resolve(configDir, config.contentTransform)
+     });
+     s.stop(`Found ${posts.length} posts`);
+     const postsToPublish = [];
+@@ -105039,7 +105045,7 @@ var publishCommand = import_cmd_ts6.command({
+         draftPosts.push(post);
+         continue;
+       }
+-      const contentHash = await getContentHash(post.rawContent);
++      const contentHash = await getContentHash(post.rawContent + post.hashSuffix);
+       const relativeFilePath = path12.relative(configDir, post.filePath);
+       const postState = state.posts[relativeFilePath];
+       if (force) {
+@@ -105202,7 +105208,7 @@ Dry run complete. No changes made.`);
+             }
+           }
+         }
+-        const contentHash = await getContentHash(contentForHash);
++        const contentHash = await getContentHash(contentForHash + post.hashSuffix);
+         state.posts[relativeFilePath] = {
+           contentHash,
+           atUri: documentRef.uri,

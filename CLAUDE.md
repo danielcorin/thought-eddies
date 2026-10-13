@@ -92,6 +92,12 @@ cut the file to about 8% of a full export. The reducer in
 `src/utils/reprise.ts` accepts either encoding and expands compact files to
 the v1 object form, so the player only ever sees one shape.
 
+When Sequoia publishes to atproto, `scripts/sequoia-content.mjs` swaps the
+MDX body for the recording's final text, so the record's `textContent` holds
+the post itself and not the player code. Sequoia has no hook for this, so
+`patches/sequoia-cli@*.patch` adds a `contentTransform` option to
+`sequoia.json`. If you upgrade `sequoia-cli`, redo the patch.
+
 ## Key Files
 
 - `src/content/config.ts` - Content collection schemas
