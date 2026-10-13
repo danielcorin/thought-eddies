@@ -1,0 +1,17 @@
+---
+title: 'Writing When Your Reader is Watching You Write'
+createdAt: 2026-10-12T13:41:41.765Z
+updatedAt: 2026-10-12T16:22:57.756Z
+description: 'Watch me type every character while I write about writing while you watch'
+location: 'Brooklyn'
+draft: false
+# To refresh the recording after more edits in Reprise:
+#   reprise export --force --no-keys --compact --output src/content/posts/2026/writing-when-your-reader-is-watching-you-write/writing.reprise.json
+atUri: "at://did:plc:mracrip6qu3vw46nbewg44sm/site.standard.document/3mxprpm462l2e"
+---
+
+import RepriseReplay from '@components/RepriseReplay.astro';
+import recording from './writing.reprise.json';
+import recordingUrl from './writing.reprise.json?url';
+
+<RepriseReplay recording={recording} src={recordingUrl} />

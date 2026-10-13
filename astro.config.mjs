@@ -70,6 +70,7 @@ export default defineConfig({
         'astro/assets/services/noop',
         'astro/logger/json',
         '@astrojs/svelte/server.js',
+        'lucide-react',
       ],
     },
   },

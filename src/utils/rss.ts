@@ -16,6 +16,21 @@ function stripAnsiCodes(text: string): string {
   return text.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '').replace(/\[(\d+)m/g, '');
 }
 
+// Feed readers cannot hydrate islands. Drop scripts, styles, slot templates and
+// anything marked data-feed="hide", and unwrap Astro's island elements so only
+// the server-rendered HTML remains.
+export function cleanFeedHtml(html: string): string {
+  return html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<template\b[^>]*>[\s\S]*?<\/template>/gi, '')
+    .replace(
+      /<([a-z][a-z0-9-]*)\b[^>]*\bdata-feed="hide"[^>]*>[\s\S]*?<\/\1>/gi,
+      ''
+    )
+    .replace(/<\/?astro-(?:island|slot|static-slot)\b[^>]*>/gi, '');
+}
+
 // Add RSS footer with thank you message
 export function addRSSFooter(htmlContent: string): string {
   return (
@@ -63,7 +78,7 @@ export async function generateRSSFeed(context: { site: string }) {
         const { Content } = await render(item);
         htmlContent = await container.renderToString(Content);
         // Strip ANSI color codes that may be present in code blocks
-        htmlContent = stripAnsiCodes(htmlContent);
+        htmlContent = cleanFeedHtml(stripAnsiCodes(htmlContent));
       } catch (error) {
         console.warn(`Failed to render MDX for ${item.id}:`, error);
         htmlContent = `<p>${(item.data as Record<string, any>).description || ''}</p>`;

@@ -65,6 +65,33 @@ bsky: '3lnbcug67ys2d'
 
 Full AT URIs (`at://did:plc:.../app.bsky.feed.post/...`) are also supported.
 
+### Reprise Writing Replays
+
+A post can replay the Reprise recording of its own writing. Export the open
+document into the post folder, then embed it:
+
+```sh
+reprise export --force --no-keys --compact --output src/content/posts/<year>/<slug>/writing.reprise.json
+```
+
+```mdx
+import RepriseReplay from '@components/RepriseReplay.astro';
+import recording from './writing.reprise.json';
+import recordingUrl from './writing.reprise.json?url';
+
+<RepriseReplay recording={recording} src={recordingUrl} />
+```
+
+The post body is the recording's final text, rendered through the normal
+Markdown pipeline at build time. Readers get the rendered post by default and
+a "Watch me write it" button that loads the recording on demand. The build
+fails if the export does not replay to its final text. `--no-keys` drops
+keystroke events the player never uses and `--compact` writes Reprise's
+`reprise-compact` encoding (positional arrays, delta times); together they
+cut the file to about 8% of a full export. The reducer in
+`src/utils/reprise.ts` accepts either encoding and expands compact files to
+the v1 object form, so the player only ever sees one shape.
+
 ## Key Files
 
 - `src/content/config.ts` - Content collection schemas

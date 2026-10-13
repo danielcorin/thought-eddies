@@ -7,7 +7,7 @@ import { getContainerRenderer as getMDXRenderer } from '@astrojs/mdx/container-r
 import reactRenderer from '@astrojs/react/server.js';
 import svelteRenderer from '@astrojs/svelte/server.js';
 import { loadRenderers } from 'astro:container';
-import { addRSSFooter } from './rss';
+import { addRSSFooter, cleanFeedHtml } from './rss';
 
 type ContentSection = 'posts' | 'logs' | 'til' | 'garden' | 'projects';
 
@@ -55,7 +55,7 @@ export async function generateSectionRSSFeed(
       let htmlContent = '';
       try {
         const { Content } = await render(item);
-        htmlContent = await container.renderToString(Content);
+        htmlContent = cleanFeedHtml(await container.renderToString(Content));
       } catch (error) {
         console.warn(`Failed to render MDX for ${item.id}:`, error);
         htmlContent = `<p>${'description' in item.data ? item.data.description || '' : ''}</p>`;

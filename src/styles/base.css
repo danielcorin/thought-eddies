@@ -34,6 +34,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keep the layout width constant when content grows past the viewport and a
+     classic scrollbar appears (e.g. the writing replay player). */
+  scrollbar-gutter: stable;
   transition:
     color 300ms,
     background-color 300ms;

@@ -1,0 +1,50 @@
+---
+/**
+ * Replays a Reprise writing log inside a post.
+ *
+ * Usage in MDX (both imports point at the same export):
+ *
+ *   import RepriseReplay from '@components/RepriseReplay.astro';
+ *   import recording from './writing.reprise.json';
+ *   import recordingUrl from './writing.reprise.json?url';
+ *
+ *   <RepriseReplay recording={recording} src={recordingUrl} />
+ *
+ * The recording object is used at build time to validate the export and to
+ * render the finished text through the site's normal Markdown pipeline. The
+ * URL is fetched in the browser so the event log stays out of the page HTML.
+ */
+import RepriseReplayPlayer from './RepriseReplayPlayer.tsx';
+import Markdown from './prose/Markdown.astro';
+import {
+  Timeline,
+  normalizeRecording,
+  type RepriseCompactRecording,
+  type RepriseRecording,
+} from '@utils/reprise';
+
+interface Props {
+  /** A full or compact (`reprise export --compact`) export. */
+  recording: RepriseRecording | RepriseCompactRecording;
+  src: string;
+  /** Initial playback speed multiplier. */
+  speed?: number;
+  /** Compress long pauses by default. */
+  skipIdle?: boolean;
+}
+
+const { recording: raw, src, speed = 1, skipIdle = true } = Astro.props;
+
+// Fail the build early if the export does not replay cleanly.
+const recording = normalizeRecording(raw);
+new Timeline(recording, skipIdle);
+---
+
+<RepriseReplayPlayer
+  client:visible
+  src={src}
+  defaultSpeed={speed}
+  skipIdleByDefault={skipIdle}
+>
+  <Markdown of={recording.finalText} />
+</RepriseReplayPlayer>
