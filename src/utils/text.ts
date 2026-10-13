@@ -10,14 +10,21 @@ export function getContentPreview(
 ): string {
   if (!body) return '';
 
+  // Remove frontmatter if present. Done first and anchored to the start of the
+  // body so it can't swallow the text between two `---` entry separators.
+  let content = body.replace(/^---\n[\s\S]*?\n---\n?/, '');
+
   // Remove all import statements (including multiline)
-  let content = body.replace(
+  content = content.replace(
     /^import\s+[\s\S]*?from\s+['"][^'"]+['"];?\s*$/gm,
     ''
   );
 
   // Remove export statements
   content = content.replace(/^export\s+[\s\S]*?;\s*$/gm, '');
+
+  // Unwrap components whose children are the entry's prose
+  content = content.replace(/<\/?LinkedInPost\b[^>]*>/g, '');
 
   // Remove JSX/MDX components (both self-closing and with children)
   content = content.replace(/<[A-Z][^>]*\/>/g, ''); // Self-closing
@@ -30,8 +37,8 @@ export function getContentPreview(
   content = content.replace(/```[\s\S]*?```/g, '');
   content = content.replace(/`{3}[\s\S]*?`{3}/g, '[code block]');
 
-  // Remove frontmatter if present
-  content = content.replace(/^---[\s\S]*?---\n?/m, '');
+  // Remove horizontal rules (logs separate entries with `---`)
+  content = content.replace(/^\s*([-*_])(\s*\1){2,}\s*$/gm, '');
 
   // Remove MDX expressions
   content = content.replace(/\{[^}]*\}/g, '');

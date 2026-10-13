@@ -65,6 +65,22 @@ bsky: '3lnbcug67ys2d'
 
 Full AT URIs (`at://did:plc:.../app.bsky.feed.post/...`) are also supported.
 
+### LinkedIn Posts
+
+LinkedIn has no public oEmbed, so `<LinkedInPost>` keeps a copy of the post
+text in the log and links back to LinkedIn for comments. The date comes from
+the activity id in the URL.
+
+```mdx
+import LinkedInPost from '@components/LinkedInPost.astro';
+
+<LinkedInPost id="https://www.linkedin.com/feed/update/urn:li:activity:7513325307572011008/">
+
+Post text as Markdown.
+
+</LinkedInPost>
+```
+
 ### Reprise Writing Replays
 
 A post can replay the Reprise recording of its own writing. Export the open

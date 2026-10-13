@@ -1,0 +1,138 @@
+---
+import { Icon } from 'astro-icon/components';
+
+// LinkedIn has no public oEmbed endpoint, so unlike <Tweet> the post text is
+// passed in as children and rendered statically.
+interface Props {
+  id: string; // post URL, e.g. https://www.linkedin.com/feed/update/urn:li:activity:<id>/
+  author?: string;
+  authorUrl?: string;
+}
+
+const {
+  id,
+  author = 'Dan Corin',
+  authorUrl = 'https://www.linkedin.com/in/danielcorin/',
+} = Astro.props;
+
+// The top 41 bits of a LinkedIn activity/share/ugcPost id are the creation
+// time in epoch milliseconds.
+const urnId = id.match(/urn:li:(?:activity|share|ugcPost):(\d+)/)?.[1];
+const postedAt = urnId ? new Date(Number(BigInt(urnId) >> 22n)) : undefined;
+const postedLabel = postedAt?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'America/New_York',
+});
+---
+
+<blockquote class="linkedin-post" cite={id}>
+  <slot />
+  <footer class="linkedin-post-footer">
+    <p class="linkedin-post-byline">
+      <Icon
+        name="ph:linkedin-logo"
+        class="linkedin-post-icon"
+        aria-hidden="true"
+      />
+      <a href={authorUrl} target="_blank" rel="noopener noreferrer">{author}</a>
+      {
+        postedAt && (
+          <>
+            {' · '}
+            <time datetime={postedAt.toISOString()}>{postedLabel}</time>
+          </>
+        )
+      }
+    </p>
+    <p>
+      <a
+        href={id}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="linkedin-post-cta"
+      >
+        Comment on LinkedIn
+        <Icon name="ph:arrow-up-right" aria-hidden="true" />
+      </a>
+    </p>
+  </footer>
+</blockquote>
+
+<style>
+  .linkedin-post {
+    margin: var(--spacing-md, 1rem) 0;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    color: var(--color-ink);
+  }
+
+  .linkedin-post > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .linkedin-post-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+  }
+
+  /* Paragraphs, not spans, so feed readers that drop these styles still put
+     the byline and the link on separate lines. */
+  .linkedin-post-footer > p {
+    margin: 0;
+  }
+
+  .linkedin-post-byline {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .linkedin-post-icon {
+    flex-shrink: 0;
+    width: 1.1em;
+    height: 1.1em;
+    color: #0a66c2;
+  }
+
+  .linkedin-post-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid #0a66c2;
+    border-radius: 999px;
+    color: #0a66c2;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  .linkedin-post-cta:hover {
+    background: #0a66c2;
+    color: #fff;
+  }
+
+  :global(.dark) .linkedin-post-icon,
+  :global(.dark) .linkedin-post-cta {
+    color: #70b5f9;
+    border-color: #70b5f9;
+  }
+
+  :global(.dark) .linkedin-post-cta:hover {
+    background: #70b5f9;
+    color: #000;
+  }
+</style>
