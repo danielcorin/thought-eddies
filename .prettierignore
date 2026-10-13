@@ -37,3 +37,6 @@ src/content/posts/2024/claude-artifacts/index.mdx
 
 # Generated from Raindrop; formatting would make the importer non-idempotent
 src/content/links/
+
+# Reprise recordings are machine-written; pretty-printing inflates the download
+*.reprise.json
