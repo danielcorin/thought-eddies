@@ -68,7 +68,7 @@ const headings = timelineEntries.map((entry: any) => {
 });
 ---
 
-<PostLayout frontmatter={{ ...project.data, collection: 'projects' }} ogImage={ogImage} slug={project.id}>
+<PostLayout frontmatter={{ ...project.data, collection: 'projects' }} ogImage={ogImage} slug={project.id} markdown={false}>
   <nav class="timeline-nav">
     <a href={`/projects/${project.id}`}>
       <Icon name="ph:arrow-left" />

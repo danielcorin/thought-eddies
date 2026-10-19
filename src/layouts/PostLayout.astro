@@ -20,8 +20,9 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { getCommitUrl } from '@utils/git';
 import { slugify } from '@utils/slugify';
+import { getContentPreview } from '@utils/text';
 
-const { frontmatter, ogImage, slug } = Astro.props;
+const { frontmatter, ogImage, slug, markdown = true } = Astro.props;
 
 // Build Bluesky post URL from bsky frontmatter
 const DEFAULT_DID = 'did:plc:mracrip6qu3vw46nbewg44sm';
@@ -109,13 +110,23 @@ const atprotoUrl = frontmatter.atUri
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 
+const description = frontmatter.description || getContentPreview(currentEntry?.body ?? '', 160);
+const toDate = (value: unknown) => (value ? new Date(value as string) : undefined);
+const article = {
+  publishedTime: toDate(frontmatter.publishedAt ?? frontmatter.createdAt ?? frontmatter.date),
+  modifiedTime: toDate(frontmatter.updatedAt),
+  tags: frontmatter.tags ?? undefined,
+};
+// Every entry type that uses this layout has an index.md twin, except subpages like timelines.
+const markdownUrl = markdown ? `${Astro.url.pathname.replace(/\/?$/, '/')}index.md` : undefined;
+
 // Calculate reading time if enabled
 const readingTime = frontmatter.readingTime && currentEntry?.body
   ? Math.max(1, Math.round(currentEntry.body.split(/\s+/).length / 225))
   : undefined;
 ---
 
-<Layout title={frontmatter.title} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : isBreadcrumb ? "breadcrumbs" : isRss ? "rss" : "posts"}>
+<Layout title={frontmatter.title} description={description} article={article} markdownUrl={markdownUrl} ogImage={ogImage} pageType={isProject ? "projects" : isTil ? "til" : isBreadcrumb ? "breadcrumbs" : isRss ? "rss" : "posts"}>
   <Navigation selected={isProject ? "projects" : isTil ? "til" : isBreadcrumb ? undefined : isRss ? "rss" : "posts"} />
   <article>
     {frontmatter.draft && (

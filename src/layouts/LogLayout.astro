@@ -10,6 +10,7 @@ import ClickableImages from "@components/ClickableImages.astro";
 import RandomEntryButton from "@components/RandomEntryButton.astro";
 import FullscreenImageViewer from "@components/FullscreenImageViewer.astro";
 import { getCommitUrl } from '@utils/git';
+import { getContentPreview } from '@utils/text';
 import OnThisDay from "@components/OnThisDay.astro";
 import { findOnThisDay } from "@utils/findOnThisDay";
 import {
@@ -63,11 +64,14 @@ const formatLogDay = (id: string, fallbackDate: Date): string => {
   return `${SHORT_MONTH_NAMES[month - 1]} ${String(day).padStart(2, "0")}`;
 };
 
+const description = getContentPreview(currentLog?.body ?? '', 160);
+const markdownUrl = `${Astro.url.pathname.replace(/\/?$/, '/')}index.md`;
+
 // Format current log date using parsed values (timezone-safe)
 const currentLogFullDate = formatLogFullDate(logYear, logMonth, logDay);
 ---
 
-<Layout title={frontmatter.title} ogImage={ogImage} pageType="logs">
+<Layout title={frontmatter.title} description={description} markdownUrl={markdownUrl} article={{ publishedTime: new Date(Date.UTC(logYear, logMonth - 1, logDay)), tags: frontmatter.tags ?? undefined }} ogImage={ogImage} pageType="logs">
   <Navigation selected="logs" />
   <main>
     <article>

@@ -5,6 +5,7 @@ import Navigation from '@components/layout/Navigation.astro';
 import Breadcrumbs from '@components/Breadcrumbs.astro';
 import TableOfContents from '@components/layout/TableOfContents.astro';
 import Webmentions from '@components/Webmentions.astro';
+import { getContentPreview } from '@utils/text';
 
 export async function getStaticPaths() {
   const gardenEntries = await getCollection('garden');
@@ -28,7 +29,7 @@ const ogImage = `/garden/${entry.id.replace(/\.(md|mdx)$/, '')}/og.png`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
-<Layout title={entry.data.title} ogImage={ogImage}>
+<Layout title={entry.data.title} description={getContentPreview(entry.body ?? '', 160)} ogImage={ogImage}>
   <Navigation selected="garden" />
   <main>
     <article>

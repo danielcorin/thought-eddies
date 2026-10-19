@@ -20,7 +20,7 @@ export async function getStaticPaths() {
         paths.push({
           params: { alias: cleanAlias },
           props: {
-            redirectTo: `/posts/${post.id}`,
+            redirectTo: `/posts/${post.id}/`,
             postTitle: post.data.title,
           },
         });
@@ -40,7 +40,7 @@ export async function getStaticPaths() {
         paths.push({
           params: { alias: cleanAlias },
           props: {
-            redirectTo: `/til/${category}/${slug}`,
+            redirectTo: `/til/${category}/${slug}/`,
             postTitle: til.data.title,
           },
         });
@@ -57,7 +57,7 @@ export async function getStaticPaths() {
         paths.push({
           params: { alias: cleanAlias },
           props: {
-            redirectTo: `/projects/${project.id}`,
+            redirectTo: `/projects/${project.id}/`,
             postTitle: project.data.title,
           },
         });
@@ -74,7 +74,7 @@ export async function getStaticPaths() {
         paths.push({
           params: { alias: cleanAlias },
           props: {
-            redirectTo: `/feeds/${feed.id}`,
+            redirectTo: `/feeds/${feed.id}/`,
             postTitle: feed.data.title,
           },
         });

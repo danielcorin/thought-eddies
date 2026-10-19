@@ -9,12 +9,45 @@ import KeyboardShortcutsModal from "@components/KeyboardShortcutsModal.astro";
 import SearchModal from "@components/SearchModal";
 interface Props {
 	title?: string;
+	description?: string;
 	ogImage?: string;
 	pageType?: string;
+	// Keep thin listing pages (tags, pagination) out of search results.
+	noindex?: boolean;
+	// Markdown copy of this page, advertised to agents as an alternate.
+	markdownUrl?: string;
+	// Set on single entries to emit article metadata and JSON-LD.
+	article?: {
+		publishedTime?: Date;
+		modifiedTime?: Date;
+		tags?: string[];
+	};
 }
 
-const { title = "", ogImage, pageType } = Astro.props;
-const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
+const SITE_NAME = "Thought Eddies";
+const AUTHOR = { name: "Dan Corin", url: new URL("/about/", Astro.site).href };
+
+const { title = "", ogImage, pageType, markdownUrl, article, noindex = false } = Astro.props;
+const description =
+	Astro.props.description?.replace(/\s+/g, " ").trim() || "An Experimental Digital Garden";
+const pageTitle = title.trim() ? `${title} | ${SITE_NAME}` : SITE_NAME;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const ogImageUrl = new URL(ogImage || "/og.png", Astro.site).href;
+
+const jsonLd = article && {
+	"@context": "https://schema.org",
+	"@type": "BlogPosting",
+	headline: title,
+	description,
+	url: canonicalUrl,
+	mainEntityOfPage: canonicalUrl,
+	image: ogImageUrl,
+	datePublished: article.publishedTime?.toISOString(),
+	dateModified: (article.modifiedTime ?? article.publishedTime)?.toISOString(),
+	keywords: article.tags?.length ? article.tags.join(", ") : undefined,
+	author: { "@type": "Person", ...AUTHOR },
+	publisher: { "@type": "Person", ...AUTHOR },
+};
 ---
 
 <!doctype html>
@@ -89,16 +122,34 @@ const pageTitle = title.trim() ? `Thought Eddies | ${title}` : "Thought Eddies";
 		<meta name="generator" content={Astro.generator} />
 		<SEO
 			title={pageTitle}
-			description="An Experimental Digital Garden"
+			description={description}
+			noindex={noindex}
 			openGraph={{
 				basic: {
-					title: "Thought Eddies",
-					type: "website",
-					image: ogImage || "/og-image.png",
+					title: title.trim() || SITE_NAME,
+					type: article ? "article" : "website",
+					image: ogImageUrl,
+					url: canonicalUrl,
+				},
+				optional: {
+					description,
+					siteName: SITE_NAME,
+				},
+				article: article && {
+					publishedTime: article.publishedTime?.toISOString(),
+					modifiedTime: article.modifiedTime?.toISOString(),
+					authors: [AUTHOR.name],
+					tags: article.tags,
 				},
 			}}
+			twitter={{ card: "summary_large_image" }}
 		/>
-		<title>{pageTitle}</title>
+		{markdownUrl && (
+			<link rel="alternate" type="text/markdown" href={markdownUrl} />
+		)}
+		{jsonLd && (
+			<script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+		)}
 	</head>
 	<body class="posts">
 		<a href="#main-content" class="skip-link">Skip to main content</a>
