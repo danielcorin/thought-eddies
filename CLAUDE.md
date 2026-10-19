@@ -120,6 +120,17 @@ the post itself and not the player code. Sequoia has no hook for this, so
 - `astro.config.mjs` - Build config, integrations, plugins
 - `tsconfig.json` - Path aliases: `@components`, `@layouts`, `@styles`, `@utils`
 
+## SEO
+
+`src/layouts/Layout.astro` owns page metadata: pass `description`,
+`article` (dates, tags) and `markdownUrl` from entry layouts, and `noindex`
+for thin listing pages (tags, pagination). Two post-build integrations in
+`plugins/` finish the job: `trailing-slash-links.mjs` rewrites internal links
+to `/path/` (Workers assets 307-redirect `/path`), and `sitemap-cleanup.mjs`
+drops noindex pages from the sitemap and adds `<lastmod>` from each page's
+article time. Both read the built HTML, so new templates are covered
+automatically.
+
 ## Notes
 
 - Package manager: pnpm (not npm/yarn)

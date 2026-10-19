@@ -47,7 +47,7 @@ const { page } = Astro.props as { page: any };
 const ogImage = `/og.png`;
 ---
 
-<Layout ogImage={ogImage}>
+<Layout ogImage={ogImage} noindex>
   <Navigation selected="home" />
   <main>
     <h1 class="page-title">Thought Eddies</h1>

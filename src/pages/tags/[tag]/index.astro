@@ -82,7 +82,7 @@ const allTaggedContent = [...taggedPosts, ...taggedLogs, ...taggedTils, ...tagge
 const ogImage = `/tags/og.png`;
 ---
 
-<Layout title={`Tag: ${tag}`} ogImage={ogImage}>
+<Layout title={`Tag: ${tag}`} ogImage={ogImage} noindex>
   <Navigation />
   <main>
     <div class="page-header">

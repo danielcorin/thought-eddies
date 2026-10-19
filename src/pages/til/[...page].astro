@@ -40,7 +40,7 @@ const categoriesWithCounts = [
 const ogImage = `/til/og.png`;
 ---
 
-<Layout title="TIL (Today I Learned)" ogImage={ogImage} pageType="tilList">
+<Layout title="TIL (Today I Learned)" ogImage={ogImage} pageType="tilList" noindex={page.currentPage > 1}>
   <Navigation selected="til" />
   <main>
     <h1 class="page-title">

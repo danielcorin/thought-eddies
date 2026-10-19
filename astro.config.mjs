@@ -14,6 +14,8 @@ import sitemap from '@astrojs/sitemap';
 import expressiveCode from 'astro-expressive-code';
 import devContentHmr from './plugins/dev-content-hmr.mjs';
 import devDependencyCache from './plugins/dev-dependency-cache.mjs';
+import sitemapCleanup from './plugins/sitemap-cleanup.mjs';
+import trailingSlashLinks from './plugins/trailing-slash-links.mjs';
 import {
   markdownPlugins,
   markdownSyntaxOptions,
@@ -88,6 +90,8 @@ export default defineConfig({
     sitemap({
       filter: (page) => !page.includes('/rss/'),
     }),
+    sitemapCleanup(),
+    trailingSlashLinks(),
     devImageService,
   ],
   markdown: {

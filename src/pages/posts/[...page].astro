@@ -36,7 +36,7 @@ const yearsWithPosts = [
 const ogImage = `/posts/og.png`;
 ---
 
-<Layout title="Posts" ogImage={ogImage} pageType="postsList">
+<Layout title="Posts" ogImage={ogImage} pageType="postsList" noindex={page.currentPage > 1}>
   <Navigation selected="posts" />
   <main>
     <h1 class="page-title">
