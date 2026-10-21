@@ -39,7 +39,7 @@ export const GET: APIRoute = async () => {
   // Build the markdown content
   let content = `# Thought Eddies
 
-> An experimental digital garden
+> An experimental digital garden by Dan Corin
 
 ## Main Pages
 

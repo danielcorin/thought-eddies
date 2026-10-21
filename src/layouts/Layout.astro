@@ -29,7 +29,7 @@ const AUTHOR = { name: "Dan Corin", url: new URL("/about/", Astro.site).href };
 
 const { title = "", ogImage, pageType, markdownUrl, article, noindex = false } = Astro.props;
 const description =
-	Astro.props.description?.replace(/\s+/g, " ").trim() || "An Experimental Digital Garden";
+	Astro.props.description?.replace(/\s+/g, " ").trim() || "An experimental digital garden by Dan Corin";
 const pageTitle = title.trim() ? `${title} | ${SITE_NAME}` : SITE_NAME;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const ogImageUrl = new URL(ogImage || "/og.png", Astro.site).href;

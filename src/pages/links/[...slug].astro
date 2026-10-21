@@ -2,6 +2,7 @@
 import Navigation from '@components/layout/Navigation.astro';
 import Layout from '@layouts/Layout.astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getContentPreview } from '@utils/text';
 
 export const prerender = true;
 
@@ -19,9 +20,12 @@ const canonicalUrl = new URL(`/links/${link.id}/`, Astro.site).toString();
 const published = link.data.createdAt.toISOString();
 const displayDate = published.split('T')[0];
 const targetHost = new URL(link.data.target).hostname.replace(/^www\./, '');
+// Most bookmarks are generated from Raindrop with no commentary. Keep those
+// out of search results so they don't read as thin pages.
+const commentary = getContentPreview(link.body ?? '', 160);
 ---
 
-<Layout title={link.data.title} pageType="feeds">
+<Layout title={link.data.title} description={commentary} noindex={!commentary} pageType="feeds">
   <Navigation selected="feeds" />
   <article class="h-entry bookmark">
     <header>

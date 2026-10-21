@@ -113,7 +113,7 @@ export async function generateRSSFeed(context: { site: string }) {
 
   const response = await rss({
     title: 'Thought Eddies',
-    description: 'An experimental digital garden',
+    description: 'An experimental digital garden by Dan Corin',
     site: context.site,
     items,
     xmlns: {

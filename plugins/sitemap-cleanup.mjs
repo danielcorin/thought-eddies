@@ -23,7 +23,9 @@ export default function sitemapCleanup() {
           const xml = readFileSync(path, 'utf8').replace(
             /<url><loc>([^<]+)<\/loc>(.*?)<\/url>/g,
             (entry, loc, rest) => {
-              const page = `${root}${decodeURIComponent(new URL(loc).pathname)}index.html`;
+              // <loc> is XML-escaped (e.g. `/tags/q&amp;a/`).
+              const url = new URL(loc.replaceAll('&amp;', '&'));
+              const page = `${root}${decodeURIComponent(url.pathname)}index.html`;
               if (!existsSync(page)) return entry;
               const html = readFileSync(page, 'utf8');
               if (/<meta name="robots" content="noindex/.test(html)) {
