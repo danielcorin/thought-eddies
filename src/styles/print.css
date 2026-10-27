@@ -15,6 +15,7 @@
   :root,
   :root.light,
   :root.dark {
+    color-scheme: light;
     --color-bg: #fff;
     --color-bg-code: #f2f2f2;
     --color-ink: #000;
@@ -69,29 +70,22 @@
     padding: 0;
   }
 
-  /* Point sizes instead of the screen's rem scale. */
-  article p,
-  .content,
-  .content p,
-  li {
-    font-size: 11pt;
-    line-height: 1.5;
-  }
-
+  /* Body text keeps the reader's default size (1rem prints at 12pt unless
+     they've changed it); only the screen's large headings scale down. */
   h1,
   article h1 {
-    font-size: 20pt;
+    font-size: 1.75rem;
   }
 
   h2,
   .content h2 {
-    font-size: 15pt;
+    font-size: 1.375rem;
   }
 
   h3,
   .content h3,
   h4 {
-    font-size: 13pt;
+    font-size: 1.125rem;
   }
 
   h1,
@@ -124,9 +118,11 @@
     color: #000 !important;
   }
 
-  .content a[href^='http']::after {
+  /* PrintPreparation.astro moves URLs into a numbered list at the end;
+     without JS they print inline. */
+  :root:not(.print-endnotes) .content a[href^='http']::after {
     content: ' (' attr(href) ')';
-    font-size: 9pt;
+    font-size: 0.75em;
     color: #444;
     word-break: break-all;
   }
@@ -152,7 +148,7 @@
 
   .expressive-code code,
   .content code {
-    font-size: 9pt;
+    font-size: 0.8rem;
   }
 
   /* Margin notes have no margin to live in on paper; print them inline. */
@@ -170,12 +166,32 @@
     display: none !important;
   }
 
+  .print-link-ref {
+    font-size: 0.75em;
+    color: #444;
+  }
+
+  .print-links {
+    margin-top: 2em;
+    font-family: var(--font-prose);
+    font-size: 0.75rem;
+  }
+
+  .print-links h2 {
+    font-size: 1rem;
+  }
+
+  .print-links li {
+    font-size: inherit;
+    word-break: break-all;
+  }
+
   .print-source {
     margin-top: 2em;
     padding-top: 0.5em;
     border-top: 1px solid #999;
     font-family: var(--font-prose);
-    font-size: 9pt;
+    font-size: 0.75rem;
     color: #444;
   }
 }

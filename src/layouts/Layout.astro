@@ -6,6 +6,7 @@ import "@styles/print.css";
 import Footer from "@components/layout/Footer.astro";
 import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
+import PrintPreparation from "@components/layout/PrintPreparation.astro";
 import KeyboardShortcutsModal from "@components/KeyboardShortcutsModal.astro";
 import SearchModal from "@components/SearchModal";
 interface Props {
@@ -216,6 +217,7 @@ const jsonLd = article && {
 			<Footer />
 		</div>
 		<ScrollToTop />
+		<PrintPreparation />
 		<KeyboardShortcutsModal pageType={pageType} />
 		<SearchModal client:only="react" />
 		{pageType === "404" && (

@@ -1,0 +1,91 @@
+<script>
+  // Paper can't scroll, expand, or follow a link, so just before printing:
+  // unclip scroll boxes, open collapsed content, and move link targets into a
+  // numbered list at the end of the page. Everything is undone afterwards.
+  // Without JS, print.css falls back to printing URLs inline.
+  let restore: (() => void)[] = [];
+
+  function setStyle(el: HTMLElement, styles: Record<string, string>) {
+    const previous = el.style.cssText;
+    restore.push(() => (el.style.cssText = previous));
+    for (const [prop, value] of Object.entries(styles)) {
+      el.style.setProperty(prop, value, 'important');
+    }
+  }
+
+  function unclipScrollBoxes(root: Element) {
+    const clipped = [...root.querySelectorAll<HTMLElement>('*')].filter(
+      (el) =>
+        /auto|scroll/.test(getComputedStyle(el).overflowY) &&
+        el.scrollHeight > el.clientHeight + 1,
+    );
+    // Ancestors often fix the height too, so let the whole chain grow.
+    for (const el of clipped) {
+      for (
+        let node: HTMLElement | null = el;
+        node && node !== root;
+        node = node.parentElement
+      ) {
+        setStyle(node, { height: 'auto', 'max-height': 'none', overflow: 'visible' });
+      }
+    }
+  }
+
+  function expandCollapsed(root: Element) {
+    for (const details of root.querySelectorAll('details:not([open])')) {
+      details.setAttribute('open', '');
+      restore.push(() => details.removeAttribute('open'));
+    }
+    for (const content of root.querySelectorAll<HTMLElement>('.collapsible-content')) {
+      if (content.style.display === 'none') setStyle(content, { display: 'block' });
+    }
+  }
+
+  function addLinkEndnotes(main: Element) {
+    const numbers = new Map<string, number>();
+    for (const link of main.querySelectorAll<HTMLAnchorElement>('.content a[href]')) {
+      if (!/^https?:/.test(link.href) || link.querySelector('img')) continue;
+      const url = new URL(link.href);
+      if (url.origin === location.origin && url.pathname === location.pathname) continue;
+
+      if (!numbers.has(link.href)) numbers.set(link.href, numbers.size + 1);
+      const ref = document.createElement('span');
+      ref.className = 'print-link-ref';
+      ref.textContent = `[${numbers.get(link.href)}]`;
+      link.after(ref);
+      restore.push(() => ref.remove());
+    }
+    if (numbers.size === 0) return;
+
+    const section = document.createElement('section');
+    section.className = 'print-links';
+    const heading = document.createElement('h2');
+    heading.textContent = 'Links';
+    const list = document.createElement('ol');
+    for (const href of numbers.keys()) {
+      const item = document.createElement('li');
+      item.textContent = href;
+      list.append(item);
+    }
+    section.append(heading, list);
+    main.querySelector('.print-source')?.before(section);
+    restore.push(() => section.remove());
+
+    document.documentElement.classList.add('print-endnotes');
+    restore.push(() => document.documentElement.classList.remove('print-endnotes'));
+  }
+
+  window.addEventListener('beforeprint', () => {
+    const main = document.querySelector('main');
+    if (!main || restore.length) return;
+    // Expand first so scroll boxes inside collapsed content get measured.
+    expandCollapsed(main);
+    unclipScrollBoxes(main);
+    addLinkEndnotes(main);
+  });
+
+  window.addEventListener('afterprint', () => {
+    for (const undo of restore.reverse()) undo();
+    restore = [];
+  });
+</script>
