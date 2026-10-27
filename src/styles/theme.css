@@ -71,6 +71,7 @@
 
 /* Light theme class override */
 :root.light {
+  color-scheme: light;
   --color-bg: var(--color-bg-note-light);
   --color-bg-code: var(--color-bg-code-note-light);
   --color-ink: var(--color-ink-light-theme);
@@ -88,6 +89,8 @@
 
 /* Dark theme class override */
 :root.dark {
+  /* Native scrollbars and form controls follow the theme. */
+  color-scheme: dark;
   --color-bg: var(--color-bg-note-dark);
   --color-bg-code: var(--color-bg-code-note-dark);
   --color-bg-hover: color-mix(
