@@ -2,6 +2,7 @@
 import { SEO } from "astro-seo";
 import "@styles/theme.css";
 import "@styles/base.css";
+import "@styles/print.css";
 import Footer from "@components/layout/Footer.astro";
 import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
@@ -206,6 +207,9 @@ const jsonLd = article && {
 			<div class="content-wrapper">
 				<slot />
 			</div>
+			<p class="print-only print-source">
+				{title.trim() || SITE_NAME} · {AUTHOR.name} · {canonicalUrl}
+			</p>
 		</main>
 		<div class="footer-area">
 			<slot name="footer-background" />

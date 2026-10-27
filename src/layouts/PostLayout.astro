@@ -225,7 +225,9 @@ const readingTime = frontmatter.readingTime && currentEntry?.body
     <SubscribeForm />
 
     {frontmatter.bsky && (
-      <BlueskyComments uri={frontmatter.bsky} client:visible />
+      <div class="no-print">
+        <BlueskyComments uri={frontmatter.bsky} client:visible />
+      </div>
     )}
 
     <Webmentions target={canonicalUrl} />

@@ -1,0 +1,181 @@
+/* Print styles.
+   h/t Brennen Puth, "Printable Websites"
+   https://brennenputh.me/blog/printable-websites/ */
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 2cm;
+  }
+
+  /* Paper is white, whatever theme the reader had on screen. */
+  :root,
+  :root.light,
+  :root.dark {
+    --color-bg: #fff;
+    --color-bg-code: #f2f2f2;
+    --color-ink: #000;
+    --color-ink-light: #444;
+    --color-accent: #000;
+    --color-link: #000;
+    --color-border: #999;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  /* Everything that only makes sense with a mouse or a network. */
+  .no-print,
+  .skip-link,
+  .site-nav,
+  .reading-progress,
+  #scroll-to-top,
+  #keyboard-shortcuts-modal,
+  #fullscreen-image-viewer,
+  .footer-area,
+  .breadcrumb,
+  .adjacent-navigation__side,
+  .post-navigation,
+  .raw-link,
+  .random-entry,
+  .draft-banner,
+  .toc-container,
+  .recommended-content,
+  .on-this-day,
+  .subscribe-section,
+  .webmentions,
+  .expressive-code .copy {
+    display: none !important;
+  }
+
+  main {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .content-wrapper {
+    max-width: none;
+    padding: 0;
+  }
+
+  /* Point sizes instead of the screen's rem scale. */
+  article p,
+  .content,
+  .content p,
+  li {
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  h1,
+  article h1 {
+    font-size: 20pt;
+  }
+
+  h2,
+  .content h2 {
+    font-size: 15pt;
+  }
+
+  h3,
+  .content h3,
+  h4 {
+    font-size: 13pt;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    break-after: avoid;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  img,
+  figure,
+  table,
+  blockquote {
+    break-inside: avoid;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+
+  /* Links can't be clicked on paper, so print where they go. */
+  a {
+    color: #000 !important;
+  }
+
+  .content a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 9pt;
+    color: #444;
+    word-break: break-all;
+  }
+
+  .content a:has(img)::after,
+  .heading-link-wrapper::after {
+    content: none !important;
+  }
+
+  /* Monokai's pale text vanishes once the browser drops backgrounds, so code
+     prints as black ink in a bordered box, wrapped instead of clipped. */
+  .expressive-code pre {
+    background: #fff !important;
+    border: 1px solid #999 !important;
+    white-space: pre-wrap !important;
+    overflow: visible !important;
+  }
+
+  .expressive-code pre,
+  .expressive-code pre * {
+    color: #000 !important;
+  }
+
+  .expressive-code code,
+  .content code {
+    font-size: 9pt;
+  }
+
+  /* Margin notes have no margin to live in on paper; print them inline. */
+  .sidenote-content {
+    float: none !important;
+    width: auto !important;
+    margin: 0.5em 0 !important;
+    padding: 0.5em 1em !important;
+    max-height: none !important;
+    opacity: 1 !important;
+    border-left: 2px solid #999;
+  }
+
+  .sidenote-close {
+    display: none !important;
+  }
+
+  .print-source {
+    margin-top: 2em;
+    padding-top: 0.5em;
+    border-top: 1px solid #999;
+    font-family: var(--font-prose);
+    font-size: 9pt;
+    color: #444;
+  }
+}
