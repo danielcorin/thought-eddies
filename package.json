@@ -58,6 +58,7 @@
     "tsparticles": "^4.5.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.12",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "gray-matter": "^4.0.3",
     "prettier": "^3.9.10",
@@ -68,6 +69,7 @@
     "remark-rehype": "^11.1.2",
     "sequoia-cli": "^0.5.7",
     "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.2.0",
     "wrangler": "^4.156.1"
@@ -102,6 +104,11 @@
     },
     "patchedDependencies": {
       "sequoia-cli@0.5.7": "patches/sequoia-cli@0.5.7.patch"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "sequoia-cli>typescript": "6"
+      }
     }
   }
 }
