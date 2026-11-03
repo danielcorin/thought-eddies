@@ -5,6 +5,11 @@ import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-s
 export default defineEcConfig({
   plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
   themes: ['monokai'],
+  // Shiki has no gitignore grammar; render those blocks as plain text
+  // instead of warning on every build.
+  shiki: {
+    langAlias: { gitignore: 'txt' },
+  },
   defaultProps: {
     showLineNumbers: false,
   },

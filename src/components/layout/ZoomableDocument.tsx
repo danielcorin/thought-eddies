@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
-import rehypePrism from 'rehype-prism-plus';
+import rehypePrism from 'rehype-prism-plus/common';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 
