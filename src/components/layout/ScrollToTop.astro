@@ -8,20 +8,59 @@ import { Icon } from "astro-icon/components";
     class="fixed bottom-4 right-4 p-2 rounded-full bg-[var(--color-bg)] border-2 border-[var(--color-border)] text-[var(--color-ink)] opacity-0 transition-opacity duration-200 hover:bg-[var(--color-bg-code)] cursor-pointer z-10"
 >
     <Icon name="ph:caret-up-bold" class="h-6 w-6" />
+    <!-- Reading progress, drawn clockwise from the top over the button's border. -->
+    <svg class="progress-ring" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="22" cy="22" r="21" pathLength="100"></circle>
+    </svg>
 </button>
 
 <script>
     const scrollButton = document.getElementById("scroll-to-top");
+    const ring = scrollButton?.querySelector<SVGCircleElement>(
+        ".progress-ring circle",
+    );
+    const content = document.querySelector("article");
 
-    window.addEventListener("scroll", () => {
-        if (scrollButton) {
-            scrollButton.style.opacity = window.scrollY > 300 ? "1" : "0";
-            scrollButton.style.pointerEvents =
-                window.scrollY > 300 ? "auto" : "none";
-        }
-    });
+    const update = () => {
+        if (!scrollButton) return;
+        const visible = window.scrollY > 300;
+        scrollButton.style.opacity = visible ? "1" : "0";
+        scrollButton.style.pointerEvents = visible ? "auto" : "none";
+
+        if (!ring || !content) return;
+        const contentHeight = content.offsetHeight - window.innerHeight;
+        const progress =
+            contentHeight > 0 ? (window.scrollY / contentHeight) * 100 : 100;
+        ring.style.strokeDashoffset = `${100 - Math.min(100, Math.max(0, progress))}`;
+    };
+
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
 
     scrollButton?.addEventListener("click", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     });
 </script>
+
+<style>
+    .progress-ring {
+        position: absolute;
+        /* Sit exactly on the 2px border. */
+        inset: -2px;
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        transform: rotate(-90deg);
+        pointer-events: none;
+        overflow: visible;
+    }
+
+    .progress-ring circle {
+        fill: none;
+        stroke: var(--color-ink);
+        stroke-width: 2;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        transition: stroke-dashoffset 100ms ease-out;
+    }
+</style>

@@ -4,7 +4,6 @@ import "@styles/theme.css";
 import "@styles/base.css";
 import "@styles/print.css";
 import Footer from "@components/layout/Footer.astro";
-import ReadingProgress from "@components/layout/ReadingProgress.astro";
 import ScrollToTop from "@components/layout/ScrollToTop.astro";
 import PrintPreparation from "@components/layout/PrintPreparation.astro";
 import KeyboardShortcutsModal from "@components/KeyboardShortcutsModal.astro";
@@ -155,7 +154,6 @@ const jsonLd = article && {
 	</head>
 	<body class="posts">
 		<a href="#main-content" class="skip-link">Skip to main content</a>
-		<ReadingProgress />
 
 		<script is:inline>
 			// Global theme toggle functionality - accessible to all components
