@@ -41,3 +41,5 @@ draft: false
 - https://vig.xyz
 - https://bradwoods.io/
 - https://timkellogg.me/
+- https://www.mowglii.com/
+- https://danielmiessler.com/
