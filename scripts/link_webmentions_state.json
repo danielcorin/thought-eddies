@@ -3261,7 +3261,7 @@
       "target": "https://lucumr.pocoo.org/2026/9/12/pdoom/"
     },
     "https://www.danielcorin.com/links/2026/09/scoop-top-ai-companies-probing-tens-of-thousands-of-security-incidents/": {
-      "checkedAt": "2026-11-17T11:28:29.565725Z",
+      "checkedAt": "2026-11-17T13:55:06.122358Z",
       "detail": "GET https://www.axios.com/2026/09/26/openai-anthropic-thousands-ai-security-incidents returned HTTP 403",
       "status": "failed",
       "target": "https://www.axios.com/2026/09/26/openai-anthropic-thousands-ai-security-incidents"
@@ -3310,9 +3310,8 @@
       "target": "https://nicolehedley.substack.com/p/how-software-engineering-is-changing"
     },
     "https://www.danielcorin.com/links/2026/10/i-did-this-without-your-knowledge-lesswrong/": {
-      "checkedAt": "2026-11-17T11:28:26.261903Z",
-      "detail": "Response exceeded the 2097152-byte safety limit",
-      "status": "failed",
+      "checkedAt": "2026-11-17T13:55:05.074518Z",
+      "status": "no-endpoint",
       "target": "https://www.lesswrong.com/posts/3375SZNGA5dKHQMie/i-did-this-without-your-knowledge"
     },
     "https://www.danielcorin.com/links/2026/10/i-know-why-the-mathematicians-weep/": {
@@ -3346,9 +3345,8 @@
       "target": "https://corbt.com/posts/the-machine-starts"
     },
     "https://www.danielcorin.com/links/2026/10/uncommon-web-97-live-demos-of-unusual-web-libraries/": {
-      "checkedAt": "2026-11-17T11:28:26.665486Z",
-      "detail": "Response exceeded the 2097152-byte safety limit",
-      "status": "failed",
+      "checkedAt": "2026-11-17T13:55:05.803108Z",
+      "status": "no-endpoint",
       "target": "https://webdev.teknium.io/"
     },
     "https://www.danielcorin.com/links/2026/10/websites-should-be-printable/": {
