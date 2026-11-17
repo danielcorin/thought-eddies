@@ -1,8 +1,8 @@
 ---
 title: "Black Hat USA 2026: The 'Breaking' News: The OpenAI–Hugging Face Incident - YouTube"
-target: "https://m.youtube.com/watch?v=87DyyMV0kCY&ra=m"
+target: "https://youtube.com/watch?v=87DyyMV0kCY"
 createdAt: 2026-08-08T18:11:41.795000+00:00
-updatedAt: 2026-08-08T18:11:47.071000+00:00
+updatedAt: 2026-08-08T18:20:48.629000+00:00
 raindropId: 1814012724
 tags: []
 draft: false
